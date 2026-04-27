@@ -52,11 +52,10 @@ Purpose: Store motorcycle/vehicle information
 Fields:
   id - INT, PRIMARY KEY, AUTO INCREMENT
   name - VARCHAR(100), NOT NULL
+  vehicle_type - VARCHAR(50), NOT NULL
   price - DECIMAL(10,2), NOT NULL
   status - ENUM('available', 'unavailable', 'maintenance'), DEFAULT 'available'
   current_branch_id - INT, NOT NULL, FOREIGN KEY (branches.id)
-  lat - DECIMAL(10,8), NOT NULL
-  lng - DECIMAL(11,8), NOT NULL
   created_at - DATETIME, DEFAULT CURRENT_TIMESTAMP
   updated_at - DATETIME, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -146,36 +145,63 @@ Indexes:
   FOREIGN KEY (return_branch_id) REFERENCES branches(id)
 
 ===========================================
-TABLE 7: messages
+TABLE 7: conversations
 ===========================================
 
-Purpose: Store chat messages between users (conversations and messages merged)
+Purpose: Store conversation groups between users
 
 Fields:
   id - INT, PRIMARY KEY, AUTO INCREMENT
-  user1_id - INT, NOT NULL, FOREIGN KEY (users.id)
-  user2_id - INT, NOT NULL, FOREIGN KEY (users.id)
+  created_at - DATETIME, DEFAULT CURRENT_TIMESTAMP
+
+Indexes:
+  PRIMARY KEY (id)
+
+===========================================
+TABLE 8: conversation_members
+===========================================
+
+Purpose: Store members of each conversation
+
+Fields:
+  id - INT, PRIMARY KEY, AUTO INCREMENT
+  conversation_id - INT, NOT NULL, FOREIGN KEY (conversations.id)
+  user_id - INT, NOT NULL, FOREIGN KEY (users.id)
+  joined_at - DATETIME, DEFAULT CURRENT_TIMESTAMP
+
+Indexes:
+  PRIMARY KEY (id)
+  FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+  FOREIGN KEY (user_id) REFERENCES users(id)
+  INDEX (conversation_id)
+  INDEX (user_id)
+  UNIQUE (conversation_id, user_id)
+
+===========================================
+TABLE 9: messages
+===========================================
+
+Purpose: Store chat messages in conversations
+
+Fields:
+  id - INT, PRIMARY KEY, AUTO INCREMENT
+  conversation_id - INT, NOT NULL, FOREIGN KEY (conversations.id)
   sender_id - INT, NOT NULL, FOREIGN KEY (users.id)
   content - TEXT, NOT NULL
   is_read - BOOLEAN, DEFAULT FALSE
   created_at - DATETIME, DEFAULT CURRENT_TIMESTAMP
 
-Indexes:
+Indexes:  
   PRIMARY KEY (id)
-  FOREIGN KEY (user1_id) REFERENCES users(id)
-  FOREIGN KEY (user2_id) REFERENCES users(id)
+  FOREIGN KEY (conversation_id) REFERENCES conversations(id)
   FOREIGN KEY (sender_id) REFERENCES users(id)
-  INDEX (user1_id, user2_id)
+  INDEX (conversation_id)
   INDEX (sender_id)
   INDEX (created_at)
   INDEX (is_read)
 
-Note: user1_id and user2_id form conversation pair
-sender_id indicates who sent this message
-This combines old conversations and messages tables
-
 ===========================================
-TABLE 8: reviews
+TABLE 10: reviews
 ===========================================
 
 Purpose: Store user reviews for completed bookings
@@ -203,6 +229,9 @@ RELATIONSHIPS DIAGRAM
 ===========================================
 
 users (1) --- (N) bookings
+users (1) --- (N) conversation_members
+users (1) --- (N) messages (as sender)
+users (1) --- (N) reviews
 branches (1) --- (N) vehicles
 branches (1) --- (N) bookings (pickup)
 branches (1) --- (N) bookings (return)
@@ -211,8 +240,8 @@ vehicles (1) --- (N) bookings
 bookings (1) --- (N) payments
 bookings (1) --- (N) vehicle_returns
 bookings (1) --- (N) reviews
-users (1) --- (N) messages
-users (1) --- (N) reviews
+conversations (1) --- (N) conversation_members
+conversations (1) --- (N) messages
 
 ===========================================
 KEY CONSTRAINTS & RULES
@@ -231,6 +260,7 @@ KEY CONSTRAINTS & RULES
 
 3. vehicles table
    - price must be positive decimal
+   - vehicle_type examples: Honda SH, Air Blade, Wave, Lead, ...
    - current_branch_id tracks vehicle location
    - status controls availability for booking
 
@@ -250,15 +280,27 @@ KEY CONSTRAINTS & RULES
    - extra_fee can be 0 if no damage
    - images stored as JSON array of URLs
 
-7. messages table (merged from conversations + messages)
-   - user1_id and user2_id form unique conversation pair
-   - sender_id shows who sent each message
-   - is_read tracks message read status
+7. conversations table
+   - Đại diện cho một group chat
+   - Có thể là 1-on-1 hoặc group chat
+   - created_at tracks khi conversation bắt đầu
 
-8. reviews table
-   - Only for completed bookings
+8. conversation_members table
+   - Lưu các member của conversation
+   - UNIQUE (conversation_id, user_id) để một user không join 2 lần
+   - joined_at tracks khi user join conversation
+
+9. messages table (refactored)
+   - Tách riêng từ conversations (cũ)
+   - conversation_id link đến conversation
+   - sender_id là người gửi tin nhắn
+   - is_read tracks đã đọc chưa
+
+10. reviews table
+   - Only for completed bookings (booking.status = 'completed')
    - rating must be 1-5
-   - One review per booking
+   - One review per booking (UNIQUE booking_id)
+   - Cannot create review until booking is completed
 
 ===========================================
 IMPORTANT QUERIES NEEDED
@@ -320,3 +362,14 @@ IMPORTANT QUERIES NEEDED
      SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_count
    FROM bookings
    WHERE user_id = ?
+
+9. Validate review can be created (booking must be completed)
+   SELECT COUNT(*) FROM bookings 
+   WHERE id = ? 
+   AND status = 'completed'
+
+10. Get all reviews for completed bookings
+   SELECT r.* FROM reviews r
+   JOIN bookings b ON r.booking_id = b.id
+   WHERE b.status = 'completed'
+   ORDER BY r.created_at DESC
