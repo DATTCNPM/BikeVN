@@ -1,10 +1,11 @@
 import { Outlet } from "react-router-dom";
+import AuthBackground from "../components/auth/AuthBackground";
 export default function AuthLayout() {
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center">
+    <AuthBackground>
       <div className="min-w-md">
         <Outlet />
       </div>
-    </div>
+    </AuthBackground>
   );
 }
