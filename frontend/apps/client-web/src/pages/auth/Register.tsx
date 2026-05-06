@@ -45,7 +45,7 @@ export default function Register() {
             <Input
               type="text"
               id="name"
-              placeholder="Tên"
+              placeholder="Nguyen Van A"
               {...register("name")}
             />
             {errors.name && (
@@ -58,7 +58,7 @@ export default function Register() {
           <Input
             type="email"
             id="email"
-            placeholder="Email"
+            placeholder="user@example.com"
             {...register("email")}
           />
           {errors.email && (
@@ -70,7 +70,7 @@ export default function Register() {
           <Input
             type={showPassword ? "text" : "password"}
             id="password"
-            placeholder="Password"
+            placeholder="********"
             {...register("password")}
           />
           {errors.password && (
@@ -91,7 +91,7 @@ export default function Register() {
           <Input
             type={showPassword ? "text" : "password"}
             id="confirmPassword"
-            placeholder="Xác nhận mật khẩu"
+            placeholder="********"
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (

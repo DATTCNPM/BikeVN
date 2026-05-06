@@ -40,10 +40,11 @@ export default function Login() {
         <div className="w-full items-center gap-2">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
+
             <Input
               type="email"
               id="email"
-              placeholder="Email"
+              placeholder="user@example.com"
               {...register("email")}
             />
             {errors.email && (
@@ -57,7 +58,7 @@ export default function Login() {
             <Input
               type={showPassword ? "text" : "password"}
               id="password"
-              placeholder="Password"
+              placeholder="********"
               {...register("password")}
             />
             {errors.password && (
