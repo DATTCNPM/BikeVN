@@ -1,32 +1,63 @@
 import Logo from "@/assets/icons/Logo_yellow.svg";
+import { Bell, Home, MessageCircle, CircleUserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   return (
-    <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-50 px-4">
+    <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-50 px-8">
       <Link to="/" className="flex items-center gap-2">
         <img src={Logo} alt="Logo" className="w-10" />
-        <span className="text-2xl font-bold">BikeVN</span>
+        <span className="text-2xl text-primary font-bold">BikeVN</span>
       </Link>
-      <nav className="flex items-center gap-8">
-        <div className="flex gap-8 items-center justify-center">
-          <Link
-            to="/home"
-            className="px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
-          >
-            Home
-          </Link>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/login">Đăng nhập</Link>
-          </Button>
-          <Button size="lg" asChild>
-            <Link to="/register">Đăng ký</Link>
-          </Button>
-        </div>
+      <nav className="flex items-center gap-4">
+        <Link
+          to="/home"
+          className="px-4 py-2 flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
+        >
+          <Home className="w-4 h-4" /> Home
+        </Link>
+        <Link
+          to="/chat"
+          className="px-4 py-2 flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
+        >
+          <MessageCircle className="w-4 h-4" /> Chat
+        </Link>
       </nav>
+      <div className="flex items-center gap-4">
+        <Button variant="outline" className="p-2 rounded-full">
+          <Bell className="w-4 h-4" />
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <CircleUserRound className="w-4 h-4" />
+              <span className="ml-2">Nguyen Van A</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Danger Zone</DropdownMenuLabel>
+              <DropdownMenuItem>Log out</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

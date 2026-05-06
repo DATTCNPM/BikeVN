@@ -39,27 +39,49 @@ export default function Hero() {
 
       {/* Content */}
       <div className="z-10 container mx-auto px-6 min-h-screen flex items-center justify-center">
-        <div className="max-w-2xl">
-          <p className="text-white/60 uppercase tracking-[0.3em] mb-4">
+        <div className="max-w-2xl text-secondary space-y-8">
+          <p className="uppercase tracking-[0.3em] mb-4">
             Premium Vehicle Rental
           </p>
 
-          <h1 className="text-6xl font-bold text-white leading-tight">
+          <h1 className="text-6xl font-bold text-primary leading-tight">
             Drive The Future
           </h1>
 
-          <p className="mt-6 text-lg text-white/70">
+          <p className="text-lg">
             Trải nghiệm dịch vụ thuê xe cao cấp với phong cách hiện đại, sang
             trọng và tiện lợi.
           </p>
 
           <div className="flex gap-4 mt-8">
-            <button className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition">
-              Thuê ngay
+            <button
+              className="
+              px-8 py-4
+              rounded-2xl
+              bg-primary
+              text-primary-foreground
+              font-semibold
+              hover:bg-primary/90
+              transition-all duration-300
+            "
+            >
+              Thuê xe ngay
             </button>
 
-            <button className="px-6 py-3 border border-white/20 text-white hover:bg-white/20 rounded-xl backdrop-blur-md">
-              Khám phá
+            <button
+              className="
+              px-8 py-4
+              rounded-2xl
+              border border-white/10
+              bg-white/[0.03]
+              backdrop-blur-md
+              text-white
+              hover:bg-white/[0.06]
+              hover:border-white/20
+              transition-all duration-300
+            "
+            >
+              Khám phá thêm
             </button>
           </div>
         </div>

@@ -19,16 +19,14 @@ export default function HowItWorks() {
   ];
   return (
     <section id="how-it-works">
-      <div className="max-w-3xl mx-auto text-center mb-16">
-        <p className="text-white/50 uppercase tracking-[0.3em] mb-4 text-sm">
-          How It Works
-        </p>
+      <div className="max-w-3xl mx-auto text-muted-foreground text-center mb-16">
+        <p className=" uppercase tracking-[0.3em] mb-4 text-sm">How It Works</p>
 
-        <h2 className="text-4xl md:text-5xl font-bold text-white">
+        <h2 className="text-4xl md:text-5xl font-bold text-primary leading-tight">
           Thuê xe chỉ với vài bước đơn giản
         </h2>
 
-        <p className="mt-6 text-white/60 text-lg">
+        <p className="mt-6 text-lg">
           Quy trình nhanh chóng, tối ưu trải nghiệm giúp bạn tiết kiệm thời
           gian.
         </p>

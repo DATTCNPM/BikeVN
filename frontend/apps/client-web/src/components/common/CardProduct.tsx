@@ -1,0 +1,90 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, ArrowRight } from "lucide-react";
+
+type CardProductProps = {
+  title: string;
+  type: string;
+  price: number;
+  location: string;
+  status: string;
+  image: string;
+};
+
+export default function CardProduct({
+  title,
+  type,
+  price,
+  location,
+  status,
+  image,
+}: CardProductProps) {
+  return (
+    <Card className="group overflow-hidden border-border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-card dark:border-border">
+      {/* Thumbnail */}
+      <div className="relative overflow-hidden">
+        <img
+          src={image}
+          alt={title}
+          className="h-[260px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent dark:from-black/80 dark:via-black/20 dark:to-transparent" />
+
+        {/* Badge */}
+        <Badge className="absolute left-5 top-5 rounded-md border-0 bg-primary px-4 py-1 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground">
+          {status}
+        </Badge>
+      </div>
+
+      {/* Content */}
+      <CardContent className="space-y-6 p-6">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground dark:text-muted-foreground">
+              {type}
+            </p>
+
+            <h3 className="line-clamp-2 text-3xl font-semibold tracking-tight text-card-foreground dark:text-card-foreground">
+              {title}
+            </h3>
+          </div>
+
+          <div className="shrink-0 text-right">
+            <p className="text-4xl font-bold text-primary dark:text-primary">
+              ${price.toFixed(0)}
+            </p>
+
+            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground dark:text-muted-foreground">
+              Per Day
+            </p>
+          </div>
+        </div>
+
+        {/* Location */}
+        <div className="flex items-center gap-2 text-muted-foreground dark:text-muted-foreground">
+          <MapPin className="size-4" />
+          <span className="text-sm">{location}</span>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          <Button className="flex-1 gap-2 font-semibold uppercase tracking-wide shadow-sm">
+            Book Now
+            <ArrowRight className="size-4" />
+          </Button>
+
+          <Button
+            variant="outline"
+            className="flex-1 border-border bg-background font-semibold uppercase tracking-wide hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:hover:bg-accent"
+          >
+            View Details
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
