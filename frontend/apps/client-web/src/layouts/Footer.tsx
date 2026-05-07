@@ -37,14 +37,11 @@ export default function Footer() {
           </h3>
 
           <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="transition-colors hover:text-primary">
+            <Link to="/home" className="transition-colors hover:text-primary">
               Home
             </Link>
 
-            <Link
-              to="/vehicles"
-              className="transition-colors hover:text-primary"
-            >
+            <Link to="/chat" className="transition-colors hover:text-primary">
               Chat
             </Link>
           </div>

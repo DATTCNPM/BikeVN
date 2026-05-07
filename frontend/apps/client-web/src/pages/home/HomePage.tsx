@@ -12,16 +12,14 @@ export default function HomePage() {
   const priceRanges = ["Dưới 100k", "100k - 200k", "Trên 200k"];
   return (
     <div>
-      <div className="flex items-center justify-center gap-4 mb-6">
-        <SearchComponent results={42} />
-        <Filter title="Filter by location" content={locations} />
-        <Filter title="Filter by vehicle type" content={vehicleTypes} />
-        <Filter title="Filter by price range" content={priceRanges} />
-        <Button variant="outline">Làm mới</Button>
-      </div>
-      <Separator className="my-6" />
       <Tabs defaultValue="list" className="w-full space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center gap-4">
+          <SearchComponent results={42} />
+          <Filter title="Filter by location" content={locations} />
+          <Filter title="Filter by vehicle type" content={vehicleTypes} />
+          <Filter title="Filter by price range" content={priceRanges} />
+          <Button variant="outline">Làm mới</Button>
+
           <TabsList>
             <TabsTrigger value="list">
               <List className="w-4 h-4" /> List
@@ -32,6 +30,8 @@ export default function HomePage() {
           </TabsList>
           <p className="text-sm text-muted-foreground">Hiển thị 42 xe</p>
         </div>
+
+        <Separator />
         <TabsContent value="list">
           <ListVehicle />
         </TabsContent>

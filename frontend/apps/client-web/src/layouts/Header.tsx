@@ -15,20 +15,20 @@ import {
 export default function Header() {
   return (
     <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-50 px-8">
-      <Link to="/" className="flex items-center gap-2">
+      <Link to="/home" className="flex items-center gap-2">
         <img src={Logo} alt="Logo" className="w-10" />
         <span className="text-2xl text-primary font-bold">BikeVN</span>
       </Link>
       <nav className="flex items-center gap-4">
         <Link
           to="/home"
-          className="px-4 py-2 flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
+          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all"
         >
           <Home className="w-4 h-4" /> Home
         </Link>
         <Link
           to="/chat"
-          className="px-4 py-2 flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
+          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all"
         >
           <MessageCircle className="w-4 h-4" /> Chat
         </Link>
