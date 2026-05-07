@@ -3,6 +3,7 @@ import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import Landing from "@/pages/landing/Landing";
 import HomePage from "@/pages/home/HomePage";
+import VehicleDetail from "@/pages/vehicle/VehicleDetail";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <HomePage />,
+      },
+      {
+        path: "/vehicles/:id",
+        element: <VehicleDetail />,
       },
     ],
   },

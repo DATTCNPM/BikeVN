@@ -9,6 +9,7 @@ export default function ListVehicle() {
         {DataVehicleSample.map((vehicle) => (
           <CardProduct
             key={vehicle.id}
+            id={vehicle.id}
             title={vehicle.name}
             type={vehicle.vehicle_type}
             price={vehicle.price}

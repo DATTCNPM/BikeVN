@@ -2,8 +2,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type CardProductProps = {
+  id: string;
   title: string;
   type: string;
   price: number;
@@ -13,6 +15,7 @@ type CardProductProps = {
 };
 
 export default function CardProduct({
+  id,
   title,
   type,
   price,
@@ -20,6 +23,10 @@ export default function CardProduct({
   status,
   image,
 }: CardProductProps) {
+  const navigate = useNavigate();
+  const handleViewDetails = ({ id }: { id: string }) => {
+    navigate(`/vehicles/${id}`);
+  };
   return (
     <Card className="group overflow-hidden border-border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-card dark:border-border">
       {/* Thumbnail */}
@@ -34,7 +41,7 @@ export default function CardProduct({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent dark:from-black/80 dark:via-black/20 dark:to-transparent" />
 
         {/* Badge */}
-        <Badge className="absolute left-5 top-5 rounded-md border-0 bg-primary px-4 py-1 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground">
+        <Badge variant="default" className="absolute top-2 right-2">
           {status}
         </Badge>
       </div>
@@ -80,6 +87,7 @@ export default function CardProduct({
           <Button
             variant="outline"
             className="flex-1 border-border bg-background font-semibold uppercase tracking-wide hover:bg-accent hover:text-accent-foreground dark:bg-transparent dark:hover:bg-accent"
+            onClick={() => handleViewDetails({ id })} // Use the actual vehicle ID
           >
             View Details
           </Button>
