@@ -1,4 +1,4 @@
-import AuthCard from "@/components/common/AuthCard";
+import AuthCard from "@/components/auth/AuthCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/lib/schema";

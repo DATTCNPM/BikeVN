@@ -47,8 +47,12 @@ export default function Header() {
           <DropdownMenuContent>
             <DropdownMenuGroup>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/profile/info">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/profile/settings">Settings</Link>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

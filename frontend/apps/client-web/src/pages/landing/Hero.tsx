@@ -1,27 +1,5 @@
-import Autoplay from "embla-carousel-autoplay";
-import { useRef } from "react";
-
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import motorbike1 from "@/assets/images/motorbike1.png";
-import motorbike2 from "@/assets/images/motorbike2.png";
-import motorbike3 from "@/assets/images/motorbike3.png";
-import motorbike4 from "@/assets/images/motorbike4.png";
-
-const images = [motorbike1, motorbike2, motorbike3, motorbike4];
+import VehicleGallery from "@/components/vehicle/VehicleGallery";
 export default function Hero() {
-  const plugin = useRef(
-    Autoplay({
-      delay: 2500,
-      stopOnInteraction: true,
-    }),
-  );
   return (
     <section
       className="
@@ -38,8 +16,8 @@ export default function Hero() {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:80px_80px]" />
 
       {/* Content */}
-      <div className="z-10 container mx-auto px-6 min-h-screen flex items-center justify-center">
-        <div className="max-w-2xl text-secondary space-y-8">
+      <div className="z-10 container mx-auto px-6 min-h-screen grid grid-cols-12 items-center gap-8">
+        <div className="max-w-2xl text-secondary space-y-8 col-span-6">
           <p className="uppercase tracking-[0.3em] mb-4">
             Premium Vehicle Rental
           </p>
@@ -85,52 +63,9 @@ export default function Hero() {
             </button>
           </div>
         </div>
-        <Carousel
-          plugins={[plugin.current]}
-          className="w-full w-xl mx-auto"
-          onMouseEnter={plugin.current.stop}
-          onMouseLeave={plugin.current.reset}
-        >
-          <CarouselContent>
-            {images.map((image, index) => (
-              <CarouselItem key={index}>
-                <div className="p-2">
-                  <Card className="overflow-hidden border-white/10 bg-white/[0.03]">
-                    <CardContent className="p-0">
-                      <img
-                        src={image}
-                        alt={`Car ${index + 1}`}
-                        className="
-                      w-full
-                      h-[250px] md:h-[400px]
-                      object-cover
-                    "
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-
-          <CarouselPrevious
-            className="
-          border-white/10
-          bg-black/40
-          text-white
-          hover:bg-black/60
-        "
-          />
-
-          <CarouselNext
-            className="
-          border-white/10
-          bg-black/40
-          text-white
-          hover:bg-black/60
-        "
-          />
-        </Carousel>
+        <div className="col-span-6">
+          <VehicleGallery showThumbnail={false} />
+        </div>
       </div>
     </section>
   );

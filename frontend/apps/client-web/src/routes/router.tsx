@@ -6,6 +6,9 @@ import HomePage from "@/pages/home/HomePage";
 import VehicleDetail from "@/pages/vehicle/VehicleDetail";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
+import ProfileLayout from "@/layouts/ProfileLayout";
+import InfoSection from "@/pages/profile/InfoSection";
+import SettingSection from "@/pages/profile/SettingSection";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +43,21 @@ const router = createBrowserRouter([
       {
         path: "/vehicles/:id",
         element: <VehicleDetail />,
+      },
+    ],
+  },
+  {
+    path: "/profile",
+    element: <ProfileLayout />,
+    children: [
+      {
+        index: true,
+        path: "info",
+        element: <InfoSection />,
+      },
+      {
+        path: "settings",
+        element: <SettingSection />,
       },
     ],
   },
