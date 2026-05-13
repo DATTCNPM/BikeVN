@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { user } from "@/data/user";
+import { user } from "@/constants/userSample";
 
 export function ProfileSidebar() {
   return (

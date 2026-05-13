@@ -1,4 +1,4 @@
-import type { Message } from "@/pages/chat/ChatPage";
+import type { Message } from "@/pages/ChatPage";
 
 import { Card } from "@/components/ui/card";
 

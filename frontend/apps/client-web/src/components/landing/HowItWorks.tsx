@@ -1,4 +1,4 @@
-import Card from "./Card";
+import Card from "../../components/landing/Card";
 export default function HowItWorks() {
   const howItWorks = [
     {

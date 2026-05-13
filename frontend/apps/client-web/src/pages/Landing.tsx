@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import Vehicle from "./Vehicle";
-import Hero from "./Hero";
-import CTA from "./CTA";
-import HowItWorks from "./HowItWorks";
-import Features from "./Features";
+import Vehicle from "@/components/landing/Vehicle";
+import Hero from "@/components/landing/Hero";
+import CTA from "@/components/landing/CTA";
+import HowItWorks from "@/components/landing/HowItWorks";
+import Features from "@/components/landing/Features";
 import LogoYellow from "@/assets/icons/Logo_yellow.svg";
 import LogoWhite from "@/assets/icons/Logo_white.svg";
 import {

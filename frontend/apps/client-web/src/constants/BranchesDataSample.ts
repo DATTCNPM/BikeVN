@@ -1,4 +1,5 @@
-export const branches = [
+import type { Branch } from "@/lib/types";
+export const branches: Branch[] = [
   {
     id: "1",
     name: "Chi nhánh TP.HCM",
@@ -18,5 +19,3 @@ export const branches = [
     created_at: "2026-05-07 10:00:00",
   },
 ];
-
-export type Branch = (typeof branches)[number];

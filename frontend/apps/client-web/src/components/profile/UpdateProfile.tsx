@@ -12,7 +12,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 
-import { user } from "@/data/user";
+import { user } from "@/constants/userSample";
 import { useState } from "react";
 
 type UpdateProfileProps = {

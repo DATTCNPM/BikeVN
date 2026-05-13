@@ -5,7 +5,7 @@ import motorbike3 from "@/assets/images/motorbike3.png";
 export default function Vehicle() {
   const DataVehicleSample = [
     {
-      id: 1,
+      id: "1",
       title: "Yamaha Exciter 155",
       type: "Xe số",
       price: 150000,
@@ -14,7 +14,7 @@ export default function Vehicle() {
       status: "available",
     },
     {
-      id: 2,
+      id: "2",
       title: "Honda Air Blade 125",
       type: "Xe ga",
       price: 120000,
@@ -23,7 +23,7 @@ export default function Vehicle() {
       status: "available",
     },
     {
-      id: 3,
+      id: "3",
       title: "Suzuki Raider 150",
       type: "Xe số",
       price: 140000,
@@ -41,6 +41,7 @@ export default function Vehicle() {
         {DataVehicleSample.map((vehicle) => (
           <CardProduct
             key={vehicle.id}
+            id={vehicle.id}
             title={vehicle.title}
             type={vehicle.type}
             price={vehicle.price}

@@ -18,7 +18,7 @@ import {
   Car,
 } from "lucide-react";
 import { useState } from "react";
-import { user } from "@/data/user";
+import { user } from "@/constants/userSample";
 import { Button } from "@/components/ui/button";
 import UpdateProfile from "@/components/profile/UpdateProfile";
 import AlertComponent from "@/components/common/AlertComponent";

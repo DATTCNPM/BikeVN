@@ -2,9 +2,10 @@ import { useState } from "react";
 import CardProduct from "@/components/common/CardProduct";
 import DataVehicleSample from "@/constants/VehicleDataSample";
 import { branches } from "@/constants/BranchesDataSample";
-import Map from "@/components/Map/Map";
+import Map from "@/components/map/Map";
+
 export default function MapVehicle() {
-  const [selectedBranch, setSelectedBranch] = useState<number | undefined>(
+  const [selectedBranch, setSelectedBranch] = useState<string | undefined>(
     undefined,
   );
   const selectedBranchData = branches.find((b) => b.id === selectedBranch);
@@ -43,6 +44,7 @@ export default function MapVehicle() {
           {filteredVehicles?.map((vehicle) => (
             <CardProduct
               key={vehicle.id}
+              id={vehicle.id}
               title={vehicle.name}
               type={vehicle.vehicle_type}
               price={vehicle.price}

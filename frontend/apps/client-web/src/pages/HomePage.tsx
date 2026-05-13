@@ -1,7 +1,7 @@
 import SearchComponent from "@/components/common/Search";
 import Filter from "@/components/common/Filter";
-import ListVehicle from "./ListVehicle";
-import MapVehicle from "./MapVehicle";
+import ListVehicle from "../components/home/ListVehicle";
+import MapVehicle from "../components/home/MapVehicle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

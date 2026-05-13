@@ -1,4 +1,4 @@
-import Card from "./Card";
+import Card from "../../components/landing/Card";
 import {
   Zap,
   Motorbike,
@@ -31,9 +31,7 @@ export default function Feature() {
   return (
     <section id="features" className="space-y-16">
       <div className="max-w-3xl mx-auto text-center text-muted-foreground">
-        <p className="uppercase tracking-[0.3em] mb-4 text-sm">
-          Why Choose Us
-        </p>
+        <p className="uppercase tracking-[0.3em] mb-4 text-sm">Why Choose Us</p>
 
         <h2 className="text-4xl md:text-5xl font-bold text-primary leading-tight">
           Trải nghiệm thuê xe hiện đại,

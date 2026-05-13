@@ -1,4 +1,4 @@
-import type { Conversation } from "@/pages/chat/ChatPage";
+import type { Conversation } from "@/pages/ChatPage";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 

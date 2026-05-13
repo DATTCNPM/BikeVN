@@ -1,15 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
-import Landing from "@/pages/landing/Landing";
-import HomePage from "@/pages/home/HomePage";
-import VehicleDetail from "@/pages/vehicle/VehicleDetail";
-import ChatPage from "@/pages/chat/ChatPage";
-import Login from "@/pages/auth/Login";
-import Register from "@/pages/auth/Register";
+import Landing from "@/pages/Landing";
+import HomePage from "@/pages/HomePage";
+import VehicleDetail from "@/pages/VehicleDetail";
+import ChatPage from "@/pages/ChatPage";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 import ProfileLayout from "@/layouts/ProfileLayout";
-import InfoSection from "@/pages/profile/InfoSection";
-import SettingSection from "@/pages/profile/SettingSection";
+import InfoSection from "@/components/profile/InfoSection";
+import SettingSection from "@/components/profile/SettingSection";
 import ChatLayout from "@/layouts/ChatLayout";
 
 const router = createBrowserRouter([

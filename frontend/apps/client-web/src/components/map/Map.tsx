@@ -1,8 +1,9 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import type { Branch } from "@/constants/BranchesDataSample";
+import type { Branch } from "@/lib/types";
+import FlyToLocation from "./FlyToLocation";
 type MapProps = {
   locations: Branch[];
-  selectedBranchId?: number;
+  selectedBranchId?: string;
   onSelectBranch?: (branch: Branch) => void;
 };
 export default function Map({
@@ -36,6 +37,12 @@ export default function Map({
           <Popup>{item.name}</Popup>
         </Marker>
       ))}
+      {selectedBranchId && (
+        <FlyToLocation
+          lat={locations.find((l) => l.id === selectedBranchId)?.lat || 0}
+          lng={locations.find((l) => l.id === selectedBranchId)?.lng || 0}
+        />
+      )}
     </MapContainer>
   );
 }

@@ -2,7 +2,10 @@ import motorbike1 from "@/assets/images/motorbike1.png";
 import motorbike2 from "@/assets/images/motorbike2.png";
 import motorbike3 from "@/assets/images/motorbike3.png";
 import motorbike4 from "@/assets/images/motorbike4.png";
-export const DataVehicleSample = [
+
+import type { Vehicle } from "@/lib/types";
+
+export const DataVehicleSample: Vehicle[] = [
   {
     id: "1",
     name: "Yamaha Exciter 155",

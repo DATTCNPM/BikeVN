@@ -1,5 +1,5 @@
 import { Search, Users } from "lucide-react";
-import type { Conversation } from "@/pages/chat/ChatPage";
+import type { Conversation } from "@/pages/ChatPage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";

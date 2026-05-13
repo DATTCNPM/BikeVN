@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { Conversation, Message } from "@/pages/chat/ChatPage";
+import type { Conversation, Message } from "@/pages/ChatPage";
 
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";

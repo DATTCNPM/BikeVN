@@ -1,13 +1,4 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  phone: string;
-  cccd_number: string;
-  role: "user" | "admin";
-  created_at: string;
-  updated_at: string;
-}
+import type { User } from "@/lib/types";
 
 export const user: User = {
   id: "123456",
