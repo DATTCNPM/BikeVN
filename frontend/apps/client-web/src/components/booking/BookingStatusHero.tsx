@@ -42,6 +42,13 @@ const statusConfig: Record<Booking["status"], any> = {
     iconClass: "bg-muted text-muted-foreground border-border",
   },
 };
+const colorTitle = {
+  pending: "text-yellow-500",
+  approved: "text-green-500",
+  completed: "text-primary",
+  rejected: "text-red-500",
+  cancelled: "text-muted-foreground",
+};
 
 export default function BookingStatusHero({ status }: Props) {
   const config = statusConfig[status] || statusConfig["pending"];
@@ -52,20 +59,21 @@ export default function BookingStatusHero({ status }: Props) {
     <section className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-8 shadow-sm">
       <div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
 
-      <div className="relative flex flex-col items-center text-center">
-        <div
-          className={`flex size-24 items-center justify-center rounded-full border ${config.iconClass}`}
-        >
-          <Icon className="size-12" />
+      <div className="relative flex items-center flex-col text-center space-y-4">
+        <div className="flex items-center gap-4">
+          <div
+            className={`flex size-24 items-center justify-center rounded-full border ${config.iconClass}`}
+          >
+            <Icon className="size-12" />
+          </div>
+          <h1
+            className={`text-4xl font-black tracking-tight ${colorTitle[status]}`}
+          >
+            {config.title}
+          </h1>
         </div>
 
-        <h1 className="mt-6 text-4xl font-black tracking-tight">
-          {config.title}
-        </h1>
-
-        <p className="mt-3 max-w-2xl text-muted-foreground">
-          {config.description}
-        </p>
+        <p className=" max-w-2xl text-muted-foreground">{config.description}</p>
       </div>
     </section>
   );

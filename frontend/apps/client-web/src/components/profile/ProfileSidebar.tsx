@@ -59,6 +59,13 @@ export function ProfileSidebar() {
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Đặt xe của tôi">
+                  <a href="/profile/bookings">
+                    <Settings /> <span>Quản lý đặt xe</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

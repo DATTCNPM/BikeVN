@@ -2,30 +2,39 @@
 
 import { CalendarDays, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import type { Vehicle, Booking, Branch } from "@/lib/types";
 
 type Props = {
-  booking: any;
+  booking: Booking;
+  vehicle: Vehicle;
+  pickupBranch?: Branch;
+  returnBranch?: Branch;
 };
 
-export default function BookingVehicleCard({ booking }: Props) {
+export default function BookingVehicleCard({
+  booking,
+  vehicle,
+  pickupBranch,
+  returnBranch,
+}: Props) {
   return (
     <Card className="overflow-hidden rounded-[2rem] border-border bg-card shadow-sm">
       <div className="grid lg:grid-cols-[320px_1fr]">
         <div className="h-full">
           <img
-            src={booking.vehicle.image}
-            alt={booking.vehicle.name}
+            src={vehicle.image}
+            alt={vehicle.name}
             className="h-full w-full object-cover"
           />
         </div>
 
-        <div className="flex flex-col justify-between p-6">
+        <div className="flex flex-col justify-center p-6">
           <div>
             <p className="text-sm font-medium uppercase tracking-wider text-primary">
               Vehicle
             </p>
 
-            <h2 className="mt-2 text-3xl font-bold">{booking.vehicle.name}</h2>
+            <h2 className="mt-2 text-3xl font-bold">{vehicle.name}</h2>
           </div>
 
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
@@ -34,12 +43,12 @@ export default function BookingVehicleCard({ booking }: Props) {
                 <CalendarDays className="size-5" />
               </div>
 
-              <div>
+              <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Rental Time</p>
 
-                <p className="font-semibold">{booking.start_time}</p>
+                <p className="font-semibold">{booking.start_date}</p>
 
-                <p className="font-semibold">{booking.end_time}</p>
+                <p className="font-semibold">{booking.end_date}</p>
               </div>
             </div>
 
@@ -48,12 +57,12 @@ export default function BookingVehicleCard({ booking }: Props) {
                 <MapPin className="size-5" />
               </div>
 
-              <div>
+              <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Branches</p>
 
-                <p className="font-semibold">{booking.pickup_branch}</p>
+                <p className="font-semibold">{pickupBranch?.name}</p>
 
-                <p className="font-semibold">{booking.return_branch}</p>
+                <p className="font-semibold">{returnBranch?.name}</p>
               </div>
             </div>
           </div>

@@ -60,3 +60,16 @@ export type Booking = {
   created_at: string;
   updated_at: string;
 };
+
+export type PaymentMethod = {
+  id: string;
+  booking_id: string;
+  amount: number;
+  type: "deposit" | "rental";
+  card_method: "momo" | "vnpay" | "card";
+  payment_method: string;
+  status: "pending" | "completed" | "failed" | "refunded";
+  transaction_code?: string | null;
+  paid_at?: string | null;
+  created_at: string;
+};

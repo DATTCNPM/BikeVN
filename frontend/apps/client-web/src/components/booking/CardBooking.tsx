@@ -1,5 +1,5 @@
 "use client";
-
+import { useNavigate } from "react-router-dom";
 import * as React from "react";
 import { addDays, differenceInDays, format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -19,6 +19,8 @@ import { Separator } from "@/components/ui/separator";
 
 import Filter from "@/components/common/Filter";
 
+import { booking } from "@/constants/BookingSample";
+
 const branchOptions = ["Chi nhánh TP.HCM", "Chi nhánh Cần Thơ"];
 
 const PRICE_PER_DAY = 150000;
@@ -37,6 +39,7 @@ export default function BookingCard() {
 
   const totalPrice = totalDays * PRICE_PER_DAY;
 
+  const navigate = useNavigate();
   return (
     <Card className="sticky top-24 w-full">
       {/* Header */}
@@ -145,7 +148,10 @@ export default function BookingCard() {
 
       {/* Footer */}
       <CardFooter>
-        <Button className="h-12 w-full rounded-xl text-base font-semibold">
+        <Button
+          className="h-12 w-full rounded-xl text-base font-semibold"
+          onClick={() => navigate(`/payment/${booking[0].id}`)}
+        >
           Đặt xe ngay
         </Button>
       </CardFooter>

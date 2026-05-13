@@ -11,6 +11,9 @@ import ProfileLayout from "@/layouts/ProfileLayout";
 import InfoSection from "@/components/profile/InfoSection";
 import SettingSection from "@/components/profile/SettingSection";
 import ChatLayout from "@/layouts/ChatLayout";
+import BookingResultPage from "@/pages/BookingResultPage";
+import MyBookingSection from "@/components/profile/MyBookingSection";
+import PaymentPage from "@/pages/PaymentPage";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +49,14 @@ const router = createBrowserRouter([
         path: "/vehicles/:id",
         element: <VehicleDetail />,
       },
+      {
+        path: "/booking-result/:id",
+        element: <BookingResultPage />,
+      },
+      {
+        path: "/payment/:id",
+        element: <PaymentPage />,
+      },
     ],
   },
   {
@@ -69,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingSection />,
+      },
+      {
+        path: "bookings",
+        element: <MyBookingSection />,
       },
     ],
   },
