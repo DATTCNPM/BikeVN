@@ -5,11 +5,24 @@ import { registerSchema } from "@/lib/schema";
 import type { RegisterSchema } from "@/lib/schema";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
+
+import { useNavigate } from "react-router-dom";
+
+import { useAuthStore } from "@/stores/useAuthStore";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { register: registerUser, loading, error } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const methods = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
@@ -25,8 +38,11 @@ export default function Register() {
     handleSubmit,
     formState: { errors },
   } = methods;
-  const onSubmit = (data: RegisterSchema) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterSchema) => {
+    const success = await registerUser(data);
+    if (success) {
+      navigate("/login");
+    }
   };
 
   return (
@@ -34,83 +50,91 @@ export default function Register() {
       title="Đăng ký"
       description="Đăng ký tài khoản của bạn"
       action="register"
+      error={error}
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full flex flex-col gap-4"
-      >
-        <div className="w-full items-center gap-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">Tên</Label>
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="name">Name</FieldLabel>
+          <FieldContent>
             <Input
               type="text"
               id="name"
-              placeholder="Nguyen Van A"
+              placeholder="John Doe"
               {...register("name")}
             />
-            {errors.name && (
-              <p className="text-red-500">{errors.name.message}</p>
-            )}
-          </div>
-        </div>
-        <div className="grid w-full items-center gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            type="email"
-            id="email"
-            placeholder="user@example.com"
-            {...register("email")}
-          />
-          {errors.email && (
-            <p className="text-red-500">{errors.email.message}</p>
-          )}
-        </div>
-        <div className="grid w-full items-center gap-2 relative">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            type={showPassword ? "text" : "password"}
-            id="password"
-            placeholder="********"
-            {...register("password")}
-          />
+          </FieldContent>
+          {errors.name && <FieldError>{errors.name.message}</FieldError>}
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <FieldContent>
+            <Input
+              type="email"
+              id="email"
+              placeholder="user@example.com"
+              {...register("email")}
+            />
+          </FieldContent>
+          {errors.email && <FieldError>{errors.email.message}</FieldError>}
+        </Field>
+        <Field className="relative">
+          <FieldLabel htmlFor="password">Password</FieldLabel>
+          <FieldContent>
+            <Input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              placeholder="********"
+              {...register("password")}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute top-7 right-1"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff /> : <Eye />}
+            </Button>
+          </FieldContent>
           {errors.password && (
-            <p className="text-red-500">{errors.password.message}</p>
+            <FieldError>{errors.password.message}</FieldError>
           )}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute top-6 right-1"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff /> : <Eye />}
-          </Button>
-        </div>
-        <div className="grid w-full items-center gap-2 relative">
-          <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-          <Input
-            type={showPassword ? "text" : "password"}
-            id="confirmPassword"
-            placeholder="********"
-            {...register("confirmPassword")}
-          />
+        </Field>
+        <Field className="relative">
+          <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+          <FieldContent>
+            <Input
+              type={showPassword ? "text" : "password"}
+              id="confirmPassword"
+              placeholder="********"
+              {...register("confirmPassword")}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute top-7 right-1"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff /> : <Eye />}
+            </Button>
+          </FieldContent>
           {errors.confirmPassword && (
-            <p className="text-red-500">{errors.confirmPassword.message}</p>
+            <FieldError>{errors.confirmPassword.message}</FieldError>
           )}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute top-6 right-1"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff /> : <Eye />}
-          </Button>
-        </div>
-        <Button type="submit" className="w-full" size="lg">
-          Đăng ký
+        </Field>
+        <Button type="submit" size="lg">
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <Spinner className="w-5 h-5" />
+              Đang đăng ký...
+            </span>
+          ) : (
+            "Đăng ký"
+          )}
         </Button>
-      </form>
+      </FieldGroup>
     </AuthCard>
   );
 }

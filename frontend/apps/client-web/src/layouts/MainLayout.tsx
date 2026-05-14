@@ -9,6 +9,7 @@ export default function MainLayout() {
       <main className="flex-grow container mx-auto px-6 pt-20 pb-6">
         <Outlet />
       </main>
+
       <Footer />
     </div>
   );

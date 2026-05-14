@@ -1,6 +1,6 @@
 import Logo from "@/assets/icons/Logo_yellow.svg";
 import { Bell, Home, MessageCircle, CircleUserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,8 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
+
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function Header() {
+  const { userProfile, logout } = useAuthStore();
+  const navigate = useNavigate();
   return (
     <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-50 px-8">
       <Link to="/home" className="flex items-center gap-2">
@@ -41,7 +46,7 @@ export default function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
               <CircleUserRound className="w-4 h-4" />
-              <span className="ml-2">Nguyen Van A</span>
+              <span className="ml-2">{userProfile?.name || "User"}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -57,7 +62,19 @@ export default function Header() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuLabel>Danger Zone</DropdownMenuLabel>
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={async () => {
+                  const isSuccess = await logout();
+                  if (isSuccess) {
+                    navigate("/login");
+                  } else {
+                    toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
+                  }
+                }}
+              >
+                Log out
+              </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

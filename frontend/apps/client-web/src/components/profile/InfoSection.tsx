@@ -17,14 +17,11 @@ import {
   Edit2,
   Car,
 } from "lucide-react";
-import { useState } from "react";
 import { user } from "@/constants/userSample";
 import { Button } from "@/components/ui/button";
 import UpdateProfile from "@/components/profile/UpdateProfile";
-import AlertComponent from "@/components/common/AlertComponent";
 
 export default function InfoSection() {
-  const [alert, setAlert] = useState(false);
   const infoItems = [
     {
       icon: <User className="text-muted-foreground" />,
@@ -90,8 +87,6 @@ export default function InfoSection() {
                   <span className="ml-2">Chỉnh sửa</span>
                 </Button>
               }
-              alert={alert}
-              setAlert={setAlert}
             />
           </CardAction>
         </CardHeader>
@@ -110,14 +105,6 @@ export default function InfoSection() {
           ))}
         </CardContent>
       </Card>
-      {alert && (
-        <AlertComponent
-          variant="default"
-          title="Cập nhật thành công"
-          description="Thông tin cá nhân của bạn đã được cập nhật."
-          setAlert={setAlert}
-        />
-      )}
     </div>
   );
 }

@@ -16,6 +16,9 @@ interface AuthCardProps {
   description: string;
   children: React.ReactNode;
   action: string;
+
+  error?: string | null;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
 }
 
 export default function AuthCard({
@@ -23,6 +26,9 @@ export default function AuthCard({
   description,
   children,
   action,
+
+  error,
+  onSubmit,
 }: AuthCardProps) {
   return (
     <Card className="w-full">
@@ -41,7 +47,13 @@ export default function AuthCard({
           )}
         </CardAction>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent>
+        <form onSubmit={onSubmit}>
+          {children}
+
+          {error && <p className="text-destructive mt-2">{error}</p>}
+        </form>
+      </CardContent>
       <CardFooter className="flex items-center justify-center">
         <Link to="/" className="flex items-center gap-2 text-primary">
           <Home className="w-4 h-4" />

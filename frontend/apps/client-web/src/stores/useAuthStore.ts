@@ -1,18 +1,19 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { registerUser, loginUser, getUserCurrent } from "../api/authAPI";
+import { authApi } from "@/api/authApi";
+import type { User } from "@/lib/types";
 
 interface AuthState {
   isLogin: boolean;
-  userProfile: any | null;
+  userProfile: User | null;
   loading: boolean;
   isServerDown: boolean;
   error: string | null;
 
   // Actions
   register: (userData: any) => Promise<boolean>;
-  login: (credentials: any) => Promise<void>;
-  logout: () => void;
+  login: (credentials: any) => Promise<boolean>;
+  logout: () => Promise<boolean>;
   fetchProfile: () => Promise<void>;
   setError: (msg: string | null) => void;
 }
@@ -33,7 +34,7 @@ export const useAuthStore = create<AuthState>()(
       register: async (userData) => {
         set({ loading: true, error: null });
         try {
-          await registerUser(userData);
+          await authApi.register(userData);
           set({ isServerDown: false });
           return true; // Để Component biết và chuyển hướng
         } catch (err: any) {
@@ -55,15 +56,16 @@ export const useAuthStore = create<AuthState>()(
       login: async (credentials) => {
         set({ loading: true, error: null });
         try {
-          const response = await loginUser(credentials);
-          if (response?.token) {
-            localStorage.setItem("token", response.token);
+          const response = await authApi.login(credentials);
+          if (response?.access_token) {
+            localStorage.setItem("token", response.access_token);
             set({
               isLogin: true,
               userProfile: response.user,
               isServerDown: false,
             });
           }
+          return true;
         } catch (err: any) {
           const status = err.response?.status;
           if (!status || status >= 500 || status === 404) {
@@ -74,7 +76,7 @@ export const useAuthStore = create<AuthState>()(
                 err.response?.data?.message || "Sai tài khoản hoặc mật khẩu",
             });
           }
-          throw err;
+          return false;
         } finally {
           set({ loading: false });
         }
@@ -87,7 +89,7 @@ export const useAuthStore = create<AuthState>()(
 
         set({ loading: true });
         try {
-          const user = await getUserCurrent();
+          const user = await authApi.getProfile();
           set({ userProfile: user, isLogin: true, isServerDown: false });
         } catch (err: any) {
           const status = err.response?.status;
@@ -103,9 +105,16 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // 4. Logout
-      logout: () => {
+      logout: async () => {
+        const response = await authApi.logout();
         localStorage.removeItem("token");
         set({ isLogin: false, userProfile: null, error: null });
+        if (response?.status === 200) {
+          return true;
+        } else {
+          set({ error: "Đăng xuất thất bại" });
+          return false;
+        }
       },
 
       setError: (msg) => set({ error: msg }),

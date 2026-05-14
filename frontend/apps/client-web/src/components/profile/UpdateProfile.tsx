@@ -14,18 +14,13 @@ import {
 
 import { user } from "@/constants/userSample";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type UpdateProfileProps = {
   trigger: React.ReactNode;
-  alert: boolean;
-  setAlert: (alert: boolean) => void;
 };
 
-export default function UpdateProfile({
-  trigger,
-  alert,
-  setAlert,
-}: UpdateProfileProps) {
+export default function UpdateProfile({ trigger }: UpdateProfileProps) {
   const [open, setOpen] = useState(false);
   const methods = useForm<UpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
@@ -46,7 +41,7 @@ export default function UpdateProfile({
     // Here you would typically call an API to update the user's profile
 
     setOpen(false);
-    setAlert(true);
+    toast.success("Cập nhật thông tin thành công!");
   };
 
   return (
