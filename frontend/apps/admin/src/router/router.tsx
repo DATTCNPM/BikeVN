@@ -10,6 +10,9 @@ import ReviewManagementPage from "@/pages/ReviewManagementPage";
 import PaymentManagementPage from "@/pages/PaymentManagementPage";
 import VehicleReturnManagementPage from "@/pages/VehicleReturnManagementPage";
 import ChatManagementPage from "@/pages/ChatManagementPage";
+import InfoPage from "@/pages/InfoPage";
+import SecurityPage from "@/pages/SecurityPage";
+import SettingPage from "@/pages/SettingPage";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +54,18 @@ const router = createBrowserRouter([
       {
         path: "chats",
         element: <ChatManagementPage />,
+      },
+      {
+        path: "info",
+        element: <InfoPage />,
+      },
+      {
+        path: "security",
+        element: <SecurityPage />,
+      },
+      {
+        path: "settings",
+        element: <SettingPage />,
       },
     ],
   },

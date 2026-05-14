@@ -1,14 +1,12 @@
 import {
   Bike,
-  CalendarRange,
   CircleDollarSign,
   ClipboardList,
   LayoutDashboard,
-  Settings,
-  ShieldCheck,
   Users,
   Store,
   MessageSquare,
+  Star,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -55,12 +53,12 @@ const menuItems = [
   },
   {
     title: "Vehicle Returns",
-    icon: CalendarRange,
+    icon: Bike,
     href: "/admin/vehicle-returns",
   },
   {
     title: "Đánh giá",
-    icon: CircleDollarSign,
+    icon: Star,
     href: "/admin/reviews",
   },
   {
@@ -72,16 +70,6 @@ const menuItems = [
     title: "Tin nhắn",
     icon: MessageSquare,
     href: "/admin/chats",
-  },
-  {
-    title: "Bảo mật",
-    icon: ShieldCheck,
-    href: "/admin/security",
-  },
-  {
-    title: "Cài đặt",
-    icon: Settings,
-    href: "/admin/settings",
   },
 ];
 

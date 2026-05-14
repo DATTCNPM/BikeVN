@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "react-router-dom";
 
 export default function AppHeader() {
   return (
@@ -93,11 +94,17 @@ export default function AppHeader() {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem>Hồ sơ cá nhân</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/admin/info">Hồ sơ cá nhân</Link>
+              </DropdownMenuItem>
 
-              <DropdownMenuItem>Cài đặt tài khoản</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/admin/settings">Cài đặt</Link>
+              </DropdownMenuItem>
 
-              <DropdownMenuItem>Đổi mật khẩu</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/admin/security">Bảo mật</Link>
+              </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
