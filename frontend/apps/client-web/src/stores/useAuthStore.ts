@@ -6,7 +6,7 @@ import type { UpdateProfilePayload } from "@/api/authApi";
 
 interface AuthState {
   isLogin: boolean;
-  userProfile: User | null;
+  userProfile: User | undefined;
   loading: boolean;
   isServerDown: boolean;
   error: string | null;
@@ -99,7 +99,7 @@ export const useAuthStore = create<AuthState>()(
             set({ isServerDown: true });
           } else if (status === 401) {
             localStorage.removeItem("token");
-            set({ isLogin: false, userProfile: null });
+            set({ isLogin: false, userProfile: undefined });
           }
         } finally {
           set({ loading: false });
@@ -110,7 +110,7 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         const response = await authApi.logout();
         localStorage.removeItem("token");
-        set({ isLogin: false, userProfile: null, error: null });
+        set({ isLogin: false, userProfile: undefined, error: null });
         if (response?.status === 200) {
           return true;
         } else {

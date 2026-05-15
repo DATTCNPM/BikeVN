@@ -1,72 +1,257 @@
 import VehicleGallery from "@/components/vehicle/VehicleGallery";
-import DataVehicleSample from "@/constants/VehicleDataSample";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Smile, Motorbike } from "lucide-react";
-import { branches } from "@/constants/BranchesDataSample";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
+import {
+  MapPin,
+  Smile,
+  Motorbike,
+  Calendar,
+  Fuel,
+  Gauge,
+  Palette,
+  CarFront,
+  Hash,
+  Banknote,
+} from "lucide-react";
 import { formatDateTime } from "@/lib/format";
 
 import Map from "@/components/map/Map";
 import ReviewSection from "@/components/vehicle/review/ReviewSection";
 
+import { useBranchStore } from "@/stores/useBranchStore";
+import { useVehicleStore } from "@/stores/useVehicleStore";
+import { useEffect, useMemo } from "react";
+
 export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
-  const locationVehicle = branches.find(
-    (b) => b.id === DataVehicleSample[0].current_branch_id,
-  );
-  const vehicle = DataVehicleSample.find((v) => v.id === vehicleId);
+  const { branches, fetchBranches, loading, error } = useBranchStore();
+
+  const {
+    selectedVehicle,
+    fetchVehicleById,
+    loading: vehicleLoading,
+    error: vehicleError,
+  } = useVehicleStore();
+
+  useEffect(() => {
+    fetchBranches();
+    fetchVehicleById(vehicleId);
+  }, [fetchBranches, fetchVehicleById, vehicleId]);
+
+  const vehicleData = useMemo(() => {
+    return {
+      ...selectedVehicle,
+      locationName: branches.find(
+        (branch) => branch.id === selectedVehicle?.current_branch_id,
+      )?.name,
+    };
+  }, [selectedVehicle, branches]);
+
+  const locationVehicle = useMemo(() => {
+    return branches.find((b) => b.id === selectedVehicle?.current_branch_id);
+  }, [selectedVehicle, branches]);
+
+  const statusMap = {
+    available: {
+      label: "Available",
+      variant: "default" as const,
+    },
+    unavailable: {
+      label: "Unavailable",
+      variant: "destructive" as const,
+    },
+    maintenance: {
+      label: "Maintenance",
+      variant: "secondary" as const,
+    },
+  };
+
+  const fuelTypeMap = {
+    gasoline: "Gasoline",
+    diesel: "Diesel",
+    electric: "Electric",
+    hybrid: "Hybrid",
+  };
+
+  if (loading || vehicleLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error || vehicleError) {
+    toast.error("Failed to load data. Please try again.");
+    return null;
+  }
+
+  if (!vehicleData) return null;
+
   return (
     <>
-      <VehicleGallery />
+      <VehicleGallery images={vehicleData.image_url || []} />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold">{vehicle?.name}</h1>
-          <div className="flex items-center space-x-4">
+          <div>
+            <h1 className="text-4xl font-bold">{vehicleData.name}</h1>
+
+            <p className="text-muted-foreground mt-2">
+              {vehicleData.description || "No description available"}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
             <Badge variant="default">
-              {" "}
-              <Motorbike className="inline-block mr-2" />{" "}
-              {vehicle?.vehicle_type}
-            </Badge>
-            <Badge variant="outline">
-              <MapPin className="inline-block mr-2" /> Location:{" "}
-              {locationVehicle?.name || "Unknown"}
+              <Motorbike className="mr-2 h-4 w-4" />
+              {vehicleData.brand} - {vehicleData.model}
             </Badge>
 
-            <Badge variant="secondary">
-              <Smile className="inline-block mr-2" /> Status: {vehicle?.status}
+            <Badge variant="outline">
+              <MapPin className="mr-2 h-4 w-4" />
+              {vehicleData.locationName || "Unknown"}
+            </Badge>
+
+            <Badge
+              variant={statusMap[vehicleData.status || "available"].variant}
+            >
+              <Smile className="mr-2 h-4 w-4" />
+              {statusMap[vehicleData.status || "available"].label}
             </Badge>
           </div>
         </div>
-        <p className="text-2xl font-semibold text-primary">
-          {vehicle?.price.toFixed(0)}đ
-          <span className="text-lg text-muted-foreground"> / ngày</span>
+
+        <div className="rounded-xl border p-6 min-w-[250px]">
+          <p className="text-sm text-muted-foreground mb-2">Rental price</p>
+
+          <p className="text-3xl font-bold text-primary">
+            {vehicleData.price_per_day
+              ? vehicleData.price_per_day.toLocaleString("vi-VN")
+              : "N/A"}
+            đ
+          </p>
+
+          <span className="text-muted-foreground text-sm">/ day</span>
+        </div>
+      </div>
+
+      <div className="grid gap-4 mt-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <CarFront className="h-4 w-4" />
+            Vehicle
+          </div>
+
+          <p className="font-medium">
+            {vehicleData.brand} {vehicleData.model}
+          </p>
+        </div>
+
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            Year
+          </div>
+
+          <p className="font-medium">{vehicleData.year}</p>
+        </div>
+
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Fuel className="h-4 w-4" />
+            Fuel type
+          </div>
+
+          <p className="font-medium">
+            {fuelTypeMap[vehicleData.fuel_type || "gasoline"]}
+          </p>
+        </div>
+
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Gauge className="h-4 w-4" />
+            Mileage
+          </div>
+
+          <p className="font-medium">
+            {vehicleData.mileage
+              ? vehicleData.mileage.toLocaleString("vi-VN")
+              : "N/A"}{" "}
+            km
+          </p>
+        </div>
+
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Palette className="h-4 w-4" />
+            Color
+          </div>
+
+          <p className="font-medium">{vehicleData.color}</p>
+        </div>
+
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Hash className="h-4 w-4" />
+            License plate
+          </div>
+
+          <p className="font-medium">{vehicleData.license_plate}</p>
+        </div>
+
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Motorbike className="h-4 w-4" />
+            Engine capacity
+          </div>
+
+          <p className="font-medium">{vehicleData.engine_capacity} cc</p>
+        </div>
+
+        <div className="rounded-xl border p-4 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Banknote className="h-4 w-4" />
+            Price per day
+          </div>
+
+          <p className="font-medium">
+            {vehicleData.price_per_day
+              ? vehicleData.price_per_day.toLocaleString("vi-VN")
+              : "N/A"}
+            đ
+          </p>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 mt-8 text-sm text-muted-foreground">
+        <p>
+          <span className="font-medium mr-2">Created at:</span>
+
+          {vehicleData.created_at
+            ? formatDateTime(vehicleData.created_at)
+            : "Undefined"}
+        </p>
+
+        <p>
+          <span className="font-medium mr-2">Updated at:</span>
+
+          {vehicleData.updated_at
+            ? formatDateTime(vehicleData.updated_at)
+            : "Undefined"}
         </p>
       </div>
-      <p className="text-base text-muted-foreground">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat.
-      </p>
 
-      <div className="flex items-center space-x-4 ">
-        <p className="text-base text-muted-foreground">
-          <span className="font-medium mr-2">Ngày tạo</span>
-          {vehicle ? formatDateTime(vehicle.created_at) : "Unknown"}
-        </p>
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Vehicle location</h2>
 
-        <p className="text-base text-muted-foreground">
-          <span className="font-medium mr-2">Ngày cập nhật</span>
-          {vehicle ? formatDateTime(vehicle.updated_at) : "Unknown"}
-        </p>
-      </div>
-      <div className="mt-6">
-        <h2 className="text-2xl font-bold mb-4">Vị trí xe trên bản đồ</h2>
         <Map
           locations={locationVehicle ? [locationVehicle] : []}
-          selectedBranchId={vehicle?.current_branch_id}
+          selectedBranchId={vehicleData.current_branch_id}
         />
       </div>
-      <div className="mt-6">
+
+      <div className="mt-8">
         <ReviewSection />
       </div>
     </>

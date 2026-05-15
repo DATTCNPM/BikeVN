@@ -24,27 +24,41 @@ export type Review = {
   };
 };
 
-export type Vehicle = {
+export type VehicleStatus = "available" | "unavailable" | "maintenance";
+
+export type FuelType = "gasoline" | "diesel" | "electric" | "hybrid";
+
+export interface Vehicle {
   id: string;
   name: string;
-  vehicle_type: string;
-  price: number;
-  image: string;
-  status: "available" | "rented" | "maintenance";
+  brand: string;
+  model: string;
+  license_plate: string;
+  color: string;
+  year: number;
+  price_per_day: number;
+  status: VehicleStatus;
+  engine_capacity: number;
+  fuel_type: FuelType;
+  mileage: number;
+  image_url: string[];
+  description?: string;
   current_branch_id: string;
   created_at: string;
   updated_at: string;
-};
+}
 
-export type Branch = {
+export type BranchStatus = "active" | "inactive";
+
+export interface Branch {
   id: string;
   name: string;
   address: string;
   lat: number;
   lng: number;
-  status: "active" | "inactive";
+  status: BranchStatus;
   created_at: string;
-};
+}
 
 export type Booking = {
   id: string;

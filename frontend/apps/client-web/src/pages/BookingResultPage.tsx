@@ -8,15 +8,24 @@ import BookingTimeline from "@/components/booking/BookingTimeline";
 import BookingVehicleCard from "@/components/booking/BookingVehicleCard";
 
 import { booking } from "@/constants/BookingSample";
-import { DataVehicleSample } from "@/constants/VehicleDataSample";
-import { branches } from "@/constants/BranchesDataSample";
+import { useVehicleStore } from "@/stores/useVehicleStore";
+import { useBranchStore } from "@/stores/useBranchStore";
+
+import { useEffect } from "react";
+
 export default function BookingResultPage() {
   const { id } = useParams();
+  const { selectedVehicle, fetchVehicleById } = useVehicleStore();
+  const { branches, fetchBranches } = useBranchStore();
+
+  useEffect(() => {
+    fetchVehicleById(id || "");
+    fetchBranches();
+  }, [fetchVehicleById, fetchBranches]);
+
   const bookingData = booking.find((b) => b.id === id) || booking[0];
   //   Lấy thông tin xe từ bookingData.vehicle_id và DataVehicleSample
-  const vehicleData =
-    DataVehicleSample.find((v) => v.id === bookingData.vehicle_id) ||
-    DataVehicleSample[0];
+
   // Tên chi nhánh lấy từ bookingData.pickup_branch_id và bookingData.return_branch_id
   const pickupBranch = branches.find(
     (b) => b.id === bookingData.pickup_branch_id,
@@ -32,7 +41,7 @@ export default function BookingResultPage() {
 
         <BookingVehicleCard
           booking={bookingData}
-          vehicle={vehicleData}
+          vehicle={selectedVehicle}
           pickupBranch={pickupBranch}
           returnBranch={returnBranch}
         />

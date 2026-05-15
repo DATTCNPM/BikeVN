@@ -18,9 +18,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { user } from "@/constants/userSample";
+
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export function ProfileSidebar() {
+  const { userProfile } = useAuthStore();
   return (
     <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader className="p-4">
@@ -28,13 +30,15 @@ export function ProfileSidebar() {
           <Avatar className="h-9 w-9 border border-primary/20">
             <AvatarImage src="" />
             <AvatarFallback className="bg-primary text-primary-foreground font-bold">
-              {user.name.charAt(0)}
+              {userProfile?.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col truncate group-data-[collapsible=icon]:hidden">
-            <span className="font-semibold text-sm truncate">{user.name}</span>
+            <span className="font-semibold text-sm truncate">
+              {userProfile?.name}
+            </span>
             <span className="text-xs text-muted-foreground truncate">
-              {user.email}
+              {userProfile?.email}
             </span>
           </div>
         </div>

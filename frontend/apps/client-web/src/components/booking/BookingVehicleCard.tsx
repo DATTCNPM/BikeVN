@@ -6,7 +6,7 @@ import type { Vehicle, Booking, Branch } from "@/lib/types";
 
 type Props = {
   booking: Booking;
-  vehicle: Vehicle;
+  vehicle: Vehicle | null;
   pickupBranch?: Branch;
   returnBranch?: Branch;
 };
@@ -22,8 +22,8 @@ export default function BookingVehicleCard({
       <div className="grid lg:grid-cols-[320px_1fr]">
         <div className="h-full">
           <img
-            src={vehicle.image}
-            alt={vehicle.name}
+            src={vehicle?.image_url?.[0] || "/placeholder-vehicle.png"}
+            alt={vehicle?.name}
             className="h-full w-full object-cover"
           />
         </div>
@@ -34,7 +34,7 @@ export default function BookingVehicleCard({
               Vehicle
             </p>
 
-            <h2 className="mt-2 text-3xl font-bold">{vehicle.name}</h2>
+            <h2 className="mt-2 text-3xl font-bold">{vehicle?.name}</h2>
           </div>
 
           <div className="mt-8 grid gap-5 sm:grid-cols-2">

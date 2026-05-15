@@ -12,8 +12,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Booking } from "@/lib/types";
 import { booking } from "@/constants/BookingSample";
-import { DataVehicleSample } from "@/constants/VehicleDataSample";
 import { Button } from "@/components/ui/button";
+
+import { useVehicleStore } from "@/stores/useVehicleStore";
+import { useEffect } from "react";
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {
@@ -49,13 +51,19 @@ const statusConfig: Record<Booking["status"], any> = {
 
 export default function MyBookingSection() {
   const navigate = useNavigate();
+  const { vehicles, fetchVehicles } = useVehicleStore();
+
+  useEffect(() => {
+    fetchVehicles();
+  }, [fetchVehicles]);
+
   const bookings = booking.map((b) => {
-    const vehicle = DataVehicleSample.find((v) => v.id === b.vehicle_id);
+    const vehicle = vehicles.find((v) => v.id === b.vehicle_id);
     return {
       ...b,
       vehicleName: vehicle ? vehicle.name : "Unknown Vehicle",
       vehicleImage: vehicle
-        ? vehicle.image
+        ? vehicle.image_url[0]
         : "https://via.placeholder.com/300x200?text=No+Image",
     };
   });

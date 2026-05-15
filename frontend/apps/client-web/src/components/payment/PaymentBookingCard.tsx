@@ -1,13 +1,21 @@
 import { Card } from "@/components/ui/card";
 import { CalendarDays, MapPinned } from "lucide-react";
 import type { Booking } from "@/lib/types";
-import { branches } from "@/constants/BranchesDataSample";
+import { useBranchStore } from "@/stores/useBranchStore";
+
+import { useEffect } from "react";
 
 type Props = {
   booking: Booking;
 };
 
 export default function PaymentBookingCard({ booking }: Props) {
+  const { branches, fetchBranches } = useBranchStore();
+
+  useEffect(() => {
+    fetchBranches();
+  }, [fetchBranches]);
+
   const nameBranchesPickup =
     branches.find((branch) => branch.id === booking.pickup_branch_id)?.name ||
     "Unknown Branch";

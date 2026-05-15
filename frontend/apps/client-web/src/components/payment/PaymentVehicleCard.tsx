@@ -1,13 +1,19 @@
 import { Card } from "@/components/ui/card";
 import { Fuel, MapPin, Settings2 } from "lucide-react";
 import type { Vehicle } from "@/lib/types";
-import { branches } from "@/constants/BranchesDataSample";
+import { useBranchStore } from "@/stores/useBranchStore";
 
+import { useEffect } from "react";
 export default function PaymentVehicleCard({
   vehicle,
 }: {
   vehicle: Vehicle | undefined;
 }) {
+  const { branches, fetchBranches } = useBranchStore();
+  useEffect(() => {
+    fetchBranches();
+  }, [fetchBranches]);
+
   const nameBranches =
     branches.find((branch) => branch.id === vehicle?.current_branch_id)?.name ||
     "Unknown Branch";
@@ -15,7 +21,7 @@ export default function PaymentVehicleCard({
     <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm">
       <div className="grid lg:grid-cols-[280px_1fr]">
         <img
-          src={vehicle?.image}
+          src={vehicle?.image_url?.[0] || "/placeholder-vehicle.png"}
           alt={vehicle?.name}
           className="h-full min-h-[240px] w-full object-cover"
         />

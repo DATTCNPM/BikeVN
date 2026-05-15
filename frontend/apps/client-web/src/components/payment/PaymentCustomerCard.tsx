@@ -2,7 +2,11 @@ import { Card } from "@/components/ui/card";
 import { Mail, Phone, User2 } from "lucide-react";
 import type { User } from "@/lib/types";
 
-export default function PaymentCustomerCard({ user }: { user: User }) {
+export default function PaymentCustomerCard({
+  user,
+}: {
+  user: User | undefined;
+}) {
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
       <div>
@@ -17,19 +21,19 @@ export default function PaymentCustomerCard({ user }: { user: User }) {
         <InfoItem
           icon={<User2 className="size-5" />}
           label="Full Name"
-          value={user.name}
+          value={user?.name}
         />
 
         <InfoItem
           icon={<Mail className="size-5" />}
           label="Email"
-          value={user.email}
+          value={user?.email}
         />
 
         <InfoItem
           icon={<Phone className="size-5" />}
           label="Phone"
-          value={user.phone}
+          value={user?.phone || "N/A"}
         />
       </div>
     </Card>
@@ -43,7 +47,7 @@ function InfoItem({
 }: {
   icon: React.ReactNode;
   label: string;
-  value: string;
+  value: string | undefined;
 }) {
   return (
     <div className="rounded-2xl bg-muted/50 p-5">

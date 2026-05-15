@@ -7,20 +7,27 @@ import PaymentSummaryCard from "@/components/payment/PaymentSummaryCard";
 import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
 
 import { booking } from "@/constants/BookingSample";
-import { DataVehicleSample } from "@/constants/VehicleDataSample";
-import { user } from "@/constants/userSample";
 import { paymentMethods } from "@/constants/PaymentSample";
 
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useVehicleStore } from "@/stores/useVehicleStore";
+
+import { useEffect } from "react";
+
 export default function PaymentPage() {
+  const { userProfile } = useAuthStore();
+  const { vehicles, fetchVehicles } = useVehicleStore();
+  useEffect(() => {
+    fetchVehicles();
+  }, [fetchVehicles]);
+
   const bookingData = booking[0]; // Lấy booking đầu tiên làm ví dụ
-  const vehicleData = DataVehicleSample.find(
-    (v) => v.id === bookingData.vehicle_id,
-  );
-  const userData = user; // Giả sử chỉ có một user trong sample
+  const vehicleData = vehicles.find((v) => v.id === bookingData.vehicle_id);
+
   const dataPayment = {
     booking: bookingData,
     vehicle: vehicleData ? vehicleData : undefined,
-    user: userData,
+    user: userProfile ? userProfile : undefined,
     paymentMethod: paymentMethods[0], // Lấy phương thức thanh toán đầu tiên làm ví dụ
   };
 

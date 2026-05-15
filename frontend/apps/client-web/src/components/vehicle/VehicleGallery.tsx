@@ -9,17 +9,12 @@ import "swiper/css/thumbs";
 // 2. (Tùy chọn) Import CSS cho autoplay nếu cần hiệu ứng đặc biệt
 import "swiper/css/autoplay";
 
-import motorbike1 from "../../assets/images/motorbike1.png";
-import motorbike2 from "../../assets/images/motorbike2.png";
-import motorbike3 from "../../assets/images/motorbike3.png";
-import motorbike4 from "../../assets/images/motorbike4.png";
-
-const images = [motorbike1, motorbike2, motorbike3, motorbike4];
-
 export default function VehicleGallery({
   showThumbnail = true,
+  images,
 }: {
   showThumbnail?: boolean;
+  images: string[];
 }) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
 
