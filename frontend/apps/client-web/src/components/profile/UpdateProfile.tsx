@@ -11,10 +11,11 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
-
-import { user } from "@/constants/userSample";
-import { useState } from "react";
 import { toast } from "sonner";
+
+import { useState } from "react";
+
+import { useAuthStore } from "@/stores/useAuthStore";
 
 type UpdateProfileProps = {
   trigger: React.ReactNode;
@@ -22,26 +23,34 @@ type UpdateProfileProps = {
 
 export default function UpdateProfile({ trigger }: UpdateProfileProps) {
   const [open, setOpen] = useState(false);
+  const user = useAuthStore((state) => state.userProfile);
+  const updateProfile = useAuthStore((state) => state.updateProfile);
+  const loading = useAuthStore((state) => state.loading);
+  const error = useAuthStore((state) => state.error);
   const methods = useForm<UpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      cccd_number: user.cccd_number,
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      cccd_number: user?.cccd_number || "",
     },
   });
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = methods;
   const onSubmit = (data: UpdateProfileSchema) => {
-    console.log(data);
-    // Here you would typically call an API to update the user's profile
-
-    setOpen(false);
-    toast.success("Cập nhật thông tin thành công!");
+    updateProfile(data).then((success) => {
+      if (success) {
+        toast.success("Cập nhật thông tin thành công!");
+        setOpen(false);
+      } else {
+        toast.error("Cập nhật thông tin thất bại!");
+      }
+    });
   };
 
   return (
@@ -52,6 +61,8 @@ export default function UpdateProfile({ trigger }: UpdateProfileProps) {
       title="Cập nhật thông tin cá nhân"
       description="Cập nhật thông tin định danh và liên lạc của bạn"
       onSubmit={handleSubmit(onSubmit)}
+      loading={loading}
+      error={error}
     >
       <FieldGroup>
         <Field>
@@ -60,7 +71,7 @@ export default function UpdateProfile({ trigger }: UpdateProfileProps) {
             <Input
               type="text"
               id="name"
-              placeholder="Nguyễn Văn A"
+              placeholder={`${user?.name || "Nguyễn Văn A"}`}
               {...register("name")}
             />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
@@ -72,7 +83,7 @@ export default function UpdateProfile({ trigger }: UpdateProfileProps) {
             <Input
               type="email"
               id="email"
-              placeholder="nguyenvana@example.com"
+              placeholder={`${user?.email || "nguyenvana@example.com"}`}
               {...register("email")}
             />
             {errors.email && <FieldError>{errors.email.message}</FieldError>}
@@ -84,7 +95,7 @@ export default function UpdateProfile({ trigger }: UpdateProfileProps) {
             <Input
               type="text"
               id="phone"
-              placeholder="0123456789"
+              placeholder={`${user?.phone || "0123456789"}`}
               {...register("phone")}
             />
             {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
@@ -96,7 +107,7 @@ export default function UpdateProfile({ trigger }: UpdateProfileProps) {
             <Input
               type="text"
               id="cccd_number"
-              placeholder="123456789"
+              placeholder={`${user?.cccd_number || "123456789"}`}
               {...register("cccd_number")}
             />
             {errors.cccd_number && (

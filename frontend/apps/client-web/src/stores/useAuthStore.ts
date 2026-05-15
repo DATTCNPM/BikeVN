@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { authApi } from "@/api/authApi";
 import type { User } from "@/lib/types";
+import type { UpdateProfilePayload } from "@/api/authApi";
 
 interface AuthState {
   isLogin: boolean;
@@ -16,11 +17,12 @@ interface AuthState {
   logout: () => Promise<boolean>;
   fetchProfile: () => Promise<void>;
   setError: (msg: string | null) => void;
+  updateProfile: (payload: UpdateProfilePayload) => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
       // --- State ---
       isLogin: !!localStorage.getItem("token"),
       userProfile: null,
@@ -114,6 +116,47 @@ export const useAuthStore = create<AuthState>()(
         } else {
           set({ error: "Đăng xuất thất bại" });
           return false;
+        }
+      },
+
+      updateProfile: async (payload) => {
+        set({
+          loading: true,
+          error: null,
+        });
+
+        try {
+          const currentUser = get().userProfile;
+
+          if (!currentUser) {
+            throw {
+              response: {
+                status: 401,
+                data: {
+                  message: "Chưa đăng nhập",
+                },
+              },
+            };
+          }
+
+          const response = await authApi.updateProfile(currentUser.id, payload);
+
+          set({
+            userProfile: response.user,
+          });
+
+          return true;
+        } catch (err: any) {
+          set({
+            error:
+              err.response?.data?.message || err.message || "Cập nhật thất bại",
+          });
+
+          return false;
+        } finally {
+          set({
+            loading: false,
+          });
         }
       },
 

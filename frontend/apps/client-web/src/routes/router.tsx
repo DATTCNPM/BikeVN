@@ -15,6 +15,22 @@ import BookingResultPage from "@/pages/BookingResultPage";
 import MyBookingSection from "@/components/profile/MyBookingSection";
 import PaymentPage from "@/pages/PaymentPage";
 
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuthStore } from "@/stores/useAuthStore";
+
+function ProtectedRoute() {
+  // dùng state này từ useAuthStore
+  const isLogin = useAuthStore((state) => state.isLogin);
+
+  // chưa đăng nhập -> đá về login
+  if (!isLogin) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // đã đăng nhập -> render route con
+  return <Outlet />;
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -50,40 +66,50 @@ const router = createBrowserRouter([
         element: <VehicleDetail />,
       },
       {
-        path: "/booking-result/:id",
-        element: <BookingResultPage />,
-      },
-      {
-        path: "/payment/:id",
-        element: <PaymentPage />,
-      },
-    ],
-  },
-  {
-    element: <ChatLayout />,
-    children: [
-      {
-        path: "/chat",
-        element: <ChatPage />,
+        element: <ProtectedRoute />, // Bọc các route cần bảo vệ bằng ProtectedRoute
+        children: [
+          {
+            path: "/booking-result/:id",
+            element: <BookingResultPage />,
+          },
+          {
+            path: "/payment/:id",
+            element: <PaymentPage />,
+          },
+        ],
       },
     ],
   },
   {
-    path: "/profile",
-    element: <ProfileLayout />,
+    element: <ProtectedRoute />, // Bọc các route cần bảo vệ bằng ProtectedRoute
     children: [
       {
-        index: true,
-        path: "info",
-        element: <InfoSection />,
+        element: <ChatLayout />,
+        children: [
+          {
+            path: "/chat",
+            element: <ChatPage />,
+          },
+        ],
       },
       {
-        path: "settings",
-        element: <SettingSection />,
-      },
-      {
-        path: "bookings",
-        element: <MyBookingSection />,
+        path: "/profile",
+        element: <ProfileLayout />,
+        children: [
+          {
+            index: true,
+            path: "info",
+            element: <InfoSection />,
+          },
+          {
+            path: "settings",
+            element: <SettingSection />,
+          },
+          {
+            path: "bookings",
+            element: <MyBookingSection />,
+          },
+        ],
       },
     ],
   },

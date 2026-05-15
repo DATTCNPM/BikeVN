@@ -1,5 +1,7 @@
 import VehicleGallery from "@/components/vehicle/VehicleGallery";
+import { useNavigate } from "react-router-dom";
 export default function Hero() {
+  const navigate = useNavigate();
   return (
     <section
       className="
@@ -36,16 +38,19 @@ export default function Hero() {
               className="
               px-8 py-4
               rounded-2xl
+              
               bg-primary
-              text-primary-foreground
-              font-semibold
+              backdrop-blur-md
+              text-white
               hover:bg-primary/90
+              
               transition-all duration-300
+              cursor-pointer
             "
+              onClick={() => navigate("/home")}
             >
               Thuê xe ngay
             </button>
-
             <button
               className="
               px-8 py-4
@@ -57,7 +62,9 @@ export default function Hero() {
               hover:bg-white/[0.06]
               hover:border-white/20
               transition-all duration-300
+              cursor-pointer
             "
+              onClick={() => navigate("/home")}
             >
               Khám phá thêm
             </button>

@@ -10,6 +10,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 
 type FormDialogProps = {
   trigger: React.ReactNode;
@@ -19,6 +20,8 @@ type FormDialogProps = {
   children: React.ReactNode;
   open: boolean;
   onOpen: (open: boolean) => void;
+  loading: boolean;
+  error: string | null;
 };
 
 export default function FormDialog({
@@ -29,6 +32,8 @@ export default function FormDialog({
   children,
   open,
   onOpen,
+  loading,
+  error,
 }: FormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpen}>
@@ -44,13 +49,16 @@ export default function FormDialog({
           <Separator />
 
           {children}
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? <Spinner /> : "Submit"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

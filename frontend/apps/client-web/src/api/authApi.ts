@@ -2,6 +2,7 @@
 
 import type { MockData } from "@/data/UserData";
 import { users } from "@/data/UserData";
+import type { User } from "@/lib/types";
 
 type LoginPayload = {
   email: string;
@@ -13,6 +14,12 @@ type RegisterPayload = {
   name: string;
   password: string;
   confirmPassword: string;
+};
+
+export type UpdateProfilePayload = {
+  name: string;
+  phone?: string;
+  cccd_number?: string;
 };
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -94,12 +101,46 @@ export const authApi = {
   async getProfile() {
     await delay(500);
 
-    return users[0];
+    return users[1];
   },
 
   async logout() {
     await delay(300);
 
     return { status: 200, message: "Đăng xuất thành công" };
+  },
+
+  async updateProfile(userId: string, payload: UpdateProfilePayload) {
+    await delay(500);
+
+    const userIndex = users.findIndex((u) => u.id === userId);
+
+    if (userIndex === -1) {
+      throw {
+        response: {
+          status: 404,
+          data: {
+            message: "Người dùng không tồn tại",
+          },
+        },
+      };
+    }
+
+    users[userIndex] = {
+      ...users[userIndex],
+      name: payload.name,
+      phone: payload.phone ? payload.phone : users[userIndex].phone,
+      cccd_number: payload.cccd_number
+        ? payload.cccd_number
+        : users[userIndex].cccd_number,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { password, ...userWithoutPassword } = users[userIndex];
+
+    return {
+      message: "Cập nhật thông tin thành công",
+      user: userWithoutPassword as User,
+    };
   },
 };

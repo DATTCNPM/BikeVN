@@ -17,16 +17,19 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import { Moon, Sun, Lock, Trash2 } from "lucide-react";
 import AlertDialog from "@/components/common/AlertDialog";
+import { toast } from "sonner";
 
 import { updatePasswordSchema } from "@/lib/schema";
 import type { UpdatePasswordSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTheme } from "next-themes";
 
 export default function SettingsSection() {
+  const { theme, setTheme } = useTheme();
+
   const methods = useForm<UpdatePasswordSchema>({
     resolver: zodResolver(updatePasswordSchema),
   });
@@ -36,13 +39,11 @@ export default function SettingsSection() {
     formState: { errors },
   } = methods;
   const onSubmit = (data: UpdatePasswordSchema) => {
-    console.log(data);
-    // Here you would typically call an API to update the user's password
+    toast.error("Tính năng đổi mật khẩu hiện chưa được triển khai.");
   };
 
   const handleDeleteAccount = () => {
-    console.log("Account deleted");
-    // Here you would typically call an API to delete the user's account
+    toast.error("Tính năng xóa tài khoản hiện chưa được triển khai.");
   };
   return (
     <div className="space-y-8">
@@ -59,17 +60,32 @@ export default function SettingsSection() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sun size={20} className="text-primary" /> Chế độ hiển thị
+            {theme === "dark" ? (
+              <Moon size={20} className="text-blue-500" />
+            ) : (
+              <Sun size={20} className="text-primary" />
+            )}{" "}
+            Chế độ hiển thị
           </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Chế độ tối (Dark Mode)</Label>
+            <Label>
+              Chế độ{" "}
+              {theme === "dark" ? (
+                <Moon size={20} className="text-blue-500" />
+              ) : (
+                <Sun size={20} className="text-primary" />
+              )}
+            </Label>
             <p className="text-sm text-muted-foreground">
               Chuyển đổi giữa giao diện sáng và tối.
             </p>
           </div>
-          <Switch />
+          <Switch
+            checked={theme === "dark"}
+            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+          />
         </CardContent>
       </Card>
 

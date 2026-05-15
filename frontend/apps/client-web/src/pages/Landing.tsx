@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Vehicle from "@/components/landing/Vehicle";
 import Hero from "@/components/landing/Hero";
 import CTA from "@/components/landing/CTA";
@@ -13,7 +13,16 @@ import {
   navigation,
   social,
 } from "@/constants/FooterConstant";
+
+import { useAuthStore } from "@/stores/useAuthStore";
 export default function Landing() {
+  const { isLogin } = useAuthStore();
+  const navigate = useNavigate();
+
+  if (isLogin) {
+    navigate("/home");
+  }
+
   return (
     <div className="relative bg-[#050505] overflow-hidden">
       {/* Background Glow */}
@@ -22,10 +31,11 @@ export default function Landing() {
       {/* Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:80px_80px]" />
       <header className=" fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-sm h-16 flex items-center justify-center gap-24">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img src={LogoYellow} alt="BikeVN Logo" className="h-10" />
           <h1 className="text-2xl font-bold text-primary">BikeVN</h1>
-        </div>
+        </Link>
+
         <nav>
           <ul className="flex items-center space-x-6 text-secondary">
             <Button variant="link" size="lg" asChild>
@@ -52,6 +62,7 @@ export default function Landing() {
           </Button>
         </div>
       </header>
+      {/* Hero Section */}
       <Hero />
 
       <div className="relative z-10 container mx-auto px-10 pt-32 space-y-32">

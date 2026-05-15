@@ -17,48 +17,51 @@ import {
   Edit2,
   Car,
 } from "lucide-react";
-import { user } from "@/constants/userSample";
 import { Button } from "@/components/ui/button";
 import UpdateProfile from "@/components/profile/UpdateProfile";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function InfoSection() {
+  const user = useAuthStore((state) => state.userProfile);
   const infoItems = [
     {
       icon: <User className="text-muted-foreground" />,
       label: "Họ và tên",
-      value: user.name,
+      value: user?.name || "Chưa cập nhật",
     },
     {
       icon: <Mail className="text-muted-foreground" />,
       label: "Email liên hệ",
-      value: user.email,
+      value: user?.email || "Chưa cập nhật",
     },
     {
       icon: <Phone className="text-muted-foreground" />,
       label: "Số điện thoại",
-      value: user.phone,
+      value: user?.phone || "Chưa cập nhật",
     },
     {
       icon: <CreditCard className="text-muted-foreground" />,
       label: "Số CCCD",
-      value: user.cccd_number,
+      value: user?.cccd_number || "Chưa cập nhật",
     },
     {
       icon: <Shield className="text-muted-foreground" />,
       label: "Vai trò hệ thống",
       value: (
         <Badge
-          variant={user.role === "admin" ? "default" : "outline"}
+          variant={user?.role === "admin" ? "default" : "outline"}
           className="capitalize"
         >
-          {user.role}
+          {user?.role || "Chưa cập nhật"}
         </Badge>
       ),
     },
     {
       icon: <Calendar className="text-muted-foreground" />,
       label: "Ngày tham gia",
-      value: new Date(user.created_at).toLocaleDateString("vi-VN"),
+      value: user?.created_at
+        ? new Date(user.created_at).toLocaleDateString("vi-VN")
+        : "Chưa cập nhật",
     },
   ];
 
