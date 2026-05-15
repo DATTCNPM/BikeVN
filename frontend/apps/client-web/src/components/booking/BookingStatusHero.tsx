@@ -3,7 +3,7 @@
 import { CheckCircle2, Clock3, CircleX, Ban } from "lucide-react";
 import type { Booking } from "@/lib/types";
 type Props = {
-  status: Booking["status"];
+  status: Booking["status"] | null;
 };
 
 const statusConfig: Record<Booking["status"], any> = {

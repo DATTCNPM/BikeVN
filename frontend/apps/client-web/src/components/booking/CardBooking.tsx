@@ -19,13 +19,14 @@ import { Separator } from "@/components/ui/separator";
 
 import Filter from "@/components/common/Filter";
 
-import { booking } from "@/constants/BookingSample";
+import { useBookingStore } from "@/stores/useBookingStore";
 
 const branchOptions = ["Chi nhánh TP.HCM", "Chi nhánh Cần Thơ"];
 
 const PRICE_PER_DAY = 150000;
 
 export default function BookingCard() {
+  const { bookings } = useBookingStore();
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 2),
@@ -150,7 +151,7 @@ export default function BookingCard() {
       <CardFooter>
         <Button
           className="h-12 w-full rounded-xl text-base font-semibold"
-          onClick={() => navigate(`/payment/${booking[0].id}`)}
+          onClick={() => navigate(`/payment/${bookings[0].id}`)}
         >
           Đặt xe ngay
         </Button>

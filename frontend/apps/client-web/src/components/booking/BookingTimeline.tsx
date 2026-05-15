@@ -3,7 +3,7 @@
 import { CheckCircle2, Clock3, Circle } from "lucide-react";
 
 type Props = {
-  status: string;
+  status: string | null;
 };
 
 const steps = ["Booking Created", "Pending Approval", "Approved", "Completed"];

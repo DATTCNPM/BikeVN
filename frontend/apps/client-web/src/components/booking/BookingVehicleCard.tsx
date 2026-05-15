@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import type { Vehicle, Booking, Branch } from "@/lib/types";
 
 type Props = {
-  booking: Booking;
+  booking: Booking | null;
   vehicle: Vehicle | null;
   pickupBranch?: Branch;
   returnBranch?: Branch;
@@ -22,7 +22,7 @@ export default function BookingVehicleCard({
       <div className="grid lg:grid-cols-[320px_1fr]">
         <div className="h-full">
           <img
-            src={vehicle?.image_url?.[0] || "/placeholder-vehicle.png"}
+            src={vehicle?.image_url?.[0]}
             alt={vehicle?.name}
             className="h-full w-full object-cover"
           />
@@ -46,9 +46,9 @@ export default function BookingVehicleCard({
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Rental Time</p>
 
-                <p className="font-semibold">{booking.start_date}</p>
+                <p className="font-semibold">{booking?.start_date || "N/A"}</p>
 
-                <p className="font-semibold">{booking.end_date}</p>
+                <p className="font-semibold">{booking?.end_date || "N/A"}</p>
               </div>
             </div>
 
@@ -60,9 +60,9 @@ export default function BookingVehicleCard({
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Branches</p>
 
-                <p className="font-semibold">{pickupBranch?.name}</p>
+                <p className="font-semibold">{pickupBranch?.name || "N/A"}</p>
 
-                <p className="font-semibold">{returnBranch?.name}</p>
+                <p className="font-semibold">{returnBranch?.name || "N/A"}</p>
               </div>
             </div>
           </div>

@@ -11,8 +11,10 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Booking } from "@/lib/types";
-import { booking } from "@/constants/BookingSample";
+import { useBookingStore } from "@/stores/useBookingStore";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 import { useVehicleStore } from "@/stores/useVehicleStore";
 import { useEffect } from "react";
@@ -51,13 +53,20 @@ const statusConfig: Record<Booking["status"], any> = {
 
 export default function MyBookingSection() {
   const navigate = useNavigate();
-  const { vehicles, fetchVehicles } = useVehicleStore();
+  const { vehicles, fetchVehicles, loading, error } = useVehicleStore();
+  const {
+    bookings,
+    fetchBookings,
+    loading: bookingsLoading,
+    error: bookingsError,
+  } = useBookingStore();
 
   useEffect(() => {
     fetchVehicles();
-  }, [fetchVehicles]);
+    fetchBookings();
+  }, [fetchVehicles, fetchBookings]);
 
-  const bookings = booking.map((b) => {
+  const bookingData = bookings.map((b) => {
     const vehicle = vehicles.find((v) => v.id === b.vehicle_id);
     return {
       ...b,
@@ -67,6 +76,18 @@ export default function MyBookingSection() {
         : "https://via.placeholder.com/300x200?text=No+Image",
     };
   });
+
+  if (loading || bookingsLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+  if (error) {
+    toast.error("Failed to load vehicles. Please try again.");
+    return null;
+  }
 
   return (
     <section className="space-y-6">
@@ -87,7 +108,7 @@ export default function MyBookingSection() {
       </div>
 
       <div className="grid gap-5">
-        {bookings.map((booking) => {
+        {bookingData.map((booking) => {
           const status = statusConfig[booking.status];
 
           const StatusIcon = status.icon;

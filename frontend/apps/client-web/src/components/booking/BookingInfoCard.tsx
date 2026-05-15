@@ -1,9 +1,10 @@
 // components/booking/BookingInfoCard.tsx
 
 import { Card } from "@/components/ui/card";
+import type { Booking } from "@/lib/types";
 
 type Props = {
-  booking: any;
+  booking: Booking | null;
 };
 
 export default function BookingInfoCard({ booking }: Props) {
@@ -20,15 +21,19 @@ export default function BookingInfoCard({ booking }: Props) {
       </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
-        <InfoItem label="Booking ID" value={booking.id} />
+        <InfoItem label="Booking ID" value={booking?.id || "N/A"} />
 
-        <InfoItem label="Status" value={booking.status} />
+        <InfoItem label="Status" value={booking?.status || "N/A"} />
 
-        <InfoItem label="Created At" value={booking.created_at} />
+        <InfoItem label="Created At" value={booking?.created_at || "N/A"} />
 
         <InfoItem
           label="Total Price"
-          value={`${booking.total_price.toLocaleString("vi-VN")}đ`}
+          value={
+            booking?.total_price
+              ? `${booking.total_price.toLocaleString("vi-VN")}đ`
+              : "N/A"
+          }
         />
       </div>
     </Card>
