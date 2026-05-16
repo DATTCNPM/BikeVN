@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
+import QueryProvider from "@/providers/QueryProvider";
 
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useEffect } from "react";
@@ -22,7 +23,9 @@ export default function App() {
       disableTransitionOnChange
     >
       <TooltipProvider>
-        <RouterProvider router={router} />
+        <QueryProvider>
+          <RouterProvider router={router} />
+        </QueryProvider>
         <Toaster />
       </TooltipProvider>
     </ThemeProvider>

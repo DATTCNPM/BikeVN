@@ -19,24 +19,22 @@ import { formatDateTime } from "@/lib/format";
 import Map from "@/components/map/Map";
 import ReviewSection from "@/components/vehicle/review/ReviewSection";
 
-import { useBranchStore } from "@/stores/useBranchStore";
-import { useVehicleStore } from "@/stores/useVehicleStore";
 import { useEffect, useMemo } from "react";
+import { useBranches } from "@/hooks/useBranch";
+import { useVehicle } from "@/hooks/useVehicle";
 
 export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
-  const { branches, fetchBranches, loading, error } = useBranchStore();
+  const {
+    data: branches,
+    isLoading: branchLoading,
+    error: branchError,
+  } = useBranches();
 
   const {
-    selectedVehicle,
-    fetchVehicleById,
-    loading: vehicleLoading,
+    data: selectedVehicle,
+    isLoading: vehicleLoading,
     error: vehicleError,
-  } = useVehicleStore();
-
-  useEffect(() => {
-    fetchBranches();
-    fetchVehicleById(vehicleId);
-  }, [fetchBranches, fetchVehicleById, vehicleId]);
+  } = useVehicle(vehicleId);
 
   const vehicleData = useMemo(() => {
     return {
@@ -73,20 +71,22 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
     hybrid: "Hybrid",
   };
 
-  if (loading || vehicleLoading) {
+  useEffect(() => {
+    if (branchError) {
+      toast.error("Branch not found");
+    }
+    if (vehicleError) {
+      toast.error("Vehicle not found");
+    }
+  }, [branchError, vehicleError]);
+
+  if (branchLoading || vehicleLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Spinner />
       </div>
     );
   }
-
-  if (error || vehicleError) {
-    toast.error("Failed to load data. Please try again.");
-    return null;
-  }
-
-  if (!vehicleData) return null;
 
   return (
     <>

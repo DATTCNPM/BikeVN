@@ -4,7 +4,7 @@ import type { Booking } from "@/lib/types";
 
 export const bookings: Booking[] = [
   {
-    id: crypto.randomUUID(),
+    id: "booking-1",
     user_id: "u1",
 
     vehicle_id: "1",
@@ -29,7 +29,7 @@ export const bookings: Booking[] = [
   },
 
   {
-    id: crypto.randomUUID(),
+    id: "booking-2",
 
     user_id: "u2",
 

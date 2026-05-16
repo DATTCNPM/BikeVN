@@ -1,54 +1,61 @@
-import CardProduct from "@/components/common/CardProduct";
-import PaginationComponent from "@/components/common/PaginationComponent";
-import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
-
-import { useVehicleStore } from "@/stores/useVehicleStore";
-import { useBranchStore } from "@/stores/useBranchStore";
-
 import { useEffect, useMemo } from "react";
 
+import { toast } from "sonner";
+
+import CardProduct from "@/components/common/CardProduct";
+import PaginationComponent from "@/components/common/PaginationComponent";
+
+import { Spinner } from "@/components/ui/spinner";
+
+import { useVehicles } from "@/hooks/useVehicle";
+import { useBranches } from "@/hooks/useBranch";
+
 export default function ListVehicle() {
-  const { vehicles, fetchVehicles, loading, error } = useVehicleStore();
+  const { data: vehicles = [], isLoading, error } = useVehicles();
+
   const {
-    branches,
-    fetchBranches,
-    loading: branchLoading,
+    data: branches = [],
+    isLoading: branchLoading,
     error: branchError,
-  } = useBranchStore();
+  } = useBranches();
 
   useEffect(() => {
-    fetchVehicles();
-    fetchBranches();
-  }, [fetchVehicles, fetchBranches]);
+    if (error) {
+      toast.error("Lấy danh sách xe thất bại");
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (branchError) {
+      toast.error("Lấy danh sách chi nhánh thất bại");
+    }
+  }, [branchError]);
 
   const vehicleListData = useMemo(() => {
     return vehicles.map((vehicle) => ({
       id: vehicle.id,
       name: vehicle.name,
-      vehicle_type: vehicle.model, // Assuming model represents the type
+      vehicle_type: vehicle.model,
       price: vehicle.price_per_day,
-      image: vehicle.image_url[0], // Use the first image as thumbnail
+      image: vehicle.image_url[0],
       location:
-        branches.find((b) => b.id === vehicle.current_branch_id)?.name ||
-        "Unknown",
+        branches.find((branch) => branch.id === vehicle.current_branch_id)
+          ?.name || "Unknown",
       status: vehicle.status,
     }));
   }, [vehicles, branches]);
 
-  if (loading || branchLoading) {
+  if (isLoading || branchLoading) {
     return (
-      <div className="w-full flex items-center justify-center h-[300px]">
+      <div className="flex h-[300px] w-full items-center justify-center">
         <Spinner />
       </div>
     );
   }
-  if (error || branchError) {
-    toast.error(error || branchError);
-  }
+
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-4">
         {vehicleListData.map((vehicle) => (
           <CardProduct
             key={vehicle.id}
@@ -62,6 +69,7 @@ export default function ListVehicle() {
           />
         ))}
       </div>
+
       <PaginationComponent />
     </>
   );

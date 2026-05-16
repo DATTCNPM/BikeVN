@@ -9,30 +9,28 @@ import BookingVehicleCard from "@/components/booking/BookingVehicleCard";
 
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-
-import { useBookingStore } from "@/stores/useBookingStore";
-import { useVehicleStore } from "@/stores/useVehicleStore";
-import { useBranchStore } from "@/stores/useBranchStore";
-
 import { useEffect } from "react";
+
+import { useBooking } from "@/hooks/useBooking";
+import { useVehicle } from "@/hooks/useVehicle";
+import { useBranches } from "@/hooks/useBranch";
 
 export default function BookingResultPage() {
   const { id } = useParams();
-  const { selectedVehicle, fetchVehicleById } = useVehicleStore();
-  const { branches, fetchBranches } = useBranchStore();
-  const { selectedBooking, fetchBookingById } = useBookingStore();
+  const { data: booking, isLoading, error } = useBooking(id!);
+  const {
+    data: vehicle,
+    isLoading: vehicleLoading,
+    error: vehicleError,
+  } = useVehicle(booking?.vehicle_id || "");
+  const {
+    data: branches,
+    isLoading: branchesLoading,
+    error: branchesError,
+  } = useBranches();
 
-  useEffect(() => {
-    fetchVehicleById(selectedBooking?.vehicle_id || "");
-    fetchBranches();
-    fetchBookingById(id || "");
-  }, [
-    fetchVehicleById,
-    fetchBranches,
-    fetchBookingById,
-    id,
-    selectedBooking?.vehicle_id,
-  ]);
+  const selectedBooking = booking;
+  const selectedVehicle = vehicle;
 
   console.log("Selected Booking:", selectedBooking);
   console.log("Selected Vehicle:", selectedVehicle);
@@ -46,17 +44,28 @@ export default function BookingResultPage() {
     (b) => b.id === selectedBooking?.return_branch_id,
   );
 
-  // if (loading || branchesLoading || bookingsLoading) {
-  //   return (
-  //     <div className="flex h-screen items-center justify-center">
-  //       <Spinner />
-  //     </div>
-  //   );
-  // }
-  // if (error || branchesError || bookingsError) {
-  //   toast.error("Failed to load booking details. Please try again.");
-  //   return null;
-  // }
+  if (isLoading || vehicleLoading || branchesLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load booking details. Please try again.");
+    }
+
+    if (vehicleError) {
+      toast.error("Failed to load vehicle details. Please try again.");
+    }
+
+    if (branchesError) {
+      toast.error("Failed to load branches details. Please try again.");
+    }
+  }, [error, vehicleError, branchesError]);
+
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto max-w-5xl space-y-8 px-4 py-10">

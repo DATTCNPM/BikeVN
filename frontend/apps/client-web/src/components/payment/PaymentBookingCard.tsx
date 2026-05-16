@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { CalendarDays, MapPinned } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 import type { Booking } from "@/lib/types";
-import { useBranchStore } from "@/stores/useBranchStore";
+import { useBranches } from "@/hooks/useBranch";
 
 import { useEffect } from "react";
 
@@ -10,11 +12,21 @@ type Props = {
 };
 
 export default function PaymentBookingCard({ booking }: Props) {
-  const { branches, fetchBranches } = useBranchStore();
+  const { data: branches, isLoading, error } = useBranches();
 
   useEffect(() => {
-    fetchBranches();
-  }, [fetchBranches]);
+    if (error) {
+      toast.error("Failed to load branches. Please try again.");
+    }
+  }, [error]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   const nameBranchesPickup =
     branches.find((branch) => branch.id === booking.pickup_branch_id)?.name ||

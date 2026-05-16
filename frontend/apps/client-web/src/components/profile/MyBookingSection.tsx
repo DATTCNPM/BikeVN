@@ -11,13 +11,12 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Booking } from "@/lib/types";
-import { useBookingStore } from "@/stores/useBookingStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-
-import { useVehicleStore } from "@/stores/useVehicleStore";
 import { useEffect } from "react";
+import { useBookings } from "@/hooks/useBooking";
+import { useVehicles } from "@/hooks/useVehicle";
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {
@@ -53,18 +52,12 @@ const statusConfig: Record<Booking["status"], any> = {
 
 export default function MyBookingSection() {
   const navigate = useNavigate();
-  const { vehicles, fetchVehicles, loading, error } = useVehicleStore();
+  const { data: bookings, isLoading, error } = useBookings();
   const {
-    bookings,
-    fetchBookings,
-    loading: bookingsLoading,
-    error: bookingsError,
-  } = useBookingStore();
-
-  useEffect(() => {
-    fetchVehicles();
-    fetchBookings();
-  }, [fetchVehicles, fetchBookings]);
+    data: vehicles,
+    isLoading: vehicleLoading,
+    error: vehicleError,
+  } = useVehicles();
 
   const bookingData = bookings.map((b) => {
     const vehicle = vehicles.find((v) => v.id === b.vehicle_id);
@@ -77,17 +70,22 @@ export default function MyBookingSection() {
     };
   });
 
-  if (loading || bookingsLoading) {
+  if (isLoading || vehicleLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
       </div>
     );
   }
-  if (error) {
-    toast.error("Failed to load vehicles. Please try again.");
-    return null;
-  }
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load bookings. Please try again.");
+    }
+
+    if (vehicleError) {
+      toast.error("Failed to load vehicles. Please try again.");
+    }
+  }, [error, vehicleError]);
 
   return (
     <section className="space-y-6">

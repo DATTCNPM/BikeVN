@@ -1,4 +1,4 @@
-import type { User } from "@/lib/types";
+import type { User } from "@repo/types";
 export type MockData = User & {
   password: string;
 };

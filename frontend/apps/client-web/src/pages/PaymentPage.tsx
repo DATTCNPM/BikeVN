@@ -5,21 +5,20 @@ import PaymentMethodCard from "@/components/payment/PaymentMethodCard";
 import PaymentPolicyCard from "@/components/payment/PaymentPolicyCard";
 import PaymentSummaryCard from "@/components/payment/PaymentSummaryCard";
 import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 import { booking } from "@/constants/BookingSample";
 import { paymentMethods } from "@/constants/PaymentSample";
 
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useVehicleStore } from "@/stores/useVehicleStore";
 
 import { useEffect } from "react";
+import { useVehicles } from "@/hooks/useVehicle";
 
 export default function PaymentPage() {
   const { userProfile } = useAuthStore();
-  const { vehicles, fetchVehicles } = useVehicleStore();
-  useEffect(() => {
-    fetchVehicles();
-  }, [fetchVehicles]);
+  const { data: vehicles, isLoading, error } = useVehicles();
 
   const bookingData = booking[0]; // Lấy booking đầu tiên làm ví dụ
   const vehicleData = vehicles.find((v) => v.id === bookingData.vehicle_id);
@@ -30,6 +29,20 @@ export default function PaymentPage() {
     user: userProfile ? userProfile : undefined,
     paymentMethod: paymentMethods[0], // Lấy phương thức thanh toán đầu tiên làm ví dụ
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load vehicles. Please try again.");
+    }
+  }, [error]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background pb-20">
