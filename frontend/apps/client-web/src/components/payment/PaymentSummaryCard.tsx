@@ -5,19 +5,38 @@ import { Card } from "@repo/ui/components/card";
 import { ReceiptText } from "lucide-react";
 import type { Booking } from "@repo/types";
 import type { PaymentMethod } from "@repo/types";
+import type { CreatePaymentPayload } from "@repo/api";
+
+import { useCreatePayment } from "@/hooks/usePayment";
 
 type Props = {
-  booking: Booking;
-  paymentMethod: PaymentMethod;
+  booking: Booking | undefined;
+  selectedMethod: PaymentMethod;
 };
 
-export default function PaymentSummaryCard({ booking, paymentMethod }: Props) {
+export default function PaymentSummaryCard({ booking, selectedMethod }: Props) {
   const navigate = useNavigate();
+  const { mutate: createPayment } = useCreatePayment();
 
   const handlePayment = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    navigate(`/booking-result/${booking.id}`);
+    if (!booking) return;
+    const payload: CreatePaymentPayload = {
+      booking_id: booking.id,
+      amount: booking.total_price,
+      type: "rental",
+      card_method: selectedMethod,
+      payment_method: selectedMethod,
+    };
+    createPayment(
+      {
+        ...payload,
+      },
+      {
+        onSuccess() {
+          navigate(`/booking-result/${booking?.id}`);
+        },
+      },
+    );
   };
 
   return (
@@ -37,18 +56,24 @@ export default function PaymentSummaryCard({ booking, paymentMethod }: Props) {
       </div>
 
       <div className="mt-8 space-y-5">
-        <SummaryItem label="Rental Price" value={paymentMethod.amount} />
+        <SummaryItem label="Rental Price" value={booking?.total_price || 0} />
 
-        <SummaryItem label="Deposit" value={paymentMethod.amount * 0.2} />
+        <SummaryItem
+          label="Deposit"
+          value={booking?.total_price ? booking.total_price * 0.2 : 0}
+        />
 
-        <SummaryItem label="Service Fee" value={paymentMethod.amount * 0.1} />
+        <SummaryItem
+          label="Service Fee"
+          value={booking?.total_price ? booking.total_price * 0.1 : 0}
+        />
 
         <div className="border-t border-dashed border-border pt-5">
           <div className="flex items-center justify-between">
             <p className="text-lg font-semibold">Total</p>
 
             <p className="text-3xl font-black tracking-tight text-primary">
-              {paymentMethod.amount.toLocaleString("vi-VN")}đ
+              {booking?.total_price.toLocaleString("vi-VN")}đ
             </p>
           </div>
         </div>

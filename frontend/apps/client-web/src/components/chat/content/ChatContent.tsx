@@ -1,18 +1,20 @@
 import { useState } from "react";
 
-import type { Conversation, Message } from "@/pages/ChatPage";
+import type { Conversation, Message } from "@repo/schemas";
 
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageList from "../message/MessageList";
 
 type Props = {
+  loading: boolean;
   conversation?: Conversation;
   messages: Message[];
   currentUserId: number;
 };
 
 export default function ChatContent({
+  loading,
   conversation,
   messages,
   currentUserId,
@@ -36,7 +38,11 @@ export default function ChatContent({
     <section className="col-span-12 flex h-full overflow-hidden flex-col bg-background md:col-span-8 lg:col-span-9">
       <ChatHeader conversation={conversation} />
 
-      <MessageList messages={messages} currentUserId={currentUserId} />
+      <MessageList
+        loading={loading}
+        messages={messages}
+        currentUserId={currentUserId}
+      />
 
       <ChatInput
         message={message}

@@ -3,29 +3,16 @@
 import type { MockData } from "./data/UserData";
 import { users } from "./data/UserData";
 import type { User } from "@repo/types";
-
-type LoginPayload = {
-  email: string;
-  password: string;
-};
-
-type RegisterPayload = {
-  email: string;
-  name: string;
-  password: string;
-  confirmPassword: string;
-};
-
-export type UpdateProfilePayload = {
-  name: string;
-  phone?: string;
-  cccd_number?: string;
-};
+import type {
+  LoginSchema,
+  RegisterSchema,
+  UpdateProfileSchema,
+} from "@repo/schemas";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const authApi = {
-  async login(payload: LoginPayload) {
+  async login(payload: LoginSchema) {
     await delay(500);
 
     const user = users.find(
@@ -51,7 +38,7 @@ export const authApi = {
     };
   },
 
-  async register(payload: RegisterPayload) {
+  async register(payload: RegisterSchema) {
     await delay(500);
 
     if (payload.password !== payload.confirmPassword) {
@@ -110,7 +97,7 @@ export const authApi = {
     return { status: 200, message: "Đăng xuất thành công" };
   },
 
-  async updateProfile(userId: string, payload: UpdateProfilePayload) {
+  async updateProfile(userId: string, payload: UpdateProfileSchema) {
     await delay(500);
 
     const userIndex = users.findIndex((u) => u.id === userId);

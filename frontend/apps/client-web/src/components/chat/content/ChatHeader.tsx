@@ -1,6 +1,6 @@
 import { MoreVertical, Phone, Video } from "lucide-react";
 
-import type { Conversation } from "@/pages/ChatPage";
+import type { Conversation } from "@repo/schemas";
 
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 import { Button } from "@repo/ui/components/button";

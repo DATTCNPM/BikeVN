@@ -1,17 +1,8 @@
-"use client";
-
 import { useEffect } from "react";
-
 import { useNavigate, useParams } from "react-router-dom";
-
 import { addDays, differenceInDays, format } from "date-fns";
-
 import { vi } from "date-fns/locale";
-
-import { z } from "zod";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Controller, useForm } from "react-hook-form";
 
 import type { DateRange } from "react-day-picker";
@@ -224,7 +215,7 @@ export default function BookingCard() {
                       </SelectTrigger>
 
                       <SelectContent>
-                        {branchOptions.map((branch) => (
+                        {branchOptions?.map((branch) => (
                           <SelectItem key={branch.value} value={branch.value}>
                             {branch.label}
                           </SelectItem>
@@ -256,7 +247,7 @@ export default function BookingCard() {
                       </SelectTrigger>
 
                       <SelectContent>
-                        {branchOptions.map((branch) => (
+                        {branchOptions?.map((branch) => (
                           <SelectItem key={branch.value} value={branch.value}>
                             {branch.label}
                           </SelectItem>

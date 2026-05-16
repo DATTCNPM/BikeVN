@@ -1,15 +1,18 @@
 import { Search, Users } from "lucide-react";
-import type { Conversation } from "@/pages/ChatPage";
+import type { Conversation } from "@repo/schemas";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
+import { Spinner } from "@repo/ui/components/spinner";
 import ConversationItem from "./ConversationItem";
 type Props = {
+  loading: boolean;
   conversations: Conversation[];
   selectedConversationId: number;
   onSelectConversation: (id: number) => void;
 };
 export default function ChatSidebar({
+  loading,
   conversations,
   selectedConversationId,
   onSelectConversation,
@@ -47,14 +50,21 @@ export default function ChatSidebar({
         {" "}
         <div className="space-y-2 p-3">
           {" "}
-          {conversations.map((conversation) => (
-            <ConversationItem
-              key={conversation.id}
-              conversation={conversation}
-              isActive={conversation.id === selectedConversationId}
-              onClick={() => onSelectConversation(conversation.id)}
-            />
-          ))}{" "}
+          {loading ? (
+            <div className="flex items-center justify-center p-4">
+              <Spinner />
+              <p className="ml-2">Đang tải...</p>
+            </div>
+          ) : (
+            conversations.map((conversation) => (
+              <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                isActive={conversation.id === selectedConversationId}
+                onClick={() => onSelectConversation(conversation.id)}
+              />
+            ))
+          )}{" "}
         </div>{" "}
       </ScrollArea>{" "}
     </aside>

@@ -1,9 +1,15 @@
-import { useState } from "react";
 import { Card } from "@repo/ui/components/card";
 import { Badge } from "@repo/ui/components/badge";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
 
-const methods = [
+import type { PaymentMethod } from "@repo/types";
+
+const methods: {
+  id: PaymentMethod;
+  name: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
   {
     id: "vnpay",
     name: "VNPay",
@@ -26,9 +32,15 @@ const methods = [
   },
 ];
 
-export default function PaymentMethodCard() {
-  const [selectedMethod, setSelectedMethod] = useState("vnpay");
+type Props = {
+  selectedMethod: PaymentMethod;
+  onMethodSelect: (method: PaymentMethod) => void;
+};
 
+export default function PaymentMethodCard({
+  selectedMethod,
+  onMethodSelect,
+}: Props) {
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
       <div>
@@ -48,7 +60,7 @@ export default function PaymentMethodCard() {
           return (
             <button
               key={method.id}
-              onClick={() => setSelectedMethod(method.id)}
+              onClick={() => onMethodSelect(method.id)}
               className={`flex items-center justify-between rounded-3xl border p-5 text-left transition-all duration-300 ${
                 active
                   ? "border-primary bg-primary/10"

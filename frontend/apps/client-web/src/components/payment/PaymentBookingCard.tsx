@@ -8,7 +8,7 @@ import { useBranches } from "@/hooks/useBranch";
 import { useEffect } from "react";
 
 type Props = {
-  booking: Booking;
+  booking: Booking | undefined;
 };
 
 export default function PaymentBookingCard({ booking }: Props) {
@@ -29,10 +29,10 @@ export default function PaymentBookingCard({ booking }: Props) {
   }
 
   const nameBranchesPickup =
-    branches.find((branch) => branch.id === booking.pickup_branch_id)?.name ||
+    branches?.find((branch) => branch.id === booking?.pickup_branch_id)?.name ||
     "Unknown Branch";
   const nameBranchesReturn =
-    branches.find((branch) => branch.id === booking.return_branch_id)?.name ||
+    branches?.find((branch) => branch.id === booking?.return_branch_id)?.name ||
     "Unknown Branch";
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
@@ -52,13 +52,13 @@ export default function PaymentBookingCard({ booking }: Props) {
           </div>
 
           <div className="mt-4 space-y-2">
-            <p className="font-semibold">Start: {booking.start_date}</p>
+            <p className="font-semibold">Start: {booking?.start_date}</p>
 
-            <p className="font-semibold">End: {booking.end_date}</p>
+            <p className="font-semibold">End: {booking?.end_date}</p>
 
             <p className="text-muted-foreground">
               Total Days:{" "}
-              {booking.start_date && booking.end_date
+              {booking?.start_date && booking?.end_date
                 ? Math.ceil(
                     (new Date(booking.end_date).getTime() -
                       new Date(booking.start_date).getTime()) /

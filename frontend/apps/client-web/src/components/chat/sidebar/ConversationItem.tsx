@@ -1,4 +1,4 @@
-import type { Conversation } from "@/pages/ChatPage";
+import type { Conversation } from "@repo/schemas";
 
 import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 

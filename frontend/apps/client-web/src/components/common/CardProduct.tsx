@@ -28,7 +28,7 @@ export default function CardProduct({
     navigate(`/vehicles/${id}`);
   };
   return (
-    <Card className="group overflow-hidden border-border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-card dark:border-border">
+    <Card className="group pt-0 overflow-hidden border-border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-card dark:border-border">
       {/* Thumbnail */}
       <div className="relative overflow-hidden">
         <img

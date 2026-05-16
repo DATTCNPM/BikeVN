@@ -26,7 +26,7 @@ export default function Hero() {
 
       {/* Content */}
       <div className="z-10 container mx-auto px-6 min-h-screen grid grid-cols-12 items-center gap-8">
-        <div className="max-w-2xl text-secondary space-y-8 col-span-6">
+        <div className="max-w-2xl text-white/80 space-y-8 col-span-6">
           <p className="uppercase tracking-[0.3em] mb-4">
             Premium Vehicle Rental
           </p>
@@ -35,7 +35,7 @@ export default function Hero() {
             Drive The Future
           </h1>
 
-          <p className="text-lg">
+          <p className="text-lg text-white/80 leading-relaxed">
             Trải nghiệm dịch vụ thuê xe cao cấp với phong cách hiện đại, sang
             trọng và tiện lợi.
           </p>
