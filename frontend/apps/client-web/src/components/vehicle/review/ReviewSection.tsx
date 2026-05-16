@@ -1,6 +1,6 @@
 import ReviewCard from "./ReviewCard";
 import ReviewSummary from "./ReviewSummary";
-import type { Review } from "@/lib/types";
+import type { Review } from "@repo/types";
 
 const reviews: Review[] = [
   {

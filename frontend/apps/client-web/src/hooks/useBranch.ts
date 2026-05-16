@@ -4,7 +4,7 @@ import {
   branchApi,
   type CreateBranchPayload,
   type UpdateBranchPayload,
-} from "@/api/branchApi";
+} from "@repo/api";
 
 export function useBranches() {
   return useQuery({

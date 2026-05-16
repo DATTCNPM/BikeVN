@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button } from "@repo/ui/components/button";
+import { Card } from "@repo/ui/components/card";
 import { ReceiptText } from "lucide-react";
-import type { Booking } from "@/lib/types";
-import type { PaymentMethod } from "@/lib/types";
+import type { Booking } from "@repo/types";
+import type { PaymentMethod } from "@repo/types";
 
 type Props = {
   booking: Booking;

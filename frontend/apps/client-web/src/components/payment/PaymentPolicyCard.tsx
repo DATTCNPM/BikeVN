@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/card";
 import { ShieldCheck } from "lucide-react";
 
 export default function PaymentPolicyCard() {

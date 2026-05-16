@@ -5,7 +5,7 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "@/components/ui/combobox";
+} from "@repo/ui/components/combobox";
 
 type ComboboxBasicProps = {
   title: string;

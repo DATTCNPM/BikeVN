@@ -4,8 +4,8 @@ import {
   PaginationItem,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Label } from "@/components/ui/label";
+} from "@repo/ui/components/pagination";
+import { Label } from "@repo/ui/components/label";
 
 export default function PaginationComponent() {
   return (

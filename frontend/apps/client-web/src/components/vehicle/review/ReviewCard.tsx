@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-import type { Review } from "@/types/review";
+import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
+import { Card } from "@repo/ui/components/card";
+import type { Review } from "@repo/types";
 
 type Props = {
   review: Review;

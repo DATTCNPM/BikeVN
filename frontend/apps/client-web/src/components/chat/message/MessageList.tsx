@@ -1,6 +1,6 @@
 import type { Message } from "@/pages/ChatPage";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@repo/ui/components/scroll-area";
 
 import MessageItem from "./MessageItem";
 

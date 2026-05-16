@@ -1,4 +1,4 @@
-import type { PaymentMethod } from "@/lib/types";
+import type { PaymentMethod } from "@repo/types";
 
 export const paymentMethods: PaymentMethod[] = [
   {

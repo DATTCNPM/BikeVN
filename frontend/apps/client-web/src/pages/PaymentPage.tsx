@@ -5,44 +5,54 @@ import PaymentMethodCard from "@/components/payment/PaymentMethodCard";
 import PaymentPolicyCard from "@/components/payment/PaymentPolicyCard";
 import PaymentSummaryCard from "@/components/payment/PaymentSummaryCard";
 import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/spinner";
 import { toast } from "sonner";
 
-import { booking } from "@/constants/BookingSample";
 import { paymentMethods } from "@/constants/PaymentSample";
 
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useBooking } from "@/hooks/useBooking";
 
 import { useEffect } from "react";
 import { useVehicles } from "@/hooks/useVehicle";
+import { useParams } from "react-router-dom";
 
 export default function PaymentPage() {
   const { userProfile } = useAuthStore();
-  const { data: vehicles, isLoading, error } = useVehicles();
-
-  const bookingData = booking[0]; // Lấy booking đầu tiên làm ví dụ
-  const vehicleData = vehicles.find((v) => v.id === bookingData.vehicle_id);
-
-  const dataPayment = {
-    booking: bookingData,
-    vehicle: vehicleData ? vehicleData : undefined,
-    user: userProfile ? userProfile : undefined,
-    paymentMethod: paymentMethods[0], // Lấy phương thức thanh toán đầu tiên làm ví dụ
-  };
+  const { id } = useParams();
+  const { data: booking, isLoading, error } = useBooking(id!);
+  const {
+    data: vehicles,
+    isLoading: vehicleLoading,
+    error: vehicleError,
+  } = useVehicles();
 
   useEffect(() => {
     if (error) {
-      toast.error("Failed to load vehicles. Please try again.");
+      toast.error("Failed to load booking details. Please try again.");
+    }
+    if (vehicleError) {
+      toast.error("Failed to load vehicle details. Please try again.");
     }
   }, [error]);
 
-  if (isLoading) {
+  if (isLoading || vehicleLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
       </div>
     );
   }
+
+  const vehicleData = vehicles.find((v) => v.id === booking.vehicle_id);
+
+  const bookingData = booking;
+  const dataPayment = {
+    booking: bookingData,
+    vehicle: vehicleData ? vehicleData : undefined,
+    user: userProfile ? userProfile : undefined,
+    paymentMethod: paymentMethods[0], // Lấy phương thức thanh toán đầu tiên làm ví dụ
+  };
 
   return (
     <main className="min-h-screen bg-background pb-20">

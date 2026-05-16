@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@repo/ui/components/card";
+import { Badge } from "@repo/ui/components/badge";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
 
 const methods = [

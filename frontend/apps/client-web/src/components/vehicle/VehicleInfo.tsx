@@ -1,6 +1,6 @@
 import VehicleGallery from "@/components/vehicle/VehicleGallery";
-import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@repo/ui/components/badge";
+import { Spinner } from "@repo/ui/components/spinner";
 import { toast } from "sonner";
 import {
   MapPin,
@@ -14,7 +14,7 @@ import {
   Hash,
   Banknote,
 } from "lucide-react";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@repo/utils";
 
 import Map from "@/components/map/Map";
 import ReviewSection from "@/components/vehicle/review/ReviewSection";

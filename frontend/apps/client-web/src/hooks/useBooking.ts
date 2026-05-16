@@ -4,7 +4,7 @@ import {
   bookingApi,
   type CreateBookingPayload,
   type UpdateBookingPayload,
-} from "@/api/bookingApi";
+} from "@repo/api";
 
 export function useBookings() {
   return useQuery({

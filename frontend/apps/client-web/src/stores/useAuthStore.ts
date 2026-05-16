@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { authApi } from "@/api/authApi";
-import type { User } from "@/lib/types";
-import type { UpdateProfilePayload } from "@/api/authApi";
+import { authApi } from "@repo/api";
+import type { User } from "@repo/types";
+import type { UpdateProfilePayload } from "@repo/api";
 
 interface AuthState {
   isLogin: boolean;

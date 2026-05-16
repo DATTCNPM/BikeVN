@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import type { Branch } from "@/lib/types";
+import type { Branch } from "@repo/types";
 import FlyToLocation from "./FlyToLocation";
 type MapProps = {
   locations: Branch[];

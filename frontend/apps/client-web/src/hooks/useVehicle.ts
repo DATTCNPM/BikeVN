@@ -4,7 +4,7 @@ import {
   vehicleApi,
   type CreateVehiclePayload,
   type UpdateVehiclePayload,
-} from "@/api/vehicleApi";
+} from "@repo/api";
 
 export function useVehicles() {
   return useQuery({

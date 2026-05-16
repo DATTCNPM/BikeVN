@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/components/button";
 import { Link, useNavigate } from "react-router-dom";
 import Vehicle from "@/components/landing/Vehicle";
 import Hero from "@/components/landing/Hero";

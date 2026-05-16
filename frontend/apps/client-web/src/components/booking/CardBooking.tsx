@@ -18,11 +18,11 @@ import type { DateRange } from "react-day-picker";
 
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@repo/ui/components/badge";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/components/button";
 
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@repo/ui/components/calendar";
 
 import {
   Card,
@@ -30,7 +30,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@repo/ui/components/card";
 
 import {
   Field,
@@ -38,7 +38,7 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field";
+} from "@repo/ui/components/field";
 
 import {
   Select,
@@ -46,19 +46,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@repo/ui/components/select";
 
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@repo/ui/components/separator";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/spinner";
 
 import { useCreateBooking } from "@/hooks/useBooking";
 
 import { useVehicle } from "@/hooks/useVehicle";
 import { useBranches } from "@/hooks/useBranch";
 
-import type { BookingSchema } from "@/lib/schema";
-import { bookingSchema } from "@/lib/schema";
+import type { BookingSchema } from "@repo/schemas";
+import { bookingSchema } from "@repo/schemas";
 
 export default function BookingCard() {
   const { id } = useParams();
@@ -99,15 +99,13 @@ export default function BookingCard() {
 
   const onSubmit = (values: BookingSchema) => {
     createBooking({
-      bikeId: id!,
-
-      pickupBranchId: values.pickupBranchId,
-
-      returnBranchId: values.returnBranchId,
-
-      pickupDate: values.dateRange.from.toISOString(),
-
-      returnDate: values.dateRange.to.toISOString(),
+      user_id: "u1", // mock user
+      vehicle_id: id!,
+      pickup_branch_id: values.pickupBranchId,
+      return_branch_id: values.returnBranchId,
+      start_date: values.dateRange.from.toISOString(),
+      end_date: values.dateRange.to.toISOString(),
+      total_price: totalPrice,
     });
 
     navigate("/payment/booking-1");

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import CardProduct from "@/components/common/CardProduct";
 import PaginationComponent from "@/components/common/PaginationComponent";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/spinner";
 
 import { useVehicles } from "@/hooks/useVehicle";
 import { useBranches } from "@/hooks/useBranch";

@@ -1,7 +1,7 @@
 // components/booking/BookingInfoCard.tsx
 
-import { Card } from "@/components/ui/card";
-import type { Booking } from "@/lib/types";
+import { Card } from "@repo/ui/components/card";
+import type { Booking } from "@repo/types";
 
 type Props = {
   booking: Booking | null;

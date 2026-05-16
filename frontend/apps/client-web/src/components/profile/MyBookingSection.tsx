@@ -8,11 +8,11 @@ import {
   Bike,
 } from "lucide-react";
 
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import type { Booking } from "@/lib/types";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Card } from "@repo/ui/components/card";
+import { Badge } from "@repo/ui/components/badge";
+import type { Booking } from "@repo/types";
+import { Button } from "@repo/ui/components/button";
+import { Spinner } from "@repo/ui/components/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useBookings } from "@/hooks/useBooking";
@@ -59,6 +59,25 @@ export default function MyBookingSection() {
     error: vehicleError,
   } = useVehicles();
 
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load bookings. Please try again.");
+    }
+
+    if (vehicleError) {
+      toast.error("Failed to load vehicles. Please try again.");
+    }
+  }, [error, vehicleError]);
+  if (isLoading || vehicleLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+  console.log("bookings", bookings);
+  console.log("vehicles", vehicles);
+
   const bookingData = bookings.map((b) => {
     const vehicle = vehicles.find((v) => v.id === b.vehicle_id);
     return {
@@ -69,23 +88,6 @@ export default function MyBookingSection() {
         : "https://via.placeholder.com/300x200?text=No+Image",
     };
   });
-
-  if (isLoading || vehicleLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to load bookings. Please try again.");
-    }
-
-    if (vehicleError) {
-      toast.error("Failed to load vehicles. Please try again.");
-    }
-  }, [error, vehicleError]);
 
   return (
     <section className="space-y-6">

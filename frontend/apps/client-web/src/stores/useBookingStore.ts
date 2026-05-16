@@ -8,9 +8,9 @@ import {
   bookingApi,
   type CreateBookingPayload,
   type UpdateBookingPayload,
-} from "@/api/bookingApi";
+} from "@repo/api";
 
-import type { Booking } from "@/lib/types";
+import type { Booking } from "@repo/types";
 
 interface BookingState {
   bookings: Booking[];

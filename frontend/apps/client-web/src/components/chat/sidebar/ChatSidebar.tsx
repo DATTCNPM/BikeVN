@@ -1,8 +1,8 @@
 import { Search, Users } from "lucide-react";
 import type { Conversation } from "@/pages/ChatPage";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@repo/ui/components/button";
+import { Input } from "@repo/ui/components/input";
+import { ScrollArea } from "@repo/ui/components/scroll-area";
 import ConversationItem from "./ConversationItem";
 type Props = {
   conversations: Conversation[];

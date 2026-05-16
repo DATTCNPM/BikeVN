@@ -7,7 +7,7 @@ import BookingStatusHero from "@/components/booking/BookingStatusHero";
 import BookingTimeline from "@/components/booking/BookingTimeline";
 import BookingVehicleCard from "@/components/booking/BookingVehicleCard";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 
@@ -29,6 +29,27 @@ export default function BookingResultPage() {
     error: branchesError,
   } = useBranches();
 
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load booking details. Please try again.");
+    }
+
+    if (vehicleError) {
+      toast.error("Failed to load vehicle details. Please try again.");
+    }
+
+    if (branchesError) {
+      toast.error("Failed to load branches details. Please try again.");
+    }
+  }, [error, vehicleError, branchesError]);
+  if (isLoading || vehicleLoading || branchesLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   const selectedBooking = booking;
   const selectedVehicle = vehicle;
 
@@ -43,28 +64,6 @@ export default function BookingResultPage() {
   const returnBranch = branches.find(
     (b) => b.id === selectedBooking?.return_branch_id,
   );
-
-  if (isLoading || vehicleLoading || branchesLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to load booking details. Please try again.");
-    }
-
-    if (vehicleError) {
-      toast.error("Failed to load vehicle details. Please try again.");
-    }
-
-    if (branchesError) {
-      toast.error("Failed to load branches details. Please try again.");
-    }
-  }, [error, vehicleError, branchesError]);
 
   return (
     <main className="min-h-screen bg-background">

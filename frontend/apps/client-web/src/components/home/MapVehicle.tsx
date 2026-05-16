@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CardProduct from "@/components/common/CardProduct";
 import Map from "@/components/map/Map";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/spinner";
 import { toast } from "sonner";
 import { useVehicles } from "@/hooks/useVehicle";
 import { useBranches } from "@/hooks/useBranch";

@@ -1,8 +1,8 @@
 import type { Message } from "@/pages/ChatPage";
 
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/card";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@repo/ui/lib/utils";
 
 type Props = {
   message: Message;

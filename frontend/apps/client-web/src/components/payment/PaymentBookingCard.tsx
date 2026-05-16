@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/card";
 import { CalendarDays, MapPinned } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/spinner";
 import { toast } from "sonner";
-import type { Booking } from "@/lib/types";
+import type { Booking } from "@repo/types";
 import { useBranches } from "@/hooks/useBranch";
 
 import { useEffect } from "react";

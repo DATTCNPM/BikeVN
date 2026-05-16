@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@repo/ui/components/alert-dialog";
 
 type AlertDialogProps = {
   trigger: React.ReactNode;

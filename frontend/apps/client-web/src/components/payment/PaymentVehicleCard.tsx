@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/card";
 import { Fuel, MapPin, Settings2 } from "lucide-react";
-import type { Vehicle } from "@/lib/types";
+import type { Vehicle } from "@repo/types";
 import { useBranches } from "@/hooks/useBranch";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/spinner";
 import { toast } from "sonner";
 
 import { useEffect } from "react";

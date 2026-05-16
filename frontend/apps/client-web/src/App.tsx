@@ -1,8 +1,8 @@
 import { RouterProvider } from "react-router-dom";
 import router from "@/routes/router";
 import "leaflet/dist/leaflet.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@repo/ui/components/tooltip";
+import { Toaster } from "@repo/ui/components/sonner";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
 import QueryProvider from "@/providers/QueryProvider";
 

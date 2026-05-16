@@ -1,8 +1,8 @@
 import type { Conversation } from "@/pages/ChatPage";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@repo/ui/lib/utils";
 
 type Props = {
   conversation: Conversation;

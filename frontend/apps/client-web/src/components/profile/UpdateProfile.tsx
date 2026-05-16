@@ -1,16 +1,16 @@
 import FormDialog from "../common/FormDialog";
-import { updateProfileSchema } from "@/lib/schema";
-import type { UpdateProfileSchema } from "@/lib/schema";
+import { updateProfileSchema } from "@repo/schemas";
+import type { UpdateProfileSchema } from "@repo/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@repo/ui/components/input";
 import {
   Field,
   FieldGroup,
   FieldContent,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field";
+} from "@repo/ui/components/field";
 import { toast } from "sonner";
 
 import { useState } from "react";
