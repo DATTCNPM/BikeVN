@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/components/table";
+} from "@repo/ui/components/ui/table";
 
 type Props<TData> = {
   columns: ColumnDef<TData>[];

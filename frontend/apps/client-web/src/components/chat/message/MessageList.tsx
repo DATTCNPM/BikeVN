@@ -1,7 +1,7 @@
 import type { Message } from "@repo/schemas";
 
-import { ScrollArea } from "@repo/ui/components/scroll-area";
-import { Spinner } from "@repo/ui/components/spinner";
+import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import MessageItem from "./MessageItem";
 

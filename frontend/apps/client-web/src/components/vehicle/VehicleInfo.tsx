@@ -1,6 +1,6 @@
 import VehicleGallery from "@/components/vehicle/VehicleGallery";
-import { Badge } from "@repo/ui/components/badge";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Badge } from "@repo/ui/components/ui/badge";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import {
   MapPin,
@@ -25,16 +25,25 @@ import { useVehicle } from "@/hooks/useVehicle";
 
 export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   const {
-    data: branches,
+    data: branches = [],
     isLoading: branchLoading,
     error: branchError,
   } = useBranches();
 
   const {
-    data: selectedVehicle,
+    data: selectedVehicle = null,
     isLoading: vehicleLoading,
     error: vehicleError,
   } = useVehicle(vehicleId);
+
+  useEffect(() => {
+    if (branchError) {
+      toast.error("Branch not found");
+    }
+    if (vehicleError) {
+      toast.error("Vehicle not found");
+    }
+  }, [branchError, vehicleError]);
 
   const vehicleData = useMemo(() => {
     return {
@@ -46,8 +55,16 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   }, [selectedVehicle, branches]);
 
   const locationVehicle = useMemo(() => {
-    return branches?.find((b) => b.id === selectedVehicle?.current_branch_id);
+    return branches.find((b) => b.id === selectedVehicle?.current_branch_id);
   }, [selectedVehicle, branches]);
+
+  if (branchLoading || vehicleLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Spinner />
+      </div>
+    );
+  }
 
   const statusMap = {
     available: {
@@ -70,24 +87,6 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
     electric: "Electric",
     hybrid: "Hybrid",
   };
-
-  useEffect(() => {
-    if (branchError) {
-      toast.error("Branch not found");
-    }
-    if (vehicleError) {
-      toast.error("Vehicle not found");
-    }
-  }, [branchError, vehicleError]);
-
-  if (branchLoading || vehicleLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Spinner />
-      </div>
-    );
-  }
-
   return (
     <>
       <VehicleGallery images={vehicleData.image_url || []} />
@@ -252,7 +251,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
       </div>
 
       <div className="mt-8">
-        <ReviewSection vehicleId={vehicleData.id || "N/A"} />
+        <ReviewSection vehicleId={vehicleData.id || "1"} />
       </div>
     </>
   );

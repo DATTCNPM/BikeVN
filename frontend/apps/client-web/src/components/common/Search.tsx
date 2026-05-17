@@ -4,7 +4,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@repo/ui/components/input-group";
+} from "@repo/ui/components/ui/input-group";
 
 export default function SearchComponent({ results = 0 }: { results: number }) {
   return (

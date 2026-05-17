@@ -2,7 +2,7 @@ import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
-} from "@repo/ui/components/sidebar";
+} from "@repo/ui/components/ui/sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,14 +10,14 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@repo/ui/components/breadcrumb";
+} from "@repo/ui/components/ui/breadcrumb";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { Outlet } from "react-router-dom";
-import { Separator } from "@repo/ui/components/separator";
+import { Separator } from "@repo/ui/components/ui/separator";
 import { Link } from "react-router-dom";
 import Logo from "@/assets/icons/Logo_yellow.svg";
 import { Home, MessageCircle, Bell } from "lucide-react";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@repo/ui/components/ui/button";
 
 import { useLocation } from "react-router-dom";
 

@@ -2,7 +2,7 @@ export type VehicleStatus = "available" | "unavailable" | "maintenance";
 
 export type FuelType = "gasoline" | "diesel" | "electric" | "hybrid";
 
-export interface Vehicle {
+export type Vehicle = {
   id: string;
   name: string;
   brand: string;
@@ -20,4 +20,4 @@ export interface Vehicle {
   current_branch_id: string;
   created_at: string;
   updated_at: string;
-}
+};

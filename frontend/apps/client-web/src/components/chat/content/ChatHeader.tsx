@@ -2,15 +2,15 @@ import { MoreVertical, Phone, Video } from "lucide-react";
 
 import type { Conversation } from "@repo/schemas";
 
-import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
-import { Button } from "@repo/ui/components/button";
+import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
+import { Button } from "@repo/ui/components/ui/button";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@repo/ui/components/dropdown-menu";
+} from "@repo/ui/components/ui/dropdown-menu";
 
 type Props = {
   conversation?: Conversation;

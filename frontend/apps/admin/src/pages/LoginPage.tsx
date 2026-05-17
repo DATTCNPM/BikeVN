@@ -10,9 +10,9 @@ import type { LoginSchema } from "@repo/schemas";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 // UI Components từ Monorepo Monolith
-import { Input } from "@repo/ui/components/input";
-import { Button } from "@repo/ui/components/button";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import {
   Card,
   CardHeader,
@@ -20,14 +20,14 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@repo/ui/components/card";
+} from "@repo/ui/components/ui/card";
 import {
   Field,
   FieldContent,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@repo/ui/components/field";
+} from "@repo/ui/components/ui/field";
 
 export default function Login() {
   const navigate = useNavigate();

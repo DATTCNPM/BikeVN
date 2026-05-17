@@ -6,7 +6,7 @@ import { ArrowLeft, Compass, MoveRight } from "lucide-react";
 
 import { Link } from "react-router-dom";
 
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@repo/ui/components/ui/button";
 
 export default function NotFoundPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

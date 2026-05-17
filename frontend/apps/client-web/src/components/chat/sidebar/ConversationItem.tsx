@@ -1,6 +1,6 @@
 import type { Conversation } from "@repo/schemas";
 
-import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 
 import { cn } from "@repo/ui/lib/utils";
 

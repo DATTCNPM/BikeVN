@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@repo/schemas";
 import type { LoginSchema } from "@repo/schemas";
-import { Input } from "@repo/ui/components/input";
-import { Button } from "@repo/ui/components/button";
+import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import {
@@ -13,8 +13,8 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@repo/ui/components/field";
-import { Spinner } from "@repo/ui/components/spinner";
+} from "@repo/ui/components/ui/field";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
 

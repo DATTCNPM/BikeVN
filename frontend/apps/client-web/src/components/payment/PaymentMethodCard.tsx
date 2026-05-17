@@ -1,5 +1,5 @@
-import { Card } from "@repo/ui/components/card";
-import { Badge } from "@repo/ui/components/badge";
+import { Card } from "@repo/ui/components/ui/card";
+import { Badge } from "@repo/ui/components/ui/badge";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
 
 import type { PaymentMethod } from "@repo/types";

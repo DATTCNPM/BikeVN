@@ -1,17 +1,17 @@
-import { Card } from "@repo/ui/components/card";
+import { Card } from "@repo/ui/components/ui/card";
 import { Fuel, MapPin, Settings2 } from "lucide-react";
 import type { Vehicle } from "@repo/types";
 import { useBranches } from "@/hooks/useBranch";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 
 import { useEffect } from "react";
 export default function PaymentVehicleCard({
   vehicle,
 }: {
-  vehicle: Vehicle | undefined;
+  vehicle: Vehicle | null;
 }) {
-  const { data: branches, isLoading, error } = useBranches();
+  const { data: branches = [], isLoading, error } = useBranches();
   useEffect(() => {
     if (error) {
       toast.error("Failed to load branches. Please try again.");

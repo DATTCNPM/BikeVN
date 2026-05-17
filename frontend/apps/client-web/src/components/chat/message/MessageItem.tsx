@@ -1,6 +1,6 @@
 import type { Message } from "@/pages/ChatPage";
 
-import { Card } from "@repo/ui/components/card";
+import { Card } from "@repo/ui/components/ui/card";
 
 import { cn } from "@repo/ui/lib/utils";
 

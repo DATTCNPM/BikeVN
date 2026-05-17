@@ -4,8 +4,8 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@repo/ui/components/avatar";
-import { Card } from "@repo/ui/components/card";
+} from "@repo/ui/components/ui/avatar";
+import { Card } from "@repo/ui/components/ui/card";
 
 import type { Review } from "@repo/types";
 

@@ -1,4 +1,4 @@
-import { Card } from "@repo/ui/components/card";
+import { Card } from "@repo/ui/components/ui/card";
 import { Mail, Phone, User2 } from "lucide-react";
 import type { User } from "@repo/types";
 

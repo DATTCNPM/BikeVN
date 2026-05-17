@@ -8,11 +8,11 @@ import {
   Bike,
 } from "lucide-react";
 
-import { Card } from "@repo/ui/components/card";
-import { Badge } from "@repo/ui/components/badge";
+import { Card } from "@repo/ui/components/ui/card";
+import { Badge } from "@repo/ui/components/ui/badge";
 import type { Booking } from "@repo/types";
-import { Button } from "@repo/ui/components/button";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Button } from "@repo/ui/components/ui/button";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useBookings } from "@/hooks/useBooking";
@@ -78,8 +78,8 @@ export default function MyBookingSection() {
   console.log("bookings", bookings);
   console.log("vehicles", vehicles);
 
-  const bookingData = bookings.map((b) => {
-    const vehicle = vehicles.find((v) => v.id === b.vehicle_id);
+  const bookingData = bookings?.map((b) => {
+    const vehicle = vehicles?.find((v) => v.id === b.vehicle_id);
     return {
       ...b,
       vehicleName: vehicle ? vehicle.name : "Unknown Vehicle",
@@ -103,12 +103,12 @@ export default function MyBookingSection() {
         </div>
 
         <Badge variant="secondary" className="rounded-full px-4 py-1">
-          {bookings.length} bookings
+          {bookings?.length || 0} bookings
         </Badge>
       </div>
 
       <div className="grid gap-5">
-        {bookingData.map((booking) => {
+        {bookingData?.map((booking) => {
           const status = statusConfig[booking.status];
 
           const StatusIcon = status.icon;

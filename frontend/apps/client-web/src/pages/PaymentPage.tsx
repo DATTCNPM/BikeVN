@@ -5,7 +5,7 @@ import PaymentMethodCard from "@/components/payment/PaymentMethodCard";
 import PaymentPolicyCard from "@/components/payment/PaymentPolicyCard";
 import PaymentSummaryCard from "@/components/payment/PaymentSummaryCard";
 import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -19,9 +19,9 @@ import type { PaymentMethod } from "node_modules/@repo/types/src/payment";
 export default function PaymentPage() {
   const { userProfile } = useAuthStore();
   const { id } = useParams();
-  const { data: booking, isLoading, error } = useBooking(id!);
+  const { data: booking = null, isLoading, error } = useBooking(id!);
   const {
-    data: vehicle,
+    data: vehicle = null,
     isLoading: vehicleLoading,
     error: vehicleError,
   } = useVehicle(booking?.vehicle_id || "");
@@ -54,9 +54,9 @@ export default function PaymentPage() {
           <div className="space-y-6">
             <PaymentCustomerCard user={userProfile} />
 
-            <PaymentVehicleCard vehicle={vehicle} />
+            <PaymentVehicleCard vehicle={vehicle || null} />
 
-            <PaymentBookingCard booking={booking} />
+            <PaymentBookingCard booking={booking || null} />
 
             <PaymentMethodCard
               selectedMethod={selectedMethod}
@@ -67,7 +67,10 @@ export default function PaymentPage() {
           </div>
 
           <div>
-            <PaymentSummaryCard booking={booking} />
+            <PaymentSummaryCard
+              booking={booking || null}
+              selectedMethod={selectedMethod}
+            />
           </div>
         </div>
       </div>

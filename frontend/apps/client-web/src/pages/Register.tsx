@@ -3,11 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@repo/schemas";
 import type { RegisterSchema } from "@repo/schemas";
-import { Input } from "@repo/ui/components/input";
-import { Button } from "@repo/ui/components/button";
+import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +18,7 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@repo/ui/components/field";
+} from "@repo/ui/components/ui/field";
 
 export default function Register() {
   const navigate = useNavigate();

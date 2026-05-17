@@ -6,10 +6,10 @@ import {
   CardContent,
   CardFooter,
   CardAction,
-} from "@repo/ui/components/card";
+} from "@repo/ui/components/ui/card";
 import { Home } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@repo/ui/components/ui/button";
 
 interface AuthCardProps {
   title: string;

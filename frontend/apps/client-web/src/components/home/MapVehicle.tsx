@@ -1,7 +1,7 @@
 import { useState } from "react";
 import CardProduct from "@/components/common/CardProduct";
 import Map from "@/components/map/Map";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import { useVehicles } from "@/hooks/useVehicle";
 import { useBranches } from "@/hooks/useBranch";
@@ -13,9 +13,9 @@ export default function MapVehicle() {
     undefined,
   );
 
-  const { data: vehicles, isLoading, error } = useVehicles();
+  const { data: vehicles = [], isLoading, error } = useVehicles();
   const {
-    data: branches,
+    data: branches = [],
     isLoading: branchLoading,
     error: branchError,
   } = useBranches();
@@ -29,6 +29,13 @@ export default function MapVehicle() {
       toast.error("Failed to load branches. Please try again.");
     }
   }, [error, branchError]);
+  if (isLoading || branchLoading) {
+    return (
+      <div className="w-full flex items-center justify-center h-[300px]">
+        <Spinner />
+      </div>
+    );
+  }
 
   const selectedBranchData = branches.find((b) => b.id === selectedBranch);
 
@@ -49,14 +56,6 @@ export default function MapVehicle() {
   const filteredVehicles = selectedBranch
     ? vehicleListData.filter((v) => v.location === selectedBranchData?.name)
     : null;
-
-  if (isLoading || branchLoading) {
-    return (
-      <div className="w-full flex items-center justify-center h-[300px]">
-        <Spinner />
-      </div>
-    );
-  }
 
   return (
     <div className="w-full grid grid-cols-12 h-[500px] ">

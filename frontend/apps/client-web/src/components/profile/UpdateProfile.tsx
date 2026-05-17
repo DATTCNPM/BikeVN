@@ -3,14 +3,14 @@ import { updateProfileSchema } from "@repo/schemas";
 import type { UpdateProfileSchema } from "@repo/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Input } from "@repo/ui/components/input";
+import { Input } from "@repo/ui/components/ui/input";
 import {
   Field,
   FieldGroup,
   FieldContent,
   FieldError,
   FieldLabel,
-} from "@repo/ui/components/field";
+} from "@repo/ui/components/ui/field";
 import { toast } from "sonner";
 
 import { useState } from "react";

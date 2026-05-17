@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@repo/ui/components/card";
-import { Button } from "@repo/ui/components/button";
-import { Badge } from "@repo/ui/components/badge";
+import { Card, CardContent } from "@repo/ui/components/ui/card";
+import { Button } from "@repo/ui/components/ui/button";
+import { Badge } from "@repo/ui/components/ui/badge";
 import { MapPin, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

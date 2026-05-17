@@ -7,7 +7,7 @@ import BookingStatusHero from "@/components/booking/BookingStatusHero";
 import BookingTimeline from "@/components/booking/BookingTimeline";
 import BookingVehicleCard from "@/components/booking/BookingVehicleCard";
 
-import { Spinner } from "@repo/ui/components/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 

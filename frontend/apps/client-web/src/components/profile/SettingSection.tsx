@@ -5,18 +5,18 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@repo/ui/components/card";
+} from "@repo/ui/components/ui/card";
 import {
   Field,
   FieldContent,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@repo/ui/components/field";
-import { Label } from "@repo/ui/components/label";
-import { Input } from "@repo/ui/components/input";
-import { Button } from "@repo/ui/components/button";
-import { Switch } from "@repo/ui/components/switch";
+} from "@repo/ui/components/ui/field";
+import { Label } from "@repo/ui/components/ui/label";
+import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
+import { Switch } from "@repo/ui/components/ui/switch";
 import { Moon, Sun, Lock, Trash2 } from "lucide-react";
 import AlertDialog from "@/components/common/AlertDialog";
 import { toast } from "sonner";

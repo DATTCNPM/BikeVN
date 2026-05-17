@@ -1,9 +1,9 @@
 import { Search, Users } from "lucide-react";
 import type { Conversation } from "@repo/schemas";
-import { Button } from "@repo/ui/components/button";
-import { Input } from "@repo/ui/components/input";
-import { ScrollArea } from "@repo/ui/components/scroll-area";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Button } from "@repo/ui/components/ui/button";
+import { Input } from "@repo/ui/components/ui/input";
+import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import ConversationItem from "./ConversationItem";
 type Props = {
   loading: boolean;

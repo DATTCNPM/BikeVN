@@ -1,12 +1,12 @@
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@repo/ui/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@repo/ui/components/dropdown-menu";
+} from "@repo/ui/components/ui/dropdown-menu";
 
 type Props = {
   onEdit?: () => void;

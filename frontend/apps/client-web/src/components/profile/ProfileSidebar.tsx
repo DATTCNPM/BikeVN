@@ -10,14 +10,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@repo/ui/components/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/avatar";
+} from "@repo/ui/components/ui/sidebar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@repo/ui/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@repo/ui/components/dropdown-menu";
+} from "@repo/ui/components/ui/dropdown-menu";
 
 import { useAuthStore } from "@/stores/useAuthStore";
 

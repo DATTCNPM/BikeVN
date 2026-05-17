@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "exports": {
-    "./components/*": {
-      "types": "./src/components/*.tsx",
-      "import": "./src/components/*.tsx",
-      "default": "./src/components/*.tsx"
+    "./components/ui/*": {
+      "types": "./src/components/ui/*.tsx",
+      "import": "./src/components/ui/*.tsx",
+      "default": "./src/components/ui/*.tsx"
     },
     "./lib/utils": {
       "types": "./src/lib/utils.ts",
@@ -30,6 +30,7 @@
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
     "react-day-picker": "^9.14.0",
+    "recharts": "3.8.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0"
   }

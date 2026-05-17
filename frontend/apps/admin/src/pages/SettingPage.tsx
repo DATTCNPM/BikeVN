@@ -1,16 +1,16 @@
 import { Bell, Globe, MoonStar, Palette } from "lucide-react";
 
-import { Button } from "@repo/ui/components/button";
-import { Card, CardContent } from "@repo/ui/components/card";
-import { Label } from "@repo/ui/components/label";
+import { Button } from "@repo/ui/components/ui/button";
+import { Card, CardContent } from "@repo/ui/components/ui/card";
+import { Label } from "@repo/ui/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/components/select";
-import { Switch } from "@repo/ui/components/switch";
+} from "@repo/ui/components/ui/select";
+import { Switch } from "@repo/ui/components/ui/switch";
 
 export default function SettingPage() {
   return (

@@ -9,11 +9,11 @@ import type { DateRange } from "react-day-picker";
 
 import { toast } from "sonner";
 
-import { Badge } from "@repo/ui/components/badge";
+import { Badge } from "@repo/ui/components/ui/badge";
 
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@repo/ui/components/ui/button";
 
-import { Calendar } from "@repo/ui/components/calendar";
+import { Calendar } from "@repo/ui/components/ui/calendar";
 
 import {
   Card,
@@ -21,7 +21,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@repo/ui/components/card";
+} from "@repo/ui/components/ui/card";
 
 import {
   Field,
@@ -29,7 +29,7 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@repo/ui/components/field";
+} from "@repo/ui/components/ui/field";
 
 import {
   Select,
@@ -37,11 +37,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/components/select";
+} from "@repo/ui/components/ui/select";
 
-import { Separator } from "@repo/ui/components/separator";
+import { Separator } from "@repo/ui/components/ui/separator";
 
-import { Spinner } from "@repo/ui/components/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useCreateBooking } from "@/hooks/useBooking";
 
@@ -58,8 +58,8 @@ export default function BookingCard() {
 
   const { mutate: createBooking, error, isPending } = useCreateBooking();
 
-  const { data: vehicle } = useVehicle(id!);
-  const { data: branches, isLoading: branchLoading } = useBranches();
+  const { data: vehicle = null, isLoading: vehicleLoading } = useVehicle(id!);
+  const { data: branches = [], isLoading: branchLoading } = useBranches();
 
   const form = useForm<BookingSchema>({
     resolver: zodResolver(bookingSchema),
@@ -77,6 +77,20 @@ export default function BookingCard() {
     },
   });
 
+  useEffect(() => {
+    if (error) {
+      toast.error("Lấy thông tin xe thất bại");
+    }
+  }, [error]);
+
+  if (branchLoading || vehicleLoading) {
+    return (
+      <div className="flex h-[300px] w-full items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   const dateRange = form.watch("dateRange");
 
   const startDate = dateRange?.from;
@@ -86,7 +100,7 @@ export default function BookingCard() {
   const totalDays =
     startDate && endDate ? differenceInDays(endDate, startDate) || 1 : 0;
 
-  const totalPrice = (vehicle?.price_per_day || 0) * totalDays;
+  const totalPrice = totalDays * (vehicle?.price_per_day || 0);
 
   const onSubmit = (values: BookingSchema) => {
     createBooking({
@@ -107,20 +121,6 @@ export default function BookingCard() {
     value: branch.id,
   }));
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Lấy thông tin xe thất bại");
-    }
-  }, [error]);
-
-  if (branchLoading) {
-    return (
-      <div className="flex h-[300px] w-full items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-
   return (
     <Card className="sticky top-24 w-full rounded-3xl">
       <CardHeader className="space-y-4">
@@ -129,7 +129,7 @@ export default function BookingCard() {
             <p className="text-sm text-muted-foreground">Giá thuê</p>
 
             <CardTitle className="text-3xl font-bold">
-              {vehicle?.price_per_day.toLocaleString("vi-VN")}đ
+              {vehicle?.price_per_day?.toLocaleString("vi-VN") || "0"}đ
               <span className="ml-1 text-base font-normal text-muted-foreground">
                 / ngày
               </span>

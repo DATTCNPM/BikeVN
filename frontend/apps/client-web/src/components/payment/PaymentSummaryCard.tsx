@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-import { Button } from "@repo/ui/components/button";
-import { Card } from "@repo/ui/components/card";
+import { Button } from "@repo/ui/components/ui/button";
+import { Card } from "@repo/ui/components/ui/card";
 import { ReceiptText } from "lucide-react";
 import type { Booking } from "@repo/types";
 import type { PaymentMethod } from "@repo/types";
@@ -10,7 +10,7 @@ import type { CreatePaymentPayload } from "@repo/api";
 import { useCreatePayment } from "@/hooks/usePayment";
 
 type Props = {
-  booking: Booking | undefined;
+  booking: Booking | null;
   selectedMethod: PaymentMethod;
 };
 
