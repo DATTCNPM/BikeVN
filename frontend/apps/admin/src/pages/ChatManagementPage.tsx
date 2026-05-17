@@ -9,8 +9,8 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+import { Badge } from "@repo/ui/components/badge";
 
 type Chat = {
   id: number;

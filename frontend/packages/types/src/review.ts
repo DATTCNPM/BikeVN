@@ -1,14 +1,10 @@
 export type Review = {
-  id: number;
-  booking_id: number;
-  user_id: number;
-  vehicle_id: number;
+  id: string;
+  booking_id: string;
+  user_id: string;
+  vehicle_id: string;
   rating: number;
   comment?: string | null;
   created_at: string;
-
-  user: {
-    name: string;
-    avatar: string;
-  };
+  updated_at: string;
 };

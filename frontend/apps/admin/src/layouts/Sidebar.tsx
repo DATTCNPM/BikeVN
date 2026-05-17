@@ -21,7 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@repo/ui/components/sidebar";
 
 import Logo from "@/assets/icons/Logo_yellow.svg";
 

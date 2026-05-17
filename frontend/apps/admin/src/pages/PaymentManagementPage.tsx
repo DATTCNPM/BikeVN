@@ -7,7 +7,7 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@repo/ui/components/badge";
 
 type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
 

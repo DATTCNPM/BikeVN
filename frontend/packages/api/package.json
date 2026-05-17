@@ -12,7 +12,8 @@
     }
   },
   "dependencies": {
-    "axios": "^1.16.0",
-    "@repo/types": "workspace:*"
+    "@repo/schemas": "workspace:*",
+    "@repo/types": "workspace:*",
+    "axios": "^1.16.0"
   }
 }

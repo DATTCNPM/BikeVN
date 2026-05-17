@@ -13,6 +13,7 @@ import ChatManagementPage from "@/pages/ChatManagementPage";
 import InfoPage from "@/pages/InfoPage";
 import SecurityPage from "@/pages/SecurityPage";
 import SettingPage from "@/pages/SettingPage";
+import LoginPage from "@/pages/LoginPage";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
         element: <SettingPage />,
       },
     ],
+  },
+  {
+    path: "/admin/login",
+    element: <LoginPage />,
   },
 ]);
 
