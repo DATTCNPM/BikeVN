@@ -7,4 +7,8 @@ export type Review = {
   comment?: string | null;
   created_at: string;
   updated_at: string;
+  user: {
+    email: string;
+    name: string;
+  };
 };

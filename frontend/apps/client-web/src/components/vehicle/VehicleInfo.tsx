@@ -39,14 +39,14 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   const vehicleData = useMemo(() => {
     return {
       ...selectedVehicle,
-      locationName: branches.find(
+      locationName: branches?.find(
         (branch) => branch.id === selectedVehicle?.current_branch_id,
       )?.name,
     };
   }, [selectedVehicle, branches]);
 
   const locationVehicle = useMemo(() => {
-    return branches.find((b) => b.id === selectedVehicle?.current_branch_id);
+    return branches?.find((b) => b.id === selectedVehicle?.current_branch_id);
   }, [selectedVehicle, branches]);
 
   const statusMap = {
@@ -252,7 +252,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
       </div>
 
       <div className="mt-8">
-        <ReviewSection />
+        <ReviewSection vehicleId={vehicleData.id || "N/A"} />
       </div>
     </>
   );

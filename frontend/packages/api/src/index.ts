@@ -5,3 +5,4 @@ export * from "./branchApi";
 export * from "./vehicleApi";
 export * from "./paymentApi";
 export * from "./chatApi";
+export * from "./reviewApi";
