@@ -20,13 +20,13 @@ export type CreatePaymentPayload = {
 export type UpdatePaymentPayload = Partial<CreatePaymentPayload>;
 
 export const paymentApi = {
-  async getPayments() {
+  async getPayments(): Promise<Payment[]> {
     await delay(500);
 
     return payments;
   },
 
-  async getPaymentById(id: string) {
+  async getPaymentById(id: string): Promise<Payment> {
     await delay(300);
 
     const payment = payments.find((p) => p.id === id);
@@ -45,13 +45,15 @@ export const paymentApi = {
     return payment;
   },
 
-  async getPaymentsByBookingId(bookingId: string) {
+  async getPaymentsByBookingId(bookingId: string): Promise<Payment[]> {
     await delay(300);
 
     return payments.filter((p) => p.booking_id === bookingId);
   },
 
-  async createPayment(payload: CreatePaymentPayload) {
+  async createPayment(
+    payload: CreatePaymentPayload,
+  ): Promise<{ message: string; payment: Payment }> {
     await delay(500);
 
     const newPayment: Payment = {
@@ -85,7 +87,10 @@ export const paymentApi = {
     };
   },
 
-  async updatePayment(id: string, payload: UpdatePaymentPayload) {
+  async updatePayment(
+    id: string,
+    payload: UpdatePaymentPayload,
+  ): Promise<{ message: string; payment: Payment }> {
     await delay(500);
 
     const paymentIndex = payments.findIndex((p) => p.id === id);
@@ -114,7 +119,7 @@ export const paymentApi = {
     };
   },
 
-  async deletePayment(id: string) {
+  async deletePayment(id: string): Promise<{ message: string }> {
     await delay(500);
 
     const paymentIndex = payments.findIndex((p) => p.id === id);

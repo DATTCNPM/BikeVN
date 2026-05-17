@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import ChatContent from "@/components/chat/content/ChatContent";
 import ChatSidebar from "@/components/chat/sidebar/ChatSidebar";
 
-import { useConversations, useMessages } from "@/hooks/useChat";
+import { useConversations, useMessages } from "@repo/hooks";
 
 const currentUserId = 1;
 

@@ -11,9 +11,9 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 
-import { useBooking } from "@/hooks/useBooking";
-import { useVehicle } from "@/hooks/useVehicle";
-import { useBranches } from "@/hooks/useBranch";
+import { useBooking } from "@repo/hooks";
+import { useVehicle } from "@repo/hooks";
+import { useBranches } from "@repo/hooks";
 
 export default function BookingResultPage() {
   const { id } = useParams();
@@ -24,7 +24,7 @@ export default function BookingResultPage() {
     error: vehicleError,
   } = useVehicle(booking?.vehicle_id || "");
   const {
-    data: branches,
+    data: branches = [],
     isLoading: branchesLoading,
     error: branchesError,
   } = useBranches();
@@ -50,38 +50,31 @@ export default function BookingResultPage() {
     );
   }
 
-  const selectedBooking = booking;
-  const selectedVehicle = vehicle;
-
-  console.log("Selected Booking:", selectedBooking);
-  console.log("Selected Vehicle:", selectedVehicle);
+  console.log("Selected Booking:", booking);
+  console.log("Selected Vehicle:", vehicle);
   console.log("Branches:", branches);
 
   // Tên chi nhánh lấy từ selectedBooking.pickup_branch_id và selectedBooking.return_branch_id
-  const pickupBranch = branches.find(
-    (b) => b.id === selectedBooking?.pickup_branch_id,
-  );
-  const returnBranch = branches.find(
-    (b) => b.id === selectedBooking?.return_branch_id,
-  );
+  const pickupBranch = branches.find((b) => b.id === booking?.pickup_branch_id);
+  const returnBranch = branches.find((b) => b.id === booking?.return_branch_id);
 
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto max-w-5xl space-y-8 px-4 py-10">
-        <BookingStatusHero status={selectedBooking?.status || null} />
+        <BookingStatusHero status={booking?.status || null} />
 
         <BookingVehicleCard
-          booking={selectedBooking}
-          vehicle={selectedVehicle}
+          booking={booking}
+          vehicle={vehicle}
           pickupBranch={pickupBranch}
           returnBranch={returnBranch}
         />
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6">
-            <BookingInfoCard booking={selectedBooking} />
+            <BookingInfoCard booking={booking} />
 
-            <BookingTimeline status={selectedBooking?.status || null} />
+            <BookingTimeline status={booking?.status || null} />
           </div>
 
           <BookingActions />

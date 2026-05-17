@@ -20,8 +20,8 @@ import Map from "@/components/map/Map";
 import ReviewSection from "@/components/vehicle/review/ReviewSection";
 
 import { useEffect, useMemo } from "react";
-import { useBranches } from "@/hooks/useBranch";
-import { useVehicle } from "@/hooks/useVehicle";
+import { useBranches } from "@repo/hooks";
+import { useVehicle } from "@repo/hooks";
 
 export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   const {

@@ -3,7 +3,6 @@ import {
   BarChart,
   CartesianGrid,
   ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
@@ -15,11 +14,25 @@ import {
   CardTitle,
 } from "@repo/ui/components/ui/card";
 
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@repo/ui/components/ui/chart";
+
 import type { DashboardOverview } from "@repo/types";
 
 type Props = {
   data: DashboardOverview["charts"]["branchPerformance"];
 };
+
+const chartConfig = {
+  bookings: {
+    label: "Số lượt đặt",
+    color: "var(--chart-1)",
+  },
+} satisfies ChartConfig;
 
 export default function BranchPerformanceChart({ data }: Props) {
   return (
@@ -29,7 +42,7 @@ export default function BranchPerformanceChart({ data }: Props) {
       </CardHeader>
 
       <CardContent>
-        <div className="h-[320px]">
+        <ChartContainer config={chartConfig} className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
               <CartesianGrid vertical={false} />
@@ -38,16 +51,16 @@ export default function BranchPerformanceChart({ data }: Props) {
 
               <YAxis />
 
-              <Tooltip />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
 
               <Bar
                 dataKey="bookings"
                 radius={[12, 12, 0, 0]}
-                fill="currentColor"
+                fill="var(--chart-1)"
               />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

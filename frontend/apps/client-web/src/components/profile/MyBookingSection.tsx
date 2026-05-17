@@ -15,8 +15,8 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { useBookings } from "@/hooks/useBooking";
-import { useVehicles } from "@/hooks/useVehicle";
+import { useBookings } from "@repo/hooks";
+import { useVehicles } from "@repo/hooks";
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {

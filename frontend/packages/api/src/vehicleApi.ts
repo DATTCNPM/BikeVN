@@ -26,13 +26,13 @@ export type CreateVehiclePayload = {
 export type UpdateVehiclePayload = Partial<CreateVehiclePayload>;
 
 export const vehicleApi = {
-  async getVehicles() {
+  async getVehicles(): Promise<Vehicle[]> {
     await delay(500);
 
     return vehicles;
   },
 
-  async getVehicleById(id: string) {
+  async getVehicleById(id: string): Promise<Vehicle> {
     await delay(300);
 
     const vehicle = vehicles.find((v) => v.id === id);
@@ -51,7 +51,9 @@ export const vehicleApi = {
     return vehicle;
   },
 
-  async createVehicle(payload: CreateVehiclePayload) {
+  async createVehicle(
+    payload: CreateVehiclePayload,
+  ): Promise<{ message: string; vehicle: Vehicle }> {
     await delay(500);
 
     const newVehicle: Vehicle = {
@@ -83,7 +85,10 @@ export const vehicleApi = {
     };
   },
 
-  async updateVehicle(id: string, payload: UpdateVehiclePayload) {
+  async updateVehicle(
+    id: string,
+    payload: UpdateVehiclePayload,
+  ): Promise<{ message: string; vehicle: Vehicle }> {
     await delay(500);
 
     const vehicleIndex = vehicles.findIndex((v) => v.id === id);
@@ -114,7 +119,7 @@ export const vehicleApi = {
     };
   },
 
-  async deleteVehicle(id: string) {
+  async deleteVehicle(id: string): Promise<{ message: string }> {
     await delay(500);
 
     const vehicleIndex = vehicles.findIndex((v) => v.id === id);

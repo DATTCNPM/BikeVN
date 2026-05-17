@@ -3,7 +3,7 @@ import { CalendarDays, MapPinned } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import type { Booking } from "@repo/types";
-import { useBranches } from "@/hooks/useBranch";
+import { useBranches } from "@repo/hooks";
 
 import { useEffect } from "react";
 

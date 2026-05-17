@@ -6,6 +6,12 @@
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "module": "esnext",
     "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "paths": {
+      "@repo/*": ["packages/*/src"],
+      "@repo/hooks": ["packages/hooks/src"],
+      "@repo/api": ["packages/api/src"]
+    },
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

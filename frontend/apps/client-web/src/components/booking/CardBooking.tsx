@@ -43,10 +43,10 @@ import { Separator } from "@repo/ui/components/ui/separator";
 
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-import { useCreateBooking } from "@/hooks/useBooking";
+import { useCreateBooking } from "@/features/bookings/mutations";
 
-import { useVehicle } from "@/hooks/useVehicle";
-import { useBranches } from "@/hooks/useBranch";
+import { useVehicle } from "@repo/hooks";
+import { useBranches } from "@repo/hooks";
 
 import type { BookingSchema } from "@repo/schemas";
 import { bookingSchema } from "@repo/schemas";

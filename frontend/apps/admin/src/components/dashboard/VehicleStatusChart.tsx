@@ -1,4 +1,4 @@
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer} from "recharts";
 
 import {
   Card,
@@ -7,17 +7,39 @@ import {
   CardTitle,
 } from "@repo/ui/components/ui/card";
 
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@repo/ui/components/ui/chart";
+
 import type { DashboardOverview } from "@repo/types";
 
 const COLORS = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
 ];
 
 type Props = {
   data: DashboardOverview["charts"]["vehicleStatus"];
 };
+
+const chartConfig = {
+  available: {
+    label: "Có sẵn",
+    color: "var(--chart-1)",
+  },
+  rented: {
+    label: "Đang thuê",
+    color: "var(--chart-2)",
+  },
+  maintenance: {
+    label: "Bảo trì",
+    color: "var(--chart-3)",
+  },
+} satisfies ChartConfig;
 
 export default function VehicleStatusChart({ data }: Props) {
   return (
@@ -28,23 +50,25 @@ export default function VehicleStatusChart({ data }: Props) {
 
       <CardContent>
         <div className="h-[320px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                dataKey="value"
-                innerRadius={70}
-                outerRadius={110}
-                paddingAngle={5}
-              >
-                {data.map((_, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
+          <ChartContainer config={chartConfig} className="h-full w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  dataKey="value"
+                  innerRadius={70}
+                  outerRadius={110}
+                  paddingAngle={5}
+                >
+                  {data.map((_, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
 
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+                <ChartTooltip content={<ChartTooltipContent />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartContainer>
         </div>
       </CardContent>
     </Card>

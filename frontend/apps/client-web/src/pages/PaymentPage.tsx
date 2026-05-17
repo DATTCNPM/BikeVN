@@ -9,10 +9,10 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useBooking } from "@/hooks/useBooking";
+import { useBooking } from "@repo/hooks";
 
 import { useEffect, useState } from "react";
-import { useVehicle } from "@/hooks/useVehicle";
+import { useVehicle } from "@repo/hooks";
 import { useParams } from "react-router-dom";
 import type { PaymentMethod } from "node_modules/@repo/types/src/payment";
 

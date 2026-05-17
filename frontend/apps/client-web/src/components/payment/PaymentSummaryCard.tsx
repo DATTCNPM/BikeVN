@@ -7,7 +7,7 @@ import type { Booking } from "@repo/types";
 import type { PaymentMethod } from "@repo/types";
 import type { CreatePaymentPayload } from "@repo/api";
 
-import { useCreatePayment } from "@/hooks/usePayment";
+import { useCreatePayment } from "@/features/payments/mutations";
 
 type Props = {
   booking: Booking | null;

@@ -1,25 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   vehicleApi,
   type CreateVehiclePayload,
   type UpdateVehiclePayload,
 } from "@repo/api";
-
-export function useVehicles() {
-  return useQuery({
-    queryKey: ["vehicles"],
-    queryFn: vehicleApi.getVehicles,
-  });
-}
-
-export function useVehicle(id: string) {
-  return useQuery({
-    queryKey: ["vehicle", id],
-    queryFn: () => vehicleApi.getVehicleById(id),
-    enabled: !!id,
-  });
-}
+import { vehiclesKeys } from "@repo/hooks";
 
 export function useCreateVehicle() {
   const queryClient = useQueryClient();
@@ -27,11 +13,8 @@ export function useCreateVehicle() {
   return useMutation({
     mutationFn: (payload: CreateVehiclePayload) =>
       vehicleApi.createVehicle(payload),
-
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["vehicles"],
-      });
+      queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
     },
   });
 }
@@ -47,14 +30,10 @@ export function useUpdateVehicle() {
       id: string;
       payload: UpdateVehiclePayload;
     }) => vehicleApi.updateVehicle(id, payload),
-
     onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
       queryClient.invalidateQueries({
-        queryKey: ["vehicles"],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["vehicle", variables.id],
+        queryKey: vehiclesKeys.detail(variables.id),
       });
     },
   });
@@ -65,11 +44,8 @@ export function useDeleteVehicle() {
 
   return useMutation({
     mutationFn: (id: string) => vehicleApi.deleteVehicle(id),
-
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["vehicles"],
-      });
+      queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
     },
   });
 }

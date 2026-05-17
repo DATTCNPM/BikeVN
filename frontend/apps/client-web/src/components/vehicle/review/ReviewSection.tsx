@@ -1,7 +1,7 @@
 import ReviewCard from "./ReviewCard";
 import ReviewSummary from "./ReviewSummary";
 
-import { useVehicleReviews } from "@/hooks/useReview";
+import { useVehicleReviews } from "@repo/hooks";
 
 type Props = {
   vehicleId: string;

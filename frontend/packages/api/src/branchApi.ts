@@ -17,13 +17,13 @@ export type CreateBranchPayload = {
 export type UpdateBranchPayload = Partial<CreateBranchPayload>;
 
 export const branchApi = {
-  async getBranches() {
+  async getBranches(): Promise<Branch[]> {
     await delay(500);
 
     return branches;
   },
 
-  async getBranchById(id: string) {
+  async getBranchById(id: string): Promise<Branch> {
     await delay(300);
 
     const branch = branches.find((b) => b.id === id);
@@ -42,7 +42,9 @@ export const branchApi = {
     return branch;
   },
 
-  async createBranch(payload: CreateBranchPayload) {
+  async createBranch(
+    payload: CreateBranchPayload,
+  ): Promise<{ message: string; branch: Branch }> {
     await delay(500);
 
     const newBranch: Branch = {
@@ -70,7 +72,10 @@ export const branchApi = {
     };
   },
 
-  async updateBranch(id: string, payload: UpdateBranchPayload) {
+  async updateBranch(
+    id: string,
+    payload: UpdateBranchPayload,
+  ): Promise<{ message: string; branch: Branch }> {
     await delay(500);
 
     const branchIndex = branches.findIndex((b) => b.id === id);
@@ -99,7 +104,7 @@ export const branchApi = {
     };
   },
 
-  async deleteBranch(id: string) {
+  async deleteBranch(id: string): Promise<{ message: string }> {
     await delay(500);
 
     const branchIndex = branches.findIndex((b) => b.id === id);

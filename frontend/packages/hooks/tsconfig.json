@@ -4,11 +4,11 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true,
     "outDir": "dist",
-    "jsx": "react-jsx"
+    "rootDir": "src"
   },
-  "include": [
-    "src"
-  ]
+  "references": [
+    { "path": "../api" }
+  ],
+  "include": ["src"]
 }

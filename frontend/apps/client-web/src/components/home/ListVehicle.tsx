@@ -7,8 +7,8 @@ import PaginationComponent from "@/components/common/PaginationComponent";
 
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-import { useVehicles } from "@/hooks/useVehicle";
-import { useBranches } from "@/hooks/useBranch";
+import { useVehicles } from "@repo/hooks";
+import { useBranches } from "@repo/hooks";
 
 export default function ListVehicle() {
   const { data: vehicles = [], isLoading, error } = useVehicles();

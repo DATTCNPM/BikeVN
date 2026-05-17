@@ -16,7 +16,7 @@ import TopVehiclesChart from "@/components/dashboard/TopVehiclesChart";
 import RecentBookingsTable from "@/components/dashboard/RecentBookingsTable";
 import RecentReviews from "@/components/dashboard/RecentReviews";
 
-import { useDashboardOverview } from "@/hooks/useDashboard";
+import { useDashboardOverview } from "@/features/dashboard/queries";
 
 export default function HomePage() {
   const { data, isLoading } = useDashboardOverview();

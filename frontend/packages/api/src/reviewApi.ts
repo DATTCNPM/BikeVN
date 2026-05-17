@@ -10,7 +10,9 @@ import { users } from "./data/UserData";
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const reviewApi = {
-  async getReviewsByVehicle(vehicleId: string) {
+  async getReviewsByVehicle(
+    vehicleId: string,
+  ): Promise<(Review & { user: { name: string; email: string } })[]> {
     await delay(500);
     const vehicleReviews = reviews.filter(
       (review) => review.vehicle_id === vehicleId,
@@ -25,13 +27,15 @@ export const reviewApi = {
     }));
   },
 
-  async getReviewsByUser(userId: string) {
+  async getReviewsByUser(userId: string): Promise<Review[]> {
     await delay(500);
 
     return reviews.filter((review) => review.user_id === userId);
   },
 
-  async createReview(payload: ReviewSchema) {
+  async createReview(
+    payload: ReviewSchema,
+  ): Promise<{ message: string; review: Review }> {
     await delay(500);
 
     const existedReview = reviews.find(
@@ -74,7 +78,10 @@ export const reviewApi = {
     };
   },
 
-  async updateReview(reviewId: string, payload: ReviewSchema) {
+  async updateReview(
+    reviewId: string,
+    payload: ReviewSchema,
+  ): Promise<{ message: string; review: Review }> {
     await delay(500);
 
     const reviewIndex = reviews.findIndex((review) => review.id === reviewId);
@@ -103,7 +110,7 @@ export const reviewApi = {
     };
   },
 
-  async deleteReview(reviewId: string) {
+  async deleteReview(reviewId: string): Promise<{ message: string }> {
     await delay(500);
 
     const reviewIndex = reviews.findIndex((review) => review.id === reviewId);

@@ -29,13 +29,13 @@ export type UpdateBookingPayload = Partial<CreateBookingPayload> & {
 };
 
 export const bookingApi = {
-  async getBookings() {
+  async getBookings(): Promise<Booking[]> {
     await delay(500);
 
     return bookings;
   },
 
-  async getBookingById(id: string) {
+  async getBookingById(id: string): Promise<Booking> {
     await delay(300);
 
     const booking = bookings.find((b) => b.id === id);
@@ -54,7 +54,9 @@ export const bookingApi = {
     return booking;
   },
 
-  async createBooking(payload: CreateBookingPayload) {
+  async createBooking(
+    payload: CreateBookingPayload,
+  ): Promise<{ message: string; booking: Booking }> {
     await delay(500);
 
     const newBooking: Booking = {
@@ -92,7 +94,10 @@ export const bookingApi = {
     };
   },
 
-  async updateBooking(id: string, payload: UpdateBookingPayload) {
+  async updateBooking(
+    id: string,
+    payload: UpdateBookingPayload,
+  ): Promise<{ message: string; booking: Booking }> {
     await delay(500);
 
     const bookingIndex = bookings.findIndex((b) => b.id === id);
@@ -123,7 +128,7 @@ export const bookingApi = {
     };
   },
 
-  async deleteBooking(id: string) {
+  async deleteBooking(id: string): Promise<{ message: string }> {
     await delay(500);
 
     const bookingIndex = bookings.findIndex((b) => b.id === id);

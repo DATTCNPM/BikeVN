@@ -1,7 +1,7 @@
 import { Card } from "@repo/ui/components/ui/card";
 import { Fuel, MapPin, Settings2 } from "lucide-react";
 import type { Vehicle } from "@repo/types";
-import { useBranches } from "@/hooks/useBranch";
+import { useBranches } from "@repo/hooks";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 
