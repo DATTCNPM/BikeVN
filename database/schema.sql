@@ -1,8 +1,27 @@
-CREATE DATABASE bikevn_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- BikeVN Database Schema - Complete and Unified
+-- All primary keys use UUID (VARCHAR(36)) for consistency
+-- This is the AUTHORITATIVE schema file
+
+CREATE DATABASE IF NOT EXISTS bikevn_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE bikevn_db;
 
+-- Clean up existing tables (in reverse dependency order)
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS conversation_members;
+DROP TABLE IF EXISTS conversations;
+DROP TABLE IF EXISTS vehicle_returns;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS bookings;
+DROP TABLE IF EXISTS vehicles;
+DROP TABLE IF EXISTS branches;
+DROP TABLE IF EXISTS users;
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- 1. Users Table
 CREATE TABLE users (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
   name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
@@ -18,8 +37,9 @@ CREATE TABLE users (
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User accounts and authentication';
 
+-- 2. Branches Table
 CREATE TABLE branches (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
   name VARCHAR(100) NOT NULL,
   address VARCHAR(255) NOT NULL,
   lat DECIMAL(10,8) NOT NULL COMMENT 'Latitude coordinate',
@@ -32,22 +52,23 @@ CREATE TABLE branches (
   INDEX idx_location (lat, lng)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Rental branch locations';
 
+-- 3. Vehicles Table
 CREATE TABLE vehicles (
-  id VARCHAR(36) PRIMARY KEY,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
   name VARCHAR(100) NOT NULL COMMENT 'Vehicle model/name',
-  brand VARCHAR(100) NOT NULL,
-  model VARCHAR(100) NOT NULL,
-  license_plate VARCHAR(20) NOT NULL UNIQUE,
-  color VARCHAR(50) NOT NULL,
-  year INT NOT NULL,
+  brand VARCHAR(100) NOT NULL COMMENT 'Vehicle brand (Honda, Yamaha, etc)',
+  model VARCHAR(100) NOT NULL COMMENT 'Vehicle model name',
+  license_plate VARCHAR(20) NOT NULL UNIQUE COMMENT 'License plate number',
+  color VARCHAR(50) NOT NULL COMMENT 'Vehicle color',
+  year INT NOT NULL COMMENT 'Manufacturing year',
   price_per_day DECIMAL(10,2) NOT NULL COMMENT 'Price per day in VND',
   engine_capacity INT NOT NULL COMMENT 'Engine capacity in cc',
   vehicle_type ENUM('fuel', 'electric') NOT NULL COMMENT 'Fuel type: fuel or electric',
   mileage INT DEFAULT 0 COMMENT 'Current mileage in km',
-  image_url JSON COMMENT 'Array of image URLs',
-  description TEXT,
+  image_url JSON COMMENT 'Array of image URLs (JSON)',
+  description TEXT COMMENT 'Vehicle description and features',
   status ENUM('available', 'unavailable', 'maintenance') DEFAULT 'available',
-  current_branch_id INT NOT NULL,
+  current_branch_id VARCHAR(36) NOT NULL COMMENT 'Current location (branch)',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
@@ -59,12 +80,13 @@ CREATE TABLE vehicles (
   INDEX idx_current_branch_id (current_branch_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Motorcycle/vehicle inventory';
 
+-- 4. Bookings Table
 CREATE TABLE bookings (
-  id VARCHAR(36) PRIMARY KEY,
-  user_id INT NOT NULL,
-  vehicle_id INT NOT NULL,
-  pickup_branch_id INT NOT NULL COMMENT 'Branch where vehicle is picked up',
-  return_branch_id INT NOT NULL COMMENT 'Branch where vehicle is returned',
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  user_id VARCHAR(36) NOT NULL,
+  vehicle_id VARCHAR(36) NOT NULL,
+  pickup_branch_id VARCHAR(36) NOT NULL COMMENT 'Branch where vehicle is picked up',
+  return_branch_id VARCHAR(36) NOT NULL COMMENT 'Branch where vehicle is returned',
   start_time DATETIME NOT NULL COMMENT 'Booking start date/time',
   end_time DATETIME NOT NULL COMMENT 'Booking end date/time',
   actual_return_time DATETIME COMMENT 'Actual vehicle return date/time',
@@ -85,9 +107,10 @@ CREATE TABLE bookings (
   INDEX idx_user_vehicle (user_id, vehicle_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Booking/rental records';
 
+-- 5. Payments Table
 CREATE TABLE payments (
-  id VARCHAR(36) PRIMARY KEY,
-  booking_id INT NOT NULL,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  booking_id VARCHAR(36) NOT NULL,
   amount DECIMAL(10,2) NOT NULL COMMENT 'Payment amount in VND',
   type ENUM('deposit', 'rental') NOT NULL COMMENT 'Payment type: deposit or rental',
   payment_method VARCHAR(50) NOT NULL COMMENT 'e.g., credit_card, cash, transfer',
@@ -103,11 +126,12 @@ CREATE TABLE payments (
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Payment transactions';
 
+-- 6. Vehicle Returns Table
 CREATE TABLE vehicle_returns (
-  id VARCHAR(36) PRIMARY KEY,
-  booking_id INT NOT NULL,
-  vehicle_id INT NOT NULL,
-  return_branch_id INT NOT NULL,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  booking_id VARCHAR(36) NOT NULL,
+  vehicle_id VARCHAR(36) NOT NULL,
+  return_branch_id VARCHAR(36) NOT NULL,
   condition_status VARCHAR(50) NOT NULL COMMENT 'Vehicle condition: excellent, good, fair, damaged',
   damage_description TEXT,
   extra_fee DECIMAL(10,2) DEFAULT 0 COMMENT 'Any additional fees (damage, late return)',
@@ -122,17 +146,19 @@ CREATE TABLE vehicle_returns (
   INDEX idx_return_branch (return_branch_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Vehicle return tracking';
 
+-- 7. Conversations Table
 CREATE TABLE conversations (
-  id VARCHAR(36) PRIMARY KEY,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chat conversations';
 
+-- 8. Conversation Members Table
 CREATE TABLE conversation_members (
-  id VARCHAR(36) PRIMARY KEY,
-  conversation_id INT NOT NULL,
-  user_id INT NOT NULL,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  conversation_id VARCHAR(36) NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
   joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   
   FOREIGN KEY fk_cm_conversation (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
@@ -142,10 +168,11 @@ CREATE TABLE conversation_members (
   INDEX idx_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Conversation membership';
 
+-- 9. Messages Table
 CREATE TABLE messages (
-  id VARCHAR(36) PRIMARY KEY,
-  conversation_id INT NOT NULL,
-  sender_id INT NOT NULL,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  conversation_id VARCHAR(36) NOT NULL,
+  sender_id VARCHAR(36) NOT NULL,
   content TEXT NOT NULL,
   is_read BOOLEAN DEFAULT FALSE,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -158,11 +185,12 @@ CREATE TABLE messages (
   INDEX idx_is_read (is_read)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chat messages';
 
+-- 10. Reviews Table
 CREATE TABLE reviews (
-  id VARCHAR(36) PRIMARY KEY,
-  booking_id INT NOT NULL,
-  user_id INT NOT NULL,
-  vehicle_id INT NOT NULL,
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  booking_id VARCHAR(36) NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  vehicle_id VARCHAR(36) NOT NULL,
   rating INT NOT NULL COMMENT 'Rating 1-5 stars',
   comment TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
