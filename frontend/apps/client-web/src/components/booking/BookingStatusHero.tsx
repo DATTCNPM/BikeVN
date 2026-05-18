@@ -1,7 +1,7 @@
 // components/booking/BookingStatusHero.tsx
 
 import { CheckCircle2, Clock3, CircleX, Ban } from "lucide-react";
-import type { Booking } from "@/lib/types";
+import type { Booking } from "@repo/types";
 type Props = {
   status: Booking["status"] | null;
 };

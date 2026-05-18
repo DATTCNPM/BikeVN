@@ -1,6 +1,6 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/ui/card";
 import { Mail, Phone, User2 } from "lucide-react";
-import type { User } from "@/lib/types";
+import type { User } from "@repo/types";
 
 export default function PaymentCustomerCard({
   user,

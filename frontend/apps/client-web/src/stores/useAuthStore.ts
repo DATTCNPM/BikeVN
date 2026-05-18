@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { authApi } from "@/api/authApi";
-import type { User } from "@/lib/types";
-import type { UpdateProfilePayload } from "@/api/authApi";
+import { authApi } from "@repo/api";
+import type { User } from "@repo/types";
+import type { UpdateProfileSchema } from "@repo/schemas";
 
 interface AuthState {
   isLogin: boolean;
@@ -12,12 +12,13 @@ interface AuthState {
   error: string | null;
 
   // Actions
+  ping: () => Promise<void>;
   register: (userData: any) => Promise<boolean>;
   login: (credentials: any) => Promise<boolean>;
   logout: () => Promise<boolean>;
   fetchProfile: () => Promise<void>;
   setError: (msg: string | null) => void;
-  updateProfile: (payload: UpdateProfilePayload) => Promise<boolean>;
+  updateProfile: (payload: UpdateProfileSchema) => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -31,6 +32,17 @@ export const useAuthStore = create<AuthState>()(
       error: null,
 
       // --- Actions ---
+      // Ping
+      ping: async () => {
+        try {
+          const response = await authApi.ping();
+          console.log("Ping response:", response);
+          set({ isServerDown: false });
+        } catch (err) {
+          console.error("Ping failed:", err);
+          set({ isServerDown: true });
+        }
+      },
 
       // 1. Hàm Register (Đã tối ưu phân loại lỗi)
       register: async (userData) => {

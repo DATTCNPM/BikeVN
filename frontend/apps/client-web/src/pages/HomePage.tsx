@@ -2,9 +2,14 @@ import SearchComponent from "@/components/common/Search";
 import Filter from "@/components/common/Filter";
 import ListVehicle from "../components/home/ListVehicle";
 import MapVehicle from "../components/home/MapVehicle";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@repo/ui/components/ui/button";
+import { Separator } from "@repo/ui/components/ui/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@repo/ui/components/ui/tabs";
 import { List, MapPin } from "lucide-react";
 export default function HomePage() {
   const locations = ["Hà Nội", "Hồ Chí Minh", "Đà Nẵng", "Hải Phòng"];

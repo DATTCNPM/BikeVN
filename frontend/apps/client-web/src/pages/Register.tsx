@@ -1,13 +1,13 @@
 import AuthCard from "@/components/auth/AuthCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "@/lib/schema";
-import type { RegisterSchema } from "@/lib/schema";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { registerSchema } from "@repo/schemas";
+import type { RegisterSchema } from "@repo/schemas";
+import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +18,7 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field";
+} from "@repo/ui/components/ui/field";
 
 export default function Register() {
   const navigate = useNavigate();

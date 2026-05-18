@@ -1,54 +1,29 @@
 import ReviewCard from "./ReviewCard";
 import ReviewSummary from "./ReviewSummary";
-import type { Review } from "@/lib/types";
 
-const reviews: Review[] = [
-  {
-    id: 1,
-    booking_id: 12,
-    user_id: 2,
-    vehicle_id: 1,
-    rating: 5,
-    comment:
-      "Xe chạy rất êm, tiết kiệm xăng và giao xe đúng giờ. Chủ shop hỗ trợ cực kỳ nhiệt tình.",
-    created_at: "2026-05-12",
-    user: {
-      name: "Nguyễn Minh",
-      avatar: "https://i.pravatar.cc/150?img=12",
-    },
-  },
-  {
-    id: 2,
-    booking_id: 14,
-    user_id: 4,
-    vehicle_id: 1,
-    rating: 4,
-    comment: "Xe sạch sẽ, dễ lái. Thủ tục thuê nhanh và đơn giản.",
-    created_at: "2026-05-10",
-    user: {
-      name: "Trần Quốc",
-      avatar: "https://i.pravatar.cc/150?img=18",
-    },
-  },
-  {
-    id: 3,
-    booking_id: 19,
-    user_id: 5,
-    vehicle_id: 1,
-    rating: 5,
-    comment: "Phù hợp đi phượt đường dài, máy khỏe và ổn định.",
-    created_at: "2026-05-07",
-    user: {
-      name: "Lê Hoàng",
-      avatar: "https://i.pravatar.cc/150?img=33",
-    },
-  },
-];
+import { useVehicleReviews } from "@repo/hooks";
 
-export default function ReviewSection() {
+type Props = {
+  vehicleId: string;
+};
+
+export default function ReviewSection({ vehicleId }: Props) {
+  const { data: reviews = [], isLoading } = useVehicleReviews(vehicleId);
+
   const averageRating =
-    reviews.reduce((total, review) => total + review.rating, 0) /
-    reviews.length;
+    reviews.length > 0
+      ? reviews.reduce((total, review) => total + review.rating, 0) /
+        reviews.length
+      : 0;
+  console.log("vehicle ID:", vehicleId);
+  console.log("reviews", reviews);
+  if (isLoading) {
+    return (
+      <section className="flex items-center justify-center py-10">
+        <p className="text-muted-foreground">Đang tải đánh giá...</p>
+      </section>
+    );
+  }
 
   return (
     <section className="space-y-8">
@@ -57,11 +32,17 @@ export default function ReviewSection() {
         totalReviews={reviews.length}
       />
 
-      <div className="grid gap-5">
-        {reviews.map((review) => (
-          <ReviewCard key={review.id} review={review} />
-        ))}
-      </div>
+      {reviews.length === 0 ? (
+        <div className="rounded-xl border p-6 text-center">
+          <p className="text-muted-foreground">Chưa có đánh giá nào</p>
+        </div>
+      ) : (
+        <div className="grid gap-5">
+          {reviews.map((review) => (
+            <ReviewCard key={review.id} review={review} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

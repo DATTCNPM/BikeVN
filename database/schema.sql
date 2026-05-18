@@ -1,7 +1,39 @@
+CREATE DATABASE bikevn_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE bikevn_db;
 
-CREATE TABLE vehicles (
+CREATE TABLE users (
   id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  cccd_number VARCHAR(20) NOT NULL COMMENT 'National ID number for identity verification',
+  role ENUM('user', 'employee', 'admin') DEFAULT 'user',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  UNIQUE KEY unique_email (email),
+  UNIQUE KEY unique_cccd (cccd_number),
+  INDEX idx_role (role),
+  INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User accounts and authentication';
+
+CREATE TABLE branches (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  lat DECIMAL(10,8) NOT NULL COMMENT 'Latitude coordinate',
+  lng DECIMAL(11,8) NOT NULL COMMENT 'Longitude coordinate',
+  status ENUM('active', 'inactive') DEFAULT 'active',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  INDEX idx_status (status),
+  INDEX idx_location (lat, lng)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Rental branch locations';
+
+CREATE TABLE vehicles (
+  id VARCHAR(36) PRIMARY KEY,
   name VARCHAR(100) NOT NULL COMMENT 'Vehicle model/name',
   brand VARCHAR(100) NOT NULL,
   model VARCHAR(100) NOT NULL,
@@ -28,7 +60,7 @@ CREATE TABLE vehicles (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Motorcycle/vehicle inventory';
 
 CREATE TABLE bookings (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
   user_id INT NOT NULL,
   vehicle_id INT NOT NULL,
   pickup_branch_id INT NOT NULL COMMENT 'Branch where vehicle is picked up',
@@ -54,7 +86,7 @@ CREATE TABLE bookings (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Booking/rental records';
 
 CREATE TABLE payments (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
   booking_id INT NOT NULL,
   amount DECIMAL(10,2) NOT NULL COMMENT 'Payment amount in VND',
   type ENUM('deposit', 'rental') NOT NULL COMMENT 'Payment type: deposit or rental',
@@ -72,7 +104,7 @@ CREATE TABLE payments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Payment transactions';
 
 CREATE TABLE vehicle_returns (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
   booking_id INT NOT NULL,
   vehicle_id INT NOT NULL,
   return_branch_id INT NOT NULL,
@@ -91,14 +123,14 @@ CREATE TABLE vehicle_returns (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Vehicle return tracking';
 
 CREATE TABLE conversations (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chat conversations';
 
 CREATE TABLE conversation_members (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
   conversation_id INT NOT NULL,
   user_id INT NOT NULL,
   joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -111,7 +143,7 @@ CREATE TABLE conversation_members (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Conversation membership';
 
 CREATE TABLE messages (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
   conversation_id INT NOT NULL,
   sender_id INT NOT NULL,
   content TEXT NOT NULL,
@@ -127,7 +159,7 @@ CREATE TABLE messages (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chat messages';
 
 CREATE TABLE reviews (
-  id INT PRIMARY KEY AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
   booking_id INT NOT NULL,
   user_id INT NOT NULL,
   vehicle_id INT NOT NULL,

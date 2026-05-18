@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -7,38 +7,17 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 
-import { Badge } from "@/components/ui/badge";
+import VehicleCreate from "@/components/vehicle/VehicleCreate";
+import VehicleDelete from "@/components/vehicle/VehicleDelete";
+import VehicleEdit from "@/components/vehicle/VehicleEdit";
 
-type VehicleStatus = "available" | "unavailable" | "maintenance";
+import { Badge } from "@repo/ui/components/ui/badge";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+import { toast } from "@repo/ui/components/ui/sonner";
 
-type Vehicle = {
-  id: number;
-  name: string;
-  vehicle_type: string;
-  price: number;
-  status: VehicleStatus;
-  current_branch_id: number;
-};
-
-const vehicles: Vehicle[] = [
-  {
-    id: 1,
-    name: "Honda Vision",
-    vehicle_type: "Scooter",
-    price: 150000,
-    status: "available",
-    current_branch_id: 1,
-  },
-
-  {
-    id: 2,
-    name: "Yamaha Exciter",
-    vehicle_type: "Manual",
-    price: 250000,
-    status: "maintenance",
-    current_branch_id: 2,
-  },
-];
+import { type Vehicle } from "@repo/types";
+import { useVehicles } from "@repo/hooks";
+import VehicleInfoDropdown from "@/components/vehicle/VehicleInfoDropdown";
 
 const vehicleStatusMap = {
   available:
@@ -57,32 +36,75 @@ const vehicleStatusLabel = {
 };
 
 export default function VehicleManagementPage() {
+  const { data: vehicles = [], isLoading, error } = useVehicles();
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+
   const [search, setSearch] = useState("");
+  useEffect(() => {
+    if (error) {
+      toast.error("Không thể tải danh sách xe");
+    }
+  }, [error]);
 
   const columns = useMemo<ColumnDef<Vehicle>[]>(
     () => [
       {
         accessorKey: "name",
-        header: "Tên xe",
+        header: "Xe",
+
+        cell: ({ row }) => {
+          const vehicle = row.original;
+
+          return (
+            <div className="flex items-center gap-3">
+              <img
+                src={vehicle.image_url[0]}
+                alt={vehicle.name}
+                className="h-14 w-20 rounded-md object-cover"
+              />
+
+              <div className="min-w-0">
+                <p className="truncate font-medium">{vehicle.name}</p>
+
+                <p className="text-muted-foreground text-sm">
+                  {vehicle.license_plate}
+                </p>
+              </div>
+            </div>
+          );
+        },
       },
 
       {
-        accessorKey: "vehicle_type",
-        header: "Loại xe",
+        accessorKey: "brand",
+        header: "Hãng",
+
+        cell: ({ row }) => (
+          <div>
+            <p className="font-medium">{row.original.brand}</p>
+
+            <p className="text-muted-foreground text-sm">
+              {row.original.model}
+            </p>
+          </div>
+        ),
       },
 
       {
         accessorKey: "price",
         header: "Giá thuê",
 
-        cell: ({ row }) => `${row.original.price.toLocaleString()}đ`,
+        cell: ({ row }) => `${row.original.price_per_day.toLocaleString()}đ`,
       },
 
       {
         accessorKey: "current_branch_id",
         header: "Chi nhánh",
 
-        cell: ({ row }) => `Chi nhánh #${row.original.current_branch_id}`,
+        cell: ({ row }) => <span>CN #{row.original.current_branch_id}</span>,
       },
 
       {
@@ -95,15 +117,27 @@ export default function VehicleManagementPage() {
           </Badge>
         ),
       },
+      {
+        id: "info",
+        header: "",
+
+        cell: ({ row }) => <VehicleInfoDropdown vehicle={row.original} />,
+      },
 
       {
         id: "actions",
         header: "",
 
-        cell: () => (
+        cell: ({ row }) => (
           <TableActionDropdown
-            onEdit={() => console.log("edit")}
-            onDelete={() => console.log("delete")}
+            onEdit={() => {
+              setSelectedVehicle(row.original);
+              setOpenEditDialog(true);
+            }}
+            onDelete={() => {
+              setSelectedVehicle(row.original);
+              setOpenDeleteDialog(true);
+            }}
           />
         ),
       },
@@ -111,12 +145,20 @@ export default function VehicleManagementPage() {
     [],
   );
 
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <div>
       <DataTableToolbar
         search={search}
         onSearchChange={setSearch}
-        onCreate={() => console.log("create")}
+        onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
       <DataTable columns={columns} data={vehicles} />
@@ -125,6 +167,21 @@ export default function VehicleManagementPage() {
         page={1}
         totalPages={10}
         onPageChange={(page) => console.log(page)}
+      />
+      {/* Dialogs */}
+      <VehicleCreate
+        open={openCreateDialog}
+        onOpenChange={setOpenCreateDialog}
+      />
+      <VehicleEdit
+        open={openEditDialog}
+        onOpenChange={setOpenEditDialog}
+        vehicle={selectedVehicle}
+      />
+      <VehicleDelete
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+        vehicle={selectedVehicle}
       />
     </div>
   );

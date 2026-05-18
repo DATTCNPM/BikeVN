@@ -1,4 +1,4 @@
-import type { Booking } from "@/lib/types";
+import type { Booking } from "@repo/types";
 
 export const booking: Booking[] = [
   {

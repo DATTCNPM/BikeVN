@@ -1,6 +1,6 @@
 // components/booking/BookingActions.tsx
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/components/ui/button";
 import { ArrowRight, Bike, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

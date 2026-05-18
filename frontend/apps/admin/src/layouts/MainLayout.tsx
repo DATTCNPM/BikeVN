@@ -4,7 +4,10 @@ import AppFooter from "@/layouts/Footer";
 import AppHeader from "@/layouts/Header";
 import AppSidebar from "@/layouts/Sidebar";
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from "@repo/ui/components/ui/sidebar";
 
 export default function MainLayout() {
   return (

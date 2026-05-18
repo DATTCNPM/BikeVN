@@ -1,11 +1,10 @@
 import { useState } from "react";
 import CardProduct from "@/components/common/CardProduct";
 import Map from "@/components/map/Map";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
-
-import { useVehicleStore } from "@/stores/useVehicleStore";
-import { useBranchStore } from "@/stores/useBranchStore";
+import { useVehicles } from "@repo/hooks";
+import { useBranches } from "@repo/hooks";
 
 import { useEffect, useMemo } from "react";
 
@@ -14,18 +13,29 @@ export default function MapVehicle() {
     undefined,
   );
 
-  const { vehicles, fetchVehicles, loading, error } = useVehicleStore();
+  const { data: vehicles = [], isLoading, error } = useVehicles();
   const {
-    branches,
-    fetchBranches,
-    loading: branchLoading,
+    data: branches = [],
+    isLoading: branchLoading,
     error: branchError,
-  } = useBranchStore();
+  } = useBranches();
 
   useEffect(() => {
-    fetchVehicles();
-    fetchBranches();
-  }, [fetchVehicles, fetchBranches]);
+    if (error) {
+      toast.error("Failed to load vehicles. Please try again.");
+    }
+
+    if (branchError) {
+      toast.error("Failed to load branches. Please try again.");
+    }
+  }, [error, branchError]);
+  if (isLoading || branchLoading) {
+    return (
+      <div className="w-full flex items-center justify-center h-[300px]">
+        <Spinner />
+      </div>
+    );
+  }
 
   const selectedBranchData = branches.find((b) => b.id === selectedBranch);
 
@@ -47,16 +57,6 @@ export default function MapVehicle() {
     ? vehicleListData.filter((v) => v.location === selectedBranchData?.name)
     : null;
 
-  if (loading || branchLoading) {
-    return (
-      <div className="w-full flex items-center justify-center h-[300px]">
-        <Spinner />
-      </div>
-    );
-  }
-  if (error || branchError) {
-    toast.error(error || branchError);
-  }
   return (
     <div className="w-full grid grid-cols-12 h-[500px] ">
       <div className="col-span-4 bg-muted p-6 overflow-y-auto">

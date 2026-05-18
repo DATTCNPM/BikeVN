@@ -1,26 +1,38 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/ui/card";
 import { CalendarDays, MapPinned } from "lucide-react";
-import type { Booking } from "@/lib/types";
-import { useBranchStore } from "@/stores/useBranchStore";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+import { toast } from "sonner";
+import type { Booking } from "@repo/types";
+import { useBranches } from "@repo/hooks";
 
 import { useEffect } from "react";
 
 type Props = {
-  booking: Booking;
+  booking: Booking | null;
 };
 
 export default function PaymentBookingCard({ booking }: Props) {
-  const { branches, fetchBranches } = useBranchStore();
+  const { data: branches, isLoading, error } = useBranches();
 
   useEffect(() => {
-    fetchBranches();
-  }, [fetchBranches]);
+    if (error) {
+      toast.error("Failed to load branches. Please try again.");
+    }
+  }, [error]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   const nameBranchesPickup =
-    branches.find((branch) => branch.id === booking.pickup_branch_id)?.name ||
+    branches?.find((branch) => branch.id === booking?.pickup_branch_id)?.name ||
     "Unknown Branch";
   const nameBranchesReturn =
-    branches.find((branch) => branch.id === booking.return_branch_id)?.name ||
+    branches?.find((branch) => branch.id === booking?.return_branch_id)?.name ||
     "Unknown Branch";
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
@@ -40,13 +52,13 @@ export default function PaymentBookingCard({ booking }: Props) {
           </div>
 
           <div className="mt-4 space-y-2">
-            <p className="font-semibold">Start: {booking.start_date}</p>
+            <p className="font-semibold">Start: {booking?.start_date}</p>
 
-            <p className="font-semibold">End: {booking.end_date}</p>
+            <p className="font-semibold">End: {booking?.end_date}</p>
 
             <p className="text-muted-foreground">
               Total Days:{" "}
-              {booking.start_date && booking.end_date
+              {booking?.start_date && booking?.end_date
                 ? Math.ceil(
                     (new Date(booking.end_date).getTime() -
                       new Date(booking.start_date).getTime()) /

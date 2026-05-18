@@ -1,7 +1,7 @@
 import Logo from "@/assets/icons/Logo_yellow.svg";
 import { Bell, Home, MessageCircle, CircleUserRound } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@repo/ui/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 import { useAuthStore } from "@/stores/useAuthStore";

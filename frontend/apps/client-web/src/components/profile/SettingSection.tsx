@@ -5,24 +5,24 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
+} from "@repo/ui/components/ui/card";
 import {
   Field,
   FieldContent,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+} from "@repo/ui/components/ui/field";
+import { Label } from "@repo/ui/components/ui/label";
+import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
+import { Switch } from "@repo/ui/components/ui/switch";
 import { Moon, Sun, Lock, Trash2 } from "lucide-react";
 import AlertDialog from "@/components/common/AlertDialog";
 import { toast } from "sonner";
 
-import { updatePasswordSchema } from "@/lib/schema";
-import type { UpdatePasswordSchema } from "@/lib/schema";
+import { updatePasswordSchema } from "@repo/schemas";
+import type { UpdatePasswordSchema } from "@repo/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTheme } from "next-themes";

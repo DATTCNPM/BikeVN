@@ -1,15 +1,17 @@
-import type { Message } from "@/pages/ChatPage";
+import type { message } from "@repo/types";
 
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/ui/card";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@repo/ui/lib/utils";
 
 type Props = {
-  message: Message;
+  message: message;
   isCurrentUser: boolean;
 };
 
 export default function MessageItem({ message, isCurrentUser }: Props) {
+  console.log("message send Id", message.senderId);
+  console.log("isCurrentUser", isCurrentUser);
   return (
     <div
       className={cn("flex", isCurrentUser ? "justify-end" : "justify-start")}

@@ -1,8 +1,8 @@
 // components/booking/BookingVehicleCard.tsx
 
 import { CalendarDays, MapPin } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import type { Vehicle, Booking, Branch } from "@/lib/types";
+import { Card } from "@repo/ui/components/ui/card";
+import type { Vehicle, Booking, Branch } from "@repo/types";
 
 type Props = {
   booking: Booking | null;

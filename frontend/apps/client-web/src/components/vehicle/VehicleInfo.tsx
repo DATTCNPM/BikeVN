@@ -1,6 +1,6 @@
 import VehicleGallery from "@/components/vehicle/VehicleGallery";
-import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@repo/ui/components/ui/badge";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import {
   MapPin,
@@ -14,34 +14,41 @@ import {
   Hash,
   Banknote,
 } from "lucide-react";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@repo/utils";
 
 import Map from "@/components/map/Map";
 import ReviewSection from "@/components/vehicle/review/ReviewSection";
 
-import { useBranchStore } from "@/stores/useBranchStore";
-import { useVehicleStore } from "@/stores/useVehicleStore";
 import { useEffect, useMemo } from "react";
+import { useBranches } from "@repo/hooks";
+import { useVehicle } from "@repo/hooks";
 
 export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
-  const { branches, fetchBranches, loading, error } = useBranchStore();
+  const {
+    data: branches = [],
+    isLoading: branchLoading,
+    error: branchError,
+  } = useBranches();
 
   const {
-    selectedVehicle,
-    fetchVehicleById,
-    loading: vehicleLoading,
+    data: selectedVehicle = null,
+    isLoading: vehicleLoading,
     error: vehicleError,
-  } = useVehicleStore();
+  } = useVehicle(vehicleId);
 
   useEffect(() => {
-    fetchBranches();
-    fetchVehicleById(vehicleId);
-  }, [fetchBranches, fetchVehicleById, vehicleId]);
+    if (branchError) {
+      toast.error("Branch not found");
+    }
+    if (vehicleError) {
+      toast.error("Vehicle not found");
+    }
+  }, [branchError, vehicleError]);
 
   const vehicleData = useMemo(() => {
     return {
       ...selectedVehicle,
-      locationName: branches.find(
+      locationName: branches?.find(
         (branch) => branch.id === selectedVehicle?.current_branch_id,
       )?.name,
     };
@@ -50,6 +57,14 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   const locationVehicle = useMemo(() => {
     return branches.find((b) => b.id === selectedVehicle?.current_branch_id);
   }, [selectedVehicle, branches]);
+
+  if (branchLoading || vehicleLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Spinner />
+      </div>
+    );
+  }
 
   const statusMap = {
     available: {
@@ -72,22 +87,6 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
     electric: "Electric",
     hybrid: "Hybrid",
   };
-
-  if (loading || vehicleLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (error || vehicleError) {
-    toast.error("Failed to load data. Please try again.");
-    return null;
-  }
-
-  if (!vehicleData) return null;
-
   return (
     <>
       <VehicleGallery images={vehicleData.image_url || []} />
@@ -252,7 +251,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
       </div>
 
       <div className="mt-8">
-        <ReviewSection />
+        <ReviewSection vehicleId={vehicleData.id || "1"} />
       </div>
     </>
   );

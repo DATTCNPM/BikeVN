@@ -1,25 +1,37 @@
-import type { Message } from "@/pages/ChatPage";
+import type { message } from "@repo/types";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import MessageItem from "./MessageItem";
 
 type Props = {
-  messages: Message[];
-  currentUserId: number;
+  loading: boolean;
+  messages: message[];
+  currentUserId: string;
 };
 
-export default function MessageList({ messages, currentUserId }: Props) {
+export default function MessageList({
+  loading,
+  messages,
+  currentUserId,
+}: Props) {
   return (
     <ScrollArea className="h-[calc(100vh-14rem)] w-full bg-muted/30">
       <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4">
-        {messages.map((message) => (
-          <MessageItem
-            key={message.id}
-            message={message}
-            isCurrentUser={message.senderId === currentUserId}
-          />
-        ))}
+        {loading ? (
+          <div className="flex justify-center p-4">
+            <Spinner />
+          </div>
+        ) : (
+          messages.map((message) => (
+            <MessageItem
+              key={message.id}
+              message={message}
+              isCurrentUser={message.senderId === currentUserId}
+            />
+          ))
+        )}
       </div>
     </ScrollArea>
   );

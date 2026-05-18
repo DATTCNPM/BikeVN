@@ -1,10 +1,10 @@
 import AuthCard from "@/components/auth/AuthCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/lib/schema";
-import type { LoginSchema } from "@/lib/schema";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { loginSchema } from "@repo/schemas";
+import type { LoginSchema } from "@repo/schemas";
+import { Input } from "@repo/ui/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import {
@@ -13,8 +13,8 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field";
-import { Spinner } from "@/components/ui/spinner";
+} from "@repo/ui/components/ui/field";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
 

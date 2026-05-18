@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,9 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
+} from "@repo/ui/components/ui/dialog";
+import { Separator } from "@repo/ui/components/ui/separator";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 type FormDialogProps = {
   trigger: React.ReactNode;

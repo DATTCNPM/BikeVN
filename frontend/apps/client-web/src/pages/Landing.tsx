@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import Vehicle from "@/components/landing/Vehicle";
 import Hero from "@/components/landing/Hero";
@@ -37,7 +37,7 @@ export default function Landing() {
         </Link>
 
         <nav>
-          <ul className="flex items-center space-x-6 text-secondary">
+          <ul className="flex items-center space-x-6 text-white/80">
             <Button variant="link" size="lg" asChild>
               <a href="/">Trang chủ</a>
             </Button>
@@ -106,7 +106,7 @@ export default function Landing() {
 
           {/* Navigation */}
           <div className="space-y-4">
-            <h3 className="text-secondary font-semibold">Điều hướng</h3>
+            <h3 className="text-sm font-semibold">Điều hướng</h3>
 
             <ul className="space-y-4">
               {navigation.map((item) => (
@@ -128,7 +128,7 @@ export default function Landing() {
 
           {/* Support */}
           <div className="space-y-4">
-            <h3 className="text-secondary font-semibold">Hỗ trợ</h3>
+            <h3 className="text-sm  font-semibold">Hỗ trợ</h3>
 
             <ul className="space-y-4">
               {support.map((item) => (
@@ -136,7 +136,7 @@ export default function Landing() {
                   <a
                     href="#"
                     className="
-                  text-muted-foreground
+                  text-white/80
                   hover:text-primary
                   transition-colors duration-300
                 "
@@ -152,7 +152,7 @@ export default function Landing() {
           <div className="space-y-4">
             <h3 className="text-secondary font-semibold">Liên hệ</h3>
 
-            <div className="space-y-5 text-muted-foreground">
+            <div className="space-y-5 text-white/80">
               {contact.map((item) => (
                 <div key={item.type} className="flex items-center gap-2">
                   {item.icon}
@@ -165,11 +165,11 @@ export default function Landing() {
 
         {/* Bottom */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-8">
-          <p className="text-muted-foreground text-sm text-center md:text-left">
+          <p className="text-white/80 text-sm text-center md:text-left">
             © 2026 BikeVN. All rights reserved.
           </p>
 
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <div className="flex items-center gap-6 text-sm text-white/80">
             <a
               href="#"
               className="hover:text-muted transition-colors duration-300"

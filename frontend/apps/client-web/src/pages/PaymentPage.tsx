@@ -5,31 +5,45 @@ import PaymentMethodCard from "@/components/payment/PaymentMethodCard";
 import PaymentPolicyCard from "@/components/payment/PaymentPolicyCard";
 import PaymentSummaryCard from "@/components/payment/PaymentSummaryCard";
 import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
-
-import { booking } from "@/constants/BookingSample";
-import { paymentMethods } from "@/constants/PaymentSample";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+import { toast } from "sonner";
 
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useVehicleStore } from "@/stores/useVehicleStore";
+import { useBooking } from "@repo/hooks";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useVehicle } from "@repo/hooks";
+import { useParams } from "react-router-dom";
+import type { PaymentMethod } from "node_modules/@repo/types/src/payment";
 
 export default function PaymentPage() {
   const { userProfile } = useAuthStore();
-  const { vehicles, fetchVehicles } = useVehicleStore();
+  const { id } = useParams();
+  const { data: booking = null, isLoading, error } = useBooking(id!);
+  const {
+    data: vehicle = null,
+    isLoading: vehicleLoading,
+    error: vehicleError,
+  } = useVehicle(booking?.vehicle_id || "");
+
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("vnpay");
+
   useEffect(() => {
-    fetchVehicles();
-  }, [fetchVehicles]);
+    if (error) {
+      toast.error("Failed to load booking details. Please try again.");
+    }
+    if (vehicleError) {
+      toast.error("Failed to load vehicle details. Please try again.");
+    }
+  }, [error]);
 
-  const bookingData = booking[0]; // Lấy booking đầu tiên làm ví dụ
-  const vehicleData = vehicles.find((v) => v.id === bookingData.vehicle_id);
-
-  const dataPayment = {
-    booking: bookingData,
-    vehicle: vehicleData ? vehicleData : undefined,
-    user: userProfile ? userProfile : undefined,
-    paymentMethod: paymentMethods[0], // Lấy phương thức thanh toán đầu tiên làm ví dụ
-  };
+  if (isLoading || vehicleLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background pb-20">
@@ -38,21 +52,24 @@ export default function PaymentPage() {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_420px]">
           <div className="space-y-6">
-            <PaymentCustomerCard user={dataPayment.user} />
+            <PaymentCustomerCard user={userProfile} />
 
-            <PaymentVehicleCard vehicle={dataPayment.vehicle} />
+            <PaymentVehicleCard vehicle={vehicle || null} />
 
-            <PaymentBookingCard booking={dataPayment.booking} />
+            <PaymentBookingCard booking={booking || null} />
 
-            <PaymentMethodCard />
+            <PaymentMethodCard
+              selectedMethod={selectedMethod}
+              onMethodSelect={setSelectedMethod}
+            />
 
             <PaymentPolicyCard />
           </div>
 
           <div>
             <PaymentSummaryCard
-              booking={dataPayment.booking}
-              paymentMethod={dataPayment.paymentMethod}
+              booking={booking || null}
+              selectedMethod={selectedMethod}
             />
           </div>
         </div>

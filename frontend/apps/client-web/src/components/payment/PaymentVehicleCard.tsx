@@ -1,18 +1,30 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@repo/ui/components/ui/card";
 import { Fuel, MapPin, Settings2 } from "lucide-react";
-import type { Vehicle } from "@/lib/types";
-import { useBranchStore } from "@/stores/useBranchStore";
+import type { Vehicle } from "@repo/types";
+import { useBranches } from "@repo/hooks";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+import { toast } from "sonner";
 
 import { useEffect } from "react";
 export default function PaymentVehicleCard({
   vehicle,
 }: {
-  vehicle: Vehicle | undefined;
+  vehicle: Vehicle | null;
 }) {
-  const { branches, fetchBranches } = useBranchStore();
+  const { data: branches = [], isLoading, error } = useBranches();
   useEffect(() => {
-    fetchBranches();
-  }, [fetchBranches]);
+    if (error) {
+      toast.error("Failed to load branches. Please try again.");
+    }
+  }, [error]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   const nameBranches =
     branches.find((branch) => branch.id === vehicle?.current_branch_id)?.name ||

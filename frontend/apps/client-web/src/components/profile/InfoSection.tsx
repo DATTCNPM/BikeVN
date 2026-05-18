@@ -5,8 +5,8 @@ import {
   CardTitle,
   CardDescription,
   CardAction,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "@repo/ui/components/ui/card";
+import { Badge } from "@repo/ui/components/ui/badge";
 import {
   User,
   Mail,
@@ -17,7 +17,7 @@ import {
   Edit2,
   Car,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/ui/components/ui/button";
 import UpdateProfile from "@/components/profile/UpdateProfile";
 import { useAuthStore } from "@/stores/useAuthStore";
 

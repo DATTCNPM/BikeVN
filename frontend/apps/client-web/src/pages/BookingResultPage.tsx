@@ -7,73 +7,74 @@ import BookingStatusHero from "@/components/booking/BookingStatusHero";
 import BookingTimeline from "@/components/booking/BookingTimeline";
 import BookingVehicleCard from "@/components/booking/BookingVehicleCard";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
-
-import { useBookingStore } from "@/stores/useBookingStore";
-import { useVehicleStore } from "@/stores/useVehicleStore";
-import { useBranchStore } from "@/stores/useBranchStore";
-
 import { useEffect } from "react";
+
+import { useBooking } from "@repo/hooks";
+import { useVehicle } from "@repo/hooks";
+import { useBranches } from "@repo/hooks";
 
 export default function BookingResultPage() {
   const { id } = useParams();
-  const { selectedVehicle, fetchVehicleById } = useVehicleStore();
-  const { branches, fetchBranches } = useBranchStore();
-  const { selectedBooking, fetchBookingById } = useBookingStore();
+  const { data: booking, isLoading, error } = useBooking(id!);
+  const {
+    data: vehicle,
+    isLoading: vehicleLoading,
+    error: vehicleError,
+  } = useVehicle(booking?.vehicle_id || "");
+  const {
+    data: branches = [],
+    isLoading: branchesLoading,
+    error: branchesError,
+  } = useBranches();
 
   useEffect(() => {
-    fetchVehicleById(selectedBooking?.vehicle_id || "");
-    fetchBranches();
-    fetchBookingById(id || "");
-  }, [
-    fetchVehicleById,
-    fetchBranches,
-    fetchBookingById,
-    id,
-    selectedBooking?.vehicle_id,
-  ]);
+    if (error) {
+      toast.error("Failed to load booking details. Please try again.");
+    }
 
-  console.log("Selected Booking:", selectedBooking);
-  console.log("Selected Vehicle:", selectedVehicle);
+    if (vehicleError) {
+      toast.error("Failed to load vehicle details. Please try again.");
+    }
+
+    if (branchesError) {
+      toast.error("Failed to load branches details. Please try again.");
+    }
+  }, [error, vehicleError, branchesError]);
+  if (isLoading || vehicleLoading || branchesLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  console.log("Selected Booking:", booking);
+  console.log("Selected Vehicle:", vehicle);
   console.log("Branches:", branches);
 
   // Tên chi nhánh lấy từ selectedBooking.pickup_branch_id và selectedBooking.return_branch_id
-  const pickupBranch = branches.find(
-    (b) => b.id === selectedBooking?.pickup_branch_id,
-  );
-  const returnBranch = branches.find(
-    (b) => b.id === selectedBooking?.return_branch_id,
-  );
+  const pickupBranch = branches.find((b) => b.id === booking?.pickup_branch_id);
+  const returnBranch = branches.find((b) => b.id === booking?.return_branch_id);
 
-  // if (loading || branchesLoading || bookingsLoading) {
-  //   return (
-  //     <div className="flex h-screen items-center justify-center">
-  //       <Spinner />
-  //     </div>
-  //   );
-  // }
-  // if (error || branchesError || bookingsError) {
-  //   toast.error("Failed to load booking details. Please try again.");
-  //   return null;
-  // }
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto max-w-5xl space-y-8 px-4 py-10">
-        <BookingStatusHero status={selectedBooking?.status || null} />
+        <BookingStatusHero status={booking?.status || null} />
 
         <BookingVehicleCard
-          booking={selectedBooking}
-          vehicle={selectedVehicle}
+          booking={booking}
+          vehicle={vehicle}
           pickupBranch={pickupBranch}
           returnBranch={returnBranch}
         />
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6">
-            <BookingInfoCard booking={selectedBooking} />
+            <BookingInfoCard booking={booking} />
 
-            <BookingTimeline status={selectedBooking?.status || null} />
+            <BookingTimeline status={booking?.status || null} />
           </div>
 
           <BookingActions />

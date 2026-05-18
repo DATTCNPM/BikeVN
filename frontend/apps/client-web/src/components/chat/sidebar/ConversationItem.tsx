@@ -1,11 +1,11 @@
-import type { Conversation } from "@/pages/ChatPage";
+import type { conversation } from "@repo/types";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@repo/ui/lib/utils";
 
 type Props = {
-  conversation: Conversation;
+  conversation: conversation;
   isActive: boolean;
   onClick: () => void;
 };

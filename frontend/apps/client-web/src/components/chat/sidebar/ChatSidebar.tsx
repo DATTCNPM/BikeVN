@@ -1,15 +1,18 @@
 import { Search, Users } from "lucide-react";
-import type { Conversation } from "@/pages/ChatPage";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import type { conversation } from "@repo/types";
+import { Button } from "@repo/ui/components/ui/button";
+import { Input } from "@repo/ui/components/ui/input";
+import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import ConversationItem from "./ConversationItem";
 type Props = {
-  conversations: Conversation[];
-  selectedConversationId: number;
-  onSelectConversation: (id: number) => void;
+  loading: boolean;
+  conversations: conversation[];
+  selectedConversationId: string | null;
+  onSelectConversation: (id: string) => void;
 };
 export default function ChatSidebar({
+  loading,
   conversations,
   selectedConversationId,
   onSelectConversation,
@@ -47,14 +50,21 @@ export default function ChatSidebar({
         {" "}
         <div className="space-y-2 p-3">
           {" "}
-          {conversations.map((conversation) => (
-            <ConversationItem
-              key={conversation.id}
-              conversation={conversation}
-              isActive={conversation.id === selectedConversationId}
-              onClick={() => onSelectConversation(conversation.id)}
-            />
-          ))}{" "}
+          {loading ? (
+            <div className="flex items-center justify-center p-4">
+              <Spinner />
+              <p className="ml-2">Đang tải...</p>
+            </div>
+          ) : (
+            conversations.map((conversation) => (
+              <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                isActive={conversation.id === selectedConversationId}
+                onClick={() => onSelectConversation(conversation.id)}
+              />
+            ))
+          )}{" "}
         </div>{" "}
       </ScrollArea>{" "}
     </aside>

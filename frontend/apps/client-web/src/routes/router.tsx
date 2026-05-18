@@ -14,6 +14,7 @@ import ChatLayout from "@/layouts/ChatLayout";
 import BookingResultPage from "@/pages/BookingResultPage";
 import MyBookingSection from "@/components/profile/MyBookingSection";
 import PaymentPage from "@/pages/PaymentPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 

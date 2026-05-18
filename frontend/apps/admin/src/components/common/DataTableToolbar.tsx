@@ -1,19 +1,19 @@
 import { Plus, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@repo/ui/components/ui/button";
+import { Input } from "@repo/ui/components/ui/input";
 
 type Props = {
   search: string;
   onSearchChange: (value: string) => void;
-  onCreate?: () => void;
+  onCreateOpen?: () => void;
   children?: React.ReactNode;
 };
 
 export default function DataTableToolbar({
   search,
   onSearchChange,
-  onCreate,
+  onCreateOpen,
   children,
 }: Props) {
   return (
@@ -34,7 +34,7 @@ export default function DataTableToolbar({
       </div>
 
       <Button
-        onClick={onCreate}
+        onClick={onCreateOpen}
         className="h-12 rounded-2xl px-5 font-semibold"
       >
         <Plus className="mr-2 size-5" />
