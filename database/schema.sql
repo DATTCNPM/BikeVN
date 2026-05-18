@@ -1,52 +1,30 @@
-CREATE DATABASE bikevn_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE bikevn_db;
-
-CREATE TABLE users (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  phone VARCHAR(20) NOT NULL,
-  cccd_number VARCHAR(20) NOT NULL COMMENT 'National ID number for identity verification',
-  role ENUM('user', 'employee', 'admin') DEFAULT 'user',
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  UNIQUE KEY unique_email (email),
-  UNIQUE KEY unique_cccd (cccd_number),
-  INDEX idx_role (role),
-  INDEX idx_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User accounts and authentication';
-
-CREATE TABLE branches (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(100) NOT NULL,
-  address VARCHAR(255) NOT NULL,
-  lat DECIMAL(10,8) NOT NULL COMMENT 'Latitude coordinate',
-  lng DECIMAL(11,8) NOT NULL COMMENT 'Longitude coordinate',
-  status ENUM('active', 'inactive') DEFAULT 'active',
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  INDEX idx_status (status),
-  INDEX idx_location (lat, lng)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Rental branch locations';
 
 CREATE TABLE vehicles (
   id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL COMMENT 'Vehicle model/name',
-  vehicle_type VARCHAR(50) NOT NULL COMMENT 'Type: scooter, sport, cruiser, etc',
-  price DECIMAL(10,2) NOT NULL COMMENT 'Price per day in VND',
+  brand VARCHAR(100) NOT NULL,
+  model VARCHAR(100) NOT NULL,
+  license_plate VARCHAR(20) NOT NULL UNIQUE,
+  color VARCHAR(50) NOT NULL,
+  year INT NOT NULL,
+  price_per_day DECIMAL(10,2) NOT NULL COMMENT 'Price per day in VND',
+  engine_capacity INT NOT NULL COMMENT 'Engine capacity in cc',
+  vehicle_type ENUM('fuel', 'electric') NOT NULL COMMENT 'Fuel type: fuel or electric',
+  mileage INT DEFAULT 0 COMMENT 'Current mileage in km',
+  image_url JSON COMMENT 'Array of image URLs',
+  description TEXT,
   status ENUM('available', 'unavailable', 'maintenance') DEFAULT 'available',
   current_branch_id INT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   FOREIGN KEY fk_vehicle_branch (current_branch_id) REFERENCES branches(id) ON DELETE RESTRICT,
+  UNIQUE KEY unique_license_plate (license_plate),
   INDEX idx_status (status),
+  INDEX idx_price_per_day (price_per_day),
   INDEX idx_vehicle_type (vehicle_type),
-  INDEX idx_branch (current_branch_id)
-  
+  INDEX idx_current_branch_id (current_branch_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Motorcycle/vehicle inventory';
 
 CREATE TABLE bookings (
@@ -148,7 +126,6 @@ CREATE TABLE messages (
   INDEX idx_is_read (is_read)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chat messages';
 
-
 CREATE TABLE reviews (
   id INT PRIMARY KEY AUTO_INCREMENT,
   booking_id INT NOT NULL,
@@ -168,6 +145,3 @@ CREATE TABLE reviews (
   
   CONSTRAINT check_rating CHECK (rating >= 1 AND rating <= 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Customer reviews and ratings';
-
-
-
