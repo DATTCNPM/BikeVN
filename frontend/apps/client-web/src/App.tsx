@@ -11,9 +11,11 @@ import { useEffect } from "react";
 
 export default function App() {
   const fetchProfile = useAuthStore((state) => state.fetchProfile);
+  const ping = useAuthStore((state) => state.ping);
 
   useEffect(() => {
     fetchProfile();
+    ping();
   }, []);
   return (
     <ThemeProvider

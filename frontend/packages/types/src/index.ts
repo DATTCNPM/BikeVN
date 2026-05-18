@@ -5,3 +5,4 @@ export * from "./user";
 export * from "./review";
 export * from "./branch";
 export * from "./dashboard";
+export * from "./message";

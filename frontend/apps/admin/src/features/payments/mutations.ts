@@ -13,9 +13,9 @@ export function useUpdatePayment() {
       id: string;
       payload: CreatePaymentPayload;
     }) => paymentApi.updatePayment(id, payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
-      queryClient.invalidateQueries({
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
+      await queryClient.invalidateQueries({
         queryKey: paymentsKeys.detail(variables.id),
       });
     },
@@ -27,8 +27,8 @@ export function useDeletePayment() {
 
   return useMutation({
     mutationFn: (id: string) => paymentApi.deletePayment(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
     },
   });
 }

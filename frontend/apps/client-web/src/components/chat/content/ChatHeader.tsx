@@ -1,6 +1,6 @@
 import { MoreVertical, Phone, Video } from "lucide-react";
 
-import type { Conversation } from "@repo/schemas";
+import type { conversation } from "@repo/types";
 
 import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import { Button } from "@repo/ui/components/ui/button";
@@ -13,7 +13,7 @@ import {
 } from "@repo/ui/components/ui/dropdown-menu";
 
 type Props = {
-  conversation?: Conversation;
+  conversation?: conversation;
 };
 
 export default function ChatHeader({ conversation }: Props) {

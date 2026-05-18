@@ -13,8 +13,8 @@ export function useCreateVehicle() {
   return useMutation({
     mutationFn: (payload: CreateVehiclePayload) =>
       vehicleApi.createVehicle(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
     },
   });
 }
@@ -30,9 +30,9 @@ export function useUpdateVehicle() {
       id: string;
       payload: UpdateVehiclePayload;
     }) => vehicleApi.updateVehicle(id, payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
-      queryClient.invalidateQueries({
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
+      await queryClient.invalidateQueries({
         queryKey: vehiclesKeys.detail(variables.id),
       });
     },
@@ -44,8 +44,8 @@ export function useDeleteVehicle() {
 
   return useMutation({
     mutationFn: (id: string) => vehicleApi.deleteVehicle(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
     },
   });
 }

@@ -1,31 +1,32 @@
 import { conversations, messages } from "./data/ChatData";
 
-import type { Conversation, Message, SendMessagePayload } from "@repo/schemas";
+import type { conversation, message } from "@repo/types";
+import type { SendMessagePayload } from "@repo/schemas";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const chatApi = {
-  async getConversations(): Promise<Conversation[]> {
+  async getConversations(): Promise<conversation[]> {
     await delay(500);
 
     return conversations;
   },
 
-  async getMessages(conversationId: number): Promise<Message[]> {
+  async getMessages(conversationId: string): Promise<message[]> {
     await delay(500);
 
     return messages[conversationId] || [];
   },
 
   async sendMessage(
-    conversationId: number,
+    conversationId: string,
     payload: SendMessagePayload,
-  ): Promise<Message> {
+  ): Promise<message> {
     await delay(500);
 
-    const newMessage: Message = {
-      id: Date.now(),
-      senderId: 1,
+    const newMessage: message = {
+      id: Date.now().toString(),
+      senderId: "currentUserId", // Thay bằng ID người dùng hiện tại
       content: payload.content,
       image: payload.image,
       createdAt: new Date().toISOString(),

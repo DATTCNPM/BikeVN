@@ -13,13 +13,15 @@ export function useUpdateReviewAdmin(
   return useMutation({
     mutationFn: (payload: ReviewSchema) =>
       reviewApi.updateReview(reviewId, payload),
-    onSuccess: () => {
+    onSuccess: async () => {
       if (vehicleId)
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: reviewsKeys.byVehicle(vehicleId),
         });
       if (userId)
-        queryClient.invalidateQueries({ queryKey: reviewsKeys.byUser(userId) });
+        await queryClient.invalidateQueries({
+          queryKey: reviewsKeys.byUser(userId),
+        });
     },
   });
 }
@@ -29,13 +31,15 @@ export function useDeleteReviewAdmin(vehicleId?: string, userId?: string) {
 
   return useMutation({
     mutationFn: (id: string) => reviewApi.deleteReview(id),
-    onSuccess: () => {
+    onSuccess: async () => {
       if (vehicleId)
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: reviewsKeys.byVehicle(vehicleId),
         });
       if (userId)
-        queryClient.invalidateQueries({ queryKey: reviewsKeys.byUser(userId) });
+        await queryClient.invalidateQueries({
+          queryKey: reviewsKeys.byUser(userId),
+        });
     },
   });
 }

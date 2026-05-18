@@ -1,5 +1,6 @@
 // src/apis/authApi.ts
 
+import axiosClient from "./axious";
 import type { MockData } from "./data/UserData";
 import { users } from "./data/UserData";
 import type { User } from "@repo/types";
@@ -12,6 +13,10 @@ import type {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const authApi = {
+  async ping() {
+    const response = await axiosClient.get("/auth/test");
+    return { message: response };
+  },
   async login(payload: LoginSchema) {
     await delay(500);
 

@@ -1,16 +1,17 @@
-import { useState } from "react";
-
-import type { Conversation, Message } from "@repo/schemas";
+import type { SendMessagePayload } from "@repo/schemas";
+import type { conversation, message } from "@repo/types";
 
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageList from "../message/MessageList";
 
+import { useSendMessage } from "@/features/chat/mutations";
+
 type Props = {
   loading: boolean;
-  conversation?: Conversation;
-  messages: Message[];
-  currentUserId: number;
+  conversation?: conversation;
+  messages: message[];
+  currentUserId: string;
 };
 
 export default function ChatContent({
@@ -19,19 +20,9 @@ export default function ChatContent({
   messages,
   currentUserId,
 }: Props) {
-  const [message, setMessage] = useState("");
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
-  const handleSendMessage = () => {
-    if (!message.trim() && !selectedImage) return;
-
-    console.log({
-      message,
-      image: selectedImage,
-    });
-
-    setMessage("");
-    setSelectedImage(null);
+  const { mutate: sendMessage } = useSendMessage(conversation?.id || "");
+  const handleSend = (data: SendMessagePayload) => {
+    sendMessage(data);
   };
 
   return (
@@ -44,12 +35,7 @@ export default function ChatContent({
         currentUserId={currentUserId}
       />
 
-      <ChatInput
-        message={message}
-        onChange={setMessage}
-        onSend={handleSendMessage}
-        onSelectImage={setSelectedImage}
-      />
+      <ChatInput onSend={handleSend} />
     </section>
   );
 }

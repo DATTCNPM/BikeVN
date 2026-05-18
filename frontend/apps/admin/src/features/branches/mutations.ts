@@ -8,8 +8,8 @@ export function useCreateBranch() {
   return useMutation({
     mutationFn: (payload: CreateBranchPayload) =>
       branchApi.createBranch(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: branchesKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
     },
   });
 }
@@ -25,9 +25,9 @@ export function useUpdateBranch() {
       id: string;
       payload: CreateBranchPayload;
     }) => branchApi.updateBranch(id, payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: branchesKeys.all });
-      queryClient.invalidateQueries({
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
+      await queryClient.invalidateQueries({
         queryKey: branchesKeys.detail(variables.id),
       });
     },
@@ -39,8 +39,8 @@ export function useDeleteBranch() {
 
   return useMutation({
     mutationFn: (id: string) => branchApi.deleteBranch(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: branchesKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
     },
   });
 }

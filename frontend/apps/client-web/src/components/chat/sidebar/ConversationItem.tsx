@@ -1,11 +1,11 @@
-import type { Conversation } from "@repo/schemas";
+import type { conversation } from "@repo/types";
 
 import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 
 import { cn } from "@repo/ui/lib/utils";
 
 type Props = {
-  conversation: Conversation;
+  conversation: conversation;
   isActive: boolean;
   onClick: () => void;
 };

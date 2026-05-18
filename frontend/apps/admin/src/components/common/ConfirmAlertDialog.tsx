@@ -54,16 +54,17 @@ export default function ConfirmAlertDialog({
             <Button variant="outline">{cancelText}</Button>
           </AlertDialogCancel>
 
-          <AlertDialogAction asChild>
-            <Button
-              variant="destructive"
-              onClick={onConfirm}
-              disabled={loading}
-            >
+          <AlertDialogAction
+            asChild
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={loading}
+          >
+            <p>
               {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
 
               {confirmText}
-            </Button>
+            </p>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

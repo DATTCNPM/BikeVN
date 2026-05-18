@@ -1,5 +1,5 @@
 import { Search, Users } from "lucide-react";
-import type { Conversation } from "@repo/schemas";
+import type { conversation } from "@repo/types";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
@@ -7,9 +7,9 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import ConversationItem from "./ConversationItem";
 type Props = {
   loading: boolean;
-  conversations: Conversation[];
-  selectedConversationId: number;
-  onSelectConversation: (id: number) => void;
+  conversations: conversation[];
+  selectedConversationId: string | null;
+  onSelectConversation: (id: string) => void;
 };
 export default function ChatSidebar({
   loading,

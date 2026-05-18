@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const conversationSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   branchName: z.string().min(1),
   lastMessage: z.string(),
   unreadCount: z.number().min(0),
@@ -10,24 +10,19 @@ export const conversationSchema = z.object({
 });
 
 export const messageSchema = z.object({
-  id: z.number(),
-  senderId: z.number(),
-  content: z.string().optional(),
-  image: z.string().optional(),
+  id: z.string(),
+  senderId: z.string(),
+  content: z.string().min(1).max(1000),
+  image: z.file().nullable(),
   createdAt: z.string(),
 });
 
 export const sendMessageSchema = z
   .object({
-    content: z.string().trim().optional(),
-    image: z.string().optional(),
+    content: z.string().trim().max(1000).optional(),
+    image: z.file().nullable(),
   })
   .refine((data) => data.content || data.image, {
     message: "Message content or image is required",
   });
-
-export type Conversation = z.infer<typeof conversationSchema>;
-
-export type Message = z.infer<typeof messageSchema>;
-
 export type SendMessagePayload = z.infer<typeof sendMessageSchema>;

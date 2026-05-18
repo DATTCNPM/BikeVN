@@ -5,11 +5,11 @@ import ChatSidebar from "@/components/chat/sidebar/ChatSidebar";
 
 import { useConversations, useMessages } from "@repo/hooks";
 
-const currentUserId = 1;
+const currentUserId = "1";
 
 export default function ChatPage() {
   const [selectedConversationId, setSelectedConversationId] = useState<
-    number | null
+    string | null
   >(null);
 
   // conversations query
@@ -34,7 +34,7 @@ export default function ChatPage() {
 
   // messages query
   const { data: messages = [], isLoading: messagesLoading } = useMessages(
-    selectedConversationId ?? 0,
+    selectedConversationId ?? "0",
   );
 
   return (
@@ -42,7 +42,7 @@ export default function ChatPage() {
       <ChatSidebar
         loading={conversationsLoading}
         conversations={conversations}
-        selectedConversationId={selectedConversationId ?? 0}
+        selectedConversationId={selectedConversationId ?? "0"}
         onSelectConversation={setSelectedConversationId}
       />
 

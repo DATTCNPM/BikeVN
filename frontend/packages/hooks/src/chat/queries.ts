@@ -9,7 +9,7 @@ export const useConversations = () => {
   });
 };
 
-export const useMessages = (conversationId: number) => {
+export const useMessages = (conversationId: string) => {
   return useQuery({
     queryKey: ["messages", conversationId],
     queryFn: () => chatApi.getMessages(conversationId),

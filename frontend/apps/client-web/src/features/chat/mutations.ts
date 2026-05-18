@@ -3,7 +3,7 @@ import { chatApi } from "@repo/api";
 
 import type { SendMessagePayload } from "@repo/schemas";
 
-export const useSendMessage = (conversationId: number) => {
+export const useSendMessage = (conversationId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({

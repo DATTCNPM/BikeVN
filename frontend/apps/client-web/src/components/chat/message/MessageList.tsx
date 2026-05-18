@@ -1,4 +1,4 @@
-import type { Message } from "@repo/schemas";
+import type { message } from "@repo/types";
 
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
 import { Spinner } from "@repo/ui/components/ui/spinner";
@@ -7,8 +7,8 @@ import MessageItem from "./MessageItem";
 
 type Props = {
   loading: boolean;
-  messages: Message[];
-  currentUserId: number;
+  messages: message[];
+  currentUserId: string;
 };
 
 export default function MessageList({
