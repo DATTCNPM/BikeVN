@@ -7,3 +7,4 @@ export * from "./paymentApi";
 export * from "./chatApi";
 export * from "./reviewApi";
 export * from "./dashboardApi";
+export * from "./userApi";

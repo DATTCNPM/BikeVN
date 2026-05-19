@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 
-import { sendMessageSchema, type SendMessagePayload } from "@repo/schemas";
+import { sendMessageSchema, type SendMessagePayload } from "@/features/chat/schemas";
 
 type Props = {
   onSend: (data: SendMessagePayload) => void;

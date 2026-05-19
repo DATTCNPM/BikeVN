@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { authApi } from "@repo/api";
 import type { User } from "@repo/types";
-import type { UpdateProfileSchema } from "@repo/schemas";
+import type { UpdateProfileSchema } from "@/features/auth/schemas";
 
 interface AuthState {
   isLogin: boolean;

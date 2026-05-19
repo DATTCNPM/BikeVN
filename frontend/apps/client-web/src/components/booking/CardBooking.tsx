@@ -48,8 +48,8 @@ import { useCreateBooking } from "@/features/bookings/mutations";
 import { useVehicle } from "@repo/hooks";
 import { useBranches } from "@repo/hooks";
 
-import type { BookingSchema } from "@repo/schemas";
-import { bookingSchema } from "@repo/schemas";
+import type { BookingSchema } from "@/features/booking/schemas";
+import { bookingSchema } from "@/features/booking/schemas";
 
 export default function BookingCard() {
   const { id } = useParams();

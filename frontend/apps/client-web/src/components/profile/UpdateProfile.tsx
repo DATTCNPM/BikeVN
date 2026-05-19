@@ -1,6 +1,6 @@
 import FormDialog from "../common/FormDialog";
-import { updateProfileSchema } from "@repo/schemas";
-import type { UpdateProfileSchema } from "@repo/schemas";
+import { updateProfileSchema } from "@/features/auth/schemas";
+import type { UpdateProfileSchema } from "@/features/auth/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Input } from "@repo/ui/components/ui/input";

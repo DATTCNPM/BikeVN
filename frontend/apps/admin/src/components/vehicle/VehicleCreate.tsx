@@ -26,7 +26,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateVehicle } from "@/features/vehicles/mutations";
 
-import { vehicleSchema, type VehicleFormValues } from "@repo/schemas";
+import { vehicleSchema, type VehicleFormValues } from "@/features/vehicles/schemas";
 
 type Props = {
   open: boolean;

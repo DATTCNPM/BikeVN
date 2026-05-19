@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { chatApi } from "@repo/api";
 
-import type { SendMessagePayload } from "@repo/schemas";
+import type { SendMessagePayload } from "./schemas";
 
 export const useSendMessage = (conversationId: string) => {
   const queryClient = useQueryClient();

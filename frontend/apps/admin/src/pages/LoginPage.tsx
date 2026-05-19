@@ -5,9 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Home, ShieldCheck } from "lucide-react";
 
 // Schemas & Stores
-import { loginSchema } from "@repo/schemas";
-import type { LoginSchema } from "@repo/schemas";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { loginSchema } from "@/features/auth/schemas";
+import type { LoginSchema } from "@/features/auth/schemas";
+import { useAdminAuth } from "@/features/auth/useAdminAuth";
 
 // UI Components từ Monorepo Monolith
 import { Input } from "@repo/ui/components/ui/input";
@@ -31,7 +31,7 @@ import {
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, loading, error } = useAuthStore();
+  const { loginAdmin, loading, error } = useAdminAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -47,9 +47,9 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginSchema) => {
-    const success = await login(data);
+    const success = await loginAdmin(data);
     if (success) {
-      navigate("/");
+      navigate("/admin");
     }
   };
 

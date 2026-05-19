@@ -1,5 +1,3 @@
-// schemas/vehicleSchema.ts
-
 import { z } from "zod";
 
 export const vehicleStatusSchema = z.enum([

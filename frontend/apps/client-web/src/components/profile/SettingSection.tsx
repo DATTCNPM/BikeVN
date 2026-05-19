@@ -21,8 +21,8 @@ import { Moon, Sun, Lock, Trash2 } from "lucide-react";
 import AlertDialog from "@/components/common/AlertDialog";
 import { toast } from "sonner";
 
-import { updatePasswordSchema } from "@repo/schemas";
-import type { UpdatePasswordSchema } from "@repo/schemas";
+import { updatePasswordSchema } from "@/features/auth/schemas";
+import type { UpdatePasswordSchema } from "@/features/auth/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTheme } from "next-themes";

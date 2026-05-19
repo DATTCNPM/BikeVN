@@ -1,35 +1,34 @@
 // src/apis/authApi.ts
 
-import axiosClient from "./axious";
-import type { MockData } from "./data/UserData";
 import { users } from "./data/UserData";
+import { type MockData } from "./data/UserData";
+
 import type { User } from "@repo/types";
 import type {
-  LoginSchema,
-  RegisterSchema,
-  UpdateProfileSchema,
-} from "@repo/schemas";
+  LoginPayload,
+  RegisterPayload,
+  UpdateProfilePayload,
+  UpdatePasswordPayload,
+} from "@repo/types";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const authApi = {
   async ping() {
-    const response = await axiosClient.get("/auth/test");
-    return { message: response };
+    return { message: "pong" };
   },
-  async login(payload: LoginSchema) {
-    await delay(500);
+  async login(
+    payload: LoginPayload,
+  ): Promise<{ message: string; user: User; access_token: string }> {
+    await delay(1000);
 
-    const user = users.find(
-      (u) => u.email === payload.email && u.password === payload.password,
-    );
+    const user = users.find((u) => u.email === payload.email);
 
-    if (!user) {
+    if (!user || user.password !== payload.password) {
       throw {
         response: {
-          status: 401,
           data: {
-            message: "Sai email hoặc mật khẩu",
+            message: "Tài khoản hoặc mật khẩu không chính xác",
           },
         },
       };
@@ -43,7 +42,7 @@ export const authApi = {
     };
   },
 
-  async register(payload: RegisterSchema) {
+  async register(payload: RegisterPayload) {
     await delay(500);
 
     if (payload.password !== payload.confirmPassword) {
@@ -93,7 +92,17 @@ export const authApi = {
   async getProfile() {
     await delay(500);
 
-    return users[1];
+    if (localStorage.getItem("admin_token")) {
+      const admin = users.find((u) => u.role === "admin");
+      if (admin) {
+        const { password, ...adminWithoutPassword } = admin;
+        return adminWithoutPassword;
+      }
+    }
+
+    const user = users.find((u) => u.role === "user");
+    const { password, ...userWithoutPassword } = user!;
+    return userWithoutPassword;
   },
 
   async logout() {
@@ -102,7 +111,7 @@ export const authApi = {
     return { status: 200, message: "Đăng xuất thành công" };
   },
 
-  async updateProfile(userId: string, payload: UpdateProfileSchema) {
+  async updateProfile(userId: string, payload: UpdateProfilePayload) {
     await delay(500);
 
     const userIndex = users.findIndex((u) => u.id === userId);

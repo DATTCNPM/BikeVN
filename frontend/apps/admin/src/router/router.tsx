@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import MainLayout from "@/layouts/MainLayout";
+import ProtectedRoute from "@/features/auth/ProtectedRoute";
 import HomePage from "../pages/HomePage";
 import VehicleManagementPage from "@/pages/VehicleManagementPage";
 import UserManagementPage from "@/pages/UserManagementPage";
@@ -18,7 +19,11 @@ import LoginPage from "@/pages/LoginPage";
 const router = createBrowserRouter([
   {
     path: "/admin",
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,

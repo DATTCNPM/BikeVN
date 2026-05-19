@@ -1,7 +1,6 @@
 import { conversations, messages } from "./data/ChatData";
 
-import type { conversation, message } from "@repo/types";
-import type { SendMessagePayload } from "@repo/schemas";
+import type { conversation, message, SendMessagePayload } from "@repo/types";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

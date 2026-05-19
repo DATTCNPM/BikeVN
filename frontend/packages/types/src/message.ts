@@ -15,4 +15,9 @@ type conversation = {
   online: boolean;
 };
 
+export type SendMessagePayload = {
+  content?: string;
+  image: File | null;
+};
+
 export type { message, conversation };

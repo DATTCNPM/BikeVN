@@ -1,8 +1,8 @@
 import AuthCard from "@/components/auth/AuthCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "@repo/schemas";
-import type { RegisterSchema } from "@repo/schemas";
+import { registerSchema } from "@/features/auth/schemas";
+import type { RegisterSchema } from "@/features/auth/schemas";
 import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";

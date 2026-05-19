@@ -2,8 +2,7 @@
 
 import { reviews } from "./data/ReviewData";
 
-import type { Review } from "@repo/types";
-import type { ReviewSchema } from "@repo/schemas";
+import type { Review, ReviewPayload } from "@repo/types";
 
 import { users } from "./data/UserData";
 
@@ -27,6 +26,18 @@ export const reviewApi = {
     }));
   },
 
+  async getReviews(): Promise<(Review & { user: { name: string; email: string } })[]> {
+    await delay(500);
+
+    return reviews.map((review) => ({
+      ...review,
+      user: users.find((user) => user.id === review.user_id) || {
+        email: "unknown",
+        name: "Unknown User",
+      },
+    }));
+  },
+
   async getReviewsByUser(userId: string): Promise<Review[]> {
     await delay(500);
 
@@ -34,7 +45,7 @@ export const reviewApi = {
   },
 
   async createReview(
-    payload: ReviewSchema,
+    payload: ReviewPayload,
   ): Promise<{ message: string; review: Review }> {
     await delay(500);
 
@@ -80,7 +91,7 @@ export const reviewApi = {
 
   async updateReview(
     reviewId: string,
-    payload: ReviewSchema,
+    payload: ReviewPayload,
   ): Promise<{ message: string; review: Review }> {
     await delay(500);
 

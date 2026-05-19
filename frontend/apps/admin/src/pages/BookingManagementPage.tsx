@@ -1,123 +1,113 @@
-import { useMemo, useState } from "react";
-
+import { useMemo, useState, useEffect } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+import { toast } from "@repo/ui/components/ui/sonner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 
-type BookingStatus =
-  | "pending"
-  | "approved"
-  | "rejected"
-  | "completed"
-  | "cancelled";
+import BookingCreate from "@/components/booking/BookingCreate";
+import BookingEdit from "@/components/booking/BookingEdit";
+import BookingDelete from "@/components/booking/BookingDelete";
 
-type Booking = {
-  id: number;
-  customer: string;
-  vehicle: string;
-  pickup_branch: string;
-  return_branch: string;
-  start_time: string;
-  end_time: string;
-  total_price: number;
-  status: BookingStatus;
-};
-
-const bookings: Booking[] = [
-  {
-    id: 1,
-    customer: "Nguyễn Văn A",
-    vehicle: "Honda Vision",
-    pickup_branch: "Cà Mau",
-    return_branch: "Năm Căn",
-    start_time: "2026-05-14 08:00",
-    end_time: "2026-05-16 08:00",
-    total_price: 300000,
-    status: "approved",
-  },
-];
+import { useBookings } from "@repo/hooks";
+import type { Booking } from "@repo/types";
 
 const bookingStatusMap = {
-  pending:
-    "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
-
+  pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
   approved: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
-
   rejected: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
-
-  completed:
-    "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
-
+  completed: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
   cancelled: "bg-zinc-200 text-zinc-700 dark:bg-zinc-500/20 dark:text-zinc-300",
 };
 
+const bookingStatusLabel = {
+  pending: "Chờ duyệt",
+  approved: "Đã duyệt",
+  rejected: "Từ chối",
+  completed: "Hoàn thành",
+  cancelled: "Đã hủy",
+};
+
 export default function BookingManagementPage() {
+  const { data: bookings = [], isLoading, error } = useBookings();
+
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Không thể tải danh sách đặt xe");
+    }
+  }, [error]);
 
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
       {
-        accessorKey: "customer",
+        accessorKey: "user_id",
         header: "Khách hàng",
+        cell: ({ row }) => <span className="text-sm font-medium">User #{row.original.user_id.substring(0, 4)}</span>,
       },
-
       {
-        accessorKey: "vehicle",
+        accessorKey: "vehicle_id",
         header: "Xe",
+        cell: ({ row }) => <span className="text-sm font-medium">Xe #{row.original.vehicle_id.substring(0, 4)}</span>,
       },
-
       {
-        accessorKey: "pickup_branch",
+        accessorKey: "pickup_branch_id",
         header: "Chi nhánh nhận",
+        cell: ({ row }) => <span className="text-sm">CN #{row.original.pickup_branch_id.substring(0, 4)}</span>,
       },
-
       {
-        accessorKey: "return_branch",
+        accessorKey: "return_branch_id",
         header: "Chi nhánh trả",
+        cell: ({ row }) => <span className="text-sm">CN #{row.original.return_branch_id.substring(0, 4)}</span>,
       },
-
       {
-        accessorKey: "start_time",
+        accessorKey: "start_date",
         header: "Bắt đầu",
+        cell: ({ row }) => new Date(row.original.start_date).toLocaleDateString("vi-VN"),
       },
-
       {
-        accessorKey: "end_time",
+        accessorKey: "end_date",
         header: "Kết thúc",
+        cell: ({ row }) => new Date(row.original.end_date).toLocaleDateString("vi-VN"),
       },
-
       {
         accessorKey: "total_price",
         header: "Tổng tiền",
-
         cell: ({ row }) => `${row.original.total_price.toLocaleString()}đ`,
       },
-
       {
         accessorKey: "status",
         header: "Trạng thái",
-
         cell: ({ row }) => (
           <Badge className={bookingStatusMap[row.original.status]}>
-            {row.original.status}
+            {bookingStatusLabel[row.original.status]}
           </Badge>
         ),
       },
-
       {
         id: "actions",
-
         header: "",
-
-        cell: () => (
+        cell: ({ row }) => (
           <TableActionDropdown
-            onEdit={() => console.log("edit")}
-            onDelete={() => console.log("delete")}
+            onEdit={() => {
+              setSelectedBooking(row.original);
+              setOpenEditDialog(true);
+            }}
+            onDelete={() => {
+              setSelectedBooking(row.original);
+              setOpenDeleteDialog(true);
+            }}
           />
         ),
       },
@@ -125,20 +115,43 @@ export default function BookingManagementPage() {
     [],
   );
 
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   return (
     <div>
       <DataTableToolbar
         search={search}
         onSearchChange={setSearch}
-        onCreate={() => console.log("create")}
+        onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
       <DataTable columns={columns} data={bookings} />
 
       <TablePagination
         page={1}
-        totalPages={10}
+        totalPages={Math.ceil(bookings.length / 10) || 1}
         onPageChange={(page) => console.log(page)}
+      />
+
+      <BookingCreate
+        open={openCreateDialog}
+        onOpenChange={setOpenCreateDialog}
+      />
+      <BookingEdit
+        open={openEditDialog}
+        onOpenChange={setOpenEditDialog}
+        booking={selectedBooking}
+      />
+      <BookingDelete
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+        booking={selectedBooking}
       />
     </div>
   );

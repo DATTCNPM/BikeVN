@@ -1,4 +1,4 @@
-import type { SendMessagePayload } from "@repo/schemas";
+import type { SendMessagePayload } from "@/features/chat/schemas";
 import type { conversation, message } from "@repo/types";
 
 import ChatHeader from "./ChatHeader";

@@ -3,6 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { reviewApi } from "@repo/api";
 import { reviewsKeys } from "../queryKeys";
 
+export function useAllReviews() {
+  return useQuery({
+    queryKey: reviewsKeys.all,
+    queryFn: reviewApi.getReviews,
+  });
+}
+
 export function useVehicleReviews(vehicleId: string) {
   return useQuery({
     queryKey: reviewsKeys.byVehicle(vehicleId),

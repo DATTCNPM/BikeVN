@@ -4,7 +4,7 @@ function fixStore(file) {
   let c = fs.readFileSync(file, "utf8");
   c = c.replace(
     "import type { UpdateProfilePayload } from \"@repo/api\";",
-    "import type { UpdateProfileSchema } from \"@repo/schemas\";"
+    "import type { UpdateProfileSchema } from \"../features/auth/schemas\";"
   );
   c = c.replace(
     "updateProfile: (payload: UpdateProfilePayload) => Promise<boolean>;",

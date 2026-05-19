@@ -12,3 +12,11 @@ export type Review = {
     name: string;
   };
 };
+
+export type ReviewPayload = {
+  booking_id: string;
+  user_id: string;
+  vehicle_id: string;
+  rating: number;
+  comment?: string;
+};

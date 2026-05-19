@@ -1,45 +1,25 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { reviewApi } from "@repo/api";
-import type { ReviewSchema } from "@repo/schemas";
 import { reviewsKeys } from "@repo/hooks";
+import type { ReviewPayload } from "@repo/types";
 
-export function useUpdateReviewAdmin(
-  reviewId: string,
-  vehicleId?: string,
-  userId?: string,
-) {
+export function useUpdateReview() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (payload: ReviewSchema) =>
-      reviewApi.updateReview(reviewId, payload),
-    onSuccess: async () => {
-      if (vehicleId)
-        await queryClient.invalidateQueries({
-          queryKey: reviewsKeys.byVehicle(vehicleId),
-        });
-      if (userId)
-        await queryClient.invalidateQueries({
-          queryKey: reviewsKeys.byUser(userId),
-        });
+    mutationFn: ({ id, payload }: { id: string; payload: ReviewPayload }) => 
+      reviewApi.updateReview(id, payload),
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: reviewsKeys.all });
     },
   });
 }
 
-export function useDeleteReviewAdmin(vehicleId?: string, userId?: string) {
+export function useDeleteReview() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (id: string) => reviewApi.deleteReview(id),
     onSuccess: async () => {
-      if (vehicleId)
-        await queryClient.invalidateQueries({
-          queryKey: reviewsKeys.byVehicle(vehicleId),
-        });
-      if (userId)
-        await queryClient.invalidateQueries({
-          queryKey: reviewsKeys.byUser(userId),
-        });
+      await queryClient.invalidateQueries({ queryKey: reviewsKeys.all });
     },
   });
 }
