@@ -1,6 +1,7 @@
 package com.backend.bikerental.controller;
 
 import com.backend.bikerental.dto.request.UserCreationRequest;
+import com.backend.bikerental.dto.request.UserUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.UserResponse;
 import com.backend.bikerental.service.UserService;
@@ -37,6 +38,14 @@ public class UserController {
     {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.getUser(userId))
+                .build();
+    }
+
+    @PutMapping("/{userId}")
+    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request)
+    {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUser(userId, request))
                 .build();
     }
 
