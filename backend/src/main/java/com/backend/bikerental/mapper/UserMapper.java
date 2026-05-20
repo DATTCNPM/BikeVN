@@ -1,10 +1,10 @@
 package com.backend.bikerental.mapper;
 
 import com.backend.bikerental.dto.request.UserCreationRequest;
+import com.backend.bikerental.dto.request.UserUpdateRequest;
 import com.backend.bikerental.dto.response.UserResponse;
 import com.backend.bikerental.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.List;
 
@@ -15,4 +15,8 @@ public interface UserMapper {
     User toUser(UserCreationRequest request);
     UserResponse toUserResponse(User user);
     List<UserResponse> toListUsersResponse(List<User> users);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "roles", ignore = true)
+    void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }

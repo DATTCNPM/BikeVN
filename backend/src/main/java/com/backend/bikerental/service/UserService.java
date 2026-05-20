@@ -1,6 +1,7 @@
 package com.backend.bikerental.service;
 
 import com.backend.bikerental.dto.request.UserCreationRequest;
+import com.backend.bikerental.dto.request.UserUpdateRequest;
 import com.backend.bikerental.dto.response.UserResponse;
 import com.backend.bikerental.entity.Role;
 import com.backend.bikerental.entity.User;
@@ -12,6 +13,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -49,16 +52,30 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('admin')")
     public List<UserResponse> getAllUsers()
     {
         return userMapper.toListUsersResponse(userRepository.findAll());
     }
 
+    @PostAuthorize("returnObject.name == authentication.name")
     public UserResponse getUser(String id)
     {
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("user is not exist")));
     }
+
+    public UserResponse updateUser(String id, UserUpdateRequest request)
+    {
+        User user = userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not exist"));
+        userMapper.updateUser(user, request);
+        if(request.getPassword() != null && !request.getPassword().isBlank())
+        {
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
 
     public void deleteUser(String id)
     {
