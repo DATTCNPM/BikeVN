@@ -3,6 +3,7 @@ package com.backend.bikerental.entity;
 import com.backend.bikerental.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,24 +14,25 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36)
-    private String id;
+    String id;
 
-    private String name;
+    String name;
 
-    private String email;
+    String email;
 
     @Column(name = "password_hash")
-    private String passwordHash;
+    String passwordHash;
 
-    private String phone;
+    String phone;
 
     @Column(name = "cccd_number")
-    private String cccdNumber;
+    String cccdNumber;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
