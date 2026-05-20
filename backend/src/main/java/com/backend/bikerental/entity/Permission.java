@@ -1,9 +1,6 @@
 package com.backend.bikerental.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,7 +13,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Permission {
     @Id
-    String name;
-    String description;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(length = 36)
+    String id;
     
+    @Column(unique = true, nullable = false)
+    String name;
+    
+    String description;
 }

@@ -2,8 +2,11 @@ package com.backend.bikerental.service;
 
 import com.backend.bikerental.dto.request.UserCreationRequest;
 import com.backend.bikerental.dto.response.UserResponse;
+import com.backend.bikerental.entity.Role;
 import com.backend.bikerental.entity.User;
+import com.backend.bikerental.enums.RoleEnum;
 import com.backend.bikerental.mapper.UserMapper;
+import com.backend.bikerental.repository.RoleRepository;
 import com.backend.bikerental.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ import java.util.List;
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
+    RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
     public UserResponse createUser(UserCreationRequest request)
     {
@@ -30,6 +35,17 @@ public class UserService {
         }
         User user = userMapper.toUser(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
+
+        var role = roleRepository.findById(RoleEnum.user.name())
+                .orElseGet(()-> {
+                    var newRole = Role.builder()
+                            .name(RoleEnum.user.name())
+                            .description("User role")
+                            .build();
+                    return roleRepository.save(newRole);
+                });
+        user.setRoles(Set.of(role));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 

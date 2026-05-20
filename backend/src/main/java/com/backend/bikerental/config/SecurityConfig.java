@@ -1,5 +1,6 @@
 package com.backend.bikerental.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,20 +10,46 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/test", "/auth/login", "/user"};
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/test", "/auth/login",
+            "/auth/logout",  "/auth/introspect",
+            "/user", "/role", "/permission"};
+    @Autowired
+    private CustomJWTDecoder customJWTDecoder;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(req -> req.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
                 .permitAll().anyRequest().authenticated());
+
+        httpSecurity.oauth2ResourceServer(oauth2-> oauth2.jwt(jwtConfigurer ->
+            jwtConfigurer.decoder(customJWTDecoder)
+                    .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+        );
+
+        httpSecurity.exceptionHandling(exception -> exception.accessDeniedHandler(new JwtAccessDeniedHandler()));
+
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }
+
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter()
+    {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder()
     {

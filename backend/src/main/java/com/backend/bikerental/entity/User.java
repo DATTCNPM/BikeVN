@@ -4,6 +4,7 @@ import com.backend.bikerental.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -31,14 +32,12 @@ public class User {
     @Column(name = "cccd_number")
     private String cccdNumber;
 
-    // TODO: Role relationship 
-    /*
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_name")
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    Set<Role> roles;
-    */
+    Set<Role> roles = new HashSet<>();
+
 }
