@@ -1,24 +1,48 @@
-export type LoginPayload = {
+export interface ApiResponse<T> {
+  code: number;
+  message?: string;
+  result?: T;
+}
+
+export interface AuthenticationResponse {
+  token: string;
+  authenticated: boolean;
+}
+
+export interface IntrospectResponse {
+  valid: boolean;
+}
+
+export interface LoginPayload {
   email: string;
   password?: string;
-};
+}
 
-export type RegisterPayload = {
+export interface UserCreationRequest {
+  name: string;
+  email?: string;
+  passwordHash: string;
+  phone?: string;
+  cccdNumber?: string;
+}
+
+export interface RegisterPayload {
   name: string;
   email: string;
   password?: string;
   confirmPassword?: string;
-};
+}
 
-export type UpdateProfilePayload = {
+export interface UpdateProfilePayload {
   name?: string;
   email?: string;
   phone?: string;
   cccd_number?: string;
-};
+}
 
-export type UpdatePasswordPayload = {
+export interface UpdatePasswordPayload {
   currentPassword?: string;
   newPassword?: string;
   confirmNewPassword?: string;
-};
+}
+

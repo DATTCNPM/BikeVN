@@ -2,7 +2,7 @@ type message = {
   id: string;
   senderId: string;
   content?: string;
-  image: File | null;
+  image?: string | File | null;
   createdAt: string;
 };
 
@@ -17,7 +17,7 @@ type conversation = {
 
 export type SendMessagePayload = {
   content?: string;
-  image: File | null;
+  image?: File | null;
 };
 
 export type { message, conversation };

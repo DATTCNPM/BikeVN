@@ -51,7 +51,8 @@ const colorTitle = {
 };
 
 export default function BookingStatusHero({ status }: Props) {
-  const config = statusConfig[status] || statusConfig["pending"];
+  const activeStatus = status || "pending";
+  const config = statusConfig[activeStatus] || statusConfig["pending"];
 
   const Icon = config.icon;
 
@@ -67,7 +68,7 @@ export default function BookingStatusHero({ status }: Props) {
             <Icon className="size-12" />
           </div>
           <h1
-            className={`text-4xl font-black tracking-tight ${colorTitle[status]}`}
+            className={`text-4xl font-black tracking-tight ${colorTitle[activeStatus]}`}
           >
             {config.title}
           </h1>

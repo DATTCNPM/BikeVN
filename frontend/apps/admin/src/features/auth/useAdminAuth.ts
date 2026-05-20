@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { authApi } from "@repo/api";
+import { authStorageService, tokenService } from "@repo/services";
+import { ROLES } from "@repo/constants";
 import type { User } from "@repo/types";
 import type { LoginSchema } from "./schemas";
 
@@ -19,7 +21,7 @@ interface AdminAuthState {
 export const useAdminAuth = create<AdminAuthState>()(
   devtools(
     (set) => ({
-      isAdminLogin: !!localStorage.getItem("admin_token"),
+      isAdminLogin: !!authStorageService.getAdminToken(),
       adminProfile: null,
       loading: false,
       error: null,
@@ -29,22 +31,33 @@ export const useAdminAuth = create<AdminAuthState>()(
         try {
           const response = await authApi.login(credentials);
           
-          if (response?.user?.role !== "admin") {
-            set({ error: "Tài khoản không có quyền quản trị viên" });
-            return false;
-          }
+          if (response?.code === 1000 && response.result?.token) {
+            const token = response.result.token;
+            const roles = tokenService.getRoles(token);
+            
+            const hasAdminAccess = roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
+            if (!hasAdminAccess) {
+              set({ error: "Tài khoản không có quyền quản trị viên" });
+              return false;
+            }
 
-          if (response?.access_token) {
-            localStorage.setItem("admin_token", response.access_token);
+            authStorageService.setAdminToken(token);
             set({
               isAdminLogin: true,
-              adminProfile: response.user as User,
             });
+            
+            const profileResponse = await authApi.getProfile();
+            if (profileResponse?.code === 1000 && profileResponse.result) {
+              set({ adminProfile: profileResponse.result });
+              return true;
+            }
           }
-          return true;
+          
+          set({ error: response?.message || "Sai tài khoản hoặc mật khẩu" });
+          return false;
         } catch (err: any) {
           set({
-            error: err.response?.data?.message || "Sai tài khoản hoặc mật khẩu",
+            error: err.response?.data?.message || err.message || "Sai tài khoản hoặc mật khẩu",
           });
           return false;
         } finally {
@@ -54,34 +67,42 @@ export const useAdminAuth = create<AdminAuthState>()(
 
       logoutAdmin: async () => {
         set({ loading: true });
-        try {
-          await authApi.logout();
-          localStorage.removeItem("admin_token");
-          set({ isAdminLogin: false, adminProfile: null, error: null });
-          return true;
-        } catch (err) {
-          set({ error: "Đăng xuất thất bại" });
-          return false;
-        } finally {
-          set({ loading: false });
+        const token = authStorageService.getAdminToken();
+        if (token) {
+          try {
+            await authApi.logout(token);
+          } catch (err) {
+            console.error("Admin logout failed:", err);
+          }
         }
+        authStorageService.clearAdminToken();
+        set({ isAdminLogin: false, adminProfile: null, error: null });
+        return true;
       },
 
       fetchAdminProfile: async () => {
-        const token = localStorage.getItem("admin_token");
+        const token = authStorageService.getAdminToken();
         if (!token) return;
 
         set({ loading: true });
         try {
-          const user = await authApi.getProfile();
-          if (user?.role !== "admin") {
-            localStorage.removeItem("admin_token");
+          const roles = tokenService.getRoles(token);
+          const hasAdminAccess = roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
+          if (!hasAdminAccess || tokenService.isExpired(token)) {
+            authStorageService.clearAdminToken();
             set({ isAdminLogin: false, adminProfile: null });
             return;
           }
-          set({ adminProfile: user as User, isAdminLogin: true });
+
+          const response = await authApi.getProfile();
+          if (response?.code === 1000 && response.result) {
+            set({ adminProfile: response.result, isAdminLogin: true });
+          } else {
+            authStorageService.clearAdminToken();
+            set({ isAdminLogin: false, adminProfile: null });
+          }
         } catch (err: any) {
-          localStorage.removeItem("admin_token");
+          authStorageService.clearAdminToken();
           set({ isAdminLogin: false, adminProfile: null });
         } finally {
           set({ loading: false });

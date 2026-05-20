@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { authApi } from "@repo/api";
+import { authApi, userApi } from "@repo/api";
+import { authStorageService } from "@repo/services";
 import type { User } from "@repo/types";
-import type { UpdateProfileSchema } from "@/features/auth/schemas";
+import type { UpdateProfileSchema } from "@repo/schemas";
 
 interface AuthState {
   isLogin: boolean;
@@ -25,14 +26,13 @@ export const useAuthStore = create<AuthState>()(
   devtools(
     (set, get) => ({
       // --- State ---
-      isLogin: !!localStorage.getItem("token"),
-      userProfile: null,
+      isLogin: !!authStorageService.getToken(),
+      userProfile: undefined,
       loading: false,
       isServerDown: false,
       error: null,
 
       // --- Actions ---
-      // Ping
       ping: async () => {
         try {
           const response = await authApi.ping();
@@ -44,13 +44,23 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // 1. Hàm Register (Đã tối ưu phân loại lỗi)
       register: async (userData) => {
         set({ loading: true, error: null });
         try {
-          await authApi.register(userData);
-          set({ isServerDown: false });
-          return true; // Để Component biết và chuyển hướng
+          const payload = {
+            name: userData.name,
+            email: userData.email,
+            passwordHash: userData.password,
+            phone: userData.phone || undefined,
+            cccdNumber: userData.cccdNumber || undefined,
+          };
+          const response = await authApi.register(payload);
+          if (response?.code === 1000) {
+            set({ isServerDown: false });
+            return true;
+          }
+          set({ error: response?.message || "Đăng ký thất bại" });
+          return false;
         } catch (err: any) {
           const status = err.response?.status;
           const msg = err.response?.data?.message || "Đăng ký thất bại";
@@ -66,20 +76,21 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // 2. Hàm Login
       login: async (credentials) => {
         set({ loading: true, error: null });
         try {
           const response = await authApi.login(credentials);
-          if (response?.access_token) {
-            localStorage.setItem("token", response.access_token);
+          if (response?.code === 1000 && response.result?.token) {
+            authStorageService.setToken(response.result.token);
             set({
               isLogin: true,
-              userProfile: response.user,
               isServerDown: false,
             });
+            await get().fetchProfile();
+            return true;
           }
-          return true;
+          set({ error: response?.message || "Sai tài khoản hoặc mật khẩu" });
+          return false;
         } catch (err: any) {
           const status = err.response?.status;
           if (!status || status >= 500 || status === 404) {
@@ -96,21 +107,25 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // 3. Hàm Fetch Profile (Dùng khi F5 trang)
       fetchProfile: async () => {
-        const token = localStorage.getItem("token");
+        const token = authStorageService.getToken();
         if (!token) return;
 
         set({ loading: true });
         try {
-          const user = await authApi.getProfile();
-          set({ userProfile: user, isLogin: true, isServerDown: false });
+          const response = await authApi.getProfile();
+          if (response?.code === 1000 && response.result) {
+            set({ userProfile: response.result, isLogin: true, isServerDown: false });
+          } else {
+            authStorageService.clearToken();
+            set({ isLogin: false, userProfile: undefined });
+          }
         } catch (err: any) {
           const status = err.response?.status;
           if (!status || status >= 500 || status === 404) {
             set({ isServerDown: true });
-          } else if (status === 401) {
-            localStorage.removeItem("token");
+          } else {
+            authStorageService.clearToken();
             set({ isLogin: false, userProfile: undefined });
           }
         } finally {
@@ -118,17 +133,18 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // 4. Logout
       logout: async () => {
-        const response = await authApi.logout();
-        localStorage.removeItem("token");
-        set({ isLogin: false, userProfile: undefined, error: null });
-        if (response?.status === 200) {
-          return true;
-        } else {
-          set({ error: "Đăng xuất thất bại" });
-          return false;
+        const token = authStorageService.getToken();
+        if (token) {
+          try {
+            await authApi.logout(token);
+          } catch (err) {
+            console.error("Logout request failed:", err);
+          }
         }
+        authStorageService.clearToken();
+        set({ isLogin: false, userProfile: undefined, error: null });
+        return true;
       },
 
       updateProfile: async (payload) => {
@@ -141,23 +157,20 @@ export const useAuthStore = create<AuthState>()(
           const currentUser = get().userProfile;
 
           if (!currentUser) {
-            throw {
-              response: {
-                status: 401,
-                data: {
-                  message: "Chưa đăng nhập",
-                },
-              },
-            };
+            throw new Error("Chưa đăng nhập");
           }
 
-          const response = await authApi.updateProfile(currentUser.id, payload);
+          const response = await userApi.updateUser(currentUser.id, payload);
 
-          set({
-            userProfile: response.user,
-          });
-
-          return true;
+          if (response?.code === 1000 && response.result) {
+            set({
+              userProfile: response.result,
+            });
+            return true;
+          }
+          
+          set({ error: response?.message || "Cập nhật thất bại" });
+          return false;
         } catch (err: any) {
           set({
             error:

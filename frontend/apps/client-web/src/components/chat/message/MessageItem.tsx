@@ -28,7 +28,11 @@ export default function MessageItem({ message, isCurrentUser }: Props) {
         {message.image && (
           <div className="overflow-hidden">
             <img
-              src={message.image}
+              src={
+                typeof message.image === "string"
+                  ? message.image
+                  : URL.createObjectURL(message.image)
+              }
               alt="message-image"
               className="max-h-[320px] w-full object-cover"
             />

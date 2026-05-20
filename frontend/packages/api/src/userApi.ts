@@ -1,68 +1,37 @@
-import { users } from "./data/UserData";
-import type { User } from "@repo/types";
-
-export type CreateUserPayload = {
-  name: string;
-  email: string;
-  phone?: string;
-  cccd_number?: string;
-  role: "user" | "admin";
-};
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import axiosClient from "./axious";
+import type { ApiResponse, User, UserCreationRequest, UpdateProfilePayload } from "@repo/types";
 
 export const userApi = {
-  async getUsers(): Promise<User[]> {
-    await delay(500);
-    return users.map(({ password, ...user }) => user as User);
+  async getUsers(): Promise<ApiResponse<User[]>> {
+    return axiosClient.get("/user");
   },
 
-  async getUserById(id: string): Promise<User> {
-    await delay(300);
-    const user = users.find((u) => u.id === id);
-    if (!user) {
-      throw { response: { status: 404, data: { message: "Người dùng không tồn tại" } } };
-    }
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword as User;
+  async getUserById(id: string): Promise<ApiResponse<User>> {
+    return axiosClient.get(`/user/${id}`);
   },
 
-  async createUser(payload: CreateUserPayload): Promise<{ message: string; user: User }> {
-    await delay(500);
-    const newUser = {
-      id: Date.now().toString(),
-      ...payload,
-      password: "defaultPassword123",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+  async createUser(
+    payload: Omit<UserCreationRequest, "passwordHash"> & { passwordHash?: string; cccd_number?: string }
+  ): Promise<ApiResponse<User>> {
+    const { cccd_number, passwordHash, ...rest } = payload;
+    const requestPayload = {
+      ...rest,
+      cccdNumber: cccd_number || (payload as any).cccdNumber,
+      passwordHash: passwordHash || "defaultPassword123",
     };
-    users.push(newUser);
-    const { password, ...userWithoutPassword } = newUser;
-    return { message: "Thêm người dùng thành công", user: userWithoutPassword as User };
+    return axiosClient.post("/user", requestPayload);
   },
 
-  async updateUser(id: string, payload: Partial<CreateUserPayload>): Promise<{ message: string; user: User }> {
-    await delay(500);
-    const userIndex = users.findIndex((u) => u.id === id);
-    if (userIndex === -1) {
-      throw { response: { status: 404, data: { message: "Người dùng không tồn tại" } } };
-    }
-    users[userIndex] = {
-      ...users[userIndex],
-      ...payload,
-      updated_at: new Date().toISOString(),
+  async updateUser(id: string, payload: Partial<UpdateProfilePayload> & { cccd_number?: string }): Promise<ApiResponse<User>> {
+    const { cccd_number, ...rest } = payload;
+    const requestPayload = {
+      ...rest,
+      cccdNumber: cccd_number !== undefined ? cccd_number : (payload as any).cccdNumber,
     };
-    const { password, ...userWithoutPassword } = users[userIndex];
-    return { message: "Cập nhật người dùng thành công", user: userWithoutPassword as User };
+    return axiosClient.put(`/user/${id}`, requestPayload);
   },
 
-  async deleteUser(id: string): Promise<{ message: string }> {
-    await delay(500);
-    const userIndex = users.findIndex((u) => u.id === id);
-    if (userIndex === -1) {
-      throw { response: { status: 404, data: { message: "Người dùng không tồn tại" } } };
-    }
-    users.splice(userIndex, 1);
-    return { message: "Xóa người dùng thành công" };
+  async deleteUser(id: string): Promise<ApiResponse<void>> {
+    return axiosClient.delete(`/user/${id}`);
   },
 };

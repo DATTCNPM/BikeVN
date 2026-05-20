@@ -64,15 +64,15 @@ export default function BookingResultPage() {
         <BookingStatusHero status={booking?.status || null} />
 
         <BookingVehicleCard
-          booking={booking}
-          vehicle={vehicle}
+          booking={booking || null}
+          vehicle={vehicle || null}
           pickupBranch={pickupBranch}
           returnBranch={returnBranch}
         />
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6">
-            <BookingInfoCard booking={booking} />
+            <BookingInfoCard booking={booking || null} />
 
             <BookingTimeline status={booking?.status || null} />
           </div>

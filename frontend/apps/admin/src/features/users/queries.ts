@@ -9,14 +9,32 @@ export const usersKeys = {
 export function useUsers() {
   return useQuery({
     queryKey: usersKeys.all,
-    queryFn: () => userApi.getUsers(),
+    queryFn: async () => {
+      const response = await userApi.getUsers();
+      // Map cccdNumber to cccd_number if needed, and default roles to "user"
+      const usersList = response?.result || [];
+      return usersList.map((u) => ({
+        ...u,
+        cccd_number: u.cccdNumber || u.cccd_number,
+        role: u.role || "user", // fallback display role
+      }));
+    },
   });
 }
 
 export function useUser(id: string) {
   return useQuery({
     queryKey: usersKeys.detail(id),
-    queryFn: () => userApi.getUserById(id),
+    queryFn: async () => {
+      const response = await userApi.getUserById(id);
+      const user = response?.result;
+      if (!user) return null;
+      return {
+        ...user,
+        cccd_number: user.cccdNumber || user.cccd_number,
+        role: user.role || "user",
+      };
+    },
     enabled: !!id,
   });
 }

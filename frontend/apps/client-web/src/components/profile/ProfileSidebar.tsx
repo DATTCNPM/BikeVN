@@ -1,4 +1,4 @@
-import { User, Settings, LogOut, ChevronUp, ShieldCheck } from "lucide-react";
+import { User, Settings, LogOut, ChevronUp } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,

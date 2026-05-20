@@ -13,7 +13,6 @@ import {
 } from "@repo/ui/components/ui/breadcrumb";
 import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
 import { Outlet } from "react-router-dom";
-import { Separator } from "@repo/ui/components/ui/separator";
 import { Link } from "react-router-dom";
 import Logo from "@/assets/icons/Logo_yellow.svg";
 import { Home, MessageCircle, Bell } from "lucide-react";

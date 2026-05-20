@@ -1,6 +1,6 @@
 // components/booking/BookingTimeline.tsx
 
-import { CheckCircle2, Clock3, Circle } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 
 type Props = {
   status: string | null;

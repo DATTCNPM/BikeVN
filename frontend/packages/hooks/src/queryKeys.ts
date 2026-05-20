@@ -20,6 +20,7 @@ export const branchesKeys = {
 };
 
 export const reviewsKeys = {
+  all: ["reviews"] as const,
   byVehicle: (vehicleId: string) => ["reviews", "vehicle", vehicleId] as const,
   byUser: (userId: string) => ["reviews", "user", userId] as const,
 };

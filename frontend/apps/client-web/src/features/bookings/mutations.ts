@@ -7,7 +7,7 @@ export function useCreateBooking() {
 
   return useMutation({
     mutationFn: (payload: any) => bookingApi.createBooking(payload),
-    onSuccess: (_, variables) => {
+    onSuccess: (_) => {
       queryClient.invalidateQueries({ queryKey: bookingsKeys.all });
     },
   });

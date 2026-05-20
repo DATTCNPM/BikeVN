@@ -1,4 +1,4 @@
-import { message, conversation } from "@repo/types";
+import type { message, conversation } from "@repo/types";
 
 export const conversations: conversation[] = [
   {
