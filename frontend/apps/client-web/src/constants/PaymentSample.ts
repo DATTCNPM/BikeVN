@@ -1,0 +1,40 @@
+import type { PaymentMethod } from "@repo/types";
+
+export const paymentMethods: PaymentMethod[] = [
+  {
+    id: "1",
+    booking_id: "1",
+    amount: 100,
+    type: "deposit",
+    card_method: "momo",
+    payment_method: " Momo Wallet",
+    status: "completed",
+    transaction_code: "TXN123456",
+    paid_at: "2024-06-01T10:00:00Z",
+    created_at: "2024-06-01T10:00:00Z",
+  },
+  {
+    id: "2",
+    booking_id: "1",
+    amount: 200,
+    type: "rental",
+    card_method: "vnpay",
+    payment_method: " VNPay",
+    status: "completed",
+    transaction_code: "TXN789012",
+    paid_at: "2024-06-01T11:00:00Z",
+    created_at: "2024-06-01T11:00:00Z",
+  },
+  {
+    id: "3",
+    booking_id: "2",
+    amount: 150,
+    type: "deposit",
+    card_method: "card",
+    payment_method: "Credit Card",
+    status: "pending",
+    transaction_code: null,
+    paid_at: null,
+    created_at: "2024-06-01T12:00:00Z",
+  },
+];

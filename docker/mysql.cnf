@@ -1,0 +1,58 @@
+# ========================================
+# MySQL Custom Configuration
+# ========================================
+# This file is mounted to MySQL container at:
+# /etc/mysql/conf.d/mysql.cnf
+
+[mysqld]
+# ========================================
+# Character Set & Collation (UTF-8 Support)
+# ========================================
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# ========================================
+# Connection Settings
+# ========================================
+max_connections = 1000
+max_allowed_packet = 256M
+connect_timeout = 10
+wait_timeout = 28800
+
+# ========================================
+# Performance Tuning
+# ========================================
+# InnoDB Buffer Pool (for development: 128MB, production: 50-80% of RAM)
+innodb_buffer_pool_size = 256M
+
+# Query Cache (deprecated in MySQL 8.0, but useful in 5.7)
+# query_cache_type = 1
+# query_cache_size = 64M
+
+# ========================================
+# Binary Logging (for replication/backup)
+# ========================================
+# server-id = 1
+# log_bin = /var/log/mysql/mysql-bin.log
+# binlog_format = ROW
+
+# ========================================
+# Slow Query Log (for performance analysis)
+# ========================================
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/mysql-slow.log
+long_query_time = 2
+log_queries_not_using_indexes = 0
+
+# ========================================
+# Default Storage Engine
+# ========================================
+default_storage_engine = InnoDB
+
+# ========================================
+# SQL Modes (strict mode for data integrity)
+# ========================================
+sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'
+
+[client]
+default-character-set = utf8mb4
