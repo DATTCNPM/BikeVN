@@ -27,7 +27,7 @@ export const authApi = {
   },
 
   async getProfile(): Promise<ApiResponse<User>> {
-    return axiosClient.get("/user");
+    return axiosClient.get("/user/myInfo");
   },
 
   async logout(token: string): Promise<ApiResponse<void>> {

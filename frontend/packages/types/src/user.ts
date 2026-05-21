@@ -4,9 +4,7 @@ export interface User {
   email: string;
   phone?: string;
   cccdNumber?: string;
-  cccd_number?: string;
   role?: "user" | "admin";
   created_at?: string;
   updated_at?: string;
 }
-

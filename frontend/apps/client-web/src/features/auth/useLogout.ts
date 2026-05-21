@@ -1,4 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 import { authApi } from "@repo/api";
 
@@ -8,6 +10,7 @@ import { authKeys } from "./authKeys";
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async () => {
@@ -28,6 +31,8 @@ export const useLogout = () => {
       await queryClient.removeQueries({
         queryKey: authKeys.profile(),
       });
+      toast.success("Đăng xuất thành công");
+      navigate("/login");
     },
   });
 };

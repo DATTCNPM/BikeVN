@@ -50,7 +50,7 @@ export default function InfoSection() {
     {
       icon: <CreditCard className="text-muted-foreground" />,
       label: "Số CCCD",
-      value: user?.cccd_number || "Chưa cập nhật",
+      value: user?.cccdNumber || "Chưa cập nhật",
     },
     {
       icon: <Shield className="text-muted-foreground" />,
@@ -92,6 +92,15 @@ export default function InfoSection() {
           </CardDescription>
           <CardAction>
             <UpdateProfile
+              userProfile={
+                user
+                  ? user
+                  : {
+                      id: "",
+                      name: "",
+                      email: "",
+                    }
+              }
               trigger={
                 <Button variant="outline">
                   <Edit2 className="w-4 h-4" />
