@@ -19,7 +19,6 @@ import java.text.ParseException;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@CrossOrigin(origins = "http://localhost:5173")
 public class AuthenticationController {
     AuthenticationService authenticationService;
     //TEST CONTROLLER
