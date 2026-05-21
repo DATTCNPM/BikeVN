@@ -6,6 +6,8 @@ import com.backend.bikerental.dto.response.UserResponse;
 import com.backend.bikerental.entity.Role;
 import com.backend.bikerental.entity.User;
 import com.backend.bikerental.enums.RoleEnum;
+import com.backend.bikerental.exception.AppException;
+import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.UserMapper;
 import com.backend.bikerental.repository.RoleRepository;
 import com.backend.bikerental.repository.UserRepository;
@@ -15,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +37,7 @@ public class UserService {
     {
         if(userRepository.existsByEmail(request.getEmail()))
         {
-            throw new RuntimeException("user existed");
+            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
         User user = userMapper.toUser(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
@@ -63,12 +66,12 @@ public class UserService {
     public UserResponse getUser(String id)
     {
         return userMapper.toUserResponse(userRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("user is not exist")));
+                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     public UserResponse updateUser(String id, UserUpdateRequest request)
     {
-        User user = userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not exist"));
+        User user = userRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
         if(request.getPassword() != null && !request.getPassword().isBlank())
         {
@@ -81,6 +84,16 @@ public class UserService {
     public void deleteUser(String id)
     {
         userRepository.deleteById(id);
+    }
+
+    public UserResponse getMyInfo()
+    {
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return userMapper.toUserResponse(user);
     }
 
 }
