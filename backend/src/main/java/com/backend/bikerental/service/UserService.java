@@ -39,7 +39,8 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
 
-        var role = roleRepository.findById(RoleEnum.user.name())
+        //hiện tại có uuid cho role nên cần đổi qua, chúng ta đang dùng role name nên ko tìm được
+        var role = roleRepository.findByName(RoleEnum.user.name())
                 .orElseGet(()-> {
                     var newRole = Role.builder()
                             .name(RoleEnum.user.name())
