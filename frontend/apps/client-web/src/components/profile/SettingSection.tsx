@@ -27,8 +27,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTheme } from "next-themes";
 
+import { useDeleteUser } from "@/features/auth/useDeleteUser";
+import { useProfile } from "@/features/auth/useProfile";
+
 export default function SettingsSection() {
   const { theme, setTheme } = useTheme();
+  const { data: profile } = useProfile();
+
+  const { mutate: deleteUser, isPending } = useDeleteUser();
 
   const methods = useForm<UpdatePasswordSchema>({
     resolver: zodResolver(updatePasswordSchema),
@@ -43,7 +49,8 @@ export default function SettingsSection() {
   };
 
   const handleDeleteAccount = () => {
-    toast.error("Tính năng xóa tài khoản hiện chưa được triển khai.");
+    // Gọi hàm xóa người dùng từ useDeleteUser
+    deleteUser(profile?.id || ""); // Sử dụng ID từ profile nếu có
   };
   return (
     <div className="space-y-8">
