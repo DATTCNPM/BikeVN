@@ -8,7 +8,7 @@ import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useProfile } from "@/features/auth/useProfile";
 import { useBooking } from "@repo/hooks";
 
 import { useEffect, useState } from "react";
@@ -17,7 +17,11 @@ import { useParams } from "react-router-dom";
 import type { PaymentMethod } from "node_modules/@repo/types/src/payment";
 
 export default function PaymentPage() {
-  const { userProfile } = useAuthStore();
+  const {
+    data: userProfile,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useProfile();
   const { id } = useParams();
   const { data: booking = null, isLoading, error } = useBooking(id!);
   const {
@@ -35,9 +39,12 @@ export default function PaymentPage() {
     if (vehicleError) {
       toast.error("Failed to load vehicle details. Please try again.");
     }
-  }, [error]);
+    if (profileError) {
+      toast.error("Failed to load user profile. Please try again.");
+    }
+  }, [error, vehicleError, profileError]);
 
-  if (isLoading || vehicleLoading) {
+  if (isLoading || vehicleLoading || profileLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />

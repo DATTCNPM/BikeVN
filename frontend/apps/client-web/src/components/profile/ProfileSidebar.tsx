@@ -23,10 +23,18 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
 
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useProfile } from "@/features/auth/useProfile";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export function ProfileSidebar() {
-  const { userProfile } = useAuthStore();
+  const { data: userProfile, isLoading: profileLoading } = useProfile();
+  if (profileLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <Spinner />
+      </div>
+    );
+  }
   return (
     <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader className="p-4">

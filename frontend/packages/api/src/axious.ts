@@ -27,9 +27,16 @@ axiosClient.interceptors.request.use(
 
 axiosClient.interceptors.response.use(
   (response) => {
+    // Lấy config của request ra để kiểm tra cờ custom
+    const config = response.config as any;
     const data = response.data;
 
-    // Check for logical HTTP 200 but custom Unauthenticated (code 401)
+    // Nếu request có cờ skipAuthCheck, cho phép đi qua thẳng, không can thiệp
+    if (config?.skipAuthCheck) {
+      return data;
+    }
+
+    // Check cho logical HTTP 200 nhưng custom Unauthenticated (code 401)
     if (data && (data.code === 401 || data.message === "Unauthenticated")) {
       handleUnauthorizedRedirect();
       return Promise.reject(new Error(data.message || "Unauthenticated"));
@@ -38,9 +45,15 @@ axiosClient.interceptors.response.use(
     return data;
   },
   (error) => {
+    const config = error.config as any;
     const response = error.response;
 
-    // Check if real HTTP status is 401 or 403
+    // Nếu lỗi HTTP thực tế (401/403) nhưng có cờ skipAuthCheck, trả lỗi về cho hàm gọi tự xử lý
+    if (config?.skipAuthCheck) {
+      return Promise.reject(error);
+    }
+
+    // Check nếu real HTTP status is 401 hoặc 403
     if (
       response &&
       (response.status === 401 || (response.data && response.data.code === 401))
