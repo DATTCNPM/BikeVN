@@ -1,10 +1,12 @@
-export type User = {
+export interface User {
   id: string;
-  email: string;
   name: string;
+  email: string;
   phone?: string;
+  cccdNumber?: string;
   cccd_number?: string;
-  role: "user" | "admin";
-  created_at: string;
-  updated_at: string;
-};
+  role?: "user" | "admin";
+  created_at?: string;
+  updated_at?: string;
+}
+

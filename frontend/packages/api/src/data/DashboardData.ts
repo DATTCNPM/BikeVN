@@ -1,4 +1,4 @@
-import { DashboardOverview } from "@repo/types";
+import type { DashboardOverview } from "@repo/types";
 export const dashboardData: DashboardOverview = {
   overview: {
     totalRevenue: 125000,

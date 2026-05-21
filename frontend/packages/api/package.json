@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@repo/types": "workspace:*",
+    "@repo/constants": "workspace:*",
+    "@repo/services": "workspace:*",
     "axios": "^1.16.0"
   }
 }

@@ -38,7 +38,7 @@ export default function SettingsSection() {
     handleSubmit,
     formState: { errors },
   } = methods;
-  const onSubmit = (data: UpdatePasswordSchema) => {
+  const onSubmit = (_data: UpdatePasswordSchema) => {
     toast.error("Tính năng đổi mật khẩu hiện chưa được triển khai.");
   };
 

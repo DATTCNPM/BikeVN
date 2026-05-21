@@ -7,3 +7,5 @@ export * from "./review";
 export * from "./branch";
 export * from "./dashboard";
 export * from "./message";
+export * from "./role";
+

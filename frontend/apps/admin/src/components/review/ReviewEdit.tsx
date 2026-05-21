@@ -51,7 +51,8 @@ export default function ReviewEdit({ open, onOpenChange, review }: Props) {
           booking_id: review.booking_id,
           user_id: review.user_id,
           vehicle_id: review.vehicle_id,
-          ...values,
+          rating: values.rating,
+          comment: values.comment || undefined,
         },
       });
       toast.success("Cập nhật đánh giá thành công");

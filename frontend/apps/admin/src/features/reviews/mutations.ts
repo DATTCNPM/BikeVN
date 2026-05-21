@@ -8,7 +8,7 @@ export function useUpdateReview() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: ReviewPayload }) => 
       reviewApi.updateReview(id, payload),
-    onSuccess: async (_, variables) => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: reviewsKeys.all });
     },
   });

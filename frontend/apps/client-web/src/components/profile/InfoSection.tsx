@@ -15,7 +15,6 @@ import {
   Shield,
   Calendar,
   Edit2,
-  Car,
 } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
 import UpdateProfile from "@/components/profile/UpdateProfile";

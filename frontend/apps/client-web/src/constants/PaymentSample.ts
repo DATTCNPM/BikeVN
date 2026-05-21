@@ -1,13 +1,13 @@
-import type { PaymentMethod } from "@repo/types";
+import type { Payment } from "@repo/types";
 
-export const paymentMethods: PaymentMethod[] = [
+export const paymentMethods: Payment[] = [
   {
     id: "1",
     booking_id: "1",
     amount: 100,
     type: "deposit",
     card_method: "momo",
-    payment_method: " Momo Wallet",
+    payment_method: "momo",
     status: "completed",
     transaction_code: "TXN123456",
     paid_at: "2024-06-01T10:00:00Z",
@@ -19,7 +19,7 @@ export const paymentMethods: PaymentMethod[] = [
     amount: 200,
     type: "rental",
     card_method: "vnpay",
-    payment_method: " VNPay",
+    payment_method: "vnpay",
     status: "completed",
     transaction_code: "TXN789012",
     paid_at: "2024-06-01T11:00:00Z",
@@ -31,7 +31,7 @@ export const paymentMethods: PaymentMethod[] = [
     amount: 150,
     type: "deposit",
     card_method: "card",
-    payment_method: "Credit Card",
+    payment_method: "card",
     status: "pending",
     transaction_code: null,
     paid_at: null,

@@ -1,5 +1,5 @@
 {
-  "name": "@repo/providers",
+  "name": "@repo/services",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.ts",
@@ -12,8 +12,7 @@
     }
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.100.9",
-    "@types/react": "^19.2.14",
-    "react": "^19.2.5"
+    "@repo/types": "workspace:*",
+    "@repo/constants": "workspace:*"
   }
 }

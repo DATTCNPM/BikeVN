@@ -7,6 +7,7 @@ type Props = {
   search: string;
   onSearchChange: (value: string) => void;
   onCreateOpen?: () => void;
+  onCreate?: () => void;
   children?: React.ReactNode;
 };
 
@@ -14,8 +15,10 @@ export default function DataTableToolbar({
   search,
   onSearchChange,
   onCreateOpen,
+  onCreate,
   children,
 }: Props) {
+  const handleCreate = onCreateOpen || onCreate;
   return (
     <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
       <div className="flex flex-1 flex-col gap-3 lg:flex-row">
@@ -34,7 +37,7 @@ export default function DataTableToolbar({
       </div>
 
       <Button
-        onClick={onCreateOpen}
+        onClick={handleCreate}
         className="h-12 rounded-2xl px-5 font-semibold"
       >
         <Plus className="mr-2 size-5" />
