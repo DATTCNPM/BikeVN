@@ -15,14 +15,18 @@ import {
 } from "@/constants/FooterConstant";
 import { useAuthStore } from "@/features/auth/authStore";
 
+import { useEffect } from "react";
+
 export default function Landing() {
   const isLogin = useAuthStore((state) => state.isLogin);
   console.log("isLogin:", isLogin);
   const navigate = useNavigate();
 
-  if (isLogin) {
-    navigate("/home");
-  }
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/home");
+    }
+  }, [isLogin, navigate]);
 
   return (
     <div className="relative bg-[#050505] overflow-hidden">

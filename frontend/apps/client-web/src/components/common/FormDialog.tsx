@@ -16,7 +16,7 @@ type FormDialogProps = {
   trigger: React.ReactNode;
   title: string;
   description?: string;
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onSubmit: () => void;
   children: React.ReactNode;
   open: boolean;
   onOpen: (open: boolean) => void;
@@ -39,7 +39,14 @@ export default function FormDialog({
     <Dialog open={open} onOpenChange={onOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            console.log("Form submitted, calling onSubmit...");
+            onSubmit();
+          }}
+          className="space-y-4"
+        >
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {description && (

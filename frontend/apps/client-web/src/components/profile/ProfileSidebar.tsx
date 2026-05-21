@@ -24,10 +24,12 @@ import {
 } from "@repo/ui/components/ui/dropdown-menu";
 
 import { useProfile } from "@/features/auth/useProfile";
+import { useLogout } from "@/features/auth/useLogout";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export function ProfileSidebar() {
   const { data: userProfile, isLoading: profileLoading } = useProfile();
+  const { mutate: logout, isPending } = useLogout();
   if (profileLoading) {
     return (
       <div className="flex items-center justify-center h-48">
@@ -108,7 +110,7 @@ export function ProfileSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
-                  <span>Xác nhận đăng xuất</span>
+                  <span onClick={() => logout()}>Xác nhận đăng xuất</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

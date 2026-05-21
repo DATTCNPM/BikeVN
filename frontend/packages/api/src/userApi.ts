@@ -1,5 +1,10 @@
 import axiosClient from "./axious";
-import type { ApiResponse, User, UserCreationRequest, UpdateProfilePayload } from "@repo/types";
+import type {
+  ApiResponse,
+  User,
+  UserCreationRequest,
+  UpdateProfilePayload,
+} from "@repo/types";
 
 export const userApi = {
   async getUsers(): Promise<ApiResponse<User[]>> {
@@ -11,22 +16,28 @@ export const userApi = {
   },
 
   async createUser(
-    payload: Omit<UserCreationRequest, "passwordHash"> & { passwordHash?: string; cccd_number?: string }
+    payload: Omit<UserCreationRequest, "passwordHash"> & {
+      passwordHash?: string;
+      cccdNumber?: string;
+    },
   ): Promise<ApiResponse<User>> {
-    const { cccd_number, passwordHash, ...rest } = payload;
+    const { cccdNumber, passwordHash, ...rest } = payload;
     const requestPayload = {
       ...rest,
-      cccdNumber: cccd_number || (payload as any).cccdNumber,
+      cccdNumber: cccdNumber || "",
       passwordHash: passwordHash || "defaultPassword123",
     };
     return axiosClient.post("/user", requestPayload);
   },
 
-  async updateUser(id: string, payload: Partial<UpdateProfilePayload> & { cccd_number?: string }): Promise<ApiResponse<User>> {
-    const { cccd_number, ...rest } = payload;
+  async updateUser(
+    id: string,
+    payload: Partial<UpdateProfilePayload> & { cccdNumber?: string },
+  ): Promise<ApiResponse<User>> {
+    const { cccdNumber, ...rest } = payload;
     const requestPayload = {
       ...rest,
-      cccdNumber: cccd_number !== undefined ? cccd_number : (payload as any).cccdNumber,
+      cccdNumber: cccdNumber || "",
     };
     return axiosClient.put(`/user/${id}`, requestPayload);
   },

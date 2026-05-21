@@ -1,6 +1,6 @@
 import Logo from "@/assets/icons/Logo_yellow.svg";
 import { Bell, Home, MessageCircle, CircleUserRound } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
-import { toast } from "sonner";
 
 import { useProfile } from "@/features/auth/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
@@ -19,7 +18,6 @@ import { useLogout } from "@/features/auth/useLogout";
 export default function Header() {
   const { data: userProfile } = useProfile();
   const { mutateAsync: logout } = useLogout();
-  const navigate = useNavigate();
   return (
     <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-50 px-8">
       <Link to="/home" className="flex items-center gap-2">
@@ -64,18 +62,7 @@ export default function Header() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuLabel>Danger Zone</DropdownMenuLabel>
-              <DropdownMenuItem
-                variant="destructive"
-                onSelect={async () => {
-                  try {
-                    await logout();
-                    toast.success("Logged out successfully");
-                    navigate("/login");
-                  } catch (error) {
-                    toast.error("Failed to log out. Please try again.");
-                  }
-                }}
-              >
+              <DropdownMenuItem variant="destructive" onClick={() => logout()}>
                 Log out
               </DropdownMenuItem>
             </DropdownMenuGroup>

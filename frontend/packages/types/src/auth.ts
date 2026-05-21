@@ -37,7 +37,7 @@ export interface UpdateProfilePayload {
   name?: string;
   email?: string;
   phone?: string;
-  cccd_number?: string;
+  cccdNumber?: string;
 }
 
 export interface UpdatePasswordPayload {
@@ -45,4 +45,3 @@ export interface UpdatePasswordPayload {
   newPassword?: string;
   confirmNewPassword?: string;
 }
-

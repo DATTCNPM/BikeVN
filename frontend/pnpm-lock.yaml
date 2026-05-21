@@ -348,6 +348,9 @@ importers:
 
   packages/providers:
     dependencies:
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../ui
       '@tanstack/react-query':
         specifier: ^5.100.9
         version: 5.100.9(react@19.2.5)
