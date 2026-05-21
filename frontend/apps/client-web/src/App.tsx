@@ -4,19 +4,8 @@ import "leaflet/dist/leaflet.css";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Toaster } from "@repo/ui/components/ui/sonner";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
-import { QueryProvider } from "@repo/providers";
-
-import { useAuthStore } from "@/stores/useAuthStore";
-import { useEffect } from "react";
 
 export default function App() {
-  const fetchProfile = useAuthStore((state) => state.fetchProfile);
-  const ping = useAuthStore((state) => state.ping);
-
-  useEffect(() => {
-    fetchProfile();
-    ping();
-  }, []);
   return (
     <ThemeProvider
       attribute="class"
@@ -25,9 +14,8 @@ export default function App() {
       disableTransitionOnChange
     >
       <TooltipProvider>
-        <QueryProvider>
-          <RouterProvider router={router} />
-        </QueryProvider>
+        <RouterProvider router={router} />
+
         <Toaster />
       </TooltipProvider>
     </ThemeProvider>

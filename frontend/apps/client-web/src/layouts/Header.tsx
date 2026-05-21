@@ -13,10 +13,12 @@ import {
 } from "@repo/ui/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useProfile } from "@/features/auth/useProfile";
+import { useLogout } from "@/features/auth/useLogout";
 
 export default function Header() {
-  const { userProfile, logout } = useAuthStore();
+  const { data: userProfile } = useProfile();
+  const { mutateAsync: logout } = useLogout();
   const navigate = useNavigate();
   return (
     <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-50 px-8">
@@ -64,12 +66,13 @@ export default function Header() {
               <DropdownMenuLabel>Danger Zone</DropdownMenuLabel>
               <DropdownMenuItem
                 variant="destructive"
-                onClick={async () => {
-                  const isSuccess = await logout();
-                  if (isSuccess) {
+                onSelect={async () => {
+                  try {
+                    await logout();
+                    toast.success("Logged out successfully");
                     navigate("/login");
-                  } else {
-                    toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
+                  } catch (error) {
+                    toast.error("Failed to log out. Please try again.");
                   }
                 }}
               >

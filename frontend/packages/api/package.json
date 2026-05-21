@@ -12,9 +12,10 @@
     }
   },
   "dependencies": {
-    "@repo/types": "workspace:*",
     "@repo/constants": "workspace:*",
     "@repo/services": "workspace:*",
-    "axios": "^1.16.0"
+    "@repo/types": "workspace:*",
+    "axios": "^1.16.0",
+    "jwt-decode": "^4.0.0"
   }
 }

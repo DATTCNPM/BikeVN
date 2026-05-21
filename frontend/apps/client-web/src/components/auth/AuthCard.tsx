@@ -17,7 +17,7 @@ interface AuthCardProps {
   children: React.ReactNode;
   action: string;
 
-  error?: string | null;
+  error?: Error | null;
   onSubmit: React.FormEventHandler<HTMLFormElement>;
 }
 
@@ -51,7 +51,7 @@ export default function AuthCard({
         <form onSubmit={onSubmit}>
           {children}
 
-          {error && <p className="text-destructive mt-2">{error}</p>}
+          {error && <p className="text-destructive mt-2">{error.message}</p>}
         </form>
       </CardContent>
       <CardFooter className="flex items-center justify-center">

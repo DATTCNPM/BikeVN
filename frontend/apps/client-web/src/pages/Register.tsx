@@ -10,8 +10,6 @@ import { Eye, EyeOff } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
-
-import { useAuthStore } from "@/stores/useAuthStore";
 import {
   Field,
   FieldContent,
@@ -20,9 +18,15 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 
+import { useRegister } from "@/features/auth/useRegister";
+
 export default function Register() {
   const navigate = useNavigate();
-  const { register: registerUser, loading, error } = useAuthStore();
+  const {
+    mutateAsync: registerUser,
+    error,
+    isPending: loading,
+  } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
   const methods = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),

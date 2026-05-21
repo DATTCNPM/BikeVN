@@ -13,10 +13,11 @@ import {
   navigation,
   social,
 } from "@/constants/FooterConstant";
+import { useAuthStore } from "@/features/auth/authStore";
 
-import { useAuthStore } from "@/stores/useAuthStore";
 export default function Landing() {
-  const { isLogin } = useAuthStore();
+  const isLogin = useAuthStore((state) => state.isLogin);
+  console.log("isLogin:", isLogin);
   const navigate = useNavigate();
 
   if (isLogin) {

@@ -18,10 +18,19 @@ import {
 } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
 import UpdateProfile from "@/components/profile/UpdateProfile";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useProfile } from "@/features/auth/useProfile";
+import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export default function InfoSection() {
-  const user = useAuthStore((state) => state.userProfile);
+  const { data: user, isLoading } = useProfile();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <Spinner />
+      </div>
+    );
+  }
   const infoItems = [
     {
       icon: <User className="text-muted-foreground" />,

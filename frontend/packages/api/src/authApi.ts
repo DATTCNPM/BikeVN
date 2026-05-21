@@ -10,7 +10,10 @@ import type {
 
 export const authApi = {
   async ping() {
-    return axiosClient.get("/test");
+    // Truyền thêm flag ẩn dưới dạng AxiosRequestConfig
+    return axiosClient.get("/auth/test", {
+      skipAuthCheck: true,
+    } as any);
   },
 
   async login(
@@ -24,7 +27,7 @@ export const authApi = {
   },
 
   async getProfile(): Promise<ApiResponse<User>> {
-    return axiosClient.get("/user/myInfo");
+    return axiosClient.get("/user");
   },
 
   async logout(token: string): Promise<ApiResponse<void>> {

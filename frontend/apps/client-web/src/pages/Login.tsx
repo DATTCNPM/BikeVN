@@ -18,10 +18,10 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
 
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useLogin } from "@/features/auth/useLogin";
 export default function Login() {
   const navigate = useNavigate();
-  const { login, loading, error } = useAuthStore();
+  const { mutateAsync: login, error, isPending } = useLogin();
 
   const [showPassword, setShowPassword] = useState(false);
   const methods = useForm<LoginSchema>({
@@ -89,8 +89,8 @@ export default function Login() {
             <FieldError>{errors.password.message}</FieldError>
           )}
         </Field>
-        <Button type="submit" size="lg">
-          {loading ? (
+        <Button type="submit" size="lg" className="w-full" disabled={isPending}>
+          {isPending ? (
             <span className="flex items-center gap-2">
               <Spinner className="w-5 h-5" />
               Đang đăng nhập...

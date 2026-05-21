@@ -1,4 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
+import { usePingServer } from "@/features/auth/authHook";
+
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import Landing from "@/pages/Landing";
@@ -15,12 +20,23 @@ import BookingResultPage from "@/pages/BookingResultPage";
 import MyBookingSection from "@/components/profile/MyBookingSection";
 import PaymentPage from "@/pages/PaymentPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import ServerErrorPage from "@/pages/ServerErrorPage";
 
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "@/stores/useAuthStore";
-
+import { useAuthStore } from "@/features/auth/authStore";
+function GlobalRootLayout() {
+  const navigate = useNavigate();
+  usePingServer();
+  const isServerDown = useAuthStore((state) => state.isServerDown);
+  console.log("isServerDown:", isServerDown);
+  useEffect(() => {
+    if (isServerDown) {
+      navigate("/server-error");
+    }
+  }, [isServerDown]);
+  return <Outlet />;
+}
 function ProtectedRoute() {
-  // dùng state này từ useAuthStore
   const isLogin = useAuthStore((state) => state.isLogin);
 
   // chưa đăng nhập -> đá về login
@@ -35,12 +51,17 @@ function ProtectedRoute() {
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <GlobalRootLayout />, // Layout gốc để kiểm tra server status
     children: [
       {
         index: true,
         element: <Landing />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
   {
     element: <AuthLayout />,
@@ -115,8 +136,8 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "*",
-    element: <NotFoundPage />,
+    path: "/server-error",
+    element: <ServerErrorPage />,
   },
 ]);
 
