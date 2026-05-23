@@ -43,6 +43,7 @@ export default function Register() {
     formState: { errors },
   } = methods;
   const onSubmit = async (data: RegisterSchema) => {
+    console.log("Submitting registration data:", data);
     const success = await registerUser(data);
     if (success) {
       navigate("/login");

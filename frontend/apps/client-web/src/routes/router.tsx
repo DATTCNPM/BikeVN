@@ -37,12 +37,15 @@ function GlobalRootLayout() {
   return <Outlet />;
 }
 function ProtectedRoute() {
+  const navigate = useNavigate();
   const isLogin = useAuthStore((state) => state.isLogin);
 
   // chưa đăng nhập -> đá về login
-  if (!isLogin) {
-    return <Navigate to="/login" replace />;
-  }
+  useEffect(() => {
+    if (!isLogin) {
+      navigate("/login");
+    }
+  }, [isLogin]);
 
   // đã đăng nhập -> render route con
   return <Outlet />;

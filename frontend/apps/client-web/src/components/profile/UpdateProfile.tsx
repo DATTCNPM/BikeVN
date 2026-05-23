@@ -13,44 +13,62 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "sonner";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useProfile } from "@/features/auth/useProfile";
-import {useUpdateProfile} from "@/features/auth/useUpdateProfile";
+import type { User } from "@repo/types";
+import { useUpdateProfile } from "@/features/auth/useUpdateProfile";
 
 type UpdateProfileProps = {
+  userProfile: User;
   trigger: React.ReactNode;
 };
 
-export default function UpdateProfile({ trigger }: UpdateProfileProps) {
+export default function UpdateProfile({
+  trigger,
+  userProfile,
+}: UpdateProfileProps) {
   const [open, setOpen] = useState(false);
-  const { data: userProfile } = useProfile();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
   const methods = useForm<UpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      name: userProfile?.name || "",
-      email: userProfile?.email || "",
-      phone: userProfile?.phone || "",
-      cccd_number: userProfile?.cccd_number || "",
+      name: "",
+      email: "",
+      phone: "",
+      cccdNumber: "",
     },
   });
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = methods;
+  useEffect(() => {
+    if (userProfile) {
+      reset({
+        name: userProfile.name || "",
+        email: userProfile.email || "",
+        phone: userProfile.phone || "",
+        cccdNumber: userProfile.cccdNumber || "",
+      });
+    }
+  }, [userProfile, reset]);
   const onSubmit = (data: UpdateProfileSchema) => {
-    updateProfile(data, {
-      onSuccess: () => {
-        toast.success("Cập nhật thông tin thành công");
-        setOpen(false);
+    console.log("Submitting update profile with data:", data);
+    updateProfile(
+      { userId: userProfile?.id || "", payload: data },
+      {
+        onSuccess: () => {
+          toast.success("Cập nhật thông tin thành công");
+          setOpen(false);
+        },
+        onError: () => {
+          toast.error("Cập nhật thông tin thất bại. Vui lòng thử lại.");
+        },
       },
-      onError: () => {
-        toast.error("Cập nhật thông tin thất bại. Vui lòng thử lại.");
-      },
-    });
+    );
   };
 
   return (
@@ -102,16 +120,16 @@ export default function UpdateProfile({ trigger }: UpdateProfileProps) {
           </FieldContent>
         </Field>
         <Field>
-          <FieldLabel htmlFor="cccd_number">Số CCCD</FieldLabel>
+          <FieldLabel htmlFor="cccdNumber">Số CCCD</FieldLabel>
           <FieldContent>
             <Input
               type="text"
-              id="cccd_number"
-              placeholder={`${userProfile?.cccd_number || "123456789"}`}
-              {...register("cccd_number")}
+              id="cccdNumber"
+              placeholder={`${userProfile?.cccdNumber || "123456789"}`}
+              {...register("cccdNumber")}
             />
-            {errors.cccd_number && (
-              <FieldError>{errors.cccd_number.message}</FieldError>
+            {errors.cccdNumber && (
+              <FieldError>{errors.cccdNumber.message}</FieldError>
             )}
           </FieldContent>
         </Field>

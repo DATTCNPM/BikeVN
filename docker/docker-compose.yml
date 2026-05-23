@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   mysql:
     image: mysql:8.0
@@ -17,9 +15,9 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: 1
     volumes:
       - bikevn_mysql_data:/var/lib/mysql
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/sample_data.sql:/docker-entrypoint-initdb.d/02-sample_data.sql:ro
-      - ./docker/mysql.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../database/sample_data.sql:/docker-entrypoint-initdb.d/02-sample_data.sql:ro
+      - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER:-bikevn_user}", "-p${DB_PASSWORD:-bikevn_pass}"]
       interval: 10s
