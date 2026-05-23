@@ -2,16 +2,28 @@ package com.backend.bikerental.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    USER_NOT_EXISTED("User not existed", "001"),
-    EMAIL_ALREADY_EXISTS("Email already exists", "002"),
-    INVALID_PASSWORD("Invalid password", "003"),
-    UNAUTHENTICATED("Unauthenticated", "004"),
-    UNAUTHORIZED("You don't have permission", "005");
+    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized Exception", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_KEY(1001, "Invalid key", HttpStatus.BAD_REQUEST),
+    USER_EXISTED(1002, "User existed", HttpStatus.BAD_REQUEST),
+    USER_NOT_EXISTED(1003, "User not existed", HttpStatus.NOT_FOUND),
+    INVALID_PASSWORD(1004, "Invalid password",HttpStatus.BAD_REQUEST ),
+    UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN);
 
-    private final String message;
-    private final String code;
+    private int code;
+    private String message;
+    private HttpStatusCode statusCode;
+
+    ErrorCode(int code, String message, HttpStatusCode statusCode)
+    {
+        this.code = code;
+        this.message = message;
+        this.statusCode = statusCode;
+    }
 }

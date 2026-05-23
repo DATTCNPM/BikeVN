@@ -1,6 +1,7 @@
 package com.backend.bikerental.config;
 
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,12 +18,13 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-       // response.setStatus();
+        ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+        response.setStatus(errorCode.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .code(401)
-                .message("Unauthenticated")
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .build();
 
         ObjectMapper objectMapper = new ObjectMapper();

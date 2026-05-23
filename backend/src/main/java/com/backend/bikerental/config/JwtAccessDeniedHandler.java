@@ -1,6 +1,7 @@
 package com.backend.bikerental.config;
 
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,12 +19,14 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
 
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
         response.setStatus(403);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .code(403)
-                .message("You don't have permission")
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .build();
 
         ObjectMapper mapper = new ObjectMapper();
