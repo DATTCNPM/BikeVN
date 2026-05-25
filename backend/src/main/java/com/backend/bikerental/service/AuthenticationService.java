@@ -7,6 +7,8 @@ import com.backend.bikerental.dto.response.AuthenticationResponse;
 import com.backend.bikerental.dto.response.IntrospectResponse;
 import com.backend.bikerental.entity.InvalidateToken;
 import com.backend.bikerental.entity.User;
+import com.backend.bikerental.exception.AppException;
+import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.repository.InvalidatedTokenRepository;
 import com.backend.bikerental.repository.UserRepository;
 import com.nimbusds.jose.*;
@@ -79,11 +81,11 @@ public class AuthenticationService {
 
         if(invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
         {
-            throw new RuntimeException("Unauthenticated");
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         if(!verified && expiryTime.after(new Date()))
         {
-            throw new RuntimeException("Unauthenticated");
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         return signedJWT;
     }
@@ -92,18 +94,18 @@ public class AuthenticationService {
     {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> {
-                    return new RuntimeException("User not exist");
+                    return new AppException(ErrorCode.USER_NOT_EXISTED);
                 });
 
         if(request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-            throw new RuntimeException("Password is required");
+            throw new AppException(ErrorCode.INVALID_PASSWORD);
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
         if(!authenticated)
         {
-            throw new RuntimeException("Incorrect Password");
+            throw new AppException(ErrorCode.INVALID_PASSWORD);
         }
         var token = generateToken(user);
         return AuthenticationResponse.builder()
@@ -134,7 +136,7 @@ public class AuthenticationService {
         }
         catch (JOSEException e)
         {
-            throw new RuntimeException("Can't signed token");
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
     private String buildScope(User user)

@@ -37,12 +37,11 @@ public class UserService {
     {
         if(userRepository.existsByEmail(request.getEmail()))
         {
-            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
         User user = userMapper.toUser(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
 
-        //hiện tại có uuid cho role nên cần đổi qua, chúng ta đang dùng role name nên ko tìm được
         var role = roleRepository.findByName(RoleEnum.user.name())
                 .orElseGet(()-> {
                     var newRole = Role.builder()
