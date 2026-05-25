@@ -14,12 +14,30 @@ DROP TABLE IF EXISTS conversations;
 DROP TABLE IF EXISTS vehicle_returns;
 DROP TABLE IF EXISTS payments;
 DROP TABLE IF EXISTS bookings;
+DROP TABLE IF EXISTS vehicle_images;
 DROP TABLE IF EXISTS vehicles;
+DROP TABLE IF EXISTS vehicle_models;
+DROP TABLE IF EXISTS vehicle_brands;
 DROP TABLE IF EXISTS branches;
+DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- 1. Users Table
+-- 1. Roles Table (Normalized)
+CREATE TABLE roles (
+  id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Auto-increment primary key',
+  name VARCHAR(50) NOT NULL UNIQUE COMMENT 'Role name (admin, employee, user, etc)',
+  description VARCHAR(255) COMMENT 'Role description',
+  is_active BOOLEAN DEFAULT TRUE COMMENT 'Is role active for assignment',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  INDEX idx_name (name),
+  INDEX idx_is_active (is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Application roles';
+
+-- 1.1. Users Table
 CREATE TABLE users (
   id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
   name VARCHAR(100) NOT NULL,
@@ -27,15 +45,31 @@ CREATE TABLE users (
   password_hash VARCHAR(255) NOT NULL,
   phone VARCHAR(20) NOT NULL,
   cccd_number VARCHAR(20) NOT NULL COMMENT 'National ID number for identity verification',
-  role ENUM('user', 'employee', 'admin') DEFAULT 'user',
+  is_active BOOLEAN DEFAULT TRUE COMMENT 'User account status',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   UNIQUE KEY unique_email (email),
   UNIQUE KEY unique_cccd (cccd_number),
-  INDEX idx_role (role),
+  INDEX idx_is_active (is_active),
   INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User accounts and authentication';
+
+-- 1.2. User Roles Table (Many-to-Many)
+CREATE TABLE user_roles (
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  user_id VARCHAR(36) NOT NULL COMMENT 'Foreign key to users',
+  role_id INT NOT NULL COMMENT 'Foreign key to roles',
+  assigned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  assigned_by VARCHAR(36) COMMENT 'Admin user who assigned this role',
+  
+  FOREIGN KEY fk_ur_user (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY fk_ur_role (role_id) REFERENCES roles(id) ON DELETE RESTRICT,
+  UNIQUE KEY unique_user_role (user_id, role_id),
+  INDEX idx_user_id (user_id),
+  INDEX idx_role_id (role_id),
+  INDEX idx_assigned_at (assigned_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User role assignments (many-to-many)';
 
 -- 2. Branches Table
 CREATE TABLE branches (
@@ -52,33 +86,75 @@ CREATE TABLE branches (
   INDEX idx_location (lat, lng)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Rental branch locations';
 
+-- 2.1. Vehicle Brands Table (Normalized)
+CREATE TABLE vehicle_brands (
+  id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Auto-increment primary key',
+  name VARCHAR(100) NOT NULL UNIQUE COMMENT 'Brand name (Honda, Yamaha, etc)',
+  country VARCHAR(50) COMMENT 'Country of origin',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  
+  INDEX idx_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Motorcycle brands';
+
+-- 2.2. Vehicle Models Table (Normalized)
+CREATE TABLE vehicle_models (
+  id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Auto-increment primary key',
+  brand_id INT NOT NULL COMMENT 'Foreign key to vehicle_brands',
+  name VARCHAR(100) NOT NULL COMMENT 'Model name (CB500, XJR1300, etc)',
+  engine_capacity INT NOT NULL COMMENT 'Engine capacity in cc',
+  year_from INT COMMENT 'Production year start',
+  year_to INT COMMENT 'Production year end',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY fk_model_brand (brand_id) REFERENCES vehicle_brands(id) ON DELETE RESTRICT,
+  UNIQUE KEY unique_brand_model (brand_id, name),
+  INDEX idx_brand_id (brand_id),
+  INDEX idx_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Vehicle models per brand';
+
 -- 3. Vehicles Table
 CREATE TABLE vehicles (
   id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
-  name VARCHAR(100) NOT NULL COMMENT 'Vehicle model/name',
-  brand VARCHAR(100) NOT NULL COMMENT 'Vehicle brand (Honda, Yamaha, etc)',
-  model VARCHAR(100) NOT NULL COMMENT 'Vehicle model name',
-  license_plate VARCHAR(20) NOT NULL UNIQUE COMMENT 'License plate number',
+  name VARCHAR(100) NOT NULL COMMENT 'Vehicle display name/nickname',
+  brand_id INT NOT NULL COMMENT 'Foreign key to vehicle_brands',
+  model_id INT NOT NULL COMMENT 'Foreign key to vehicle_models',
+  license_plate VARCHAR(20) NOT NULL COMMENT 'License plate number',
   color VARCHAR(50) NOT NULL COMMENT 'Vehicle color',
   year INT NOT NULL COMMENT 'Manufacturing year',
-  price_per_day DECIMAL(10,2) NOT NULL COMMENT 'Price per day in VND',
-  engine_capacity INT NOT NULL COMMENT 'Engine capacity in cc',
+  price_per_day DECIMAL(10,2) NOT NULL COMMENT 'Price per day in VND',  
   vehicle_type ENUM('fuel', 'electric') NOT NULL COMMENT 'Fuel type: fuel or electric',
   mileage INT DEFAULT 0 COMMENT 'Current mileage in km',
-  image_url JSON COMMENT 'Array of image URLs (JSON)',
   description TEXT COMMENT 'Vehicle description and features',
   status ENUM('available', 'unavailable', 'maintenance') DEFAULT 'available',
   current_branch_id VARCHAR(36) NOT NULL COMMENT 'Current location (branch)',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
-  FOREIGN KEY fk_vehicle_branch (current_branch_id) REFERENCES branches(id) ON DELETE RESTRICT,
+  FOREIGN KEY fk_vehicle_brand (brand_id) REFERENCES vehicle_brands(id) ON DELETE RESTRICT,
+  FOREIGN KEY fk_vehicle_model (model_id) REFERENCES vehicle_models(id) ON DELETE RESTRICT,
+  FOREIGN KEY fk_vehicle_branch (current_branch_id) REFERENCES branches(id) ON DELETE CASCADE,
   UNIQUE KEY unique_license_plate (license_plate),
-  INDEX idx_status (status),
+  INDEX idx_brand_id (brand_id),
+  INDEX idx_model_id (model_id),  INDEX idx_status (status),
   INDEX idx_price_per_day (price_per_day),
   INDEX idx_vehicle_type (vehicle_type),
   INDEX idx_current_branch_id (current_branch_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Motorcycle/vehicle inventory';
+
+-- 3.1 Vehicle Images Table (Normalized)
+CREATE TABLE vehicle_images (
+  id VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key',
+  vehicle_id VARCHAR(36) NOT NULL COMMENT 'Foreign key to vehicles',
+  image_url VARCHAR(500) NOT NULL COMMENT 'Image URL/path',
+  alt_text VARCHAR(255) COMMENT 'Alt text for accessibility',
+  display_order INT DEFAULT 0 COMMENT 'Order to display images',
+  is_primary BOOLEAN DEFAULT FALSE COMMENT 'Primary/thumbnail image',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  
+  FOREIGN KEY fk_image_vehicle (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE,
+  INDEX idx_vehicle_id (vehicle_id),
+  INDEX idx_is_primary (is_primary),
+  INDEX idx_display_order (display_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Vehicle images gallery';
 
 -- 4. Bookings Table
 CREATE TABLE bookings (
