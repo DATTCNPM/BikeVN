@@ -27,6 +27,12 @@ public class Vehicle {
     @Column(length = 36)
     String id;
     String name;
+    @ManyToOne
+    @Column(name = "brand_id", nullable = false)
+    VehicleBrand brandId;
+    @ManyToOne
+    @Column(name = "model_id", nullable = false)
+    int modelId;
     @Column(length = 20, name = "license_plate")
     String licensePlate;
     String color;
@@ -40,15 +46,13 @@ public class Vehicle {
     String description;
     @Enumerated(EnumType.STRING)
     StatusVehicleEnum status;
-//    @ManyToOne
-//    @Column(name = "current_branch_id",nullable = false)
-//    Branch currentBranch;
-//    @Column(name = "current_branch_id", nullable = false, length = 36)
-//    String currentBranchId;
+    @ManyToOne
+    @Column(name = "current_branch_id", nullable = false, length = 36)
+    String currentBranchId;
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(nullable = false)
     LocalDateTime createdAt;
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Column(nullable = false)
     LocalDateTime updatedAt;
 }
