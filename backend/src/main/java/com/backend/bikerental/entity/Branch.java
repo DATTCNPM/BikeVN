@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class Branch {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(length=36)
     String id;
     String name;
     String address;

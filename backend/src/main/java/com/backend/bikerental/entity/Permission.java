@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "permission")
+@Table(name = "permissions")
 @Getter
 @Setter
 @AllArgsConstructor
