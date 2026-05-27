@@ -10,4 +10,4 @@ export * from "./dashboardApi";
 export * from "./userApi";
 export * from "./roleApi";
 export * from "./permissionApi";
-
+export * from "./notificationApi";

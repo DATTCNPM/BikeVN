@@ -19,6 +19,7 @@ import ChatLayout from "@/layouts/ChatLayout";
 import BookingResultPage from "@/pages/BookingResultPage";
 import MyBookingSection from "@/components/profile/MyBookingSection";
 import PaymentPage from "@/pages/PaymentPage";
+import NotificationPage from "@/pages/NotificationPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import ServerErrorPage from "@/pages/ServerErrorPage";
 
@@ -100,6 +101,10 @@ const router = createBrowserRouter([
           {
             path: "/payment/:id",
             element: <PaymentPage />,
+          },
+          {
+            path: "/notifications",
+            element: <NotificationPage />,
           },
         ],
       },

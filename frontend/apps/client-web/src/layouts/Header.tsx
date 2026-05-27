@@ -1,5 +1,5 @@
 import Logo from "@/assets/icons/Logo_yellow.svg";
-import { Bell, Home, MessageCircle, CircleUserRound } from "lucide-react";
+import { Home, MessageCircle, CircleUserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@repo/ui/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
+import { NotificationPopover } from "@/components/notification/notificationPopover";
 
 import { useProfile } from "@/features/auth/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
@@ -39,9 +40,7 @@ export default function Header() {
         </Link>
       </nav>
       <div className="flex items-center gap-4">
-        <Button variant="outline" className="p-2 rounded-full">
-          <Bell className="w-4 h-4" />
-        </Button>
+        <NotificationPopover />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
