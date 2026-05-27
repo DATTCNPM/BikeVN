@@ -26,8 +26,8 @@ public class VehicleModel {
     String name;
     @Column(nullable = false)
     int engineCapacity;
-    int yearFrom;
-    int yearTo;
+    Integer yearFrom;
+    Integer yearTo;
     @CreationTimestamp
     @Column(nullable = false)
     LocalDateTime createdAt;

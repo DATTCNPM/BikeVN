@@ -17,17 +17,17 @@ import java.time.LocalDateTime;
 public class VehicleResponse {
     String id;
     String name;
-    int brandId;
-    int modelId;
+    Integer brandId;
+    Integer modelId;
     String licensePlate;
     String color;
-    int year;
+    Integer year;
     BigDecimal pricePerDay;
-    VehicleType vehicleType;
-    int mileage;
+    String vehicleType;
+    Integer mileage;
     String description;
-    StatusVehicleEnum status;
+    String status;
     String currentBranchId;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+//    LocalDateTime createdAt;
+//    LocalDateTime updatedAt;
 }
