@@ -35,7 +35,12 @@ public class VehicleService {
                 .orElseThrow(()-> new AppException(ErrorCode.MODEL_NOT_EXISTED));
         var branch = branchRepository.findById(request.getCurrentBranchId())
                 .orElseThrow(()-> new AppException(ErrorCode.BRANCH_NOT_EXISTED));
-
+        if (request.getBrandId() == null) {
+            throw new IllegalArgumentException("brandId is null from request!");
+        }
+        if (request.getModelId() == null) {
+            throw new IllegalArgumentException("modelId is null from request!");
+        }
         Vehicle vehicle = vehicleMapper.toVehicle(request);
         vehicle.setBrand(brand);
         vehicle.setModel(model);
