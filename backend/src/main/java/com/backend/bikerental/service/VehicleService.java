@@ -7,11 +7,13 @@ import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.VehicleMapper;
+import com.backend.bikerental.repository.BranchRepository;
+import com.backend.bikerental.repository.VehicleBrandRepository;
+import com.backend.bikerental.repository.VehicleModelRepository;
 import com.backend.bikerental.repository.VehicleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +24,22 @@ import java.util.List;
 public class VehicleService {
     VehicleRepository vehicleRepository;
     VehicleMapper vehicleMapper;
+    VehicleBrandRepository vehicleBrandRepository;
+    VehicleModelRepository vehicleModelRepository;
+    BranchRepository branchRepository;
     public VehicleResponse createVehicle(VehicleCreationRequest request)
     {
+        var brand = vehicleBrandRepository.findById(request.getBrandId())
+                .orElseThrow(()-> new AppException(ErrorCode.BRAND_NOT_EXISTED));
+        var model = vehicleModelRepository.findById(request.getModelId())
+                .orElseThrow(()-> new AppException(ErrorCode.MODEL_NOT_EXISTED));
+        var branch = branchRepository.findById(request.getCurrentBranchId())
+                .orElseThrow(()-> new AppException(ErrorCode.BRANCH_NOT_EXISTED));
+
         Vehicle vehicle = vehicleMapper.toVehicle(request);
+        vehicle.setBrand(brand);
+        vehicle.setModel(model);
+        vehicle.setCurrentBranch(branch);
         return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
 

@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 public class VehicleResponse {
     String id;
     String name;
+    int brandId;
+    int modelId;
     String licensePlate;
     String color;
     int year;
@@ -25,6 +27,7 @@ public class VehicleResponse {
     int mileage;
     String description;
     StatusVehicleEnum status;
+    String currentBranchId;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
