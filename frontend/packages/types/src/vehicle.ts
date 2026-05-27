@@ -1,23 +1,35 @@
-export type VehicleStatus = "available" | "unavailable" | "maintenance";
+export type StatusVehicleEnum = "available" | "unavailable" | "maintenance";
 
-export type FuelType = "gasoline" | "diesel" | "electric" | "hybrid";
+export type VehicleType = "fuel" | "electric";
 
-export type Vehicle = {
+export interface Vehicle {
   id: string;
   name: string;
-  brand: string;
-  model: string;
-  license_plate: string;
+  licensePlate: string;
   color: string;
   year: number;
-  price_per_day: number;
-  status: VehicleStatus;
-  engine_capacity: number;
-  fuel_type: FuelType;
+  pricePerDay: number;
+  vehicleType: VehicleType;
   mileage: number;
-  image_url: string[];
   description?: string;
-  current_branch_id: string;
-  created_at: string;
-  updated_at: string;
-};
+  status: StatusVehicleEnum;
+  imageUrl: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VehicleCreationRequest {
+  name: string;
+  licensePlate: string;
+  color: string;
+  year: number;
+  pricePerDay: number;
+  vehicleType: VehicleType;
+  mileage: number;
+  description?: string;
+  status: StatusVehicleEnum;
+  imageUrl: string[];
+  currentBranchId: string;
+}
+
+export type VehicleUpdateRequest = Partial<VehicleCreationRequest>;
