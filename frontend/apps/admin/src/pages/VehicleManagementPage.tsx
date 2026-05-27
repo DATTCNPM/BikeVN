@@ -61,7 +61,7 @@ export default function VehicleManagementPage() {
           return (
             <div className="flex items-center gap-3">
               <img
-                src={vehicle.image_url[0]}
+                src={vehicle.imageUrl[0]}
                 alt={vehicle.name}
                 className="h-14 w-20 rounded-md object-cover"
               />
@@ -70,7 +70,7 @@ export default function VehicleManagementPage() {
                 <p className="truncate font-medium">{vehicle.name}</p>
 
                 <p className="text-muted-foreground text-sm">
-                  {vehicle.license_plate}
+                  {vehicle.licensePlate}
                 </p>
               </div>
             </div>
@@ -84,10 +84,10 @@ export default function VehicleManagementPage() {
 
         cell: ({ row }) => (
           <div>
-            <p className="font-medium">{row.original.brand}</p>
+            <p className="font-medium">{""}</p>
 
             <p className="text-muted-foreground text-sm">
-              {row.original.model}
+              {""}
             </p>
           </div>
         ),
@@ -97,14 +97,14 @@ export default function VehicleManagementPage() {
         accessorKey: "price",
         header: "Giá thuê",
 
-        cell: ({ row }) => `${row.original.price_per_day.toLocaleString()}đ`,
+        cell: ({ row }) => `${row.original.pricePerDay.toLocaleString()}đ`,
       },
 
       {
-        accessorKey: "current_branch_id",
+        accessorKey: "currentBranchId",
         header: "Chi nhánh",
 
-        cell: ({ row }) => <span>CN #{row.original.current_branch_id}</span>,
+        cell: ({ row }) => <span>CN #{row.original.currentBranchId}</span>,
       },
 
       {

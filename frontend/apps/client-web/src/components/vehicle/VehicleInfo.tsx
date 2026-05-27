@@ -49,13 +49,13 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
     return {
       ...selectedVehicle,
       locationName: branches?.find(
-        (branch) => branch.id === selectedVehicle?.current_branch_id,
+        (branch) => branch.id === selectedVehicle?.currentBranchId,
       )?.name,
     };
   }, [selectedVehicle, branches]);
 
   const locationVehicle = useMemo(() => {
-    return branches.find((b) => b.id === selectedVehicle?.current_branch_id);
+    return branches.find((b) => b.id === selectedVehicle?.currentBranchId);
   }, [selectedVehicle, branches]);
 
   if (branchLoading || vehicleLoading) {
@@ -89,7 +89,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   };
   return (
     <>
-      <VehicleGallery images={vehicleData.image_url || []} />
+      <VehicleGallery images={vehicleData.imageUrl || []} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-4">
@@ -104,7 +104,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="default">
               <Motorbike className="mr-2 h-4 w-4" />
-              {vehicleData.brand} - {vehicleData.model}
+              {""} - {""}
             </Badge>
 
             <Badge variant="outline">
@@ -125,8 +125,8 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
           <p className="text-sm text-muted-foreground mb-2">Rental price</p>
 
           <p className="text-3xl font-bold text-primary">
-            {vehicleData.price_per_day
-              ? vehicleData.price_per_day.toLocaleString("vi-VN")
+            {vehicleData.pricePerDay
+              ? vehicleData.pricePerDay.toLocaleString("vi-VN")
               : "N/A"}
             đ
           </p>
@@ -143,7 +143,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
           </div>
 
           <p className="font-medium">
-            {vehicleData.brand} {vehicleData.model}
+            {""} {""}
           </p>
         </div>
 
@@ -163,7 +163,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
           </div>
 
           <p className="font-medium">
-            {fuelTypeMap[vehicleData.fuel_type || "gasoline"]}
+            {fuelTypeMap[vehicleData.vehicleType || "gasoline"]}
           </p>
         </div>
 
@@ -196,7 +196,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
             License plate
           </div>
 
-          <p className="font-medium">{vehicleData.license_plate}</p>
+          <p className="font-medium">{vehicleData.licensePlate}</p>
         </div>
 
         <div className="rounded-xl border p-4 space-y-2">
@@ -205,7 +205,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
             Engine capacity
           </div>
 
-          <p className="font-medium">{vehicleData.engine_capacity} cc</p>
+          <p className="font-medium">{""} cc</p>
         </div>
 
         <div className="rounded-xl border p-4 space-y-2">
@@ -215,8 +215,8 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
           </div>
 
           <p className="font-medium">
-            {vehicleData.price_per_day
-              ? vehicleData.price_per_day.toLocaleString("vi-VN")
+            {vehicleData.pricePerDay
+              ? vehicleData.pricePerDay.toLocaleString("vi-VN")
               : "N/A"}
             đ
           </p>
@@ -227,16 +227,16 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
         <p>
           <span className="font-medium mr-2">Created at:</span>
 
-          {vehicleData.created_at
-            ? formatDateTime(vehicleData.created_at)
+          {vehicleData.createdAt
+            ? formatDateTime(vehicleData.createdAt)
             : "Undefined"}
         </p>
 
         <p>
           <span className="font-medium mr-2">Updated at:</span>
 
-          {vehicleData.updated_at
-            ? formatDateTime(vehicleData.updated_at)
+          {vehicleData.updatedAt
+            ? formatDateTime(vehicleData.updatedAt)
             : "Undefined"}
         </p>
       </div>
@@ -246,7 +246,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
 
         <Map
           locations={locationVehicle ? [locationVehicle] : []}
-          selectedBranchId={vehicleData.current_branch_id}
+          selectedBranchId={vehicleData.currentBranchId}
         />
       </div>
 

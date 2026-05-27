@@ -26,7 +26,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateVehicle } from "@/features/vehicles/mutations";
 
-import { vehicleSchema, type VehicleFormValues } from "@/features/vehicles/schemas";
+import { vehicleCreationSchema as vehicleSchema, type VehicleCreationFormValues as VehicleFormValues } from "@repo/schemas";
 
 type Props = {
   open: boolean;
@@ -35,19 +35,19 @@ type Props = {
 
 const defaultValues: VehicleFormValues = {
   name: "",
-  brand: "",
-  model: "",
-  license_plate: "",
+  
+  
+  licensePlate: "",
   color: "",
   year: new Date().getFullYear(),
-  price_per_day: 0,
+  pricePerDay: 0,
   status: "available",
-  engine_capacity: 1500,
-  fuel_type: "gasoline",
+  
+  vehicleType: "gasoline",
   mileage: 0,
-  image_url: [""],
+  imageUrl: [""],
   description: "",
-  current_branch_id: "",
+  currentBranchId: "",
 };
 
 export default function VehicleCreate({ open, onOpenChange }: Props) {
@@ -90,89 +90,11 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldGroup>
-          <Field>
-            <FieldLabel>Tên xe</FieldLabel>
+          
 
-            <Input {...register("name")} placeholder="Toyota Vios" />
-            {errors.name && <FieldError>{errors.name.message}</FieldError>}
-          </Field>
+          
 
-          <Field>
-            <FieldLabel>Hãng xe</FieldLabel>
-
-            <Input {...register("brand")} placeholder="Toyota" />
-
-            {errors.brand && <FieldError>{errors.brand.message}</FieldError>}
-          </Field>
-
-          <Field>
-            <FieldLabel>Model</FieldLabel>
-
-            <Input {...register("model")} placeholder="Vios 2024" />
-
-            {errors.model && <FieldError>{errors.model.message}</FieldError>}
-          </Field>
-
-          <Field>
-            <FieldLabel>Biển số</FieldLabel>
-
-            <Input {...register("license_plate")} placeholder="51A-12345" />
-
-            {errors.license_plate && (
-              <FieldError>{errors.license_plate.message}</FieldError>
-            )}
-          </Field>
-
-          <Field>
-            <FieldLabel>Màu sắc</FieldLabel>
-
-            <Input {...register("color")} placeholder="Trắng" />
-
-            {errors.color && <FieldError>{errors.color.message}</FieldError>}
-          </Field>
-
-          <Field>
-            <FieldLabel>Năm sản xuất</FieldLabel>
-
-            <Input
-              type="number"
-              {...register("year", {
-                valueAsNumber: true,
-              })}
-            />
-
-            {errors.year && <FieldError>{errors.year.message}</FieldError>}
-          </Field>
-
-          <Field>
-            <FieldLabel>Giá thuê/ngày</FieldLabel>
-
-            <Input
-              type="number"
-              {...register("price_per_day", {
-                valueAsNumber: true,
-              })}
-            />
-
-            {errors.price_per_day && (
-              <FieldError>{errors.price_per_day.message}</FieldError>
-            )}
-          </Field>
-
-          <Field>
-            <FieldLabel>Dung tích động cơ (cc)</FieldLabel>
-
-            <Input
-              type="number"
-              {...register("engine_capacity", {
-                valueAsNumber: true,
-              })}
-            />
-
-            {errors.engine_capacity && (
-              <FieldError>{errors.engine_capacity.message}</FieldError>
-            )}
-          </Field>
+          
 
           <Field>
             <FieldLabel>Số km đã đi</FieldLabel>
@@ -192,10 +114,10 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           <Field>
             <FieldLabel>Chi nhánh</FieldLabel>
 
-            <Input {...register("current_branch_id")} placeholder="branch_01" />
+            <Input {...register("currentBranchId")} placeholder="branch_01" />
 
-            {errors.current_branch_id && (
-              <FieldError>{errors.current_branch_id.message}</FieldError>
+            {errors.currentBranchId && (
+              <FieldError>{errors.currentBranchId.message}</FieldError>
             )}
           </Field>
 
@@ -228,7 +150,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
 
             <Controller
               control={control}
-              name="fuel_type"
+              name="vehicleType"
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
@@ -253,12 +175,12 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
             <FieldLabel>Ảnh xe</FieldLabel>
 
             <Input
-              {...register("image_url.0")}
+              {...register("imageUrl.0")}
               placeholder="https://example.com/car.jpg"
             />
 
-            {errors.image_url?.[0] && (
-              <FieldError>{errors.image_url[0].message}</FieldError>
+            {errors.imageUrl?.[0] && (
+              <FieldError>{errors.imageUrl[0].message}</FieldError>
             )}
           </Field>
 
