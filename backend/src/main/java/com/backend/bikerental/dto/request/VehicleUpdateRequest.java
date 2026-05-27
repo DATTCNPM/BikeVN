@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class VehicleUpdateRequest {
     String name;
+    int brandId;
+    int modelId;
     String licensePlate;
     String color;
     int year;
