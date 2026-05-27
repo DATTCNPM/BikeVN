@@ -12,8 +12,11 @@ public enum ErrorCode {
     INVALID_KEY(1001, "Invalid key", HttpStatus.BAD_REQUEST),
     USER_EXISTED(1002, "User existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED(1003, "User not existed", HttpStatus.NOT_FOUND),
-    INVALID_PASSWORD(1004, "Invalid password",HttpStatus.BAD_REQUEST ),
-    VEHICLE_NOT_EXISTED(1005, "Vehicle not existed",HttpStatus.NOT_FOUND ),
+    INVALID_PASSWORD(1004, "Invalid password",HttpStatus.BAD_REQUEST),
+    VEHICLE_NOT_EXISTED(1005, "Vehicle not existed",HttpStatus.NOT_FOUND),
+    BRAND_NOT_EXISTED(1006, "Brand not existed",HttpStatus.NOT_FOUND),
+    MODEL_NOT_EXISTED(1007, "Model not existed",HttpStatus.NOT_FOUND),
+    BRANCH_NOT_EXISTED(1008, "Branch not existed",HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN);
 
