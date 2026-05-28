@@ -7,40 +7,39 @@ USE bikevn_db;
 -- ========================================
 -- SAMPLE DATA - roles
 -- ========================================
-INSERT INTO roles (name, description, is_active) VALUES
-('admin', 'Administrator with full system access', TRUE),
-('employee', 'Employee with staff privileges', TRUE),
-('user', 'Regular customer user', TRUE),
-('manager', 'Branch or department manager', TRUE),
-('support', 'Customer support staff', TRUE);
+INSERT INTO roles (id, name, description) VALUES
+('7ded611a-4d31-4be6-ab6e-05fa063ed04a', 'admin', 'Administrator with full system access'),
+('ac079c2d-da6c-4462-88d6-e025f58c2844', 'employee', 'Employee with staff privileges'),
+('c8d017a3-848c-45cf-886d-8c8c0c1c47fa', 'user', 'Regular customer user'),
+('f8ed61b2-add4-4a7c-9d16-7a97fe78dc58', 'manager', 'Branch or department manager'),
+('093317a1-ab50-4e65-be85-ee6e0d442729', 'support', 'Customer support staff');
 
 -- ========================================
 -- SAMPLE DATA - users (UUID primary keys - without role column)
 -- ========================================
 INSERT INTO users (id, name, email, password_hash, phone, cccd_number, is_active) VALUES
-('550e8400-e29b-41d4-a716-446655440001', 'Admin BikeVN', 'admin@bikevn.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0987654321', '001234567890', TRUE),
-('550e8400-e29b-41d4-a716-446655440002', 'Nguyen Van A', 'nguyena@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0901234567', '001234567891', TRUE),
-('550e8400-e29b-41d4-a716-446655440003', 'Tran Thi B', 'tranb@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0902345678', '001234567892', TRUE),
-('550e8400-e29b-41d4-a716-446655440004', 'Pham Van C', 'phamc@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0903456789', '001234567893', TRUE),
-('550e8400-e29b-41d4-a716-446655440005', 'Le Thi D', 'led@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0904567890', '001234567894', TRUE),
-('550e8400-e29b-41d4-a716-446655440006', 'Hoang Van E', 'hoange@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0905678901', '001234567895', TRUE);
+('32481aa5-1c15-4efc-8e79-a947f44719f6', 'Nguyen Van A', 'nguyena@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0901234567', '001234567891', 1),
+('00a58e19-6462-4045-93fe-870e604b9311', 'Tran Thi B', 'tranb@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0902345678', '001234567892', 1),
+('40039cd5-dc03-48c4-95b8-75061f18a7f0', 'Pham Van C', 'phamc@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0903456789', '001234567893', 1),
+('2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', 'Le Thi D', 'led@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0904567890', '001234567894', 1),
+('f6869750-0ec9-49a6-a6e8-0a70d4b9e7f7', 'Hoang Van E', 'hoange@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0905678901', '001234567895', 1);
 
 -- ========================================
--- SAMPLE DATA - user_roles (assign roles to users)
+-- SAMPLE DATA - users_roles (assign roles to users)
 -- ========================================
-INSERT INTO user_roles (id, user_id, role_id, assigned_at, assigned_by) VALUES
+INSERT INTO users_roles (user_id, role_id) VALUES
 -- Admin user gets admin role
-('650e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', 1, NOW(), NULL),
+('c815d217-8e21-46ee-9b53-79fc6cf81a84', '7ded611a-4d31-4be6-ab6e-05fa063ed04a'),
 
 -- Employee user gets employee and support roles
-('650e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440002', 2, NOW(), '550e8400-e29b-41d4-a716-446655440001'),
-('650e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440002', 5, NOW(), '550e8400-e29b-41d4-a716-446655440001'),
+('32481aa5-1c15-4efc-8e79-a947f44719f6', 'ac079c2d-da6c-4462-88d6-e025f58c2844'),
+('32481aa5-1c15-4efc-8e79-a947f44719f6', '093317a1-ab50-4e65-be85-ee6e0d442729'),
 
 -- Regular users get user role
-('650e8400-e29b-41d4-a716-446655440004', '550e8400-e29b-41d4-a716-446655440003', 3, NOW(), '550e8400-e29b-41d4-a716-446655440001'),
-('650e8400-e29b-41d4-a716-446655440005', '550e8400-e29b-41d4-a716-446655440004', 3, NOW(), '550e8400-e29b-41d4-a716-446655440001'),
-('650e8400-e29b-41d4-a716-446655440006', '550e8400-e29b-41d4-a716-446655440005', 3, NOW(), '550e8400-e29b-41d4-a716-446655440001'),
-('650e8400-e29b-41d4-a716-446655440007', '550e8400-e29b-41d4-a716-446655440006', 3, NOW(), '550e8400-e29b-41d4-a716-446655440001');
+('00a58e19-6462-4045-93fe-870e604b9311', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa'),
+('40039cd5-dc03-48c4-95b8-75061f18a7f0', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa'),
+('2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa'),
+('f6869750-0ec9-49a6-a6e8-0a70d4b9e7f7', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa');
 
 -- ========================================
 -- SAMPLE DATA - vehicle_brands
@@ -88,10 +87,10 @@ INSERT INTO vehicle_models (brand_id, name, engine_capacity, year_from, year_to,
 -- SAMPLE DATA - branches
 -- ========================================
 INSERT INTO branches (id, name, address, lat, lng, status) VALUES
-('550e8400-e29b-41d4-a716-446655440101', 'Chi nhanh TP Ho Chi Minh', '123 Nguyen Hue, District 1, HCMC', 10.77588, 106.70183, 'active'),
-('550e8400-e29b-41d4-a716-446655440102', 'Chi nhanh Ha Noi', '456 Tran Hung Dao, Hoan Kiem, Hanoi', 21.02774, 105.84159, 'active'),
-('550e8400-e29b-41d4-a716-446655440103', 'Chi nhanh Da Nang', '789 Tran Phu, Hai Chau, Da Nang', 16.06778, 108.22083, 'active'),
-('550e8400-e29b-41d4-a716-446655440104', 'Chi nhanh Can Tho', '321 Mau Than, Ninh Kieu, Can Tho', 10.03000, 105.78670, 'inactive');
+('42ce84a3-e54f-415d-b707-a8a818c00a9c', 'Chi nhanh TP Ho Chi Minh', '123 Nguyen Hue, District 1, HCMC', 10.77588, 106.70183, 'active'),
+('e58c1884-0ded-477d-a0e6-7a7cb8099771', 'Chi nhanh Ha Noi', '456 Tran Hung Dao, Hoan Kiem, Hanoi', 21.02774, 105.84159, 'active'),
+('6e2fcdd0-e38b-485a-a168-4836f9b02fbe', 'Chi nhanh Da Nang', '789 Tran Phu, Hai Chau, Da Nang', 16.06778, 108.22083, 'active'),
+('8ffb93d8-6e47-4114-a67e-b870919ab33b', 'Chi nhanh Can Tho', '321 Mau Than, Ninh Kieu, Can Tho', 10.03000, 105.78670, 'inactive');
 
 -- ========================================
 -- SAMPLE DATA - vehicles (with brand_id and model_id)
@@ -99,182 +98,182 @@ INSERT INTO branches (id, name, address, lat, lng, status) VALUES
 INSERT INTO vehicles (id, name, brand_id, model_id, license_plate, color, year, price_per_day, vehicle_type, mileage, description, status, current_branch_id) VALUES
 
 -- HCMC Branch
-('550e8400-e29b-41d4-a716-446655440201', 'Honda Wave 110 #1', 1, 1, '74A-12345', 'Red', 2023, 150000, 'fuel', 5000, 'Economical daily rider with excellent fuel efficiency', 'available', '550e8400-e29b-41d4-a716-446655440101'),
-('550e8400-e29b-41d4-a716-446655440202', 'Yamaha Exciter 150 #1', 2, 8, '74A-12346', 'Blue', 2023, 250000, 'fuel', 8000, 'Sporty performance bike with modern design', 'available', '550e8400-e29b-41d4-a716-446655440101'),
-('550e8400-e29b-41d4-a716-446655440203', 'Harley-Davidson Street 750 #1', 5, 17, '74A-12347', 'Black', 2022, 800000, 'fuel', 12000, 'Premium cruiser with iconic design', 'available', '550e8400-e29b-41d4-a716-446655440101'),
-('550e8400-e29b-41d4-a716-446655440204', 'Honda SH 150 #1', 1, 6, '74A-12348', 'Silver', 2023, 300000, 'fuel', 3000, 'Premium scooter with comfort and style', 'unavailable', '550e8400-e29b-41d4-a716-446655440101'),
-('550e8400-e29b-41d4-a716-446655440205', 'Suzuki Raider 150 #1', 3, 11, '74A-12349', 'Green', 2023, 200000, 'fuel', 6000, 'Rugged sport bike for adventure seekers', 'maintenance', '550e8400-e29b-41d4-a716-446655440101'),
-('550e8400-e29b-41d4-a716-446655440206', 'Royal Enfield Classic 350 #1', 9, 19, '74A-12350', 'Brown', 2022, 450000, 'fuel', 15000, 'Classic retro styling with excellent comfort', 'available', '550e8400-e29b-41d4-a716-446655440101'),
-('550e8400-e29b-41d4-a716-446655440207', 'Aprilia SR160 #1', 8, 18, '74A-12351', 'White', 2023, 180000, 'fuel', 4000, 'Italian scooter with modern features', 'available', '550e8400-e29b-41d4-a716-446655440101'),
+('d5403559-06fe-4645-ad52-948e166e79c1', 'Honda Wave 110 #1', 1, 1, '74A-12345', 'Red', 2023, 150000, 'fuel', 5000, 'Economical daily rider with excellent fuel efficiency', 'available', '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('d4b90570-5e9a-46fe-a951-0606895e851a', 'Yamaha Exciter 150 #1', 2, 8, '74A-12346', 'Blue', 2023, 250000, 'fuel', 8000, 'Sporty performance bike with modern design', 'available', '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('70ea36da-3678-4498-a434-778e44935de5', 'Harley-Davidson Street 750 #1', 5, 17, '74A-12347', 'Black', 2022, 800000, 'fuel', 12000, 'Premium cruiser with iconic design', 'available', '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('5fcdb03c-42f2-4af4-a135-a5295ab42da0', 'Honda SH 150 #1', 1, 6, '74A-12348', 'Silver', 2023, 300000, 'fuel', 3000, 'Premium scooter with comfort and style', 'unavailable', '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('784e9a83-2aa7-488f-91bd-34c523b3abeb', 'Suzuki Raider 150 #1', 3, 11, '74A-12349', 'Green', 2023, 200000, 'fuel', 6000, 'Rugged sport bike for adventure seekers', 'maintenance', '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('d1e3d3b6-31f1-4d52-9d42-bd5eda4d73a1', 'Royal Enfield Classic 350 #1', 9, 19, '74A-12350', 'Brown', 2022, 450000, 'fuel', 15000, 'Classic retro styling with excellent comfort', 'available', '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('88d68588-6694-4c89-9384-df4c5cbd63fc', 'Aprilia SR160 #1', 8, 18, '74A-12351', 'White', 2023, 180000, 'fuel', 4000, 'Italian scooter with modern features', 'available', '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
 
 -- Hanoi Branch
-('550e8400-e29b-41d4-a716-446655440208', 'Honda Dream #1', 1, 2, '29A-54321', 'Red', 2023, 120000, 'fuel', 2000, 'Best-selling daily commuter bike', 'available', '550e8400-e29b-41d4-a716-446655440102'),
-('550e8400-e29b-41d4-a716-446655440209', 'Yamaha NVX 155 #1', 2, 10, '29A-54322', 'Orange', 2023, 280000, 'fuel', 5500, 'Modern maxi scooter with ABS technology', 'available', '550e8400-e29b-41d4-a716-446655440102'),
-('550e8400-e29b-41d4-a716-446655440210', 'Honda CB150R #1', 1, 5, '29A-54323', 'Black', 2023, 320000, 'fuel', 7000, 'Naked sport bike with aggressive styling', 'available', '550e8400-e29b-41d4-a716-446655440102'),
-('550e8400-e29b-41d4-a716-446655440211', 'Vespa Primavera 150 #1', 7, 16, '29A-54324', 'Cream', 2022, 400000, 'fuel', 10000, 'Iconic Italian scooter with timeless design', 'available', '550e8400-e29b-41d4-a716-446655440102'),
-('550e8400-e29b-41d4-a716-446655440212', 'Bajaj Pulsar 150 #1', 10, 20, '29A-54325', 'Gray', 2023, 160000, 'fuel', 4500, 'Budget-friendly sport bike', 'available', '550e8400-e29b-41d4-a716-446655440102'),
+('65afb455-0a21-423a-8114-da94f9df7d96', 'Honda Dream #1', 1, 2, '29A-54321', 'Red', 2023, 120000, 'fuel', 2000, 'Best-selling daily commuter bike', 'available', 'e58c1884-0ded-477d-a0e6-7a7cb8099771'),
+('d7322875-e214-471c-a38b-4a0a77251628', 'Yamaha NVX 155 #1', 2, 10, '29A-54322', 'Orange', 2023, 280000, 'fuel', 5500, 'Modern maxi scooter with ABS technology', 'available', 'e58c1884-0ded-477d-a0e6-7a7cb8099771'),
+('21eb518d-6098-488d-8b06-148b51a00f9f', 'Honda CB150R #1', 1, 5, '29A-54323', 'Black', 2023, 320000, 'fuel', 7000, 'Naked sport bike with aggressive styling', 'available', 'e58c1884-0ded-477d-a0e6-7a7cb8099771'),
+('585336c2-15ec-4ac4-a5a2-8e49eb8a542e', 'Vespa Primavera 150 #1', 7, 16, '29A-54324', 'Cream', 2022, 400000, 'fuel', 10000, 'Iconic Italian scooter with timeless design', 'available', 'e58c1884-0ded-477d-a0e6-7a7cb8099771'),
+('4c251719-cf97-4d4e-92d9-f262d923d820', 'Bajaj Pulsar 150 #1', 10, 20, '29A-54325', 'Gray', 2023, 160000, 'fuel', 4500, 'Budget-friendly sport bike', 'available', 'e58c1884-0ded-477d-a0e6-7a7cb8099771'),
 
 -- Da Nang Branch
-('550e8400-e29b-41d4-a716-446655440213', 'Honda Air Blade #1', 1, 7, '92A-78901', 'Gold', 2023, 180000, 'fuel', 3500, 'Premium scooter with smooth ride', 'available', '550e8400-e29b-41d4-a716-446655440103'),
-('550e8400-e29b-41d4-a716-446655440214', 'Kawasaki Ninja 400 #1', 4, 12, '92A-78902', 'Green', 2022, 500000, 'fuel', 18000, 'Entry-level sport bike from legendary brand', 'available', '550e8400-e29b-41d4-a716-446655440103'),
-('550e8400-e29b-41d4-a716-446655440215', 'Ducati Monster 659 #1', 6, 13, '92A-78903', 'Red', 2021, 900000, 'fuel', 22000, 'Premium Italian sport bike', 'maintenance', '550e8400-e29b-41d4-a716-446655440103'),
-('550e8400-e29b-41d4-a716-446655440216', 'SYM VF 200 #1', 11, 21, '92A-78904', 'Silver', 2023, 200000, 'fuel', 6500, 'Spacious scooter for comfortable riding', 'available', '550e8400-e29b-41d4-a716-446655440103'),
+('846b0a2b-60b7-420a-b058-8476d1d52484', 'Honda Air Blade #1', 1, 7, '92A-78901', 'Gold', 2023, 180000, 'fuel', 3500, 'Premium scooter with smooth ride', 'available', '6e2fcdd0-e38b-485a-a168-4836f9b02fbe'),
+('b0bc5707-94f1-479c-90a5-9ecc5afbe4bd', 'Kawasaki Ninja 400 #1', 4, 12, '92A-78902', 'Green', 2022, 500000, 'fuel', 18000, 'Entry-level sport bike from legendary brand', 'available', '6e2fcdd0-e38b-485a-a168-4836f9b02fbe'),
+('5933f90b-8c79-4f9c-b2a3-9e5a345d82e6', 'Ducati Monster 659 #1', 6, 13, '92A-78903', 'Red', 2021, 900000, 'fuel', 22000, 'Premium Italian sport bike', 'maintenance', '6e2fcdd0-e38b-485a-a168-4836f9b02fbe'),
+('d942c0ac-f14a-40d6-8440-aaf95506b484', 'SYM VF 200 #1', 11, 21, '92A-78904', 'Silver', 2023, 200000, 'fuel', 6500, 'Spacious scooter for comfortable riding', 'available', '6e2fcdd0-e38b-485a-a168-4836f9b02fbe'),
 
 -- Can Tho Branch
-('550e8400-e29b-41d4-a716-446655440217', 'Honda Future #1', 1, 3, '77A-13579', 'Red', 2023, 140000, 'fuel', 2500, 'Reliable daily commuter bike', 'available', '550e8400-e29b-41d4-a716-446655440104'),
-('550e8400-e29b-41d4-a716-446655440218', 'Yamaha Sirius #1', 2, 9, '77A-13580', 'Blue', 2023, 130000, 'fuel', 3000, 'Fuel-efficient commuter with modern features', 'available', '550e8400-e29b-41d4-a716-446655440104'),
-('550e8400-e29b-41d4-a716-446655440219', 'Honda Blade #1', 1, 4, '77A-13581', 'Black', 2022, 160000, 'fuel', 8000, 'Compact sport bike for city riding', 'unavailable', '550e8400-e29b-41d4-a716-446655440104');
+('26005a40-e204-4b93-b65d-3a50a64d46b7', 'Honda Future #1', 1, 3, '77A-13579', 'Red', 2023, 140000, 'fuel', 2500, 'Reliable daily commuter bike', 'available', '8ffb93d8-6e47-4114-a67e-b870919ab33b'),
+('c369d758-0ae1-465a-8093-7fa1137c8cac', 'Yamaha Sirius #1', 2, 9, '77A-13580', 'Blue', 2023, 130000, 'fuel', 3000, 'Fuel-efficient commuter with modern features', 'available', '8ffb93d8-6e47-4114-a67e-b870919ab33b'),
+('4967f25e-3507-47e3-9924-1e4b35dbf155', 'Honda Blade #1', 1, 4, '77A-13581', 'Black', 2022, 160000, 'fuel', 8000, 'Compact sport bike for city riding', 'unavailable', '8ffb93d8-6e47-4114-a67e-b870919ab33b');
 
 -- ========================================
 -- SAMPLE DATA - vehicle_images
 -- ========================================
 INSERT INTO vehicle_images (id, vehicle_id, image_url, alt_text, display_order, is_primary) VALUES
 -- Honda Wave 110 #1
-('650e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440201', 'https://bikevn.com/images/wave110-1.jpg', 'Honda Wave 110 front view', 1, TRUE),
-('650e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440201', 'https://bikevn.com/images/wave110-2.jpg', 'Honda Wave 110 side view', 2, FALSE),
+('52a59877-e715-4196-8dd8-36df0ce692bc', 'd5403559-06fe-4645-ad52-948e166e79c1', 'https://bikevn.com/images/wave110-1.jpg', 'Honda Wave 110 front view', 1, TRUE),
+('eeb5e3d0-bf57-4619-b690-dd6ad3a76fec', 'd5403559-06fe-4645-ad52-948e166e79c1', 'https://bikevn.com/images/wave110-2.jpg', 'Honda Wave 110 side view', 2, FALSE),
 
 -- Yamaha Exciter 150 #1
-('650e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440202', 'https://bikevn.com/images/exciter-1.jpg', 'Yamaha Exciter 150 front view', 1, TRUE),
+('888b73ed-1a34-4560-99e1-6f4040dea881', 'd4b90570-5e9a-46fe-a951-0606895e851a', 'https://bikevn.com/images/exciter-1.jpg', 'Yamaha Exciter 150 front view', 1, TRUE),
 
 -- Harley-Davidson Street 750 #1
-('650e8400-e29b-41d4-a716-446655440004', '550e8400-e29b-41d4-a716-446655440203', 'https://bikevn.com/images/harley-1.jpg', 'Harley-Davidson Street 750 front view', 1, TRUE),
+('af5f4cb5-4a0a-4337-87e7-2a7bb21cc5ba', '70ea36da-3678-4498-a434-778e44935de5', 'https://bikevn.com/images/harley-1.jpg', 'Harley-Davidson Street 750 front view', 1, TRUE),
 
 -- Honda SH 150 #1
-('650e8400-e29b-41d4-a716-446655440005', '550e8400-e29b-41d4-a716-446655440204', 'https://bikevn.com/images/sh150-1.jpg', 'Honda SH 150 front view', 1, TRUE),
+('1841b719-5651-4972-b3b4-89b7054f273b', '5fcdb03c-42f2-4af4-a135-a5295ab42da0', 'https://bikevn.com/images/sh150-1.jpg', 'Honda SH 150 front view', 1, TRUE),
 
 -- Suzuki Raider 150 #1
-('650e8400-e29b-41d4-a716-446655440006', '550e8400-e29b-41d4-a716-446655440205', 'https://bikevn.com/images/raider-1.jpg', 'Suzuki Raider 150 front view', 1, TRUE),
+('3f5b1365-003e-40a8-9a72-45a653df6b58', '784e9a83-2aa7-488f-91bd-34c523b3abeb', 'https://bikevn.com/images/raider-1.jpg', 'Suzuki Raider 150 front view', 1, TRUE),
 
 -- Royal Enfield Classic 350 #1
-('650e8400-e29b-41d4-a716-446655440007', '550e8400-e29b-41d4-a716-446655440206', 'https://bikevn.com/images/enfield-1.jpg', 'Royal Enfield Classic 350 front view', 1, TRUE),
+('24915e98-17c7-44e4-a060-4c55e2c1252e', 'd1e3d3b6-31f1-4d52-9d42-bd5eda4d73a1', 'https://bikevn.com/images/enfield-1.jpg', 'Royal Enfield Classic 350 front view', 1, TRUE),
 
 -- Aprilia SR160 #1
-('650e8400-e29b-41d4-a716-446655440008', '550e8400-e29b-41d4-a716-446655440207', 'https://bikevn.com/images/aprilia-1.jpg', 'Aprilia SR160 front view', 1, TRUE),
+('199b37c4-4e7c-40c5-a9c5-be09eac8ce06', '88d68588-6694-4c89-9384-df4c5cbd63fc', 'https://bikevn.com/images/aprilia-1.jpg', 'Aprilia SR160 front view', 1, TRUE),
 
 -- Honda Dream #1
-('650e8400-e29b-41d4-a716-446655440009', '550e8400-e29b-41d4-a716-446655440208', 'https://bikevn.com/images/dream-1.jpg', 'Honda Dream front view', 1, TRUE),
+('75ddc7fe-5eb2-49fd-b164-1b911a4a411b', '65afb455-0a21-423a-8114-da94f9df7d96', 'https://bikevn.com/images/dream-1.jpg', 'Honda Dream front view', 1, TRUE),
 
 -- Yamaha NVX 155 #1
-('650e8400-e29b-41d4-a716-446655440010', '550e8400-e29b-41d4-a716-446655440209', 'https://bikevn.com/images/nvx-1.jpg', 'Yamaha NVX 155 front view', 1, TRUE),
+('05073e25-f59e-465f-8252-056accf04f56', 'd7322875-e214-471c-a38b-4a0a77251628', 'https://bikevn.com/images/nvx-1.jpg', 'Yamaha NVX 155 front view', 1, TRUE),
 
 -- Honda CB150R #1
-('650e8400-e29b-41d4-a716-446655440011', '550e8400-e29b-41d4-a716-446655440210', 'https://bikevn.com/images/cb150r-1.jpg', 'Honda CB150R front view', 1, TRUE),
+('53209045-9df5-442e-b274-00a374f7574c', '21eb518d-6098-488d-8b06-148b51a00f9f', 'https://bikevn.com/images/cb150r-1.jpg', 'Honda CB150R front view', 1, TRUE),
 
 -- Vespa Primavera 150 #1
-('650e8400-e29b-41d4-a716-446655440012', '550e8400-e29b-41d4-a716-446655440211', 'https://bikevn.com/images/vespa-1.jpg', 'Vespa Primavera 150 front view', 1, TRUE),
+('9da30c95-6947-466f-a62e-69a31070141b', '585336c2-15ec-4ac4-a5a2-8e49eb8a542e', 'https://bikevn.com/images/vespa-1.jpg', 'Vespa Primavera 150 front view', 1, TRUE),
 
 -- Bajaj Pulsar 150 #1
-('650e8400-e29b-41d4-a716-446655440013', '550e8400-e29b-41d4-a716-446655440212', 'https://bikevn.com/images/pulsar-1.jpg', 'Bajaj Pulsar 150 front view', 1, TRUE),
+('22af2438-88cb-4109-a6f1-0543fcdad282', '4c251719-cf97-4d4e-92d9-f262d923d820', 'https://bikevn.com/images/pulsar-1.jpg', 'Bajaj Pulsar 150 front view', 1, TRUE),
 
 -- Honda Air Blade #1
-('650e8400-e29b-41d4-a716-446655440014', '550e8400-e29b-41d4-a716-446655440213', 'https://bikevn.com/images/airblade-1.jpg', 'Honda Air Blade front view', 1, TRUE),
+('f257fe52-8675-4bb4-bb39-353b64f1f421', '846b0a2b-60b7-420a-b058-8476d1d52484', 'https://bikevn.com/images/airblade-1.jpg', 'Honda Air Blade front view', 1, TRUE),
 
 -- Kawasaki Ninja 400 #1
-('650e8400-e29b-41d4-a716-446655440015', '550e8400-e29b-41d4-a716-446655440214', 'https://bikevn.com/images/ninja-1.jpg', 'Kawasaki Ninja 400 front view', 1, TRUE),
+('66d17e8d-6607-4006-85ae-030cf60a5ee2', 'b0bc5707-94f1-479c-90a5-9ecc5afbe4bd', 'https://bikevn.com/images/ninja-1.jpg', 'Kawasaki Ninja 400 front view', 1, TRUE),
 
 -- Ducati Monster 659 #1
-('650e8400-e29b-41d4-a716-446655440016', '550e8400-e29b-41d4-a716-446655440215', 'https://bikevn.com/images/ducati-1.jpg', 'Ducati Monster 659 front view', 1, TRUE),
+('bc8f01f3-764e-441e-9802-e2647b77a7f5', '5933f90b-8c79-4f9c-b2a3-9e5a345d82e6', 'https://bikevn.com/images/ducati-1.jpg', 'Ducati Monster 659 front view', 1, TRUE),
 
 -- SYM VF 200 #1
-('650e8400-e29b-41d4-a716-446655440017', '550e8400-e29b-41d4-a716-446655440216', 'https://bikevn.com/images/symvf-1.jpg', 'SYM VF 200 front view', 1, TRUE),
+('80e7d446-8cf9-48e8-a7c8-62871fc00738', 'd942c0ac-f14a-40d6-8440-aaf95506b484', 'https://bikevn.com/images/symvf-1.jpg', 'SYM VF 200 front view', 1, TRUE),
 
 -- Honda Future #1
-('650e8400-e29b-41d4-a716-446655440018', '550e8400-e29b-41d4-a716-446655440217', 'https://bikevn.com/images/future-1.jpg', 'Honda Future front view', 1, TRUE),
+('7075e63b-d700-4165-a671-f338f87f903b', '26005a40-e204-4b93-b65d-3a50a64d46b7', 'https://bikevn.com/images/future-1.jpg', 'Honda Future front view', 1, TRUE),
 
 -- Yamaha Sirius #1
-('650e8400-e29b-41d4-a716-446655440019', '550e8400-e29b-41d4-a716-446655440218', 'https://bikevn.com/images/sirius-1.jpg', 'Yamaha Sirius front view', 1, TRUE),
+('96f35a5b-4621-4992-ac0e-5b0a3136e22c', 'c369d758-0ae1-465a-8093-7fa1137c8cac', 'https://bikevn.com/images/sirius-1.jpg', 'Yamaha Sirius front view', 1, TRUE),
 
 -- Honda Blade #1
-('650e8400-e29b-41d4-a716-446655440020', '550e8400-e29b-41d4-a716-446655440219', 'https://bikevn.com/images/blade-1.jpg', 'Honda Blade front view', 1, TRUE);
+('4345a58b-e4b3-4ab8-ac79-e186d56e49d0', '4967f25e-3507-47e3-9924-1e4b35dbf155', 'https://bikevn.com/images/blade-1.jpg', 'Honda Blade front view', 1, TRUE);
 
 -- ========================================
 -- SAMPLE DATA - bookings (UUID primary keys)
 -- ========================================
 INSERT INTO bookings (id, user_id, vehicle_id, pickup_branch_id, return_branch_id, start_time, end_time, actual_return_time, status, total_price) VALUES
 -- Recent completed booking
-('550e8400-e29b-41d4-a716-446655440301', '550e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440201', '550e8400-e29b-41d4-a716-446655440101', '550e8400-e29b-41d4-a716-446655440101', '2024-01-15 08:00:00', '2024-01-15 18:00:00', '2024-01-15 18:15:00', 'completed', 1500000),
-('550e8400-e29b-41d4-a716-446655440302', '550e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440202', '550e8400-e29b-41d4-a716-446655440101', '550e8400-e29b-41d4-a716-446655440101', '2024-01-16 09:00:00', '2024-01-17 09:00:00', '2024-01-17 09:30:00', 'completed', 500000),
+('d68cc7f7-a578-4efb-baaa-6ab8f72be8fa', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'd5403559-06fe-4645-ad52-948e166e79c1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-15 08:00:00', '2024-01-15 18:00:00', '2024-01-15 18:15:00', 'completed', 1500000),
+('46c3f037-57ef-4bd2-ba74-d075e18c96f1', '00a58e19-6462-4045-93fe-870e604b9311', 'd4b90570-5e9a-46fe-a951-0606895e851a', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-16 09:00:00', '2024-01-17 09:00:00', '2024-01-17 09:30:00', 'completed', 500000),
 
 -- Current in-progress booking
-('550e8400-e29b-41d4-a716-446655440303', '550e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440203', '550e8400-e29b-41d4-a716-446655440101', '550e8400-e29b-41d4-a716-446655440101', '2024-01-20 10:00:00', '2024-01-22 10:00:00', NULL, 'approved', 1600000),
+('2e6d884a-1d71-4651-902e-361d3711b632', '32481aa5-1c15-4efc-8e79-a947f44719f6', '70ea36da-3678-4498-a434-778e44935de5', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-20 10:00:00', '2024-01-22 10:00:00', NULL, 'approved', 1600000),
 
 -- Approved booking
-('550e8400-e29b-41d4-a716-446655440304', '550e8400-e29b-41d4-a716-446655440004', '550e8400-e29b-41d4-a716-446655440204', '550e8400-e29b-41d4-a716-446655440101', '550e8400-e29b-41d4-a716-446655440101', '2024-01-25 14:00:00', '2024-01-26 14:00:00', NULL, 'approved', 300000),
+('6af7ca78-7529-4d8d-8e07-d825cec4ed3e', '40039cd5-dc03-48c4-95b8-75061f18a7f0', '5fcdb03c-42f2-4af4-a135-a5295ab42da0', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-25 14:00:00', '2024-01-26 14:00:00', NULL, 'approved', 300000),
 
 -- Pending booking
-('550e8400-e29b-41d4-a716-446655440305', '550e8400-e29b-41d4-a716-446655440005', '550e8400-e29b-41d4-a716-446655440205', '550e8400-e29b-41d4-a716-446655440102', '550e8400-e29b-41d4-a716-446655440102', '2024-02-01 08:00:00', '2024-02-03 08:00:00', NULL, 'pending', 600000),
+('8e980655-1c5c-4dc2-9c0c-bb9226218476', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', '784e9a83-2aa7-488f-91bd-34c523b3abeb', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-01 08:00:00', '2024-02-03 08:00:00', NULL, 'pending', 600000),
 
 -- Rejected booking
-('550e8400-e29b-41d4-a716-446655440306', '550e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440206', '550e8400-e29b-41d4-a716-446655440101', '550e8400-e29b-41d4-a716-446655440101', '2024-01-18 11:00:00', '2024-01-18 18:00:00', NULL, 'rejected', 450000);
+('46a80466-6fce-4592-b44d-9d6df1d54fee', '00a58e19-6462-4045-93fe-870e604b9311', 'd1e3d3b6-31f1-4d52-9d42-bd5eda4d73a1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 11:00:00', '2024-01-18 18:00:00', NULL, 'rejected', 450000);
 
 -- ========================================
 -- SAMPLE DATA - payments (UUID primary keys)
 -- ========================================
 INSERT INTO payments (id, booking_id, amount, type, payment_method, status, transaction_code, paid_at) VALUES
-('550e8400-e29b-41d4-a716-446655440401', '550e8400-e29b-41d4-a716-446655440301', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', '2024-01-15 18:30:00'),
-('550e8400-e29b-41d4-a716-446655440402', '550e8400-e29b-41d4-a716-446655440302', 500000, 'rental', 'transfer', 'completed', 'TXN002', '2024-01-17 10:00:00'),
-('550e8400-e29b-41d4-a716-446655440403', '550e8400-e29b-41d4-a716-446655440303', 1600000, 'rental', 'cash', 'completed', NULL, '2024-01-20 11:00:00'),
-('550e8400-e29b-41d4-a716-446655440404', '550e8400-e29b-41d4-a716-446655440304', 300000, 'deposit', 'credit_card', 'pending', 'TXN003', NULL),
-('550e8400-e29b-41d4-a716-446655440405', '550e8400-e29b-41d4-a716-446655440305', 600000, 'rental', 'transfer', 'pending', NULL, NULL),
-('550e8400-e29b-41d4-a716-446655440406', '550e8400-e29b-41d4-a716-446655440306', 450000, 'deposit', 'credit_card', 'refunded', 'TXN004', '2024-01-18 20:00:00');
+('1be094c5-c813-4dd5-bfd0-da3725cf7548', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', '2024-01-15 18:30:00'),
+('bea5e207-a453-4695-a2e9-d1a01da067d8', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 500000, 'rental', 'transfer', 'completed', 'TXN002', '2024-01-17 10:00:00'),
+('b44d22f8-4ef6-4d2a-bac9-259f42afd195', '2e6d884a-1d71-4651-902e-361d3711b632', 1600000, 'rental', 'cash', 'completed', NULL, '2024-01-20 11:00:00'),
+('5324521c-f023-4b82-b4f2-41520ce996f4', '6af7ca78-7529-4d8d-8e07-d825cec4ed3e', 300000, 'deposit', 'credit_card', 'pending', 'TXN003', NULL),
+('7f2b7d60-746e-4ca5-8510-79e26a114781', '8e980655-1c5c-4dc2-9c0c-bb9226218476', 600000, 'rental', 'transfer', 'pending', NULL, NULL),
+('4f4a17b3-f4c3-4834-9d21-dc2e1f1e5e85', '46a80466-6fce-4592-b44d-9d6df1d54fee', 450000, 'deposit', 'credit_card', 'refunded', 'TXN004', '2024-01-18 20:00:00');
 
 -- ========================================
 -- SAMPLE DATA - vehicle_returns (UUID primary keys)
 -- ========================================
 INSERT INTO vehicle_returns (id, booking_id, vehicle_id, return_branch_id, condition_status, damage_description, extra_fee, images) VALUES
-('550e8400-e29b-41d4-a716-446655440501', '550e8400-e29b-41d4-a716-446655440301', '550e8400-e29b-41d4-a716-446655440201', '550e8400-e29b-41d4-a716-446655440101', 'good', NULL, 0, NULL),
-('550e8400-e29b-41d4-a716-446655440502', '550e8400-e29b-41d4-a716-446655440302', '550e8400-e29b-41d4-a716-446655440202', '550e8400-e29b-41d4-a716-446655440101', 'fair', 'Minor scratches on side mirror and body', 200000, NULL);
+('bb320338-2250-4adc-80a5-d697e2894e89', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 'd5403559-06fe-4645-ad52-948e166e79c1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'good', NULL, 0, NULL),
+('1cda3da3-b534-45ed-8440-f86f36537672', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 'd4b90570-5e9a-46fe-a951-0606895e851a', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'fair', 'Minor scratches on side mirror and body', 200000, NULL);
 
 -- ========================================
 -- SAMPLE DATA - conversations (UUID primary keys)
 -- ========================================
 INSERT INTO conversations (id, created_at) VALUES
-('550e8400-e29b-41d4-a716-446655440601', NOW()),
-('550e8400-e29b-41d4-a716-446655440602', DATE_SUB(NOW(), INTERVAL 2 DAY)),
-('550e8400-e29b-41d4-a716-446655440603', DATE_SUB(NOW(), INTERVAL 5 DAY));
+('46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', NOW()),
+('50b672cb-6559-4dd8-8908-9bda53bab347', DATE_SUB(NOW(), INTERVAL 2 DAY)),
+('9b95a351-89fa-4d8f-822e-b1c921f264f4', DATE_SUB(NOW(), INTERVAL 5 DAY));
 
 -- ========================================
 -- SAMPLE DATA - conversation_members (UUID primary keys)
 -- ========================================
 INSERT INTO conversation_members (id, conversation_id, user_id, joined_at) VALUES
 -- Conversation 1: User 2 and Admin
-('550e8400-e29b-41d4-a716-446655440701', '550e8400-e29b-41d4-a716-446655440601', '550e8400-e29b-41d4-a716-446655440002', NOW()),
-('550e8400-e29b-41d4-a716-446655440702', '550e8400-e29b-41d4-a716-446655440601', '550e8400-e29b-41d4-a716-446655440001', NOW()),
+('2bd687b6-a4d4-478a-b4e7-7e06c9513676', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '32481aa5-1c15-4efc-8e79-a947f44719f6', NOW()),
+('b4545ac3-3298-4715-9ed6-df869452f912', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', NOW()),
 
 -- Conversation 2: User 3 and Admin
-('550e8400-e29b-41d4-a716-446655440703', '550e8400-e29b-41d4-a716-446655440602', '550e8400-e29b-41d4-a716-446655440003', DATE_SUB(NOW(), INTERVAL 2 DAY)),
-('550e8400-e29b-41d4-a716-446655440704', '550e8400-e29b-41d4-a716-446655440602', '550e8400-e29b-41d4-a716-446655440001', DATE_SUB(NOW(), INTERVAL 2 DAY)),
+('78d268c0-0bd0-4449-906a-82112d24bd0f', '50b672cb-6559-4dd8-8908-9bda53bab347', '00a58e19-6462-4045-93fe-870e604b9311', DATE_SUB(NOW(), INTERVAL 2 DAY)),
+('86eabfdd-870c-4181-9c0b-21352854c1e3', '50b672cb-6559-4dd8-8908-9bda53bab347', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', DATE_SUB(NOW(), INTERVAL 2 DAY)),
 
 -- Conversation 3: User 4, User 5, and Admin
-('550e8400-e29b-41d4-a716-446655440705', '550e8400-e29b-41d4-a716-446655440603', '550e8400-e29b-41d4-a716-446655440004', DATE_SUB(NOW(), INTERVAL 5 DAY)),
-('550e8400-e29b-41d4-a716-446655440706', '550e8400-e29b-41d4-a716-446655440603', '550e8400-e29b-41d4-a716-446655440005', DATE_SUB(NOW(), INTERVAL 5 DAY)),
-('550e8400-e29b-41d4-a716-446655440707', '550e8400-e29b-41d4-a716-446655440603', '550e8400-e29b-41d4-a716-446655440001', DATE_SUB(NOW(), INTERVAL 5 DAY));
+('9dad095d-2c4f-4de5-883a-cd2f915cda2f', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '40039cd5-dc03-48c4-95b8-75061f18a7f0', DATE_SUB(NOW(), INTERVAL 5 DAY)),
+('dd8b5719-0165-40f7-b627-02ef70acd0e8', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', DATE_SUB(NOW(), INTERVAL 5 DAY)),
+('72e93f47-0dfb-44e9-926c-84e70a4fd9be', '9b95a351-89fa-4d8f-822e-b1c921f264f4', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', DATE_SUB(NOW(), INTERVAL 5 DAY));
 
 -- ========================================
 -- SAMPLE DATA - messages (UUID primary keys)
 -- ========================================
 INSERT INTO messages (id, conversation_id, sender_id, content, is_read, created_at) VALUES
 -- Conversation 1
-('550e8400-e29b-41d4-a716-446655440801', '550e8400-e29b-41d4-a716-446655440601', '550e8400-e29b-41d4-a716-446655440002', 'Hello, I want to book a vehicle', FALSE, NOW()),
-('550e8400-e29b-41d4-a716-446655440802', '550e8400-e29b-41d4-a716-446655440601', '550e8400-e29b-41d4-a716-446655440001', 'Sure! Which vehicle would you like to rent?', TRUE, DATE_SUB(NOW(), INTERVAL 1 HOUR)),
-('550e8400-e29b-41d4-a716-446655440803', '550e8400-e29b-41d4-a716-446655440601', '550e8400-e29b-41d4-a716-446655440002', 'I am interested in the Honda Wave', FALSE, DATE_SUB(NOW(), INTERVAL 50 MINUTE)),
+('645cc032-70f5-4031-9d95-587468b99e76', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'Hello, I want to book a vehicle', FALSE, NOW()),
+('d45552bf-480d-4b8e-bf31-573348779852', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', 'Sure! Which vehicle would you like to rent?', TRUE, DATE_SUB(NOW(), INTERVAL 1 HOUR)),
+('e5f4ad9a-fef6-40dc-8967-a75c734b6f75', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'I am interested in the Honda Wave', FALSE, DATE_SUB(NOW(), INTERVAL 50 MINUTE)),
 
 -- Conversation 2
-('550e8400-e29b-41d4-a716-446655440804', '550e8400-e29b-41d4-a716-446655440602', '550e8400-e29b-41d4-a716-446655440003', 'Is the Yamaha Exciter available for weekend?', TRUE, DATE_SUB(NOW(), INTERVAL 2 DAY)),
-('550e8400-e29b-41d4-a716-446655440805', '550e8400-e29b-41d4-a716-446655440602', '550e8400-e29b-41d4-a716-446655440001', 'Yes, it is available! What dates?', TRUE, DATE_SUB(NOW(), INTERVAL 1 DAY)),
-('550e8400-e29b-41d4-a716-446655440806', '550e8400-e29b-41d4-a716-446655440602', '550e8400-e29b-41d4-a716-446655440003', 'January 27-28. Can I book it?', FALSE, DATE_SUB(NOW(), INTERVAL 23 HOUR)),
+('85f0b50b-363c-4556-a017-79798dced734', '50b672cb-6559-4dd8-8908-9bda53bab347', '00a58e19-6462-4045-93fe-870e604b9311', 'Is the Yamaha Exciter available for weekend?', TRUE, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+('13d86a2b-9c0d-41e6-9981-513b3bb83e47', '50b672cb-6559-4dd8-8908-9bda53bab347', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', 'Yes, it is available! What dates?', TRUE, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+('66da11e0-fab6-4b03-a5dd-63e5db21c711', '50b672cb-6559-4dd8-8908-9bda53bab347', '00a58e19-6462-4045-93fe-870e604b9311', 'January 27-28. Can I book it?', FALSE, DATE_SUB(NOW(), INTERVAL 23 HOUR)),
 
 -- Conversation 3
-('550e8400-e29b-41d4-a716-446655440807', '550e8400-e29b-41d4-a716-446655440603', '550e8400-e29b-41d4-a716-446655440004', 'Hello team, interested in group rental', FALSE, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-('550e8400-e29b-41d4-a716-446655440808', '550e8400-e29b-41d4-a716-446655440603', '550e8400-e29b-41d4-a716-446655440005', 'Me too! How many bikes do we need?', FALSE, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-('550e8400-e29b-41d4-a716-446655440809', '550e8400-e29b-41d4-a716-446655440603', '550e8400-e29b-41d4-a716-446655440001', 'We have great group rates! Please tell me your requirements', TRUE, DATE_SUB(NOW(), INTERVAL 4 DAY));
+('98019a55-c6b2-4dc6-9d14-c26449e5d24a', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '40039cd5-dc03-48c4-95b8-75061f18a7f0', 'Hello team, interested in group rental', FALSE, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+('60df9026-2a06-4f14-bf30-f799197b803e', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', 'Me too! How many bikes do we need?', FALSE, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+('60ce150b-f394-4676-b61e-4fb26dade47b', '9b95a351-89fa-4d8f-822e-b1c921f264f4', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', 'We have great group rates! Please tell me your requirements', TRUE, DATE_SUB(NOW(), INTERVAL 4 DAY));
 
 -- ========================================
 -- SAMPLE DATA - reviews (UUID primary keys)
 -- ========================================
 INSERT INTO reviews (id, booking_id, user_id, vehicle_id, rating, comment, created_at) VALUES
-('550e8400-e29b-41d4-a716-446655440901', '550e8400-e29b-41d4-a716-446655440301', '550e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440201', 5, 'Excellent service! Vehicle was in perfect condition. Highly recommend!', NOW()),
-('550e8400-e29b-41d4-a716-446655440902', '550e8400-e29b-41d4-a716-446655440302', '550e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440202', 4, 'Good experience overall. Staff was helpful. Minor damage noted at return which was fair.', NOW());
+('69c33f90-4927-459d-89fb-f87e92d7ad51', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'd5403559-06fe-4645-ad52-948e166e79c1', 5, 'Excellent service! Vehicle was in perfect condition. Highly recommend!', NOW()),
+('c52d3984-ea60-4ab7-a388-5243593f1a5d', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', '00a58e19-6462-4045-93fe-870e604b9311', 'd4b90570-5e9a-46fe-a951-0606895e851a', 4, 'Good experience overall. Staff was helpful. Minor damage noted at return which was fair.', NOW());
 
 -- ========================================
 -- VERIFICATION QUERIES
