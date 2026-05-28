@@ -56,12 +56,35 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('admin')")
+    public UserResponse createEmployee(UserCreationRequest request)
+    {
+        if(userRepository.existsByEmail(request.getEmail()))
+        {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+        User user = userMapper.toUser(request);
+        user.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
+
+        var role = roleRepository.findByName(RoleEnum.employee.name())
+                .orElseGet(()-> {
+                    var newRole = Role.builder()
+                            .name(RoleEnum.employee.name())
+                            .description("Employee role")
+                            .build();
+                    return roleRepository.save(newRole);
+                });
+        user.setRoles(Set.of(role));
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @PreAuthorize("hasRole('admin')")
     public List<UserResponse> getAllUsers()
     {
         return userMapper.toListUsersResponse(userRepository.findAll());
     }
 
-    @PostAuthorize("returnObject.name == authentication.name")
+    @PostAuthorize("hasRole('admin') or returnObject.email == authentication.name")
     public UserResponse getUser(String id)
     {
         return userMapper.toUserResponse(userRepository.findById(id)

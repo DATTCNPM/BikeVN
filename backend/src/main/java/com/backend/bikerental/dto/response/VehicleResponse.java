@@ -28,6 +28,6 @@ public class VehicleResponse {
     String description;
     String status;
     String currentBranchId;
-//    LocalDateTime createdAt;
-//    LocalDateTime updatedAt;
+   LocalDateTime createdAt;
+   LocalDateTime updatedAt;
 }

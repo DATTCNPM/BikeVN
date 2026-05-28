@@ -26,6 +26,15 @@ public class UserController {
         apiResponse.setResult(userService.createUser(request));
         return apiResponse;
     }
+
+    @PostMapping("/employee")
+    ApiResponse<UserResponse> createEmployee(@RequestBody UserCreationRequest request)
+    {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createEmployee(request))
+                .build();
+    }
+
     @GetMapping()
     ApiResponse<List<UserResponse>> getAllUsers()
     {
