@@ -22,6 +22,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 import { useUpdateVehicle } from "@/features/vehicles/mutations";
+import { useBranches } from "@repo/hooks";
 
 import type { Vehicle } from "@repo/types";
 import {
@@ -38,6 +39,7 @@ type Props = {
 
 export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
   const { mutateAsync, isPending } = useUpdateVehicle();
+  const { data: branches = [] } = useBranches();
 
   const {
     register,
@@ -218,10 +220,24 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
             <FieldLabel>Chi nhánh</FieldLabel>
-            <Input {...register("currentBranchId")} />
-            {errors.currentBranchId && (
-              <FieldError>{errors.currentBranchId.message}</FieldError>
-            )}
+            <Controller
+              control={control}
+              name="currentBranchId"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {branches.map((b) => (
+                      <SelectItem key={b.id} value={b.id}>
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </Field>
 
           <Field>

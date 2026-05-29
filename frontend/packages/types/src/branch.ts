@@ -7,5 +7,5 @@ export interface Branch {
   lat: number;
   lng: number;
   status: BranchStatus;
-  created_at: string;
+  createdAt?: string;
 }

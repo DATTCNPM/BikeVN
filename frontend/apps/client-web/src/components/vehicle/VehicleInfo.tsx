@@ -52,8 +52,12 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
       locationName: branches?.find(
         (branch) => branch.id === selectedVehicle?.currentBranchId,
       )?.name,
-      brandName: MOCK_BRANDS.find(b => b.id === selectedVehicle?.brandId)?.name || "N/A",
-      modelName: MOCK_MODELS.find(m => m.id === selectedVehicle?.modelId)?.name || "N/A",
+      brandName:
+        MOCK_BRANDS.find((b) => b.id === selectedVehicle?.brandId)?.name ||
+        "N/A",
+      modelName:
+        MOCK_MODELS.find((m) => m.id === selectedVehicle?.modelId)?.name ||
+        "N/A",
     };
   }, [selectedVehicle, branches]);
 
@@ -165,9 +169,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
             Fuel type
           </div>
 
-          <p className="font-medium">
-            {fuelTypeMap[vehicleData.vehicleType || "gasoline"]}
-          </p>
+          <p className="font-medium">{vehicleData.vehicleType || "N/A"}</p>
         </div>
 
         <div className="rounded-xl border p-4 space-y-2">

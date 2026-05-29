@@ -19,7 +19,10 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateBranch } from "@/features/branches/mutations";
-import { branchSchema, type BranchFormValues } from "@/features/branches/schemas";
+import {
+  branchSchema,
+  type BranchFormValues,
+} from "@/features/branches/schemas";
 
 type Props = {
   open: boolean;
@@ -49,6 +52,7 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
   });
 
   const onSubmit = async (values: BranchFormValues) => {
+    console.log("Submitting branch creation with values:", values);
     try {
       await mutateAsync(values);
       toast.success("Tạo chi nhánh thành công");
@@ -80,19 +84,29 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
           <Field>
             <FieldLabel>Địa chỉ</FieldLabel>
             <Input {...register("address")} placeholder="123 ABC" />
-            {errors.address && <FieldError>{errors.address.message}</FieldError>}
+            {errors.address && (
+              <FieldError>{errors.address.message}</FieldError>
+            )}
           </Field>
 
           <div className="grid grid-cols-2 gap-4">
             <Field>
               <FieldLabel>Vĩ độ (Lat)</FieldLabel>
-              <Input type="number" step="any" {...register("lat", { valueAsNumber: true })} />
+              <Input
+                type="number"
+                step="any"
+                {...register("lat", { valueAsNumber: true })}
+              />
               {errors.lat && <FieldError>{errors.lat.message}</FieldError>}
             </Field>
 
             <Field>
               <FieldLabel>Kinh độ (Lng)</FieldLabel>
-              <Input type="number" step="any" {...register("lng", { valueAsNumber: true })} />
+              <Input
+                type="number"
+                step="any"
+                {...register("lng", { valueAsNumber: true })}
+              />
               {errors.lng && <FieldError>{errors.lng.message}</FieldError>}
             </Field>
           </div>

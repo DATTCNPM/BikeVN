@@ -22,6 +22,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 import { useCreateVehicle } from "@/features/vehicles/mutations";
+import { useBranches } from "@repo/hooks";
 
 import {
   vehicleCreationSchema as vehicleSchema,
@@ -52,6 +53,7 @@ const defaultValues: VehicleFormValues = {
 
 export default function VehicleCreate({ open, onOpenChange }: Props) {
   const { mutateAsync, isPending } = useCreateVehicle();
+  const { data: branches = [] } = useBranches();
 
   const {
     register,
@@ -95,7 +97,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
       loading={isPending}
       submitText="Tạo xe"
     >
-      <FieldGroup className="py-4">
+      <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
             <FieldLabel>Tên xe</FieldLabel>
@@ -213,10 +215,27 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
             <FieldLabel>Chi nhánh</FieldLabel>
-            <Input {...register("currentBranchId")} placeholder="branch_01" />
-            {errors.currentBranchId && (
-              <FieldError>{errors.currentBranchId.message}</FieldError>
-            )}
+            <Controller
+              control={control}
+              name="currentBranchId"
+              render={({ field }) => (
+                <Select
+                  value={field.value || ""}
+                  onValueChange={(val) => field.onChange(val)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn chi nhánh" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {branches.map((b) => (
+                      <SelectItem key={b.id} value={b.id}>
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </Field>
 
           <Field>

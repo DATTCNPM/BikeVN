@@ -1,12 +1,12 @@
 # Backend Integration Guide for Frontend
 
-Tài liệu này cung cấp đầy đủ thông tin về backend hiện tại (Spring Boot) để Frontend (React/Vue/Angular chạy ở cổng `5173`) có thể kết nối và tích hợp mượt mà.
+Tài liệu này cung cấp đầy đủ thông tin về backend hiện tại (Spring Boot) để Frontend (React/Vue/Angular) có thể kết nối và tích hợp chính xác.
 
 ## 1. Thông tin cấu hình cơ bản (Base Configuration)
 
-- **Base URL:** `http://localhost:8080` (Backend chạy ở cổng 8080).
-- **CORS Configuration:** Đã được cấu hình để cho phép nguồn `http://localhost:5173` gọi API. Bạn có thể sử dụng các phương thức GET, POST, PUT, DELETE... với các header tùy ý và có hỗ trợ gửi credentials (cookies/auth headers).
-- **Cơ sở dữ liệu:** MySQL (`bikevn_db` - cổng `3307`).
+- **Base URL:** `http://localhost:8080` (Cổng mặc định là 8080, có thể thay đổi qua biến môi trường `PORT`).
+- **CORS Configuration:** Đã được cấu hình để cho phép nguồn `http://localhost:5173` gọi tất cả API (`/**`). Bạn có thể sử dụng các phương thức GET, POST, PUT, DELETE... với các header tùy ý và có hỗ trợ gửi credentials (cookies/auth headers).
+- **Cơ sở dữ liệu:** MySQL (host: `localhost`, cổng mặc định: `3306`, DB: `bikevn_db`, user: `bikevn_user`, pass: `bikevn_pass`). Tất cả đều có thể cấu hình qua biến môi trường (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`...).
 
 ## 2. Chuẩn Dữ liệu trả về (Response Wrapper)
 
@@ -15,33 +15,37 @@ Tất cả các API trả về data đều được wrap trong một object chun
 Cấu trúc JSON trả về mặc định:
 ```json
 {
-  "code": 1000, // code = 1000 thường mang ý nghĩa thành công
+  "code": 1000, // code = 1000 mang ý nghĩa request thành công
   "message": "Thông báo (nếu có)",
   "result": {
     // Dữ liệu thực tế trả về nằm ở đây (có thể là Object hoặc Array)
   }
 }
 ```
-*Lưu ý: Nếu một thuộc tính là null, nó sẽ bị bỏ qua trong response (nhờ cấu hình `@JsonInclude(JsonInclude.Include.NON_NULL)`).*
+*Lưu ý: Nếu một thuộc tính là null, nó sẽ bị bỏ qua trong response.*
 
 ## 3. Cơ chế Xác thực (Authentication & Authorization)
 
 Backend sử dụng **JWT (JSON Web Token)** để bảo mật các API.
 - Token được lấy khi gọi API Login.
-- Để gọi các API yêu cầu xác thực (Authenticated), Frontend cần gắn token vào header `Authorization` với định dạng:
+- Để gọi các API yêu cầu xác thực, Frontend cần gắn token vào header `Authorization` với định dạng:
   ```
   Authorization: Bearer <your_jwt_token>
   ```
 
-### Các Endpoint Không Cần Xác Thực (Public Endpoints - Method POST)
-Dựa theo cấu hình Security, các endpoint với phương thức **POST** sau đây được phép truy cập tự do:
+### Các Endpoint Không Cần Xác Thực (Public Endpoints)
+Dựa theo cấu hình Security, các endpoint sau đây được phép truy cập tự do:
+**Method POST:**
 - `/auth/login`
 - `/auth/logout`
 - `/auth/introspect`
 - `/user` (API đăng ký user mới)
 - `/role`
 - `/permission`
-*(Các method khác như GET trên các endpoint này vẫn yêu cầu xác thực).*
+
+**Method GET:**
+- `/branch` (Lấy danh sách tất cả chi nhánh)
+- `/branch/**` (Lấy chi tiết 1 chi nhánh)
 
 ---
 
@@ -50,20 +54,8 @@ Dựa theo cấu hình Security, các endpoint với phương thức **POST** sa
 ### 4.1. Authentication (Xác thực) - `/auth`
 
 * **POST `/auth/login`**: Đăng nhập.
-  * **Request Body:**
-    ```json
-    {
-      "email": "user@example.com",
-      "password": "yourpassword"
-    }
-    ```
-  * **Response (`result`):**
-    ```json
-    {
-      "token": "eyJhbG...",
-      "authenticated": true
-    }
-    ```
+  * **Request Body:** `{ "email": "user@example.com", "password": "yourpassword" }`
+  * **Response (`result`):** `{ "token": "...", "authenticated": true }`
 
 * **POST `/auth/logout`**: Đăng xuất.
   * **Request Body:** `{ "token": "jwt_token_here" }`
@@ -75,13 +67,14 @@ Dựa theo cấu hình Security, các endpoint với phương thức **POST** sa
 
 ### 4.2. User (Người dùng) - `/user`
 
-* **POST `/user`**: Tạo người dùng mới (Đăng ký).
-  * **Request Body:**
+* **POST `/user`**: Tạo người dùng mới (Customer).
+* **POST `/user/employee`**: Tạo tài khoản nhân viên (Employee).
+  * **Request Body (cho cả 2):**
     ```json
     {
       "name": "Tên người dùng",
       "email": "email@example.com",
-      "passwordHash": "mật_khẩu_đặt", // tối thiểu 6 ký tự
+      "passwordHash": "mật_khẩu_đặt", 
       "phone": "Số điện thoại",
       "cccdNumber": "Số CCCD"
     }
@@ -107,28 +100,31 @@ Dựa theo cấu hình Security, các endpoint với phương thức **POST** sa
 
 ### 4.3. Vehicle (Xe cho thuê) - `/vehicle`
 
-Tất cả các API Vehicle đều **cần JWT**.
+Tất cả các API Vehicle đều **cần JWT**. Lưu ý: Vehicle DTO hiện tại **KHÔNG** chứa trường lưu trữ hình ảnh (`imageUrl`).
 
 * **POST `/vehicle`**: Thêm xe mới.
-  * **Request Body:**
+  * **Request Body (VehicleCreationRequest):**
     ```json
     {
       "name": "Tên xe",
-      "licensePlate": "Biển số",
-      "color": "Màu sắc",
-      "year": 2023,
-      "pricePerDay": 150000, // Kiểu số thập phân
-      "vehicleType": "SCOOTER", // (Enum: Cần check thêm các giá trị enum)
+      "brandId": 1, // ID của hãng xe (Integer)
+      "modelId": 1, // ID của dòng xe (Integer)
+      "licensePlate": "51A-12345",
+      "color": "Đen",
+      "year": 2024,
+      "pricePerDay": 150000, 
+      "vehicleType": "fuel", // "fuel" hoặc "electric" (Chữ thường)
       "mileage": 10000,
-      "description": "Mô tả",
-      "status": "AVAILABLE", // (Enum: StatusVehicleEnum)
-      "currentBranchId": "id-của-chi-nhánh"
+      "description": "Xe mới",
+      "status": "available", // "available", "unavailable", "maintenance" (Chữ thường)
+      "currentBranchId": "uuid-của-chi-nhánh"
     }
     ```
 
 * **GET `/vehicle`**: Lấy danh sách tất cả xe.
 * **GET `/vehicle/{vehicleId}`**: Lấy thông tin chi tiết xe.
 * **PUT `/vehicle/{vehicleId}`**: Cập nhật thông tin xe.
+  * **Lưu ý:** Gần đây đã sửa bug thiếu `@RequestBody` nên API này giờ hoạt động bình thường.
 * **DELETE `/vehicle/{vehicleId}`**: Xóa xe.
 
 **Cấu trúc VehicleResponse trả về:**
@@ -136,19 +132,56 @@ Tất cả các API Vehicle đều **cần JWT**.
 {
   "id": "uuid-string",
   "name": "string",
+  "brandId": 1,
+  "modelId": 1,
   "licensePlate": "string",
   "color": "string",
-  "year": 2023,
+  "year": 2024,
   "pricePerDay": 150000,
-  "vehicleType": "SCOOTER",
+  "vehicleType": "fuel",
   "mileage": 10000,
   "description": "string",
-  "status": "AVAILABLE",
-  "createdAt": "2023-10-20T10:00:00",
-  "updatedAt": "2023-10-20T10:00:00"
+  "status": "available",
+  "currentBranchId": "uuid-của-chi-nhánh",
+  "createdAt": "2024-05-28T10:00:00",
+  "updatedAt": "2024-05-28T10:00:00"
+}
+```
+
+### 4.4. Branch (Chi nhánh) - `/branch`
+
+Quản lý chi nhánh. Các API GET là Public. POST/PUT/DELETE yêu cầu JWT.
+
+* **POST `/branch`**: Thêm chi nhánh mới.
+  * **Request Body (BranchCreationRequest):**
+    ```json
+    {
+      "name": "Tên chi nhánh",
+      "address": "Địa chỉ",
+      "lat": 10.762622, // BigDecimal
+      "lng": 106.660172, // BigDecimal
+      "status": "active" // "active" hoặc "inactive"
+    }
+    ```
+
+* **GET `/branch`**: Lấy danh sách tất cả chi nhánh (Public).
+* **GET `/branch/{branchId}`**: Lấy thông tin chi tiết chi nhánh (Public).
+* **PUT `/branch/{branchId}`**: Cập nhật thông tin chi nhánh.
+  * **Request Body (BranchUpdateRequest):** Giống hệt BranchCreationRequest.
+* **DELETE `/branch/{branchId}`**: Xóa chi nhánh.
+
+**Cấu trúc BranchResponse trả về:**
+```json
+{
+  "id": "uuid-string",
+  "name": "string",
+  "address": "string",
+  "lat": 10.762622,
+  "lng": 106.660172,
+  "status": "active"
 }
 ```
 
 ## 5. Lưu ý dành cho Frontend
-- Các enum như `VehicleType`, `StatusVehicleEnum`, `RoleEnum` sẽ nhận các string có giá trị tương ứng bên backend (VD: `"ADMIN"`, `"USER"`, `"AVAILABLE"`...). Frontend nên sử dụng đúng định dạng in hoa này khi truyền vào request body.
-- Việc xử lý Validation Error (VD: Mật khẩu ngắn, tên để trống...) sẽ làm cho `ApiResponse` trả về `code` khác 1000 kèm theo `message` giải thích chi tiết, frontend cần bắt (catch) và hiển thị thân thiện cho user dựa theo biến `code` hoặc `message`.
+- Các enum truyền thống như `RoleEnum` thường nhận string in hoa (VD: `"ADMIN"`, `"USER"`). Tuy nhiên, **riêng các trường `vehicleType` và `status` của xe đã được backend đổi thành string chữ thường** (VD: `"fuel"`, `"electric"`, `"available"`, `"maintenance"`). Tương tự, `status` của Branch cũng là chữ thường (`"active"`, `"inactive"`). Frontend cần chú ý map chính xác kiểu chữ (case-sensitive) khi gửi Request.
+- Việc xử lý Validation Error (VD: Mật khẩu ngắn, tên để trống...) sẽ làm cho `ApiResponse` trả về `code` khác 1000 kèm theo `message` giải thích chi tiết, frontend cần bắt (catch) và hiển thị thông báo thân thiện cho user dựa theo biến `code` hoặc `message`.
