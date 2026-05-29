@@ -22,6 +22,7 @@ import ReviewSection from "@/components/vehicle/review/ReviewSection";
 import { useEffect, useMemo } from "react";
 import { useBranches } from "@repo/hooks";
 import { useVehicle } from "@repo/hooks";
+import { MOCK_BRANDS, MOCK_MODELS } from "@repo/api";
 
 export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   const {
@@ -51,6 +52,12 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
       locationName: branches?.find(
         (branch) => branch.id === selectedVehicle?.currentBranchId,
       )?.name,
+      brandName:
+        MOCK_BRANDS.find((b) => b.id === selectedVehicle?.brandId)?.name ||
+        "N/A",
+      modelName:
+        MOCK_MODELS.find((m) => m.id === selectedVehicle?.modelId)?.name ||
+        "N/A",
     };
   }, [selectedVehicle, branches]);
 
@@ -104,7 +111,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="default">
               <Motorbike className="mr-2 h-4 w-4" />
-              {""} - {""}
+              {vehicleData.brandName} - {vehicleData.modelName}
             </Badge>
 
             <Badge variant="outline">
@@ -143,7 +150,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
           </div>
 
           <p className="font-medium">
-            {""} {""}
+            {vehicleData.brandName} {vehicleData.modelName}
           </p>
         </div>
 
@@ -162,9 +169,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
             Fuel type
           </div>
 
-          <p className="font-medium">
-            {fuelTypeMap[vehicleData.vehicleType || "gasoline"]}
-          </p>
+          <p className="font-medium">{vehicleData.vehicleType || "N/A"}</p>
         </div>
 
         <div className="rounded-xl border p-4 space-y-2">

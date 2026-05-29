@@ -56,7 +56,7 @@ export default function EntityFormDialog({
             )}
           </DialogHeader>
 
-          <div className="space-y-5">{children}</div>
+          <div className="py-4">{children}</div>
 
           <DialogFooter>
             <Button

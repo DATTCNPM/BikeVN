@@ -83,9 +83,9 @@ export default function MyBookingSection() {
     return {
       ...b,
       vehicleName: vehicle ? vehicle.name : "Unknown Vehicle",
-      vehicleImage: vehicle
-        ? vehicle.image_url[0]
-        : "https://via.placeholder.com/300x200?text=No+Image",
+      vehicleImage: "",
+      // ? vehicle.image_url[0]
+      // : "https://via.placeholder.com/300x200?text=No+Image",
     };
   });
 

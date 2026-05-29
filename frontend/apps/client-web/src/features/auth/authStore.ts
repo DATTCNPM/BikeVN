@@ -4,7 +4,7 @@ import { authStorageService } from "@repo/services";
 interface AuthStore {
   isServerDown: boolean;
   isLogin: boolean;
-
+  setIsLogin: (value: boolean) => void;
   setIsServerDown: (value: boolean) => void;
 }
 
@@ -15,5 +15,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setIsServerDown: (value) =>
     set({
       isServerDown: value,
+    }),
+  setIsLogin: (value) =>
+    set({
+      isLogin: value,
     }),
 }));

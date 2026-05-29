@@ -8,9 +8,7 @@ USE bikevn_db;
 -- SAMPLE DATA - roles
 -- ========================================
 INSERT INTO roles (id, name, description) VALUES
-('7ded611a-4d31-4be6-ab6e-05fa063ed04a', 'admin', 'Administrator with full system access'),
 ('ac079c2d-da6c-4462-88d6-e025f58c2844', 'employee', 'Employee with staff privileges'),
-('c8d017a3-848c-45cf-886d-8c8c0c1c47fa', 'user', 'Regular customer user'),
 ('f8ed61b2-add4-4a7c-9d16-7a97fe78dc58', 'manager', 'Branch or department manager'),
 ('093317a1-ab50-4e65-be85-ee6e0d442729', 'support', 'Customer support staff');
 

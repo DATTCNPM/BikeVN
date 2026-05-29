@@ -100,7 +100,7 @@ export default function BookingCard() {
   const totalDays =
     startDate && endDate ? differenceInDays(endDate, startDate) || 1 : 0;
 
-  const totalPrice = totalDays * (vehicle?.price_per_day || 0);
+  const totalPrice = totalDays * (vehicle?.pricePerDay || 0);
 
   const onSubmit = (values: BookingSchema) => {
     createBooking({
@@ -129,7 +129,7 @@ export default function BookingCard() {
             <p className="text-sm text-muted-foreground">Giá thuê</p>
 
             <CardTitle className="text-3xl font-bold">
-              {vehicle?.price_per_day?.toLocaleString("vi-VN") || "0"}đ
+              {vehicle?.pricePerDay?.toLocaleString("vi-VN") || "0"}đ
               <span className="ml-1 text-base font-normal text-muted-foreground">
                 / ngày
               </span>
@@ -276,7 +276,9 @@ export default function BookingCard() {
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Giá mỗi ngày</span>
 
-              <span>{vehicle?.price_per_day.toLocaleString("vi-VN")}đ</span>
+              <span>
+                {vehicle?.pricePerDay?.toLocaleString("vi-VN") || "0"}đ
+              </span>
             </div>
 
             <Separator />

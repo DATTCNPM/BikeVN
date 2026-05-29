@@ -43,11 +43,11 @@ export default function MapVehicle() {
     return vehicles.map((vehicle) => ({
       id: vehicle.id,
       name: vehicle.name,
-      vehicle_type: vehicle.model, // Assuming model represents the type
-      price: vehicle.price_per_day,
-      image: vehicle.image_url[0], // Use the first image as thumbnail
+      vehicle_type: vehicle.vehicleType,
+      price: vehicle.pricePerDay,
+      image: "", // Use the first image as thumbnail
       location:
-        branches.find((b) => b.id === vehicle.current_branch_id)?.name ||
+        branches.find((b) => b.id === vehicle.currentBranchId)?.name ||
         "Unknown",
       status: vehicle.status,
     }));

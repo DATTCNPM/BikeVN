@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const vehicleCreationSchema = z.object({
   name: z.string().min(1, "Tên xe không được để trống"),
+  brandId: z.number().int().min(1, "Vui lòng chọn hãng xe"),
+  modelId: z.number().int().min(1, "Vui lòng chọn dòng xe"),
   licensePlate: z.string().min(1, "Biển số xe không được để trống"),
   color: z.string().min(1, "Màu sắc không được để trống"),
   year: z.number().int().min(1900, "Năm sản xuất không hợp lệ").max(new Date().getFullYear() + 1, "Năm sản xuất không hợp lệ"),

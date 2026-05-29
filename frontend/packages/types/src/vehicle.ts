@@ -5,6 +5,8 @@ export type VehicleType = "fuel" | "electric";
 export interface Vehicle {
   id: string;
   name: string;
+  brandId: number;
+  modelId: number;
   licensePlate: string;
   color: string;
   year: number;
@@ -20,6 +22,8 @@ export interface Vehicle {
 
 export interface VehicleCreationRequest {
   name: string;
+  brandId: number;
+  modelId: number;
   licensePlate: string;
   color: string;
   year: number;

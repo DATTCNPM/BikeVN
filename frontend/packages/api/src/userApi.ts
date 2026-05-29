@@ -30,6 +30,21 @@ export const userApi = {
     return axiosClient.post("/user", requestPayload);
   },
 
+  async createEmployee(
+    payload: Omit<UserCreationRequest, "passwordHash"> & {
+      passwordHash?: string;
+      cccdNumber?: string;
+    },
+  ): Promise<ApiResponse<User>> {
+    const { cccdNumber, passwordHash, ...rest } = payload;
+    const requestPayload = {
+      ...rest,
+      cccdNumber: cccdNumber || "",
+      passwordHash: passwordHash || "defaultEmployee123",
+    };
+    return axiosClient.post("/user/employee", requestPayload);
+  },
+
   async updateUser(
     id: string,
     payload: Partial<UpdateProfilePayload> & { cccdNumber?: string },

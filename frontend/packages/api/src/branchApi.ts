@@ -1,10 +1,6 @@
 // src/apis/branchApi.ts
-
-import { branches } from "./data/BranchData";
-
-import type { Branch, BranchStatus } from "@repo/types";
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import type { Branch, BranchStatus, ApiResponse } from "@repo/types";
+import axiosClient from "./axious";
 
 export type CreateBranchPayload = {
   name: string;
@@ -18,17 +14,17 @@ export type UpdateBranchPayload = Partial<CreateBranchPayload>;
 
 export const branchApi = {
   async getBranches(): Promise<Branch[]> {
-    await delay(500);
-
-    return branches;
+    const data = await axiosClient.get<any, ApiResponse<Branch[]>>("/branch");
+    console.log("Fetched branches:", data.result);
+    return data.result || [];
   },
 
   async getBranchById(id: string): Promise<Branch> {
-    await delay(300);
+    const data = await axiosClient.get<any, ApiResponse<Branch>>(
+      `/branch/${id}`,
+    );
 
-    const branch = branches.find((b) => b.id === id);
-
-    if (!branch) {
+    if (!data.result) {
       throw {
         response: {
           status: 404,
@@ -39,36 +35,21 @@ export const branchApi = {
       };
     }
 
-    return branch;
+    return data.result;
   },
 
   async createBranch(
     payload: CreateBranchPayload,
   ): Promise<{ message: string; branch: Branch }> {
-    await delay(500);
-
-    const newBranch: Branch = {
-      id: Date.now().toString(),
-
-      name: payload.name,
-
-      address: payload.address,
-
-      lat: payload.lat,
-
-      lng: payload.lng,
-
-      status: payload.status || "active",
-
-      created_at: new Date().toISOString(),
-    };
-
-    branches.push(newBranch);
+    const data = await axiosClient.post<any, ApiResponse<Branch>>(
+      "/branch",
+      payload,
+    );
+    console.log("Created branch with response:", data);
 
     return {
       message: "Tạo chi nhánh thành công",
-
-      branch: newBranch,
+      branch: data.result!,
     };
   },
 
@@ -76,11 +57,12 @@ export const branchApi = {
     id: string,
     payload: UpdateBranchPayload,
   ): Promise<{ message: string; branch: Branch }> {
-    await delay(500);
+    const data = await axiosClient.put<any, ApiResponse<Branch>>(
+      `/branch/${id}`,
+      payload,
+    );
 
-    const branchIndex = branches.findIndex((b) => b.id === id);
-
-    if (branchIndex === -1) {
+    if (!data.result) {
       throw {
         response: {
           status: 404,
@@ -91,36 +73,14 @@ export const branchApi = {
       };
     }
 
-    branches[branchIndex] = {
-      ...branches[branchIndex],
-
-      ...payload,
-    };
-
     return {
       message: "Cập nhật chi nhánh thành công",
-
-      branch: branches[branchIndex],
+      branch: data.result,
     };
   },
 
   async deleteBranch(id: string): Promise<{ message: string }> {
-    await delay(500);
-
-    const branchIndex = branches.findIndex((b) => b.id === id);
-
-    if (branchIndex === -1) {
-      throw {
-        response: {
-          status: 404,
-          data: {
-            message: "Chi nhánh không tồn tại",
-          },
-        },
-      };
-    }
-
-    branches.splice(branchIndex, 1);
+    await axiosClient.delete(`/branch/${id}`);
 
     return {
       message: "Xóa chi nhánh thành công",

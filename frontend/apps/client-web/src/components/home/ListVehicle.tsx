@@ -35,11 +35,11 @@ export default function ListVehicle() {
     return vehicles.map((vehicle) => ({
       id: vehicle.id,
       name: vehicle.name,
-      vehicle_type: vehicle.model,
-      price: vehicle.price_per_day,
-      image: vehicle.image_url[0],
+      vehicle_type: vehicle.vehicleType,
+      price: vehicle.pricePerDay,
+      image: "",
       location:
-        branches.find((branch) => branch.id === vehicle.current_branch_id)
+        branches.find((branch) => branch.id === vehicle.currentBranchId)
           ?.name || "Unknown",
       status: vehicle.status,
     }));
@@ -52,6 +52,7 @@ export default function ListVehicle() {
       </div>
     );
   }
+  console.log("data", vehicles);
 
   return (
     <>

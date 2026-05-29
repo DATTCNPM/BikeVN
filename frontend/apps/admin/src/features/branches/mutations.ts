@@ -6,7 +6,10 @@ import { type BranchFormValues } from "./schemas";
 export function useCreateBranch() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: BranchFormValues) => branchApi.createBranch(payload),
+    mutationFn: (payload: BranchFormValues) => {
+      console.log("Creating branch with payload:", payload);
+      return branchApi.createBranch(payload);
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
     },
@@ -16,11 +19,18 @@ export function useCreateBranch() {
 export function useUpdateBranch() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: Partial<BranchFormValues> }) => 
-      branchApi.updateBranch(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Partial<BranchFormValues>;
+    }) => branchApi.updateBranch(id, payload),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
-      await queryClient.invalidateQueries({ queryKey: branchesKeys.detail(variables.id) });
+      await queryClient.invalidateQueries({
+        queryKey: branchesKeys.detail(variables.id),
+      });
     },
   });
 }
