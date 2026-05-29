@@ -21,17 +21,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/test", "/auth/login",
+    private final String[] PUBLIC_POST_ENDPOINTS = {"/auth/test", "/auth/login",
             "/auth/logout",  "/auth/introspect",
             "/user", "/role", "/permission"};
+            
+    private final String[] PUBLIC_GET_ENDPOINTS = {"/branch", "/branch/**"};
+
     @Autowired
     private CustomJWTDecoder customJWTDecoder;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         
-        httpSecurity.authorizeHttpRequests(req -> req.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
-                .permitAll().anyRequest().authenticated());
+        httpSecurity.authorizeHttpRequests(req -> req
+                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+                .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2-> oauth2.jwt(jwtConfigurer ->
             jwtConfigurer.decoder(customJWTDecoder)
