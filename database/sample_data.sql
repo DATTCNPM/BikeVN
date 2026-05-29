@@ -26,18 +26,12 @@ INSERT INTO users (id, name, email, password_hash, phone, cccd_number, is_active
 -- SAMPLE DATA - users_roles (assign roles to users)
 -- ========================================
 INSERT INTO users_roles (user_id, role_id) VALUES
--- Admin user gets admin role
-('c815d217-8e21-46ee-9b53-79fc6cf81a84', '7ded611a-4d31-4be6-ab6e-05fa063ed04a'),
-
 -- Employee user gets employee and support roles
 ('32481aa5-1c15-4efc-8e79-a947f44719f6', 'ac079c2d-da6c-4462-88d6-e025f58c2844'),
 ('32481aa5-1c15-4efc-8e79-a947f44719f6', '093317a1-ab50-4e65-be85-ee6e0d442729'),
 
--- Regular users get user role
-('00a58e19-6462-4045-93fe-870e604b9311', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa'),
-('40039cd5-dc03-48c4-95b8-75061f18a7f0', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa'),
-('2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa'),
-('f6869750-0ec9-49a6-a6e8-0a70d4b9e7f7', 'c8d017a3-848c-45cf-886d-8c8c0c1c47fa');
+-- Manager role for user Pham Van C
+('40039cd5-dc03-48c4-95b8-75061f18a7f0', 'f8ed61b2-add4-4a7c-9d16-7a97fe78dc58');
 
 -- ========================================
 -- SAMPLE DATA - vehicle_brands
@@ -234,18 +228,18 @@ INSERT INTO conversations (id, created_at) VALUES
 -- SAMPLE DATA - conversation_members (UUID primary keys)
 -- ========================================
 INSERT INTO conversation_members (id, conversation_id, user_id, joined_at) VALUES
--- Conversation 1: User 2 and Admin
+-- Conversation 1: User 1 and User 2
 ('2bd687b6-a4d4-478a-b4e7-7e06c9513676', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '32481aa5-1c15-4efc-8e79-a947f44719f6', NOW()),
-('b4545ac3-3298-4715-9ed6-df869452f912', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', NOW()),
+('b4545ac3-3298-4715-9ed6-df869452f912', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '00a58e19-6462-4045-93fe-870e604b9311', NOW()),
 
--- Conversation 2: User 3 and Admin
+-- Conversation 2: User 2 and User 3
 ('78d268c0-0bd0-4449-906a-82112d24bd0f', '50b672cb-6559-4dd8-8908-9bda53bab347', '00a58e19-6462-4045-93fe-870e604b9311', DATE_SUB(NOW(), INTERVAL 2 DAY)),
-('86eabfdd-870c-4181-9c0b-21352854c1e3', '50b672cb-6559-4dd8-8908-9bda53bab347', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', DATE_SUB(NOW(), INTERVAL 2 DAY)),
+('86eabfdd-870c-4181-9c0b-21352854c1e3', '50b672cb-6559-4dd8-8908-9bda53bab347', '40039cd5-dc03-48c4-95b8-75061f18a7f0', DATE_SUB(NOW(), INTERVAL 2 DAY)),
 
--- Conversation 3: User 4, User 5, and Admin
+-- Conversation 3: User 3, User 4, and User 5
 ('9dad095d-2c4f-4de5-883a-cd2f915cda2f', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '40039cd5-dc03-48c4-95b8-75061f18a7f0', DATE_SUB(NOW(), INTERVAL 5 DAY)),
 ('dd8b5719-0165-40f7-b627-02ef70acd0e8', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', DATE_SUB(NOW(), INTERVAL 5 DAY)),
-('72e93f47-0dfb-44e9-926c-84e70a4fd9be', '9b95a351-89fa-4d8f-822e-b1c921f264f4', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', DATE_SUB(NOW(), INTERVAL 5 DAY));
+('72e93f47-0dfb-44e9-926c-84e70a4fd9be', '9b95a351-89fa-4d8f-822e-b1c921f264f4', 'f6869750-0ec9-49a6-a6e8-0a70d4b9e7f7', DATE_SUB(NOW(), INTERVAL 5 DAY));
 
 -- ========================================
 -- SAMPLE DATA - messages (UUID primary keys)
@@ -253,18 +247,18 @@ INSERT INTO conversation_members (id, conversation_id, user_id, joined_at) VALUE
 INSERT INTO messages (id, conversation_id, sender_id, content, is_read, created_at) VALUES
 -- Conversation 1
 ('645cc032-70f5-4031-9d95-587468b99e76', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'Hello, I want to book a vehicle', FALSE, NOW()),
-('d45552bf-480d-4b8e-bf31-573348779852', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', 'Sure! Which vehicle would you like to rent?', TRUE, DATE_SUB(NOW(), INTERVAL 1 HOUR)),
+('d45552bf-480d-4b8e-bf31-573348779852', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '00a58e19-6462-4045-93fe-870e604b9311', 'Sure! Which vehicle would you like to rent?', TRUE, DATE_SUB(NOW(), INTERVAL 1 HOUR)),
 ('e5f4ad9a-fef6-40dc-8967-a75c734b6f75', '46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'I am interested in the Honda Wave', FALSE, DATE_SUB(NOW(), INTERVAL 50 MINUTE)),
 
 -- Conversation 2
 ('85f0b50b-363c-4556-a017-79798dced734', '50b672cb-6559-4dd8-8908-9bda53bab347', '00a58e19-6462-4045-93fe-870e604b9311', 'Is the Yamaha Exciter available for weekend?', TRUE, DATE_SUB(NOW(), INTERVAL 2 DAY)),
-('13d86a2b-9c0d-41e6-9981-513b3bb83e47', '50b672cb-6559-4dd8-8908-9bda53bab347', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', 'Yes, it is available! What dates?', TRUE, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+('13d86a2b-9c0d-41e6-9981-513b3bb83e47', '50b672cb-6559-4dd8-8908-9bda53bab347', '40039cd5-dc03-48c4-95b8-75061f18a7f0', 'Yes, it is available! What dates?', TRUE, DATE_SUB(NOW(), INTERVAL 1 DAY)),
 ('66da11e0-fab6-4b03-a5dd-63e5db21c711', '50b672cb-6559-4dd8-8908-9bda53bab347', '00a58e19-6462-4045-93fe-870e604b9311', 'January 27-28. Can I book it?', FALSE, DATE_SUB(NOW(), INTERVAL 23 HOUR)),
 
 -- Conversation 3
 ('98019a55-c6b2-4dc6-9d14-c26449e5d24a', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '40039cd5-dc03-48c4-95b8-75061f18a7f0', 'Hello team, interested in group rental', FALSE, DATE_SUB(NOW(), INTERVAL 5 DAY)),
 ('60df9026-2a06-4f14-bf30-f799197b803e', '9b95a351-89fa-4d8f-822e-b1c921f264f4', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', 'Me too! How many bikes do we need?', FALSE, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-('60ce150b-f394-4676-b61e-4fb26dade47b', '9b95a351-89fa-4d8f-822e-b1c921f264f4', 'c815d217-8e21-46ee-9b53-79fc6cf81a84', 'We have great group rates! Please tell me your requirements', TRUE, DATE_SUB(NOW(), INTERVAL 4 DAY));
+('60ce150b-f394-4676-b61e-4fb26dade47b', '9b95a351-89fa-4d8f-822e-b1c921f264f4', 'f6869750-0ec9-49a6-a6e8-0a70d4b9e7f7', 'We have great group rates! Please tell me your requirements', TRUE, DATE_SUB(NOW(), INTERVAL 4 DAY));
 
 -- ========================================
 -- SAMPLE DATA - reviews (UUID primary keys)

@@ -23,7 +23,7 @@ USE bikevn_db ;
 DROP TABLE IF EXISTS `bookings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `bookings` (bookings
+CREATE TABLE `bookings` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID primary key',
   `user_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `vehicle_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
