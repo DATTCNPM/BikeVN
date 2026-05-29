@@ -14,6 +14,7 @@ import com.backend.bikerental.repository.VehicleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class VehicleService {
     VehicleBrandRepository vehicleBrandRepository;
     VehicleModelRepository vehicleModelRepository;
     BranchRepository branchRepository;
+   @PreAuthorize("hasRole('admin') or hasRole('employee')")
     public VehicleResponse createVehicle(VehicleCreationRequest request)
     {
         var brand = vehicleBrandRepository.findById(request.getBrandId())
@@ -58,7 +60,7 @@ public class VehicleService {
         return vehicleMapper.toVehicleResponse(vehicleRepository.findById(id).orElseThrow(()->
                 new AppException(ErrorCode.VEHICLE_NOT_EXISTED)));
     }
-
+    @PreAuthorize("hasRole('admin') or hasRole('employee')")
     public VehicleResponse updateVehicle(String id, VehicleUpdateRequest request)
     {
         Vehicle vehicle = vehicleRepository.findById(id).orElseThrow(()->
@@ -66,7 +68,7 @@ public class VehicleService {
         vehicleMapper.updateVehicle(vehicle, request);
         return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
-
+    @PreAuthorize("hasRole('admin') or hasRole('employee')")
     public void deleteVehicle(String id)
     {
         vehicleRepository.deleteById(id);

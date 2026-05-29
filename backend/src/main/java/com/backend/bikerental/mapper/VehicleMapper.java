@@ -7,6 +7,8 @@ import com.backend.bikerental.entity.Vehicle;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
@@ -34,5 +36,6 @@ public interface VehicleMapper {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateVehicle(@MappingTarget Vehicle vehicle, VehicleUpdateRequest request);
 }

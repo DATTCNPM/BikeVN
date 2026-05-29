@@ -39,13 +39,13 @@ public class Vehicle {
     @Column(length = 20, name = "license_plate")
     String licensePlate;
     String color;
-    int year;
+    Integer year;
     @Column(name = "price_per_day", precision = 10, scale = 2)
     BigDecimal pricePerDay;
     @Enumerated(EnumType.STRING)
     @Column(name = "vehicle_type")
     VehicleType vehicleType;
-    int mileage;
+    Integer mileage;
     String description;
     @Enumerated(EnumType.STRING)
     StatusVehicleEnum status;
