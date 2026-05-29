@@ -11,3 +11,4 @@ export * from "./userApi";
 export * from "./roleApi";
 export * from "./permissionApi";
 export * from "./notificationApi";
+export * from "./data/mockBrandsAndModels";

@@ -18,6 +18,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { type Vehicle } from "@repo/types";
 import { useVehicles } from "@repo/hooks";
 import VehicleInfoDropdown from "@/components/vehicle/VehicleInfoDropdown";
+import { MOCK_BRANDS, MOCK_MODELS } from "@repo/api";
 
 const vehicleStatusMap = {
   available:
@@ -61,7 +62,7 @@ export default function VehicleManagementPage() {
           return (
             <div className="flex items-center gap-3">
               <img
-                src={vehicle.imageUrl[0]}
+                src={"/placeholder-image.jpg"}
                 alt={vehicle.name}
                 className="h-14 w-20 rounded-md object-cover"
               />
@@ -82,15 +83,18 @@ export default function VehicleManagementPage() {
         accessorKey: "brand",
         header: "Hãng",
 
-        cell: ({ row }) => (
-          <div>
-            <p className="font-medium">{""}</p>
-
-            <p className="text-muted-foreground text-sm">
-              {""}
-            </p>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const brand = MOCK_BRANDS.find((b) => b.id === row.original.brandId);
+          const model = MOCK_MODELS.find((m) => m.id === row.original.modelId);
+          return (
+            <div>
+              <p className="font-medium">{brand?.name || "N/A"}</p>
+              <p className="text-muted-foreground text-sm">
+                {model?.name || "N/A"}
+              </p>
+            </div>
+          );
+        },
       },
 
       {
@@ -104,7 +108,9 @@ export default function VehicleManagementPage() {
         accessorKey: "currentBranchId",
         header: "Chi nhánh",
 
-        cell: ({ row }) => <span>CN #{row.original.currentBranchId}</span>,
+        cell: ({ row }) => (
+          <span>CN #{row.original.currentBranchId || "N/A"}</span>
+        ),
       },
 
       {

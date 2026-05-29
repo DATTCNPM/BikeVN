@@ -19,9 +19,12 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useNavigate } from "react-router-dom";
 
 import { useLogin } from "@/features/auth/useLogin";
+import { useAuthStore } from "@/features/auth/authStore";
+
 export default function Login() {
   const navigate = useNavigate();
   const { mutateAsync: login, error, isPending } = useLogin();
+  const { setIsLogin } = useAuthStore();
 
   const [showPassword, setShowPassword] = useState(false);
   const methods = useForm<LoginSchema>({
@@ -39,6 +42,7 @@ export default function Login() {
   const onSubmit = async (data: LoginSchema) => {
     const success = await login(data);
     if (success) {
+      setIsLogin(true);
       navigate("/home");
     }
   };

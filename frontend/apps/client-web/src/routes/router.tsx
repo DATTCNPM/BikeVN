@@ -23,7 +23,7 @@ import NotificationPage from "@/pages/NotificationPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import ServerErrorPage from "@/pages/ServerErrorPage";
 
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useAuthStore } from "@/features/auth/authStore";
 function GlobalRootLayout() {
   const navigate = useNavigate();
@@ -41,12 +41,9 @@ function ProtectedRoute() {
   const navigate = useNavigate();
   const isLogin = useAuthStore((state) => state.isLogin);
 
-  // chưa đăng nhập -> đá về login
-  useEffect(() => {
-    if (!isLogin) {
-      navigate("/login");
-    }
-  }, [isLogin]);
+  if (!isLogin) {
+    navigate("/login");
+  }
 
   // đã đăng nhập -> render route con
   return <Outlet />;
