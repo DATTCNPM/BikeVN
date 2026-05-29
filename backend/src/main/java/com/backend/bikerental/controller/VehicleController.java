@@ -33,7 +33,7 @@ public class VehicleController {
     }
 
     @GetMapping("/{vehicleId}")
-    ApiResponse<VehicleResponse> getVehicles(@PathVariable("vehicleId") String id)
+    ApiResponse<VehicleResponse> getVehicle(@PathVariable("vehicleId") String id)
     {
         return ApiResponse.<VehicleResponse>builder()
                 .result(vehicleService.getVehicle(id))
@@ -41,7 +41,7 @@ public class VehicleController {
     }
 
     @PutMapping("/{vehicleId}")
-    ApiResponse<VehicleResponse> updateVehicle(@PathVariable("vehicleId") String id, VehicleUpdateRequest request)
+    ApiResponse<VehicleResponse> updateVehicle(@PathVariable("vehicleId") String id, @RequestBody VehicleUpdateRequest request)
     {
         return ApiResponse.<VehicleResponse>builder()
                 .result(vehicleService.updateVehicle(id, request))
