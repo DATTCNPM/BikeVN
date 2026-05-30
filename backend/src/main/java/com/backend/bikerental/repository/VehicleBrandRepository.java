@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface VehicleBrandRepository extends JpaRepository<VehicleBrand, Integer> {
     Optional<VehicleBrand> findByName(String name);
+    boolean existsByName(String name);
 }
