@@ -21,11 +21,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_POST_ENDPOINTS = {"/auth/test", "/auth/login",
+    private final String[] PUBLIC_POST_ENDPOINTS = {"/auth/login",
             "/auth/logout",  "/auth/introspect",
             "/user", "/role", "/permission"};
             
-    private final String[] PUBLIC_GET_ENDPOINTS = {"/branch", "/branch/**", "/model", "/model/**",
+    private final String[] PUBLIC_GET_ENDPOINTS = {"/auth/test", "/branch", "/branch/**", "/model", "/model/**",
             "/brand", "/brand/**", "/vehicle", "/vehicle/**", "/uploads", "/uploads/**"};
 
     @Autowired
