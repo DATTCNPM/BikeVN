@@ -26,6 +26,10 @@ export interface UserCreationRequest {
   cccdNumber?: string;
 }
 
+export interface AdminUserCreationRequest extends UserCreationRequest {
+  role: "user" | "admin";
+}
+
 export interface RegisterPayload {
   name: string;
   email: string;

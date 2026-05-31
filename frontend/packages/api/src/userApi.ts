@@ -24,7 +24,7 @@ export const userApi = {
     const { cccdNumber, passwordHash, ...rest } = payload;
     const requestPayload = {
       ...rest,
-      cccdNumber: cccdNumber || "",
+      cccdNumber: cccdNumber || undefined,
       passwordHash: passwordHash || "defaultPassword123",
     };
     return axiosClient.post("/user", requestPayload);

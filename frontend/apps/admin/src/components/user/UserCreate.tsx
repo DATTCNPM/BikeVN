@@ -19,18 +19,22 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateUser } from "@/features/users/mutations";
-import { userSchema, type UserFormValues } from "@/features/users/schemas";
+import {
+  createUserSchema,
+  type CreateUserValues,
+} from "@/features/users/schemas";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const defaultValues: UserFormValues = {
+const defaultValues: CreateUserValues = {
   name: "",
   email: "",
+  passwordHash: "",
   phone: "",
-  cccd_number: "",
+  cccdNumber: "",
   role: "user",
 };
 
@@ -43,12 +47,12 @@ export default function UserCreate({ open, onOpenChange }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
+  } = useForm<CreateUserValues>({
+    resolver: zodResolver(createUserSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: UserFormValues) => {
+  const onSubmit = async (values: CreateUserValues) => {
     try {
       await mutateAsync(values);
       toast.success("Tạo người dùng thành công");
@@ -79,8 +83,24 @@ export default function UserCreate({ open, onOpenChange }: Props) {
 
           <Field>
             <FieldLabel>Email</FieldLabel>
-            <Input {...register("email")} type="email" placeholder="email@example.com" />
+            <Input
+              {...register("email")}
+              type="email"
+              placeholder="email@example.com"
+            />
             {errors.email && <FieldError>{errors.email.message}</FieldError>}
+          </Field>
+
+          <Field>
+            <FieldLabel>Mật khẩu</FieldLabel>
+            <Input
+              {...register("passwordHash")}
+              type="password"
+              placeholder="********"
+            />
+            {errors.passwordHash && (
+              <FieldError>{errors.passwordHash.message}</FieldError>
+            )}
           </Field>
 
           <Field>
@@ -91,8 +111,10 @@ export default function UserCreate({ open, onOpenChange }: Props) {
 
           <Field>
             <FieldLabel>CCCD</FieldLabel>
-            <Input {...register("cccd_number")} placeholder="079203000123" />
-            {errors.cccd_number && <FieldError>{errors.cccd_number.message}</FieldError>}
+            <Input {...register("cccdNumber")} placeholder="079203000123" />
+            {errors.cccdNumber && (
+              <FieldError>{errors.cccdNumber.message}</FieldError>
+            )}
           </Field>
 
           <Field>

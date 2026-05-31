@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone, User } from "lucide-react";
+import { Mail, Phone, User } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import { Button } from "@repo/ui/components/ui/button";
@@ -6,7 +6,11 @@ import { Card, CardContent } from "@repo/ui/components/ui/card";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 
+import { useAdminAuth } from "@/features/auth/useAdminAuth";
+
 export default function InfoPage() {
+  const { adminProfile } = useAdminAuth();
+
   return (
     <div className="space-y-6">
       <div>
@@ -27,10 +31,12 @@ export default function InfoPage() {
             </Avatar>
 
             <div>
-              <h2 className="text-xl font-bold">Admin System</h2>
+              <h2 className="text-xl font-bold">
+                {adminProfile?.name || "Admin System"}
+              </h2>
 
               <p className="text-muted-foreground">
-                administrator@motorent.com
+                {adminProfile?.email || "administrator@motorent.com"}
               </p>
             </div>
           </div>
@@ -39,7 +45,10 @@ export default function InfoPage() {
             <div className="space-y-2">
               <Label>Họ tên</Label>
 
-              <Input defaultValue="Admin System" className="h-11 rounded-2xl" />
+              <Input
+                defaultValue={adminProfile?.name || "Admin System"}
+                className="h-11 rounded-2xl"
+              />
             </div>
 
             <div className="space-y-2">
@@ -49,7 +58,9 @@ export default function InfoPage() {
                 <Mail className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
 
                 <Input
-                  defaultValue="administrator@motorent.com"
+                  defaultValue={
+                    adminProfile?.email || "administrator@motorent.com"
+                  }
                   className="h-11 rounded-2xl pl-11"
                 />
               </div>
@@ -62,20 +73,7 @@ export default function InfoPage() {
                 <Phone className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
 
                 <Input
-                  defaultValue="0901234567"
-                  className="h-11 rounded-2xl pl-11"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Địa chỉ</Label>
-
-              <div className="relative">
-                <MapPin className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-
-                <Input
-                  defaultValue="Cà Mau, Việt Nam"
+                  defaultValue={adminProfile?.phone || "0901234567"}
                   className="h-11 rounded-2xl pl-11"
                 />
               </div>

@@ -15,7 +15,7 @@ export function useUsers() {
       const usersList = response?.result || [];
       return usersList.map((u) => ({
         ...u,
-        cccd_number: u.cccdNumber || u.cccd_number,
+        cccd_number: u.cccdNumber,
         role: u.role || "user", // fallback display role
       }));
     },
@@ -31,7 +31,7 @@ export function useUser(id: string) {
       if (!user) return null;
       return {
         ...user,
-        cccd_number: user.cccdNumber || user.cccd_number,
+        cccd_number: user.cccdNumber,
         role: user.role || "user",
       };
     },

@@ -35,11 +35,7 @@ export const updateProfileSchema = z.object({
   phone: optionalString(
     z.string().min(10, "Số điện thoại phải có ít nhất 10 chữ số"),
   ),
-  cccdNumber: z
-    .string()
-    .min(9, "Số CCCD phải có ít nhất 9 chữ số")
-    .optional()
-    .or(z.literal("")), // Chấp nhận cả trường hợp chuỗi rỗng hoàn toàn
+  cccdNumber: z.string().optional(),
 });
 
 export const updatePasswordSchema = z
