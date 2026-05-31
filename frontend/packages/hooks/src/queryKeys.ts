@@ -28,3 +28,15 @@ export const reviewsKeys = {
   byVehicle: (vehicleId: string) => ["reviews", "vehicle", vehicleId] as const,
   byUser: (userId: string) => ["reviews", "user", userId] as const,
 };
+
+export const vehicleBrandKeys = {
+  all: ["vehicle-brands"] as const,
+
+  lists: () => [...vehicleBrandKeys.all, "list"] as const,
+
+  list: () => [...vehicleBrandKeys.lists()] as const,
+
+  details: () => [...vehicleBrandKeys.all, "detail"] as const,
+
+  detail: (id: number) => [...vehicleBrandKeys.details(), id] as const,
+};

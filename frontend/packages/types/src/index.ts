@@ -9,3 +9,4 @@ export * from "./dashboard";
 export * from "./message";
 export * from "./role";
 export * from "./notificationType";
+export * from "./vehicleBrand";

@@ -1,9 +1,9 @@
-import axiosClient from "../axios/axiosClient";
+import axiosPublic from "../axios/axiosPublic";
 import type { ApiResponse, Vehicle, VehicleQueryParams } from "@repo/types";
 
-export const vehicleApi = {
+export const vehiclePublicApi = {
   async getVehicles(params?: VehicleQueryParams): Promise<Vehicle[]> {
-    const data = await axiosClient.get<any, ApiResponse<Vehicle[]>>(
+    const data = await axiosPublic.get<any, ApiResponse<Vehicle[]>>(
       "/vehicle",
       {
         params,
@@ -14,7 +14,7 @@ export const vehicleApi = {
   },
 
   async getVehicleById(id: string): Promise<Vehicle> {
-    const data = await axiosClient.get<any, ApiResponse<Vehicle>>(
+    const data = await axiosPublic.get<any, ApiResponse<Vehicle>>(
       `/vehicle/${id}`,
     );
     if (!data.result) {
