@@ -4,11 +4,18 @@ import type {
   Vehicle,
   VehicleCreationRequest,
   VehicleUpdateRequest,
+  VehicleQueryParams,
 } from "@repo/types";
 
 export const vehicleApi = {
-  async getVehicles(): Promise<Vehicle[]> {
-    const data = await axiosClient.get<any, ApiResponse<Vehicle[]>>("/vehicle");
+  async getVehicles(params?: VehicleQueryParams): Promise<Vehicle[]> {
+    const data = await axiosClient.get<any, ApiResponse<Vehicle[]>>(
+      "/vehicle",
+      {
+        params,
+      },
+    );
+
     return data.result || [];
   },
 

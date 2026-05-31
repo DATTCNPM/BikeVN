@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@repo/api";
 import { usersKeys } from "./queries";
-import { type UserFormValues } from "./schemas";
+import type { CreateUserValues, UserFormValues } from "./schemas";
 
 export function useCreateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: UserFormValues) => userApi.createUser(payload),
+    mutationFn: (payload: CreateUserValues) => userApi.createUser(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: usersKeys.all });
     },
@@ -16,11 +16,18 @@ export function useCreateUser() {
 export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: Partial<UserFormValues> }) => 
-      userApi.updateUser(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Partial<UserFormValues>;
+    }) => userApi.updateUser(id, payload),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: usersKeys.all });
-      await queryClient.invalidateQueries({ queryKey: usersKeys.detail(variables.id) });
+      await queryClient.invalidateQueries({
+        queryKey: usersKeys.detail(variables.id),
+      });
     },
   });
 }

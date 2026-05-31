@@ -36,4 +36,14 @@ export interface VehicleCreationRequest {
   currentBranchId: string;
 }
 
+export interface VehicleQueryParams {
+  search?: string;
+  branchId?: string;
+  vehicleType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  page?: number;
+  pageSize?: number;
+}
+
 export type VehicleUpdateRequest = Partial<VehicleCreationRequest>;

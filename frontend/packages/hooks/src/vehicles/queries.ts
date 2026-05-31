@@ -3,12 +3,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { vehicleApi } from "@repo/api";
 import { vehiclesKeys } from "../queryKeys";
 
-import type { Vehicle, VehicleCreationRequest, VehicleUpdateRequest } from "@repo/types";
+import type {
+  Vehicle,
+  VehicleCreationRequest,
+  VehicleQueryParams,
+  VehicleUpdateRequest,
+} from "@repo/types";
 
-export function useVehicles() {
+export function useVehicles(params?: VehicleQueryParams) {
   return useQuery<Vehicle[]>({
-    queryKey: vehiclesKeys.all,
-    queryFn: vehicleApi.getVehicles,
+    queryKey: vehiclesKeys.list(params),
+    queryFn: () => vehicleApi.getVehicles(params),
   });
 }
 
@@ -22,9 +27,10 @@ export function useVehicle(id: string) {
 
 export function useCreateVehicleMutation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (payload: VehicleCreationRequest) => vehicleApi.createVehicle(payload),
+    mutationFn: (payload: VehicleCreationRequest) =>
+      vehicleApi.createVehicle(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
     },
@@ -33,20 +39,27 @@ export function useCreateVehicleMutation() {
 
 export function useUpdateVehicleMutation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: VehicleUpdateRequest }) => 
-      vehicleApi.updateVehicle(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: VehicleUpdateRequest;
+    }) => vehicleApi.updateVehicle(id, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
-      queryClient.invalidateQueries({ queryKey: vehiclesKeys.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: vehiclesKeys.detail(variables.id),
+      });
     },
   });
 }
 
 export function useDeleteVehicleMutation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => vehicleApi.deleteVehicle(id),
     onSuccess: () => {

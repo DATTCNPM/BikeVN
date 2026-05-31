@@ -4,7 +4,7 @@ import { authApi } from "@repo/api";
 import { authStorageService, tokenService } from "@repo/services";
 import { ROLES } from "@repo/constants";
 import type { User } from "@repo/types";
-import type { LoginSchema } from "./schemas";
+import type { LoginSchema } from "@repo/schemas";
 
 interface AdminAuthState {
   isAdminLogin: boolean;
@@ -30,12 +30,13 @@ export const useAdminAuth = create<AdminAuthState>()(
         set({ loading: true, error: null });
         try {
           const response = await authApi.login(credentials);
-          
+
           if (response?.code === 1000 && response.result?.token) {
             const token = response.result.token;
             const roles = tokenService.getRoles(token);
-            
-            const hasAdminAccess = roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
+
+            const hasAdminAccess =
+              roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
             if (!hasAdminAccess) {
               set({ error: "Tài khoản không có quyền quản trị viên" });
               return false;
@@ -45,19 +46,22 @@ export const useAdminAuth = create<AdminAuthState>()(
             set({
               isAdminLogin: true,
             });
-            
+
             const profileResponse = await authApi.getProfile();
             if (profileResponse?.code === 1000 && profileResponse.result) {
               set({ adminProfile: profileResponse.result });
               return true;
             }
           }
-          
+
           set({ error: response?.message || "Sai tài khoản hoặc mật khẩu" });
           return false;
         } catch (err: any) {
           set({
-            error: err.response?.data?.message || err.message || "Sai tài khoản hoặc mật khẩu",
+            error:
+              err.response?.data?.message ||
+              err.message ||
+              "Sai tài khoản hoặc mật khẩu",
           });
           return false;
         } finally {
@@ -87,7 +91,8 @@ export const useAdminAuth = create<AdminAuthState>()(
         set({ loading: true });
         try {
           const roles = tokenService.getRoles(token);
-          const hasAdminAccess = roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
+          const hasAdminAccess =
+            roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
           if (!hasAdminAccess || tokenService.isExpired(token)) {
             authStorageService.clearAdminToken();
             set({ isAdminLogin: false, adminProfile: null });

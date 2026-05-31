@@ -5,8 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Home, ShieldCheck } from "lucide-react";
 
 // Schemas & Stores
-import { loginSchema } from "@/features/auth/schemas";
-import type { LoginSchema } from "@/features/auth/schemas";
+import { loginSchema } from "@repo/schemas";
+import type { LoginSchema } from "@repo/schemas";
 import { useAdminAuth } from "@/features/auth/useAdminAuth";
 
 // UI Components từ Monorepo Monolith

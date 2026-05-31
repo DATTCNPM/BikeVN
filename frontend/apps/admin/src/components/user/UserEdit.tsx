@@ -48,7 +48,7 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
       name: user.name,
       email: user.email,
       phone: user.phone || "",
-      cccd_number: user.cccd_number || "",
+      cccdNumber: user.cccdNumber || "",
       role: user.role,
     });
   }, [user, reset]);
@@ -96,8 +96,10 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
 
           <Field>
             <FieldLabel>CCCD</FieldLabel>
-            <Input {...register("cccd_number")} />
-            {errors.cccd_number && <FieldError>{errors.cccd_number.message}</FieldError>}
+            <Input {...register("cccdNumber")} />
+            {errors.cccdNumber && (
+              <FieldError>{errors.cccdNumber.message}</FieldError>
+            )}
           </Field>
 
           <Field>
