@@ -1,26 +1,18 @@
 // src/apis/branchApi.ts
 import type { Branch, BranchStatus, ApiResponse } from "@repo/types";
-import axiosClient from "./axious";
+import axiosAdmin from "../axios/axiosAdmin";
 
-export type CreateBranchPayload = {
-  name: string;
-  address: string;
-  lat: number;
-  lng: number;
-  status?: BranchStatus;
-};
+import type { CreateBranchPayload, UpdateBranchPayload } from "@repo/types";
 
-export type UpdateBranchPayload = Partial<CreateBranchPayload>;
-
-export const branchApi = {
+export const branchAdminApi = {
   async getBranches(): Promise<Branch[]> {
-    const data = await axiosClient.get<any, ApiResponse<Branch[]>>("/branch");
+    const data = await axiosAdmin.get<any, ApiResponse<Branch[]>>("/branch");
     console.log("Fetched branches:", data.result);
     return data.result || [];
   },
 
   async getBranchById(id: string): Promise<Branch> {
-    const data = await axiosClient.get<any, ApiResponse<Branch>>(
+    const data = await axiosAdmin.get<any, ApiResponse<Branch>>(
       `/branch/${id}`,
     );
 
@@ -41,7 +33,7 @@ export const branchApi = {
   async createBranch(
     payload: CreateBranchPayload,
   ): Promise<{ message: string; branch: Branch }> {
-    const data = await axiosClient.post<any, ApiResponse<Branch>>(
+    const data = await axiosAdmin.post<any, ApiResponse<Branch>>(
       "/branch",
       payload,
     );
@@ -57,7 +49,7 @@ export const branchApi = {
     id: string,
     payload: UpdateBranchPayload,
   ): Promise<{ message: string; branch: Branch }> {
-    const data = await axiosClient.put<any, ApiResponse<Branch>>(
+    const data = await axiosAdmin.put<any, ApiResponse<Branch>>(
       `/branch/${id}`,
       payload,
     );
@@ -80,7 +72,7 @@ export const branchApi = {
   },
 
   async deleteBranch(id: string): Promise<{ message: string }> {
-    await axiosClient.delete(`/branch/${id}`);
+    await axiosAdmin.delete(`/branch/${id}`);
 
     return {
       message: "Xóa chi nhánh thành công",

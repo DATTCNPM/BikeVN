@@ -1,34 +1,16 @@
 // src/apis/bookingApi.ts
 
-import { bookings } from "./data/BookingData";
+import { bookings } from "../data/BookingData";
 
-import type { Booking } from "@repo/types";
+import type {
+  Booking,
+  CreateBookingPayload,
+  UpdateBookingPayload,
+} from "@repo/types";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export type CreateBookingPayload = {
-  user_id: string;
-
-  vehicle_id: string;
-
-  pickup_branch_id: string;
-
-  return_branch_id: string;
-
-  start_date: string;
-
-  end_date: string;
-
-  total_price: number;
-
-  status?: Booking["status"];
-};
-
-export type UpdateBookingPayload = Partial<CreateBookingPayload> & {
-  actual_return_date?: string | null;
-};
-
-export const bookingApi = {
+export const bookingAdminApi = {
   async getBookings(): Promise<Booking[]> {
     await delay(500);
 

@@ -1,4 +1,4 @@
-import axiosClient from "./axious";
+import axiosAdmin from "../axios/axiosAdmin";
 import type {
   ApiResponse,
   Vehicle,
@@ -7,20 +7,17 @@ import type {
   VehicleQueryParams,
 } from "@repo/types";
 
-export const vehicleApi = {
+export const vehicleAdminApi = {
   async getVehicles(params?: VehicleQueryParams): Promise<Vehicle[]> {
-    const data = await axiosClient.get<any, ApiResponse<Vehicle[]>>(
-      "/vehicle",
-      {
-        params,
-      },
-    );
+    const data = await axiosAdmin.get<any, ApiResponse<Vehicle[]>>("/vehicle", {
+      params,
+    });
 
     return data.result || [];
   },
 
   async getVehicleById(id: string): Promise<Vehicle> {
-    const data = await axiosClient.get<any, ApiResponse<Vehicle>>(
+    const data = await axiosAdmin.get<any, ApiResponse<Vehicle>>(
       `/vehicle/${id}`,
     );
     if (!data.result) {
@@ -32,7 +29,7 @@ export const vehicleApi = {
   async createVehicle(
     payload: VehicleCreationRequest,
   ): Promise<{ message: string; vehicle: Vehicle }> {
-    const data = await axiosClient.post<any, ApiResponse<Vehicle>>(
+    const data = await axiosAdmin.post<any, ApiResponse<Vehicle>>(
       "/vehicle",
       payload,
     );
@@ -46,7 +43,7 @@ export const vehicleApi = {
     id: string,
     payload: VehicleUpdateRequest,
   ): Promise<{ message: string; vehicle: Vehicle }> {
-    const data = await axiosClient.put<any, ApiResponse<Vehicle>>(
+    const data = await axiosAdmin.put<any, ApiResponse<Vehicle>>(
       `/vehicle/${id}`,
       payload,
     );
@@ -57,7 +54,7 @@ export const vehicleApi = {
   },
 
   async deleteVehicle(id: string): Promise<{ message: string }> {
-    const data = await axiosClient.delete<any, ApiResponse<void>>(
+    const data = await axiosAdmin.delete<any, ApiResponse<void>>(
       `/vehicle/${id}`,
     );
     return {

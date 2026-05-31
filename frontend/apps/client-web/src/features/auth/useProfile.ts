@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { authApi } from "@repo/api";
+import { authClientApi } from "@repo/api";
 
 import { authStorageService } from "@repo/services";
 
@@ -12,7 +12,7 @@ export const useProfile = () => {
 
     queryFn: async () => {
       //   const response = await authApi.getProfile();
-      const response = await authApi.getProfile();
+      const response = await authClientApi.getProfile();
       return response.result;
     },
 

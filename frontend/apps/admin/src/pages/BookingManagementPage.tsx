@@ -14,14 +14,16 @@ import BookingCreate from "@/components/booking/BookingCreate";
 import BookingEdit from "@/components/booking/BookingEdit";
 import BookingDelete from "@/components/booking/BookingDelete";
 
-import { useBookings } from "@repo/hooks";
+import { useBookings } from "@/features/bookings/queries";
 import type { Booking } from "@repo/types";
 
 const bookingStatusMap = {
-  pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
+  pending:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
   approved: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
   rejected: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
-  completed: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
+  completed:
+    "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
   cancelled: "bg-zinc-200 text-zinc-700 dark:bg-zinc-500/20 dark:text-zinc-300",
 };
 
@@ -54,32 +56,50 @@ export default function BookingManagementPage() {
       {
         accessorKey: "user_id",
         header: "Khách hàng",
-        cell: ({ row }) => <span className="text-sm font-medium">User #{row.original.user_id.substring(0, 4)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            User #{row.original.user_id.substring(0, 4)}
+          </span>
+        ),
       },
       {
         accessorKey: "vehicle_id",
         header: "Xe",
-        cell: ({ row }) => <span className="text-sm font-medium">Xe #{row.original.vehicle_id.substring(0, 4)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            Xe #{row.original.vehicle_id.substring(0, 4)}
+          </span>
+        ),
       },
       {
         accessorKey: "pickup_branch_id",
         header: "Chi nhánh nhận",
-        cell: ({ row }) => <span className="text-sm">CN #{row.original.pickup_branch_id.substring(0, 4)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm">
+            CN #{row.original.pickup_branch_id.substring(0, 4)}
+          </span>
+        ),
       },
       {
         accessorKey: "return_branch_id",
         header: "Chi nhánh trả",
-        cell: ({ row }) => <span className="text-sm">CN #{row.original.return_branch_id.substring(0, 4)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm">
+            CN #{row.original.return_branch_id.substring(0, 4)}
+          </span>
+        ),
       },
       {
         accessorKey: "start_date",
         header: "Bắt đầu",
-        cell: ({ row }) => new Date(row.original.start_date).toLocaleDateString("vi-VN"),
+        cell: ({ row }) =>
+          new Date(row.original.start_date).toLocaleDateString("vi-VN"),
       },
       {
         accessorKey: "end_date",
         header: "Kết thúc",
-        cell: ({ row }) => new Date(row.original.end_date).toLocaleDateString("vi-VN"),
+        cell: ({ row }) =>
+          new Date(row.original.end_date).toLocaleDateString("vi-VN"),
       },
       {
         accessorKey: "total_price",
