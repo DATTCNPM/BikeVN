@@ -7,13 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.NonFinal;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "vehicles")
@@ -53,6 +53,10 @@ public class Vehicle {
     @ManyToOne
     @JoinColumn(name = "current_branch_id", nullable = false)
     Branch currentBranch;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC, createdAt ASC")
+    private List<VehicleImage> images = new ArrayList<>();
     
     @CreationTimestamp
     @Column(nullable = false)

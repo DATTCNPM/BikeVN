@@ -12,7 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = VehicleImageMapper.class)
 public interface VehicleMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "brand", ignore = true)
@@ -25,6 +25,7 @@ public interface VehicleMapper {
     @Mapping(source = "brand.id", target = "brandId")
     @Mapping(source = "model.id", target = "modelId")
     @Mapping(source = "currentBranch.id", target = "currentBranchId")
+    @Mapping(source = "images", target = "images")
     VehicleResponse toVehicleResponse(Vehicle vehicle);
 
     default List<VehicleResponse> toListVehicleResponse(List<Vehicle> vehicles) {
