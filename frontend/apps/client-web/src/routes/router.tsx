@@ -29,7 +29,7 @@ function GlobalRootLayout() {
   const navigate = useNavigate();
   usePingServer();
   const isServerDown = useAuthStore((state) => state.isServerDown);
-  console.log("isServerDown:", isServerDown);
+
   useEffect(() => {
     if (isServerDown) {
       navigate("/server-error");

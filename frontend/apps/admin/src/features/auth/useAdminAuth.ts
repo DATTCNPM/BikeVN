@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { authApi } from "@repo/api";
+import { authApi, authAdminApi } from "@repo/api";
 import { authStorageService, tokenService } from "@repo/services";
 import { ROLES } from "@repo/constants";
 import type { User } from "@repo/types";
@@ -47,7 +47,7 @@ export const useAdminAuth = create<AdminAuthState>()(
               isAdminLogin: true,
             });
 
-            const profileResponse = await authApi.getProfile();
+            const profileResponse = await authAdminApi.getProfile();
             if (profileResponse?.code === 1000 && profileResponse.result) {
               set({ adminProfile: profileResponse.result });
               return true;
@@ -74,7 +74,7 @@ export const useAdminAuth = create<AdminAuthState>()(
         const token = authStorageService.getAdminToken();
         if (token) {
           try {
-            await authApi.logout(token);
+            await authAdminApi.logout(token);
           } catch (err) {
             console.error("Admin logout failed:", err);
           }
@@ -99,7 +99,7 @@ export const useAdminAuth = create<AdminAuthState>()(
             return;
           }
 
-          const response = await authApi.getProfile();
+          const response = await authAdminApi.getProfile();
           if (response?.code === 1000 && response.result) {
             set({ adminProfile: response.result, isAdminLogin: true });
           } else {

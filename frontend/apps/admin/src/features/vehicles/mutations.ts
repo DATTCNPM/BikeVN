@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { vehicleApi } from "@repo/api";
+import { vehicleAdminApi } from "@repo/api";
 
 import type {
   VehicleCreationFormValues,
@@ -14,7 +14,7 @@ export function useCreateVehicle() {
   return useMutation({
     mutationFn: (payload: VehicleCreationFormValues) => {
       console.log("Creating vehicle with payload:", payload);
-      return vehicleApi.createVehicle(payload);
+      return vehicleAdminApi.createVehicle(payload);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
@@ -34,7 +34,7 @@ export function useUpdateVehicle() {
       payload: VehicleUpdateFormValues;
     }) => {
       console.log("Updating vehicle with id:", id, "and payload:", payload);
-      return vehicleApi.updateVehicle(id, payload);
+      return vehicleAdminApi.updateVehicle(id, payload);
     },
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
@@ -49,7 +49,7 @@ export function useDeleteVehicle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => vehicleApi.deleteVehicle(id),
+    mutationFn: (id: string) => vehicleAdminApi.deleteVehicle(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
     },

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
-import { authApi } from "@repo/api";
+import { authClientApi } from "@repo/api";
 
 import { authStorageService } from "@repo/services";
 
@@ -18,7 +18,7 @@ export const useLogout = () => {
 
       if (token) {
         try {
-          await authApi.logout(token);
+          await authClientApi.logout(token);
         } catch (error) {
           console.error("Logout request failed:", error);
         }

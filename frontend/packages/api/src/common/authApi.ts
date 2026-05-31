@@ -1,4 +1,4 @@
-import axiosClient from "./axious";
+import axiosPublic from "../axios/axiosPublic";
 import type {
   ApiResponse,
   AuthenticationResponse,
@@ -11,7 +11,7 @@ import type {
 export const authApi = {
   async ping() {
     // Truyền thêm flag ẩn dưới dạng AxiosRequestConfig
-    return axiosClient.get("/auth/test", {
+    return axiosPublic.get("/auth/test", {
       skipAuthCheck: true,
     } as any);
   },
@@ -19,22 +19,14 @@ export const authApi = {
   async login(
     payload: LoginPayload,
   ): Promise<ApiResponse<AuthenticationResponse>> {
-    return axiosClient.post("/auth/login", payload);
+    return axiosPublic.post("/auth/login", payload);
   },
 
   async register(payload: UserCreationRequest): Promise<ApiResponse<User>> {
-    return axiosClient.post("/user", payload);
-  },
-
-  async getProfile(): Promise<ApiResponse<User>> {
-    return axiosClient.get("/user/myInfo");
-  },
-
-  async logout(token: string): Promise<ApiResponse<void>> {
-    return axiosClient.post("/auth/logout", { token });
+    return axiosPublic.post("/user", payload);
   },
 
   async introspect(token: string): Promise<ApiResponse<IntrospectResponse>> {
-    return axiosClient.post("/auth/introspect", { token });
+    return axiosPublic.post("/auth/introspect", { token });
   },
 };

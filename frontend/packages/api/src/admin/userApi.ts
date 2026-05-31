@@ -1,4 +1,4 @@
-import axiosClient from "./axious";
+import axiosAdmin from "../axios/axiosAdmin";
 import type {
   ApiResponse,
   User,
@@ -8,11 +8,11 @@ import type {
 
 export const userApi = {
   async getUsers(): Promise<ApiResponse<User[]>> {
-    return axiosClient.get("/user");
+    return axiosAdmin.get("/user");
   },
 
   async getUserById(id: string): Promise<ApiResponse<User>> {
-    return axiosClient.get(`/user/${id}`);
+    return axiosAdmin.get(`/user/${id}`);
   },
 
   async createUser(
@@ -27,7 +27,7 @@ export const userApi = {
       cccdNumber: cccdNumber || undefined,
       passwordHash: passwordHash || "defaultPassword123",
     };
-    return axiosClient.post("/user", requestPayload);
+    return axiosAdmin.post("/user", requestPayload);
   },
 
   async createEmployee(
@@ -42,7 +42,7 @@ export const userApi = {
       cccdNumber: cccdNumber || "",
       passwordHash: passwordHash || "defaultEmployee123",
     };
-    return axiosClient.post("/user/employee", requestPayload);
+    return axiosAdmin.post("/user/employee", requestPayload);
   },
 
   async updateUser(
@@ -54,10 +54,10 @@ export const userApi = {
       ...rest,
       cccdNumber: cccdNumber || "",
     };
-    return axiosClient.put(`/user/${id}`, requestPayload);
+    return axiosAdmin.put(`/user/${id}`, requestPayload);
   },
 
   async deleteUser(id: string): Promise<ApiResponse<void>> {
-    return axiosClient.delete(`/user/${id}`);
+    return axiosAdmin.delete(`/user/${id}`);
   },
 };

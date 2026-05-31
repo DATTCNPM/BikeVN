@@ -9,3 +9,13 @@ export interface Branch {
   status: BranchStatus;
   createdAt?: string;
 }
+
+export type CreateBranchPayload = {
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  status?: BranchStatus;
+};
+
+export type UpdateBranchPayload = Partial<CreateBranchPayload>;

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { branchApi } from "@repo/api";
+import { branchAdminApi } from "@repo/api";
 import { branchesKeys } from "@repo/hooks";
 import { type BranchFormValues } from "./schemas";
 
@@ -8,7 +8,7 @@ export function useCreateBranch() {
   return useMutation({
     mutationFn: (payload: BranchFormValues) => {
       console.log("Creating branch with payload:", payload);
-      return branchApi.createBranch(payload);
+      return branchAdminApi.createBranch(payload);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
@@ -25,7 +25,7 @@ export function useUpdateBranch() {
     }: {
       id: string;
       payload: Partial<BranchFormValues>;
-    }) => branchApi.updateBranch(id, payload),
+    }) => branchAdminApi.updateBranch(id, payload),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
       await queryClient.invalidateQueries({
@@ -38,7 +38,7 @@ export function useUpdateBranch() {
 export function useDeleteBranch() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => branchApi.deleteBranch(id),
+    mutationFn: (id: string) => branchAdminApi.deleteBranch(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: branchesKeys.all });
     },
