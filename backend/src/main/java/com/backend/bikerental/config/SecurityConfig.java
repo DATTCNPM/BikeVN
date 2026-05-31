@@ -26,7 +26,7 @@ public class SecurityConfig {
             "/user", "/role", "/permission"};
             
     private final String[] PUBLIC_GET_ENDPOINTS = {"/branch", "/branch/**", "/model", "/model/**",
-            "/brand", "/brand/**"};
+            "/brand", "/brand/**", "/vehicle", "/vehicle/**", "/uploads", "/uploads/**"};
 
     @Autowired
     private CustomJWTDecoder customJWTDecoder;

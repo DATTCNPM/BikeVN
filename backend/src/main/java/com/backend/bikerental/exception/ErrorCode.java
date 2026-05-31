@@ -20,6 +20,7 @@ public enum ErrorCode {
     BRANCH_EXISTED(1009, "Branch existed",HttpStatus.BAD_REQUEST),
     MODEL_EXISTED(1010, "Model existed",HttpStatus.BAD_REQUEST),
     BRAND_EXISTED(1011, "Brand existed",HttpStatus.BAD_REQUEST),
+    FILE_UPLOAD_FAILED(1012, "File upload failed", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN),
     EXISTED_DATA(5055, "Data is already existed", HttpStatus.BAD_REQUEST);

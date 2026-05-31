@@ -11,5 +11,8 @@ spring:
       ddl-auto: ${DDL_AUTO:none}
     show-sql: ${SHOW_SQL:true}
 
+app:
+  upload-dir: ${UPLOAD_DIR:uploads}
+
 jwt:
   signerKey: ${JWT_SECRET:bW9yZV9zZWN1cmVfYW5kX3JhbmRvbV9rZXlfZm9yX2p3dF9zaWduaW5nX3dpdGhfaHM1MTJfYWxnb3JpdGhtXzEyMzQ1Njc4OTA=}
