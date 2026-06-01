@@ -6,9 +6,10 @@ export const useVehicleBrands = () => {
   return useQuery({
     queryKey: vehicleBrandKeys.list(),
     queryFn: async () => {
-      const res = await vehicleBrandPublicApi.getAll();
+      const res = await vehicleBrandPublicApi.getBrands();
+      console.log(res);
 
-      return res.data.result;
+      return res;
     },
   });
 };
@@ -18,9 +19,9 @@ export const useVehicleBrand = (brandId: number) => {
     queryKey: vehicleBrandKeys.detail(brandId),
 
     queryFn: async () => {
-      const res = await vehicleBrandPublicApi.getById(brandId);
+      const res = await vehicleBrandPublicApi.getBrandById(brandId);
 
-      return res.data.result;
+      return res;
     },
 
     enabled: !!brandId,

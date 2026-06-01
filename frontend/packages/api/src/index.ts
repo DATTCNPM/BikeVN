@@ -15,8 +15,10 @@ export * from "./admin/authAdminApi";
 export * from "./notificationApi";
 export * from "./data/mockBrandsAndModels";
 export * from "./admin/vehicleBrandAdminApi";
+export * from "./admin/vehicleModelAdminApi";
 
 export * from "./common/vehicleBrandPublicApi";
 export * from "./common/vehiclePublicApi";
 export * from "./common/branchPublicApi";
 export * from "./common/authApi";
+export * from "./common/vehicleModelPublicApi";

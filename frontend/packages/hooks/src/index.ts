@@ -6,3 +6,5 @@ export * from "./reviews/queries";
 export * from "./chat/queries";
 export * from "./queryKeys";
 export * from "./use-mobile";
+export * from "./vehicleBrand/queriesVehicleBrand";
+export * from "./vehicleModel/queriesVehicleModel";

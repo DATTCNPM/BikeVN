@@ -42,9 +42,19 @@ const menuItems = [
     href: "/admin/vehicles",
   },
   {
+    title: "Quản lý hãng xe",
+    icon: Bike,
+    href: "/admin/brands",
+  },
+  {
     title: "Quản lý chi nhánh",
     icon: Store,
     href: "/admin/branches",
+  },
+  {
+    title: "Quản lý model",
+    icon: Bike,
+    href: "/admin/models",
   },
   {
     title: "Đơn thuê",

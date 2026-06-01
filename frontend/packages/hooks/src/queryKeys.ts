@@ -40,3 +40,11 @@ export const vehicleBrandKeys = {
 
   detail: (id: number) => [...vehicleBrandKeys.details(), id] as const,
 };
+
+export const vehicleModelKeys = {
+  all: ["vehicle-models"] as const,
+  lists: () => [...vehicleModelKeys.all, "list"] as const,
+  list: () => [...vehicleModelKeys.lists()] as const,
+  details: () => [...vehicleModelKeys.all, "detail"] as const,
+  detail: (id: number) => [...vehicleModelKeys.details(), id] as const,
+};
