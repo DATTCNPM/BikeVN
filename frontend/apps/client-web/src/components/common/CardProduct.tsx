@@ -27,12 +27,14 @@ export default function CardProduct({
   const handleViewDetails = ({ id }: { id: string }) => {
     navigate(`/vehicles/${id}`);
   };
+
+  console.log("CardProduct received image:", image);
   return (
     <Card className="group pt-0 overflow-hidden border-border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-card dark:border-border">
       {/* Thumbnail */}
       <div className="relative overflow-hidden">
         <img
-          src={image}
+          src={`http://localhost:8080${image}` || image} // Use the actual image URL
           alt={title}
           className="h-[260px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />

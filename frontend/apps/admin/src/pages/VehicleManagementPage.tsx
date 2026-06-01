@@ -16,9 +16,9 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { type Vehicle } from "@repo/types";
-import { useVehicles } from "@repo/hooks";
+import { useVehicles, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 import VehicleInfoDropdown from "@/components/vehicle/VehicleInfoDropdown";
-import { MOCK_BRANDS, MOCK_MODELS } from "@repo/api";
+import { useNavigate } from "react-router-dom";
 
 const vehicleStatusMap = {
   available:
@@ -38,10 +38,14 @@ const vehicleStatusLabel = {
 
 export default function VehicleManagementPage() {
   const { data: vehicles = [], isLoading, error } = useVehicles();
+  const { data: brands = [] } = useVehicleBrands();
+  const { data: models = [] } = useVehicleModels();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   useEffect(() => {
@@ -84,8 +88,8 @@ export default function VehicleManagementPage() {
         header: "Hãng",
 
         cell: ({ row }) => {
-          const brand = MOCK_BRANDS.find((b) => b.id === row.original.brandId);
-          const model = MOCK_MODELS.find((m) => m.id === row.original.modelId);
+          const brand = brands.find((b) => b.id === row.original.brandId);
+          const model = models.find((m) => m.id === row.original.modelId);
           return (
             <div>
               <p className="font-medium">{brand?.name || "N/A"}</p>
@@ -136,6 +140,10 @@ export default function VehicleManagementPage() {
 
         cell: ({ row }) => (
           <TableActionDropdown
+            onManageImage={() => {
+              setSelectedVehicle(row.original);
+              navigate(`/admin/vehicles/${row.original.id}/images`);
+            }}
             onEdit={() => {
               setSelectedVehicle(row.original);
               setOpenEditDialog(true);

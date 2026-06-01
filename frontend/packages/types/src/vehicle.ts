@@ -1,3 +1,4 @@
+import { VehicleImage } from "./vehicleImage";
 export type StatusVehicleEnum = "available" | "unavailable" | "maintenance";
 
 export type VehicleType = "fuel" | "electric";
@@ -15,7 +16,8 @@ export interface Vehicle {
   mileage: number;
   description?: string;
   status: StatusVehicleEnum;
-  imageUrl: string[];
+  currentBranchId: string;
+  images: VehicleImage[];
   createdAt: string;
   updatedAt: string;
 }
@@ -32,7 +34,7 @@ export interface VehicleCreationRequest {
   mileage: number;
   description?: string;
   status: StatusVehicleEnum;
-  imageUrl: string[];
+  images: VehicleImage[];
   currentBranchId: string;
 }
 

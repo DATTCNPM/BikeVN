@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+
+import type { VehicleImage } from "@repo/types";
 // 1. Import module Autoplay
 import { Navigation, Thumbs, Autoplay } from "swiper/modules";
 
@@ -14,7 +16,7 @@ export default function VehicleGallery({
   images,
 }: {
   showThumbnail?: boolean;
-  images: string[];
+  images: VehicleImage[];
 }) {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
 
@@ -35,7 +37,11 @@ export default function VehicleGallery({
       >
         {images.map((image, index) => (
           <SwiperSlide key={index}>
-            <img src={image} alt="" className="w-full h-[500px] object-cover" />
+            <img
+              src={`http://localhost:8080${image.imageUrl}` || image.imageUrl} // Sử dụng URL hình ảnh thực tế
+              alt=""
+              className="w-full h-[500px] object-cover"
+            />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -52,7 +58,7 @@ export default function VehicleGallery({
           {images.map((image, index) => (
             <SwiperSlide key={index}>
               <img
-                src={image}
+                src={`http://localhost:8080${image.imageUrl}` || image.imageUrl} // Sử dụng URL hình ảnh thực tế
                 alt=""
                 className="h-24 w-full rounded-xl object-cover cursor-pointer border"
               />
