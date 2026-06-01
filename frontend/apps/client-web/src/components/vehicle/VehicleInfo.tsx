@@ -20,9 +20,12 @@ import Map from "@/components/map/Map";
 import ReviewSection from "@/components/vehicle/review/ReviewSection";
 
 import { useEffect, useMemo } from "react";
-import { useBranches } from "@repo/hooks";
-import { useVehicle } from "@repo/hooks";
-import { MOCK_BRANDS, MOCK_MODELS } from "@repo/api";
+import {
+  useBranches,
+  useVehicle,
+  useVehicleBrands,
+  useVehicleModels,
+} from "@repo/hooks";
 
 export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
   const {
@@ -30,6 +33,9 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
     isLoading: branchLoading,
     error: branchError,
   } = useBranches();
+
+  const { data: brands = [], isLoading: brandsLoading } = useVehicleBrands();
+  const { data: models = [], isLoading: modelsLoading } = useVehicleModels();
 
   const {
     data: selectedVehicle = null,
@@ -53,11 +59,9 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
         (branch) => branch.id === selectedVehicle?.currentBranchId,
       )?.name,
       brandName:
-        MOCK_BRANDS.find((b) => b.id === selectedVehicle?.brandId)?.name ||
-        "N/A",
+        brands.find((b) => b.id === selectedVehicle?.brandId)?.name || "N/A",
       modelName:
-        MOCK_MODELS.find((m) => m.id === selectedVehicle?.modelId)?.name ||
-        "N/A",
+        models.find((m) => m.id === selectedVehicle?.modelId)?.name || "N/A",
     };
   }, [selectedVehicle, branches]);
 
@@ -65,7 +69,7 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
     return branches.find((b) => b.id === selectedVehicle?.currentBranchId);
   }, [selectedVehicle, branches]);
 
-  if (branchLoading || vehicleLoading) {
+  if (branchLoading || vehicleLoading || brandsLoading || modelsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Spinner />
@@ -88,15 +92,11 @@ export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
     },
   };
 
-  const fuelTypeMap = {
-    gasoline: "Gasoline",
-    diesel: "Diesel",
-    electric: "Electric",
-    hybrid: "Hybrid",
-  };
+  console.log("Vehicle Data:", vehicleData);
+
   return (
     <>
-      <VehicleGallery images={vehicleData.imageUrl || []} />
+      <VehicleGallery images={vehicleData.images || []} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-4">

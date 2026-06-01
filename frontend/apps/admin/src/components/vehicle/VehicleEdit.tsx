@@ -22,14 +22,13 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 import { useUpdateVehicle } from "@/features/vehicles/mutations";
-import { useBranches } from "@repo/hooks";
+import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
 import type { Vehicle } from "@repo/types";
 import {
   vehicleCreationSchema as vehicleSchema,
   type VehicleCreationFormValues as VehicleFormValues,
 } from "@repo/schemas";
-import { MOCK_BRANDS, MOCK_MODELS } from "@repo/api";
 
 type Props = {
   open: boolean;
@@ -40,6 +39,8 @@ type Props = {
 export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
   const { mutateAsync, isPending } = useUpdateVehicle();
   const { data: branches = [] } = useBranches();
+  const { data: brands = [] } = useVehicleBrands();
+  const { data: models = [] } = useVehicleModels();
 
   const {
     register,
@@ -76,7 +77,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     name: "brandId",
   });
 
-  const filteredModels = MOCK_MODELS.filter(
+  const filteredModels = models.filter(
     (m) => m.brandId === selectedBrandId,
   );
 
@@ -113,7 +114,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Hãng xe (Mock)</FieldLabel>
+            <FieldLabel>Hãng xe</FieldLabel>
             <Controller
               control={control}
               name="brandId"
@@ -126,7 +127,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                     <SelectValue placeholder="Chọn hãng xe" />
                   </SelectTrigger>
                   <SelectContent>
-                    {MOCK_BRANDS.map((b) => (
+                    {brands.map((b) => (
                       <SelectItem key={b.id} value={b.id.toString()}>
                         {b.name}
                       </SelectItem>
@@ -141,7 +142,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Dòng xe (Mock)</FieldLabel>
+            <FieldLabel>Dòng xe</FieldLabel>
             <Controller
               control={control}
               name="modelId"
@@ -279,14 +280,6 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
             />
             {errors.vehicleType && (
               <FieldError>{errors.vehicleType.message}</FieldError>
-            )}
-          </Field>
-
-          <Field>
-            <FieldLabel>Ảnh xe</FieldLabel>
-            <Input {...register("imageUrl.0")} />
-            {errors.imageUrl?.[0] && (
-              <FieldError>{errors.imageUrl[0].message}</FieldError>
             )}
           </Field>
         </div>

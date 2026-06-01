@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Image } from "lucide-react";
 
 import { Button } from "@repo/ui/components/ui/button";
 import {
@@ -11,9 +11,14 @@ import {
 type Props = {
   onEdit?: () => void;
   onDelete?: () => void;
+  onManageImage?: () => void;
 };
 
-export default function TableActionDropdown({ onEdit, onDelete }: Props) {
+export default function TableActionDropdown({
+  onEdit,
+  onDelete,
+  onManageImage,
+}: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,6 +28,13 @@ export default function TableActionDropdown({ onEdit, onDelete }: Props) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-44 rounded-2xl">
+        {onManageImage && (
+          <DropdownMenuItem onClick={onManageImage}>
+            <Image className="mr-2 size-4" />
+            Quản lý hình ảnh
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem onClick={onEdit}>
           <Pencil className="mr-2 size-4" />
           Chỉnh sửa

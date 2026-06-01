@@ -8,6 +8,7 @@ import BrandManagementPage from "@/pages/BrandManagementPage";
 import UserManagementPage from "@/pages/UserManagementPage";
 import BranchManagementPage from "@/pages/BranchManagementPage";
 import ModelManagementPage from "@/pages/ModelManagementPage";
+import VehicleImageManagementPage from "@/pages/VehicleImageManagementPage";
 import BookingManagementPage from "@/pages/BookingManagementPage";
 import ReviewManagementPage from "@/pages/ReviewManagementPage";
 import PaymentManagementPage from "@/pages/PaymentManagementPage";
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "vehicles",
         element: <VehicleManagementPage />,
+      },
+      {
+        path: "vehicles/:vehicleId/images",
+        element: <VehicleImageManagementPage />,
       },
       {
         path: "brands",

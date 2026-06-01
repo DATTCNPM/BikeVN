@@ -11,3 +11,4 @@ export * from "./role";
 export * from "./notificationType";
 export * from "./vehicleBrand";
 export * from "./vehicleModel";
+export * from "./vehicleImage";

@@ -28,7 +28,6 @@ import {
   vehicleCreationSchema as vehicleSchema,
   type VehicleCreationFormValues as VehicleFormValues,
 } from "@repo/schemas";
-import { MOCK_BRANDS, MOCK_MODELS } from "@repo/api";
 
 type Props = {
   open: boolean;
@@ -46,7 +45,6 @@ const defaultValues: VehicleFormValues = {
   status: "available",
   vehicleType: "fuel",
   mileage: 0,
-  imageUrl: [""],
   description: "",
   currentBranchId: "",
 };
@@ -73,9 +71,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     name: "brandId",
   });
 
-  const filteredModels = models.filter(
-    (m) => m.brandId === selectedBrandId,
-  );
+  const filteredModels = models.filter((m) => m.brandId === selectedBrandId);
 
   const onSubmit = async (values: VehicleFormValues) => {
     console.log("Submitting vehicle:", values);
@@ -279,17 +275,6 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
             />
             {errors.vehicleType && (
               <FieldError>{errors.vehicleType.message}</FieldError>
-            )}
-          </Field>
-
-          <Field>
-            <FieldLabel>Ảnh xe</FieldLabel>
-            <Input
-              {...register("imageUrl.0")}
-              placeholder="https://example.com/car.jpg"
-            />
-            {errors.imageUrl?.[0] && (
-              <FieldError>{errors.imageUrl[0].message}</FieldError>
             )}
           </Field>
         </div>

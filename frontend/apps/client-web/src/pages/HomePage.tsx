@@ -21,8 +21,8 @@ import {
 
 import { List, MapPin } from "lucide-react";
 
-import { useVehicles } from "@repo/hooks";
-import { useBranches } from "@repo/hooks";
+import { useVehicles, useBranches } from "@repo/hooks";
+import type { VehicleImage } from "@repo/types";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
@@ -71,13 +71,18 @@ export default function HomePage() {
     }
   }, [branchError]);
 
+  const filterImagePrimary = (images: VehicleImage[]) => {
+    const primaryImage = images.find((img) => img.isPrimary === true);
+    return primaryImage ? primaryImage.imageUrl : "";
+  };
+
   const vehicleListData = useMemo(() => {
     return vehicles.map((vehicle) => ({
       id: vehicle.id,
       name: vehicle.name,
       vehicle_type: vehicle.vehicleType,
       price: vehicle.pricePerDay,
-      image: "",
+      image: filterImagePrimary(vehicle.images),
       location:
         branches.find((branch) => branch.id === vehicle.currentBranchId)
           ?.name || "Unknown",
@@ -107,6 +112,8 @@ export default function HomePage() {
   const vehicleTypes = ["Xe số", "Xe ga", "Xe côn"];
 
   const priceRanges = ["Dưới 100k", "100k - 200k", "Trên 200k"];
+
+  console.log("vehicles", vehicleListData);
 
   return (
     <div>
