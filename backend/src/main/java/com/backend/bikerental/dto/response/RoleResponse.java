@@ -1,6 +1,5 @@
 package com.backend.bikerental.dto.response;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

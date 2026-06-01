@@ -1,21 +1,20 @@
 package com.backend.bikerental.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class VehicleModelResponse {
-        private int id;
-        private Integer brandId;
-        private String name;
-        private Integer engineCapacity;
-        private Integer yearFrom;
-        private Integer yearTo;
-        private LocalDateTime createdAt;
+    int id;
+    Integer brandId;
+    String name;
+    Integer engineCapacity;
+    Integer yearFrom;
+    Integer yearTo;
+    LocalDateTime createdAt;
 }

@@ -2,7 +2,9 @@ package com.backend.bikerental.service;
 
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VehicleImageStorageService {
     @Value("${app.upload-dir:uploads}")
     private String uploadDir;

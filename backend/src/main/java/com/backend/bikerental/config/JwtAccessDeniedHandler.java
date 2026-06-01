@@ -3,13 +3,11 @@ package com.backend.bikerental.config;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
-
 import java.io.IOException;
 
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {

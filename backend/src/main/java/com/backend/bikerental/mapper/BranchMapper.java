@@ -2,12 +2,8 @@ package com.backend.bikerental.mapper;
 
 import com.backend.bikerental.dto.request.BranchCreationRequest;
 import com.backend.bikerental.dto.request.BranchUpdateRequest;
-import com.backend.bikerental.dto.request.UserCreationRequest;
-import com.backend.bikerental.dto.request.UserUpdateRequest;
 import com.backend.bikerental.dto.response.BranchResponse;
-import com.backend.bikerental.dto.response.UserResponse;
 import com.backend.bikerental.entity.Branch;
-import com.backend.bikerental.entity.User;
 import org.mapstruct.*;
 
 import java.util.List;

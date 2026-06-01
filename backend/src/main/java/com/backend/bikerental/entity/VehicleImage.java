@@ -1,10 +1,8 @@
 package com.backend.bikerental.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,31 +13,32 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class VehicleImage {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36)
-    private String id;
+    String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
+    Vehicle vehicle;
 
     @Column(name = "image_url", nullable = false, length = 500)
-    private String imageUrl;
+    String imageUrl;
 
     @Column(name = "alt_text", length = 255)
-    private String altText;
+    String altText;
 
     @Column(name = "display_order")
-    private Integer displayOrder = 0;
+    Integer displayOrder = 0;
 
     @Column(name = "is_primary")
-    private Boolean isPrimary = false;
+    Boolean isPrimary = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    LocalDateTime createdAt;
 
     @PrePersist
     void prePersist() {

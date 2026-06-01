@@ -2,13 +2,9 @@ package com.backend.bikerental.controller;
 
 import com.backend.bikerental.dto.request.BranchCreationRequest;
 import com.backend.bikerental.dto.request.BranchUpdateRequest;
-import com.backend.bikerental.dto.request.VehicleCreationRequest;
-import com.backend.bikerental.dto.request.VehicleUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.BranchResponse;
-import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.service.BranchService;
-import com.backend.bikerental.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

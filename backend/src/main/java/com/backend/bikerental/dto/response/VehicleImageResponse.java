@@ -1,9 +1,7 @@
 package com.backend.bikerental.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
@@ -11,12 +9,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class VehicleImageResponse {
-    private String id;
-    private String vehicleId;
-    private String imageUrl;
-    private String altText;
-    private Integer displayOrder;
-    private Boolean isPrimary;
-    private LocalDateTime createdAt;
+    String id;
+    String vehicleId;
+    String imageUrl;
+    String altText;
+    Integer displayOrder;
+    Boolean isPrimary;
+    LocalDateTime createdAt;
 }

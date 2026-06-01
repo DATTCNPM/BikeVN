@@ -1,17 +1,16 @@
 package com.backend.bikerental.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class VehicleImageCreationRequest {
-    private String imageUrl;
-    private String altText;
-    private Integer displayOrder;
-    private Boolean isPrimary;
+    String imageUrl;
+    String altText;
+    Integer displayOrder;
+    Boolean isPrimary;
 }

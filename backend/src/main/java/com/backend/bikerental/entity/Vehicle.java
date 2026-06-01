@@ -3,10 +3,8 @@ package com.backend.bikerental.entity;
 import com.backend.bikerental.enums.StatusVehicleEnum;
 import com.backend.bikerental.enums.VehicleType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -21,6 +19,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -56,7 +55,7 @@ public class Vehicle {
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("displayOrder ASC, createdAt ASC")
-    private List<VehicleImage> images = new ArrayList<>();
+    List<VehicleImage> images = new ArrayList<>();
     
     @CreationTimestamp
     @Column(nullable = false)

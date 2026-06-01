@@ -4,13 +4,10 @@ import com.backend.bikerental.dto.request.UserCreationRequest;
 import com.backend.bikerental.dto.request.UserUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.UserResponse;
-import com.backend.bikerental.entity.User;
 import com.backend.bikerental.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -19,7 +16,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping()
+    @PostMapping
     ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest request)
     {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
@@ -35,7 +32,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping()
+    @GetMapping
     ApiResponse<List<UserResponse>> getAllUsers()
     {
         return ApiResponse.<List<UserResponse>>builder()

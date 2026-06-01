@@ -1,6 +1,5 @@
 package com.backend.bikerental.entity;
 
-import com.backend.bikerental.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
