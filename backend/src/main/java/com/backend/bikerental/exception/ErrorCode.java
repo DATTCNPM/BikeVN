@@ -23,7 +23,7 @@ public enum ErrorCode {
     FILE_UPLOAD_FAILED(1012, "File upload failed", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN),
-    EXISTED_DATA(5055, "Data is already existed", HttpStatus.BAD_REQUEST);
+    EXISTED_DATA(5055, "%s already exists", HttpStatus.BAD_REQUEST);
 
     private int code;
     private String message;
