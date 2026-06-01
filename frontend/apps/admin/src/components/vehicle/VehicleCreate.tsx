@@ -22,7 +22,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 import { useCreateVehicle } from "@/features/vehicles/mutations";
-import { useBranches } from "@repo/hooks";
+import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
 import {
   vehicleCreationSchema as vehicleSchema,
@@ -54,6 +54,8 @@ const defaultValues: VehicleFormValues = {
 export default function VehicleCreate({ open, onOpenChange }: Props) {
   const { mutateAsync, isPending } = useCreateVehicle();
   const { data: branches = [] } = useBranches();
+  const { data: brands = [] } = useVehicleBrands();
+  const { data: models = [] } = useVehicleModels();
 
   const {
     register,
@@ -71,7 +73,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     name: "brandId",
   });
 
-  const filteredModels = MOCK_MODELS.filter(
+  const filteredModels = models.filter(
     (m) => m.brandId === selectedBrandId,
   );
 
@@ -106,7 +108,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Hãng xe (Mock)</FieldLabel>
+            <FieldLabel>Hãng xe</FieldLabel>
             <Controller
               control={control}
               name="brandId"
@@ -121,7 +123,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                     <SelectValue placeholder="Chọn hãng xe" />
                   </SelectTrigger>
                   <SelectContent>
-                    {MOCK_BRANDS.map((b) => (
+                    {brands.map((b) => (
                       <SelectItem key={b.id} value={b.id.toString()}>
                         {b.name}
                       </SelectItem>
@@ -136,7 +138,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Dòng xe (Mock)</FieldLabel>
+            <FieldLabel>Dòng xe</FieldLabel>
             <Controller
               control={control}
               name="modelId"

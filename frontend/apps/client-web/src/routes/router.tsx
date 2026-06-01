@@ -41,9 +41,13 @@ function ProtectedRoute() {
   const navigate = useNavigate();
   const isLogin = useAuthStore((state) => state.isLogin);
 
-  if (!isLogin) {
-    navigate("/login");
-  }
+  console.log("ProtectedRoute - isLogin:", isLogin);
+
+  useEffect(() => {
+    if (!isLogin) {
+      navigate("/login");
+    }
+  }, [isLogin]);
 
   // đã đăng nhập -> render route con
   return <Outlet />;

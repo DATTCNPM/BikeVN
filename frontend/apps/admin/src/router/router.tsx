@@ -4,8 +4,10 @@ import MainLayout from "@/layouts/MainLayout";
 import ProtectedRoute from "@/features/auth/ProtectedRoute";
 import HomePage from "../pages/HomePage";
 import VehicleManagementPage from "@/pages/VehicleManagementPage";
+import BrandManagementPage from "@/pages/BrandManagementPage";
 import UserManagementPage from "@/pages/UserManagementPage";
 import BranchManagementPage from "@/pages/BranchManagementPage";
+import ModelManagementPage from "@/pages/ModelManagementPage";
 import BookingManagementPage from "@/pages/BookingManagementPage";
 import ReviewManagementPage from "@/pages/ReviewManagementPage";
 import PaymentManagementPage from "@/pages/PaymentManagementPage";
@@ -32,6 +34,14 @@ const router = createBrowserRouter([
       {
         path: "vehicles",
         element: <VehicleManagementPage />,
+      },
+      {
+        path: "brands",
+        element: <BrandManagementPage />,
+      },
+      {
+        path: "models",
+        element: <ModelManagementPage />,
       },
       {
         path: "users",

@@ -1,35 +1,10 @@
 // src/apis/branchApi.ts
-import type { Branch, BranchStatus, ApiResponse } from "@repo/types";
+import type { Branch, ApiResponse } from "@repo/types";
 import axiosAdmin from "../axios/axiosAdmin";
 
 import type { CreateBranchPayload, UpdateBranchPayload } from "@repo/types";
 
 export const branchAdminApi = {
-  async getBranches(): Promise<Branch[]> {
-    const data = await axiosAdmin.get<any, ApiResponse<Branch[]>>("/branch");
-    console.log("Fetched branches:", data.result);
-    return data.result || [];
-  },
-
-  async getBranchById(id: string): Promise<Branch> {
-    const data = await axiosAdmin.get<any, ApiResponse<Branch>>(
-      `/branch/${id}`,
-    );
-
-    if (!data.result) {
-      throw {
-        response: {
-          status: 404,
-          data: {
-            message: "Chi nhánh không tồn tại",
-          },
-        },
-      };
-    }
-
-    return data.result;
-  },
-
   async createBranch(
     payload: CreateBranchPayload,
   ): Promise<{ message: string; branch: Branch }> {
