@@ -43,10 +43,27 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingDataIntegrityViolationException(DataIntegrityViolationException exception)
     {
         ErrorCode errorCode = ErrorCode.EXISTED_DATA;
+        String message = exception.getMostSpecificCause() != null 
+                ? exception.getMostSpecificCause().getMessage() 
+                : exception.getMessage();
+        
+        String duplicateField = "Data";
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("for key '([^']+)'").matcher(message);
+        if (matcher.find()) {
+            String key = matcher.group(1);
+            if (key.contains(".")) {
+                key = key.substring(key.lastIndexOf('.') + 1);
+            }
+            if (key.startsWith("unique_")) {
+                key = key.substring(7);
+            }
+            duplicateField = key.substring(0, 1).toUpperCase() + key.substring(1);
+        }
+
         return ResponseEntity.status(errorCode.getStatusCode())
                 .body(ApiResponse.builder()
                         .code(errorCode.getCode())
-                        .message(exception.getMessage())
+                        .message(String.format(errorCode.getMessage(), duplicateField))
                         .build());
     }
 }
