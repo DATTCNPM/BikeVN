@@ -34,6 +34,7 @@ CREATE TABLE `bookings` (
   `actual_return_time` datetime DEFAULT NULL COMMENT 'Actual vehicle return date/time',
   `total_price` decimal(10,2) NOT NULL COMMENT 'Total booking price in VND',
   `status` enum('pending','approved','rejected','completed','cancelled') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `version` int DEFAULT '0' COMMENT 'Optimistic locking version for concurrency control',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -45,11 +46,42 @@ CREATE TABLE `bookings` (
   KEY `idx_start_time` (`start_time`),
   KEY `idx_end_time` (`end_time`),
   KEY `idx_user_vehicle` (`user_id`,`vehicle_id`),
+  KEY `idx_vehicle_status_time` (`vehicle_id`,`status`,`start_time`,`end_time`) COMMENT 'Composite index for concurrent booking check',
+  KEY `idx_active_bookings` (`vehicle_id`,`status`,`start_time`) COMMENT 'Index for active/pending bookings query',
   CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `bookings_ibfk_3` FOREIGN KEY (`pickup_branch_id`) REFERENCES `branches` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `bookings_ibfk_4` FOREIGN KEY (`return_branch_id`) REFERENCES `branches` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Booking/rental records';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Booking/rental records. Use pessimistic locking (FOR UPDATE) to prevent concurrent bookings';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `booking_locks`
+--
+
+DROP TABLE IF EXISTS `booking_locks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `booking_locks` (
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID primary key',
+  `vehicle_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Vehicle being locked',
+  `user_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User who holds the lock',
+  `start_time` datetime NOT NULL COMMENT 'Lock period start',
+  `end_time` datetime NOT NULL COMMENT 'Lock period end',
+  `lock_acquired_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when lock was acquired',
+  `lock_expires_at` datetime NOT NULL COMMENT 'Lock expiration time (auto-release)',
+  `status` enum('active','released','expired') COLLATE utf8mb4_unicode_ci DEFAULT 'active',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_vehicle_id` (`vehicle_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_lock_expires_at` (`lock_expires_at`),
+  KEY `idx_vehicle_time_status` (`vehicle_id`,`status`,`start_time`,`end_time`) COMMENT 'Index for conflict detection',
+  CONSTRAINT `booking_locks_ibfk_1` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `booking_locks_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Pessimistic locks for concurrent booking prevention. Holds vehicle locks during booking transaction (TTL: 5-10 minutes)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,16 +194,22 @@ CREATE TABLE `payments` (
   `type` enum('deposit','rental') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Payment type: deposit or rental',
   `payment_method` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'e.g., credit_card, cash, transfer',
   `status` enum('pending','completed','failed','refunded') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `transaction_code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'External transaction code',
+  `transaction_code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'External transaction code - must be unique to prevent duplicate payments',
+  `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Idempotency key for duplicate request prevention',
   `paid_at` datetime DEFAULT NULL COMMENT 'Actual payment date/time',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_transaction_code` (`transaction_code`) COMMENT 'Prevent duplicate transactions from external provider',
+  UNIQUE KEY `unique_booking_type` (`booking_id`,`type`) COMMENT 'Only one payment of each type per booking',
+  UNIQUE KEY `unique_idempotency_key` (`idempotency_key`) COMMENT 'Prevent duplicate API requests',
   KEY `idx_booking_id` (`booking_id`),
   KEY `idx_status` (`status`),
   KEY `idx_type` (`type`),
   KEY `idx_created_at` (`created_at`),
+  KEY `idx_booking_status_type` (`booking_id`,`status`,`type`) COMMENT 'Query optimization for payment status checks',
   CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Payment transactions';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Payment transactions with duplicate prevention. Uses transaction_code + idempotency_key for deduplication';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -366,22 +404,27 @@ DROP TABLE IF EXISTS `vehicle_returns`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `vehicle_returns` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID primary key',
-  `booking_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `vehicle_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `return_branch_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `booking_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Foreign key to booking (can derive vehicle_id from here)',
+  `return_branch_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Branch where vehicle is returned',
   `condition_status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Vehicle condition: excellent, good, fair, damaged',
-  `damage_description` text COLLATE utf8mb4_unicode_ci,
+  `damage_description` text COLLATE utf8mb4_unicode_ci COMMENT 'Description of any damage found',
   `extra_fee` decimal(10,2) DEFAULT '0.00' COMMENT 'Any additional fees (damage, late return)',
-  `images` json DEFAULT NULL COMMENT 'Return condition photos (JSON array)',
+  `images` json DEFAULT NULL COMMENT 'Return condition photos (JSON array of URLs)',
+  `return_odometer_reading` int DEFAULT NULL COMMENT 'Vehicle odometer reading at return',
+  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional notes about return process',
+  `returned_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Staff member who processed the return',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_booking_return` (`booking_id`) COMMENT 'Only one return record per booking',
   KEY `idx_booking` (`booking_id`),
-  KEY `idx_vehicle` (`vehicle_id`),
   KEY `idx_return_branch` (`return_branch_id`),
+  KEY `idx_condition_status` (`condition_status`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_booking_condition` (`booking_id`,`condition_status`) COMMENT 'For damage assessment queries',
   CONSTRAINT `vehicle_returns_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `vehicle_returns_ibfk_2` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `vehicle_returns_ibfk_3` FOREIGN KEY (`return_branch_id`) REFERENCES `branches` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Vehicle return tracking';
+  CONSTRAINT `vehicle_returns_ibfk_2` FOREIGN KEY (`return_branch_id`) REFERENCES `branches` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Vehicle return tracking with duplicate prevention. One return per booking. vehicle_id can be derived from booking record';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

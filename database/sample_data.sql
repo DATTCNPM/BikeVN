@@ -181,40 +181,40 @@ INSERT INTO vehicle_images (id, vehicle_id, image_url, alt_text, display_order, 
 -- ========================================
 -- SAMPLE DATA - bookings (UUID primary keys)
 -- ========================================
-INSERT INTO bookings (id, user_id, vehicle_id, pickup_branch_id, return_branch_id, start_time, end_time, actual_return_time, status, total_price) VALUES
+INSERT INTO bookings (id, user_id, vehicle_id, pickup_branch_id, return_branch_id, start_time, end_time, actual_return_time, status, version, total_price) VALUES
 -- Recent completed booking
-('d68cc7f7-a578-4efb-baaa-6ab8f72be8fa', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'd5403559-06fe-4645-ad52-948e166e79c1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-15 08:00:00', '2024-01-15 18:00:00', '2024-01-15 18:15:00', 'completed', 1500000),
-('46c3f037-57ef-4bd2-ba74-d075e18c96f1', '00a58e19-6462-4045-93fe-870e604b9311', 'd4b90570-5e9a-46fe-a951-0606895e851a', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-16 09:00:00', '2024-01-17 09:00:00', '2024-01-17 09:30:00', 'completed', 500000),
+('d68cc7f7-a578-4efb-baaa-6ab8f72be8fa', '32481aa5-1c15-4efc-8e79-a947f44719f6', 'd5403559-06fe-4645-ad52-948e166e79c1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-15 08:00:00', '2024-01-15 18:00:00', '2024-01-15 18:15:00', 'completed', 1, 1500000),
+('46c3f037-57ef-4bd2-ba74-d075e18c96f1', '00a58e19-6462-4045-93fe-870e604b9311', 'd4b90570-5e9a-46fe-a951-0606895e851a', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-16 09:00:00', '2024-01-17 09:00:00', '2024-01-17 09:30:00', 'completed', 1, 500000),
 
 -- Current in-progress booking
-('2e6d884a-1d71-4651-902e-361d3711b632', '32481aa5-1c15-4efc-8e79-a947f44719f6', '70ea36da-3678-4498-a434-778e44935de5', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-20 10:00:00', '2024-01-22 10:00:00', NULL, 'approved', 1600000),
+('2e6d884a-1d71-4651-902e-361d3711b632', '32481aa5-1c15-4efc-8e79-a947f44719f6', '70ea36da-3678-4498-a434-778e44935de5', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-20 10:00:00', '2024-01-22 10:00:00', NULL, 'approved', 0, 1600000),
 
 -- Approved booking
-('6af7ca78-7529-4d8d-8e07-d825cec4ed3e', '40039cd5-dc03-48c4-95b8-75061f18a7f0', '5fcdb03c-42f2-4af4-a135-a5295ab42da0', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-25 14:00:00', '2024-01-26 14:00:00', NULL, 'approved', 300000),
+('6af7ca78-7529-4d8d-8e07-d825cec4ed3e', '40039cd5-dc03-48c4-95b8-75061f18a7f0', '5fcdb03c-42f2-4af4-a135-a5295ab42da0', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-25 14:00:00', '2024-01-26 14:00:00', NULL, 'approved', 0, 300000),
 
 -- Pending booking
-('8e980655-1c5c-4dc2-9c0c-bb9226218476', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', '784e9a83-2aa7-488f-91bd-34c523b3abeb', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-01 08:00:00', '2024-02-03 08:00:00', NULL, 'pending', 600000),
+('8e980655-1c5c-4dc2-9c0c-bb9226218476', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', '784e9a83-2aa7-488f-91bd-34c523b3abeb', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-01 08:00:00', '2024-02-03 08:00:00', NULL, 'pending', 0, 600000),
 
 -- Rejected booking
-('46a80466-6fce-4592-b44d-9d6df1d54fee', '00a58e19-6462-4045-93fe-870e604b9311', 'd1e3d3b6-31f1-4d52-9d42-bd5eda4d73a1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 11:00:00', '2024-01-18 18:00:00', NULL, 'rejected', 450000);
+('46a80466-6fce-4592-b44d-9d6df1d54fee', '00a58e19-6462-4045-93fe-870e604b9311', 'd1e3d3b6-31f1-4d52-9d42-bd5eda4d73a1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 11:00:00', '2024-01-18 18:00:00', NULL, 'rejected', 0, 450000);
 
 -- ========================================
 -- SAMPLE DATA - payments (UUID primary keys)
 -- ========================================
-INSERT INTO payments (id, booking_id, amount, type, payment_method, status, transaction_code, paid_at) VALUES
-('1be094c5-c813-4dd5-bfd0-da3725cf7548', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', '2024-01-15 18:30:00'),
-('bea5e207-a453-4695-a2e9-d1a01da067d8', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 500000, 'rental', 'transfer', 'completed', 'TXN002', '2024-01-17 10:00:00'),
-('b44d22f8-4ef6-4d2a-bac9-259f42afd195', '2e6d884a-1d71-4651-902e-361d3711b632', 1600000, 'rental', 'cash', 'completed', NULL, '2024-01-20 11:00:00'),
-('5324521c-f023-4b82-b4f2-41520ce996f4', '6af7ca78-7529-4d8d-8e07-d825cec4ed3e', 300000, 'deposit', 'credit_card', 'pending', 'TXN003', NULL),
-('7f2b7d60-746e-4ca5-8510-79e26a114781', '8e980655-1c5c-4dc2-9c0c-bb9226218476', 600000, 'rental', 'transfer', 'pending', NULL, NULL),
-('4f4a17b3-f4c3-4834-9d21-dc2e1f1e5e85', '46a80466-6fce-4592-b44d-9d6df1d54fee', 450000, 'deposit', 'credit_card', 'refunded', 'TXN004', '2024-01-18 20:00:00');
+INSERT INTO payments (id, booking_id, amount, type, payment_method, status, transaction_code, idempotency_key, paid_at) VALUES
+('1be094c5-c813-4dd5-bfd0-da3725cf7548', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', 'IDEM-20240115-001', '2024-01-15 18:30:00'),
+('bea5e207-a453-4695-a2e9-d1a01da067d8', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 500000, 'rental', 'transfer', 'completed', 'TXN002', 'IDEM-20240117-001', '2024-01-17 10:00:00'),
+('b44d22f8-4ef6-4d2a-bac9-259f42afd195', '2e6d884a-1d71-4651-902e-361d3711b632', 1600000, 'rental', 'cash', 'completed', NULL, 'IDEM-20240120-001', '2024-01-20 11:00:00'),
+('5324521c-f023-4b82-b4f2-41520ce996f4', '6af7ca78-7529-4d8d-8e07-d825cec4ed3e', 300000, 'deposit', 'credit_card', 'pending', 'TXN003', 'IDEM-20240125-001', NULL),
+('7f2b7d60-746e-4ca5-8510-79e26a114781', '8e980655-1c5c-4dc2-9c0c-bb9226218476', 600000, 'rental', 'transfer', 'pending', NULL, 'IDEM-20240201-001', NULL),
+('4f4a17b3-f4c3-4834-9d21-dc2e1f1e5e85', '46a80466-6fce-4592-b44d-9d6df1d54fee', 450000, 'deposit', 'credit_card', 'refunded', 'TXN004', 'IDEM-20240118-001', '2024-01-18 20:00:00');
 
 -- ========================================
 -- SAMPLE DATA - vehicle_returns (UUID primary keys)
 -- ========================================
-INSERT INTO vehicle_returns (id, booking_id, vehicle_id, return_branch_id, condition_status, damage_description, extra_fee, images) VALUES
-('bb320338-2250-4adc-80a5-d697e2894e89', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 'd5403559-06fe-4645-ad52-948e166e79c1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'good', NULL, 0, NULL),
-('1cda3da3-b534-45ed-8440-f86f36537672', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 'd4b90570-5e9a-46fe-a951-0606895e851a', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'fair', 'Minor scratches on side mirror and body', 200000, NULL);
+INSERT INTO vehicle_returns (id, booking_id, return_branch_id, condition_status, damage_description, extra_fee, return_odometer_reading, notes, returned_by) VALUES
+('bb320338-2250-4adc-80a5-d697e2894e89', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'good', NULL, 0, 5050, 'Vehicle returned in excellent condition', 'Staff A'),
+('1cda3da3-b534-45ed-8440-f86f36537672', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'fair', 'Minor scratches on side mirror and body', 200000, 8200, 'Customer liable for damage, fee applied', 'Staff B');
 
 -- ========================================
 -- SAMPLE DATA - conversations (UUID primary keys)
