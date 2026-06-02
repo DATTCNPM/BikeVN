@@ -17,10 +17,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class VehicleImageStorageService {
     @Value("${app.upload-dir:uploads}")
-    private String uploadDir;
+    String uploadDir;
 
     public String store(MultipartFile file) {
         if (file == null || file.isEmpty()) {
