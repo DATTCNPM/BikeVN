@@ -6,7 +6,7 @@ interface VehicleCardData {
   name: string;
   vehicle_type: string;
   price: number;
-  image: string;
+  image: string | null;
   location: string;
   status: string;
 }

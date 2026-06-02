@@ -22,7 +22,7 @@ import {
 import { List, MapPin } from "lucide-react";
 
 import { useVehicles, useBranches } from "@repo/hooks";
-import type { VehicleImage } from "@repo/types";
+import { filterImagePrimary } from "@/utils/vehicle";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
@@ -70,11 +70,6 @@ export default function HomePage() {
       toast.error("Lấy danh sách chi nhánh thất bại");
     }
   }, [branchError]);
-
-  const filterImagePrimary = (images: VehicleImage[]) => {
-    const primaryImage = images.find((img) => img.isPrimary === true);
-    return primaryImage ? primaryImage.imageUrl : "";
-  };
 
   const vehicleListData = useMemo(() => {
     return vehicles.map((vehicle) => ({

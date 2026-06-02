@@ -11,6 +11,13 @@ import "swiper/css/thumbs";
 // 2. (Tùy chọn) Import CSS cho autoplay nếu cần hiệu ứng đặc biệt
 import "swiper/css/autoplay";
 
+import motorbike1 from "../../assets/images/motorbike1.png";
+import motorbike2 from "../../assets/images/motorbike2.png";
+import motorbike3 from "../../assets/images/motorbike3.png";
+import motorbike4 from "../../assets/images/motorbike4.png";
+
+const imageMock = [motorbike1, motorbike2, motorbike3, motorbike4];
+
 export default function VehicleGallery({
   showThumbnail = true,
   images,
@@ -35,15 +42,27 @@ export default function VehicleGallery({
         }}
         className="rounded-2xl overflow-hidden"
       >
-        {images.map((image, index) => (
-          <SwiperSlide key={index}>
-            <img
-              src={`http://localhost:8080${image.imageUrl}` || image.imageUrl} // Sử dụng URL hình ảnh thực tế
-              alt=""
-              className="w-full h-[500px] object-cover"
-            />
-          </SwiperSlide>
-        ))}
+        {images.length === 0
+          ? imageMock.map((img, index) => (
+              <SwiperSlide key={index}>
+                <img
+                  src={img}
+                  alt=""
+                  className="w-full h-[500px] object-cover"
+                />
+              </SwiperSlide>
+            ))
+          : images.map((image, index) => (
+              <SwiperSlide key={index}>
+                <img
+                  src={
+                    `http://localhost:8080${image.imageUrl}` || image.imageUrl
+                  } // Sử dụng URL hình ảnh thực tế
+                  alt=""
+                  className="w-full h-[500px] object-cover"
+                />
+              </SwiperSlide>
+            ))}
       </Swiper>
 
       {/* Thumbnail Slider - Thường không cần autoplay cho phần này */}

@@ -1,7 +1,5 @@
 import VehicleGallery from "@/components/vehicle/VehicleGallery";
 import { Badge } from "@repo/ui/components/ui/badge";
-import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "sonner";
 import {
   MapPin,
   Smile,
@@ -19,63 +17,36 @@ import { formatDateTime } from "@repo/utils";
 import Map from "@/components/map/Map";
 import ReviewSection from "@/components/vehicle/review/ReviewSection";
 
-import { useEffect, useMemo } from "react";
-import {
-  useBranches,
-  useVehicle,
-  useVehicleBrands,
-  useVehicleModels,
-} from "@repo/hooks";
+import type { Vehicle, Branch, VehicleBrand, VehicleModel } from "@repo/types";
 
-export default function VehicleInfo({ vehicleId }: { vehicleId: string }) {
-  const {
-    data: branches = [],
-    isLoading: branchLoading,
-    error: branchError,
-  } = useBranches();
+import { useMemo } from "react";
 
-  const { data: brands = [], isLoading: brandsLoading } = useVehicleBrands();
-  const { data: models = [], isLoading: modelsLoading } = useVehicleModels();
-
-  const {
-    data: selectedVehicle = null,
-    isLoading: vehicleLoading,
-    error: vehicleError,
-  } = useVehicle(vehicleId);
-
-  useEffect(() => {
-    if (branchError) {
-      toast.error("Branch not found");
-    }
-    if (vehicleError) {
-      toast.error("Vehicle not found");
-    }
-  }, [branchError, vehicleError]);
-
+type Props = {
+  vehicle: Vehicle;
+  branches: Branch[];
+  brands: VehicleBrand[];
+  models: VehicleModel[];
+};
+export default function VehicleInfo({
+  vehicle,
+  branches,
+  brands,
+  models,
+}: Props) {
   const vehicleData = useMemo(() => {
     return {
-      ...selectedVehicle,
+      ...vehicle,
       locationName: branches?.find(
-        (branch) => branch.id === selectedVehicle?.currentBranchId,
+        (branch) => branch.id === vehicle?.currentBranchId,
       )?.name,
-      brandName:
-        brands.find((b) => b.id === selectedVehicle?.brandId)?.name || "N/A",
-      modelName:
-        models.find((m) => m.id === selectedVehicle?.modelId)?.name || "N/A",
+      brandName: brands.find((b) => b.id === vehicle?.brandId)?.name || "N/A",
+      modelName: models.find((m) => m.id === vehicle?.modelId)?.name || "N/A",
     };
-  }, [selectedVehicle, branches]);
+  }, [vehicle, branches]);
 
   const locationVehicle = useMemo(() => {
-    return branches.find((b) => b.id === selectedVehicle?.currentBranchId);
-  }, [selectedVehicle, branches]);
-
-  if (branchLoading || vehicleLoading || brandsLoading || modelsLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Spinner />
-      </div>
-    );
-  }
+    return branches.find((b) => b.id === vehicle?.currentBranchId);
+  }, [vehicle, branches]);
 
   const statusMap = {
     available: {

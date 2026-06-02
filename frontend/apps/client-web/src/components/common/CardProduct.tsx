@@ -4,6 +4,8 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import { MapPin, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+import motorPlaceholder from "@/assets/images/motorbike1.png";
+
 type CardProductProps = {
   id: string;
   title: string;
@@ -11,7 +13,7 @@ type CardProductProps = {
   price: number;
   location: string;
   status: string;
-  image: string;
+  image: string | null;
 };
 
 export default function CardProduct({
@@ -34,7 +36,9 @@ export default function CardProduct({
       {/* Thumbnail */}
       <div className="relative overflow-hidden">
         <img
-          src={`http://localhost:8080${image}` || image} // Use the actual image URL
+          src={
+            image !== null ? `http://localhost:8080${image}` : motorPlaceholder
+          }
           alt={title}
           className="h-[260px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />

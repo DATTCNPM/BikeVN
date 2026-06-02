@@ -1,13 +1,10 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { addDays, differenceInDays, format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
 import type { DateRange } from "react-day-picker";
-
-import { toast } from "sonner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 
@@ -41,25 +38,22 @@ import {
 
 import { Separator } from "@repo/ui/components/ui/separator";
 
-import { Spinner } from "@repo/ui/components/ui/spinner";
-
 import { useCreateBooking } from "@/features/bookings/mutations";
-
-import { useVehicle } from "@repo/hooks";
-import { useBranches } from "@repo/hooks";
 
 import type { BookingSchema } from "@/features/bookings/schemas";
 import { bookingSchema } from "@/features/bookings/schemas";
 
-export default function BookingCard() {
-  const { id } = useParams();
+import type { Vehicle, Branch } from "@repo/types";
 
+type Props = {
+  vehicle: Vehicle;
+  branches: Branch[];
+};
+
+export default function BookingCard({ vehicle, branches }: Props) {
   const navigate = useNavigate();
 
-  const { mutate: createBooking, error, isPending } = useCreateBooking();
-
-  const { data: vehicle = null, isLoading: vehicleLoading } = useVehicle(id!);
-  const { data: branches = [], isLoading: branchLoading } = useBranches();
+  const { mutate: createBooking, isPending } = useCreateBooking();
 
   const form = useForm<BookingSchema>({
     resolver: zodResolver(bookingSchema),
@@ -77,20 +71,6 @@ export default function BookingCard() {
     },
   });
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Lấy thông tin xe thất bại");
-    }
-  }, [error]);
-
-  if (branchLoading || vehicleLoading) {
-    return (
-      <div className="flex h-[300px] w-full items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-
   const dateRange = form.watch("dateRange");
 
   const startDate = dateRange?.from;
@@ -105,7 +85,7 @@ export default function BookingCard() {
   const onSubmit = (values: BookingSchema) => {
     createBooking({
       user_id: "u1", // mock user
-      vehicle_id: id!,
+      vehicle_id: vehicle.id,
       pickup_branch_id: values.pickupBranchId,
       return_branch_id: values.returnBranchId,
       start_date: values.dateRange.from.toISOString(),

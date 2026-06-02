@@ -1,12 +1,12 @@
-import VehicleGallery from "@/components/vehicle/VehicleGallery";
 import { useNavigate } from "react-router-dom";
+import VehicleGallery from "@/components/vehicle/VehicleGallery";
 
-import motorbike1 from "../../assets/images/motorbike1.png";
-import motorbike2 from "../../assets/images/motorbike2.png";
-import motorbike3 from "../../assets/images/motorbike3.png";
-import motorbike4 from "../../assets/images/motorbike4.png";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+// 2. (Tùy chọn) Import CSS cho autoplay nếu cần hiệu ứng đặc biệt
+import "swiper/css/autoplay";
 
-const images = [motorbike1, motorbike2, motorbike3, motorbike4];
 export default function Hero() {
   const navigate = useNavigate();
   return (
@@ -78,7 +78,7 @@ export default function Hero() {
           </div>
         </div>
         <div className="col-span-6">
-          <VehicleGallery showThumbnail={false} images={images} />
+          <VehicleGallery showThumbnail={false} images={[]} />
         </div>
       </div>
     </section>
