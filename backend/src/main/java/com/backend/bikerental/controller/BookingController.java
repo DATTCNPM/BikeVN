@@ -8,10 +8,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/booking")
@@ -25,6 +24,32 @@ public class BookingController {
     {
         return ApiResponse.<BookingResponse>builder()
                 .result(bookingService.createBooking(request))
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<BookingResponse> getBooking(@PathVariable String id)
+    {
+        return ApiResponse.<BookingResponse>builder()
+                .result(bookingService.getBooking(id))
+                .build();
+    }
+
+    //get booking by user
+    @GetMapping("/user/{userId}")
+    public ApiResponse<List<BookingResponse>> getBookingsByUser(@PathVariable String userId)
+    {
+        return ApiResponse.<List<BookingResponse>>builder()
+                .result(bookingService.getBookingsByUser(userId))
+                .build();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ApiResponse<Void> cancelBooking(@PathVariable String id)
+    {
+        bookingService.cancelBooking(id);
+        return ApiResponse.<Void>builder()
+                .message("Booking canceled")
                 .build();
     }
 }

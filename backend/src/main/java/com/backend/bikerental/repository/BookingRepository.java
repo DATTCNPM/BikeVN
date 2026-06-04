@@ -8,17 +8,24 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, String> {
     //p1 query
-    @Query("SELECT COUNT(b) > 0 FROM Booking b " +
-            "WHERE b.vehicleId = :vehicleId " +
-            "AND b.status IN ('PENDING', 'CONFIRMED') " +
-            "AND (b.startTime < :endTime AND b.endTime > :startTime)")
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END\n" +
+            "FROM Booking b\n" +
+            "WHERE b.vehicleId = :vehicleId\n" +
+            "AND b.id != :bookingId\n" +
+            "AND b.status IN ('pending', 'approved')\n" +
+            "AND (b.expiresAt IS NULL OR b.expiresAt > :now)\n" +
+            "AND b.startTime < :endTime\n" +
+            "AND b.endTime > :startTime")
     boolean existsConflict(
-            @Param("vehicleId") String vehicleId,
-            @Param("startTime") LocalDateTime startTime,
-            @Param("endTime") LocalDateTime endTime
+            String vehicleId,
+            String bookingId,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            LocalDateTime now
     );
     //p2 jpa hibernate
     boolean existsByVehicleIdAndStatusInAndStartTimeLessThanAndEndTimeGreaterThan(
@@ -27,4 +34,11 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
             LocalDateTime endTime,
             LocalDateTime startTime
     );
+    Optional<Booking> findFirstByUserIdAndStatus(
+            String userId,
+            BookingStatus status
+    );
+    List<Booking> findByStatus(BookingStatus status);
+    List<Booking> findByUserId(String userId);
+    List<Booking> findByStatusAndExpiresAtBefore(BookingStatus status, LocalDateTime time);
 }

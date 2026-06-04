@@ -46,4 +46,5 @@ public class Booking {
     LocalDateTime createdAt;
     @UpdateTimestamp
     LocalDateTime updatedAt;
+    LocalDateTime expiresAt;
 }
