@@ -1,8 +1,8 @@
 package com.backend.bikerental.repository;
 
 import com.backend.bikerental.entity.Payment;
-import com.backend.bikerental.enumeration.PaymentStatus;
-import com.backend.bikerental.enumeration.PaymentType;
+import com.backend.bikerental.enums.PaymentStatus;
+import com.backend.bikerental.enums.PaymentType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,73 +13,51 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Payment Repository
- * 
  * Data access layer for Payment entity with duplicate prevention support.
  * All queries are optimized for the composite indexes defined on the payments table.
  */
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, String> {
-    
-    /**
-     * Find payment by transaction code (from payment provider)
-     * Used to prevent duplicate transactions from external callbacks
-     * 
-     * @param transactionCode External transaction code
-     * @return Optional Payment
-     */
     Optional<Payment> findByTransactionCode(String transactionCode);
-    
-    /**
-     * Find payment by idempotency key (for request deduplication)
-     * Used to handle duplicate API requests from clients
-     * 
-     * @param idempotencyKey Idempotency key from request header
-     * @return Optional Payment
-     */
     Optional<Payment> findByIdempotencyKey(String idempotencyKey);
-    
+
     /**
      * Find payment of specific type for booking
      * Used to ensure only one payment of each type per booking
-     * 
-     * @param bookingId Booking ID
-     * @param type Payment type (DEPOSIT or RENTAL)
-     * @return Optional Payment
      */
     Optional<Payment> findByBookingIdAndType(String bookingId, PaymentType type);
-    
+
     /**
      * Check if payment of specific type exists for booking
-     * 
+     *
      * @param bookingId Booking ID
      * @param type Payment type
      * @return true if exists, false otherwise
      */
     boolean existsByBookingIdAndType(String bookingId, PaymentType type);
-    
+
     /**
      * Find all payments for a booking
-     * 
+     *
      * @param bookingId Booking ID
      * @return List of payments
      */
     List<Payment> findByBookingId(String bookingId);
-    
+
     /**
      * Find all payments for booking with specific status
      * Uses composite index idx_booking_status_type
-     * 
+     *
      * @param bookingId Booking ID
      * @param status Payment status
      * @return List of payments
      */
     List<Payment> findByBookingIdAndStatus(String bookingId, PaymentStatus status);
-    
+
     /**
      * Find all payments for booking with specific type and status
      * Uses composite index idx_booking_status_type
-     * 
+     *
      * @param bookingId Booking ID
      * @param type Payment type
      * @param status Payment status
@@ -249,4 +227,9 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
      */
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.bookingId = :bookingId AND p.status = 'REFUNDED'")
     java.math.BigDecimal getTotalRefundedAmount(@Param("bookingId") String bookingId);
+
+    Optional<Payment> findFirstByBookingIdAndStatus(
+            String bookingId,
+            PaymentStatus status
+    );
 }
