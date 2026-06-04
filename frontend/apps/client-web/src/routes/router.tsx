@@ -6,12 +6,12 @@ import { usePingServer } from "@/features/auth/authHook";
 
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
-import Landing from "@/pages/Landing";
+import Landing from "@/pages/LandingPage";
 import HomePage from "@/pages/HomePage";
-import VehicleDetail from "@/pages/VehicleDetail";
+import VehicleDetail from "@/pages/VehicleDetailPage";
 import ChatPage from "@/pages/ChatPage";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
+import Login from "@/pages/LoginPage";
+import Register from "@/pages/RegisterPage";
 import ProfileLayout from "@/layouts/ProfileLayout";
 import InfoSection from "@/components/profile/InfoSection";
 import SettingSection from "@/components/profile/SettingSection";

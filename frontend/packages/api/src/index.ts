@@ -1,9 +1,9 @@
 export * from "./client/bookingApi";
 export * from "./client/authClientApi";
 
-export * from "./paymentApi";
-export * from "./chatApi";
-export * from "./reviewApi";
+export * from "./common/paymentApi";
+export * from "./common/chatApi";
+export * from "./common/reviewApi";
 export * from "./admin/dashboardApi";
 export * from "./admin/userApi";
 export * from "./admin/roleApi";
@@ -12,7 +12,7 @@ export * from "./admin/bookingApi";
 export * from "./admin/vehicleApi";
 export * from "./admin/branchApi";
 export * from "./admin/authAdminApi";
-export * from "./notificationApi";
+export * from "./common/notificationApi";
 export * from "./data/mockBrandsAndModels";
 export * from "./admin/vehicleBrandAdminApi";
 export * from "./admin/vehicleModelAdminApi";

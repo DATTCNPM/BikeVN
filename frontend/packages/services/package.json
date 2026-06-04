@@ -14,5 +14,6 @@
   "dependencies": {
     "@repo/types": "workspace:*",
     "@repo/constants": "workspace:*"
-  }
+  },
+  "private": true
 }
