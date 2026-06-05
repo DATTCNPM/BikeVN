@@ -16,9 +16,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "@types/react-dom": "^19.2.3"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -33,5 +31,10 @@
     "recharts": "3.8.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0"
+  },
+  "private": true,
+  "peerDependencies": {
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
   }
 }

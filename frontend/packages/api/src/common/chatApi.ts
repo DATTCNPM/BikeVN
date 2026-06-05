@@ -1,4 +1,4 @@
-import { conversations, messages } from "./data/ChatData";
+import { conversations, messages } from "../data/ChatData";
 
 import type { conversation, message, SendMessagePayload } from "@repo/types";
 

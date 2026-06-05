@@ -21,9 +21,17 @@ public enum ErrorCode {
     MODEL_EXISTED(1010, "Model existed",HttpStatus.BAD_REQUEST),
     BRAND_EXISTED(1011, "Brand existed",HttpStatus.BAD_REQUEST),
     FILE_UPLOAD_FAILED(1012, "File upload failed", HttpStatus.BAD_REQUEST),
+    INVALID_TIME(1013, "Invalid time", HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_FOUND(1014, "Booking not found", HttpStatus.NOT_FOUND),
+    PAYMENT_NOT_FOUND(1014, "Payment not found", HttpStatus.NOT_FOUND),
+    PAYMENT_EXPIRED(1014, "Payment expired", HttpStatus.BAD_REQUEST),
+    BOOKING_ALREADY_COMPLETED(1015, "Booking completed", HttpStatus.BAD_REQUEST),
+    DUPLICATE_PAYMENT(1016, "duplicate payment",HttpStatus.BAD_REQUEST),
+    BOOKING_TIME_CONFLICT(1017, "conflict booking time",HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN),
     EXISTED_DATA(5055, "%s already exists", HttpStatus.BAD_REQUEST);
+
 
     private int code;
     private String message;

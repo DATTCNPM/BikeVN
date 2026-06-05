@@ -17,5 +17,6 @@
     "@repo/types": "workspace:*",
     "axios": "^1.16.0",
     "jwt-decode": "^4.0.0"
-  }
+  },
+  "private": true
 }
