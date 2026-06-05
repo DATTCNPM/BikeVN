@@ -1,36 +1,6 @@
-export type Booking = {
-  id: string;
-  user_id: string;
-  vehicle_id: string;
-  pickup_branch_id: string;
-  return_branch_id: string;
-  start_date: string;
-  end_date: string;
-  actual_return_date?: string | null;
-  total_price: number;
-  status: "pending" | "approved" | "rejected" | "completed" | "cancelled";
-  created_at: string;
-  updated_at: string;
-};
+import { z } from "zod";
+import { bookingSchema, bookingCreationSchema } from "@repo/schemas";
 
-export type CreateBookingPayload = {
-  user_id: string;
+export type Booking = z.infer<typeof bookingSchema>;
 
-  vehicle_id: string;
-
-  pickup_branch_id: string;
-
-  return_branch_id: string;
-
-  start_date: string;
-
-  end_date: string;
-
-  total_price: number;
-
-  status?: Booking["status"];
-};
-
-export type UpdateBookingPayload = Partial<CreateBookingPayload> & {
-  actual_return_date?: string | null;
-};
+export type BookingCreationPayload = z.infer<typeof bookingCreationSchema>;

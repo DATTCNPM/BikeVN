@@ -1,6 +1,5 @@
 export * from "./payment";
 export * from "./vehicle";
-export * from "./booking";
 export * from "./user";
 export * from "./auth";
 export * from "./review";
@@ -12,3 +11,4 @@ export * from "./notificationType";
 export * from "./vehicleBrand";
 export * from "./vehicleModel";
 export * from "./vehicleImage";
+export * from "./booking";

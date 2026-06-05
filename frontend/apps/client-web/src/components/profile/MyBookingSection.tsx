@@ -13,10 +13,9 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import type { Booking } from "@repo/types";
 import { Button } from "@repo/ui/components/ui/button";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "sonner";
-import { useEffect } from "react";
-import { useBookings } from "@/features/bookings/queries";
+import { useBookingsByUser } from "@/features/bookings/queries";
 import { useVehicles } from "@repo/hooks";
+import { useProfile } from "@/features/auth/useProfile";
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {
@@ -52,22 +51,12 @@ const statusConfig: Record<Booking["status"], any> = {
 
 export default function MyBookingSection() {
   const navigate = useNavigate();
-  const { data: bookings, isLoading, error } = useBookings();
-  const {
-    data: vehicles,
-    isLoading: vehicleLoading,
-    error: vehicleError,
-  } = useVehicles();
+  const { data: profile } = useProfile();
+  const { data: bookings = [], isLoading } = useBookingsByUser(
+    profile?.id || "",
+  );
+  const { data: vehicles, isLoading: vehicleLoading } = useVehicles();
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to load bookings. Please try again.");
-    }
-
-    if (vehicleError) {
-      toast.error("Failed to load vehicles. Please try again.");
-    }
-  }, [error, vehicleError]);
   if (isLoading || vehicleLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -79,7 +68,7 @@ export default function MyBookingSection() {
   console.log("vehicles", vehicles);
 
   const bookingData = bookings?.map((b) => {
-    const vehicle = vehicles?.find((v) => v.id === b.vehicle_id);
+    const vehicle = vehicles?.find((v) => v.id === b.vehicleId);
     return {
       ...b,
       vehicleName: vehicle ? vehicle.name : "Unknown Vehicle",
@@ -150,7 +139,7 @@ export default function MyBookingSection() {
                         <CalendarDays className="size-5 text-primary" />
 
                         <p className="font-medium">
-                          {booking.start_date} → {booking.end_date}
+                          {booking.startTime} → {booking.endTime}
                         </p>
                       </div>
                     </div>
@@ -170,7 +159,7 @@ export default function MyBookingSection() {
                       </p>
 
                       <p className="mt-1 text-3xl font-black tracking-tight text-primary">
-                        {booking.total_price.toLocaleString("vi-VN")}đ
+                        {booking.totalPrice?.toLocaleString("vi-VN")}đ
                       </p>
                     </div>
 

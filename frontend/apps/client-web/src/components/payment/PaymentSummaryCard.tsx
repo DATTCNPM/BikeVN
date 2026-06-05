@@ -22,7 +22,7 @@ export default function PaymentSummaryCard({ booking, selectedMethod }: Props) {
     if (!booking) return;
     const payload: CreatePaymentPayload = {
       booking_id: booking.id,
-      amount: booking.total_price,
+      amount: booking.totalPrice || 0,
       type: "rental",
       card_method: selectedMethod,
       payment_method: selectedMethod,
@@ -56,16 +56,16 @@ export default function PaymentSummaryCard({ booking, selectedMethod }: Props) {
       </div>
 
       <div className="mt-8 space-y-5">
-        <SummaryItem label="Rental Price" value={booking?.total_price || 0} />
+        <SummaryItem label="Rental Price" value={booking?.totalPrice || 0} />
 
         <SummaryItem
           label="Deposit"
-          value={booking?.total_price ? booking.total_price * 0.2 : 0}
+          value={booking?.totalPrice ? booking.totalPrice * 0.2 : 0}
         />
 
         <SummaryItem
           label="Service Fee"
-          value={booking?.total_price ? booking.total_price * 0.1 : 0}
+          value={booking?.totalPrice ? booking.totalPrice * 0.1 : 0}
         />
 
         <div className="border-t border-dashed border-border pt-5">
@@ -73,7 +73,7 @@ export default function PaymentSummaryCard({ booking, selectedMethod }: Props) {
             <p className="text-lg font-semibold">Total</p>
 
             <p className="text-3xl font-black tracking-tight text-primary">
-              {booking?.total_price.toLocaleString("vi-VN")}đ
+              {booking?.totalPrice?.toLocaleString("vi-VN")}đ
             </p>
           </div>
         </div>

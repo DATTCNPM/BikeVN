@@ -1,4 +1,4 @@
-export * from "./client/bookingApi";
+export * from "./client/bookingClientApi";
 export * from "./client/authClientApi";
 
 export * from "./common/paymentApi";
@@ -24,3 +24,4 @@ export * from "./common/branchPublicApi";
 export * from "./common/authApi";
 export * from "./common/vehicleModelPublicApi";
 export * from "./common/vehicleImagePublicApi";
+export * from "./common/bookingPublicApi";

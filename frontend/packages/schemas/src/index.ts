@@ -5,3 +5,4 @@ export * from "./notificationSchema";
 export * from "./vehicleBrandSchema";
 export * from "./vehicleModelSchema";
 export * from "./vehicleImageSchema";
+export * from "./bookingSchema";

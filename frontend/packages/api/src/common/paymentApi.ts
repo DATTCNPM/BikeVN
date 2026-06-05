@@ -1,6 +1,6 @@
 // src/apis/paymentApi.ts
 
-import { payments } from "./data/PaymentData";
+import { payments } from "../data/PaymentData";
 
 import type { Payment, PaymentMethod, PaymentStatus } from "@repo/types";
 

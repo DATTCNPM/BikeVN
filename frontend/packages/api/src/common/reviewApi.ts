@@ -1,10 +1,10 @@
 // src/apis/reviewApi.ts
 
-import { reviews } from "./data/ReviewData";
+import { reviews } from "../data/ReviewData";
 
 import type { Review, ReviewPayload } from "@repo/types";
 
-import { users } from "./data/UserData";
+import { users } from "../data/UserData";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -26,7 +26,9 @@ export const reviewApi = {
     }));
   },
 
-  async getReviews(): Promise<(Review & { user: { name: string; email: string } })[]> {
+  async getReviews(): Promise<
+    (Review & { user: { name: string; email: string } })[]
+  > {
     await delay(500);
 
     return reviews.map((review) => ({

@@ -9,7 +9,13 @@ export const vehiclesKeys = {
 
 export const bookingsKeys = {
   all: ["bookings"] as const,
-  detail: (id: string) => ["booking", id] as const,
+
+  lists: () => [...bookingsKeys.all, "list"] as const,
+
+  byUser: (userId: string) =>
+    [...bookingsKeys.lists(), "user", userId] as const,
+
+  detail: (id: string) => [...bookingsKeys.all, "detail", id] as const,
 };
 
 export const paymentsKeys = {

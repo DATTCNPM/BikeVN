@@ -1,24 +1,15 @@
 import { Card } from "@repo/ui/components/ui/card";
 import { CalendarDays, MapPinned } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "sonner";
 import type { Booking } from "@repo/types";
 import { useBranches } from "@repo/hooks";
-
-import { useEffect } from "react";
 
 type Props = {
   booking: Booking | null;
 };
 
 export default function PaymentBookingCard({ booking }: Props) {
-  const { data: branches, isLoading, error } = useBranches();
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to load branches. Please try again.");
-    }
-  }, [error]);
+  const { data: branches, isLoading } = useBranches();
 
   if (isLoading) {
     return (
@@ -29,10 +20,10 @@ export default function PaymentBookingCard({ booking }: Props) {
   }
 
   const nameBranchesPickup =
-    branches?.find((branch) => branch.id === booking?.pickup_branch_id)?.name ||
+    branches?.find((branch) => branch.id === booking?.pickupBranchId)?.name ||
     "Unknown Branch";
   const nameBranchesReturn =
-    branches?.find((branch) => branch.id === booking?.return_branch_id)?.name ||
+    branches?.find((branch) => branch.id === booking?.returnBranchId)?.name ||
     "Unknown Branch";
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
@@ -52,16 +43,16 @@ export default function PaymentBookingCard({ booking }: Props) {
           </div>
 
           <div className="mt-4 space-y-2">
-            <p className="font-semibold">Start: {booking?.start_date}</p>
+            <p className="font-semibold">Start: {booking?.startTime}</p>
 
-            <p className="font-semibold">End: {booking?.end_date}</p>
+            <p className="font-semibold">End: {booking?.endTime}</p>
 
             <p className="text-muted-foreground">
               Total Days:{" "}
-              {booking?.start_date && booking?.end_date
+              {booking?.startTime && booking?.endTime
                 ? Math.ceil(
-                    (new Date(booking.end_date).getTime() -
-                      new Date(booking.start_date).getTime()) /
+                    (new Date(booking.endTime).getTime() -
+                      new Date(booking.startTime).getTime()) /
                       (1000 * 60 * 60 * 24),
                   )
                 : "N/A"}{" "}

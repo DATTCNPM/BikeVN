@@ -11,7 +11,7 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 
-import { useBooking } from "@repo/hooks";
+import { useBooking } from "@/features/bookings/queries";
 import { useVehicle } from "@repo/hooks";
 import { useBranches } from "@repo/hooks";
 
@@ -22,7 +22,7 @@ export default function BookingResultPage() {
     data: vehicle,
     isLoading: vehicleLoading,
     error: vehicleError,
-  } = useVehicle(booking?.vehicle_id || "");
+  } = useVehicle(booking?.vehicleId || "");
   const {
     data: branches = [],
     isLoading: branchesLoading,
@@ -55,8 +55,8 @@ export default function BookingResultPage() {
   console.log("Branches:", branches);
 
   // Tên chi nhánh lấy từ selectedBooking.pickup_branch_id và selectedBooking.return_branch_id
-  const pickupBranch = branches.find((b) => b.id === booking?.pickup_branch_id);
-  const returnBranch = branches.find((b) => b.id === booking?.return_branch_id);
+  const pickupBranch = branches.find((b) => b.id === booking?.pickupBranchId);
+  const returnBranch = branches.find((b) => b.id === booking?.returnBranchId);
 
   return (
     <main className="min-h-screen bg-background">

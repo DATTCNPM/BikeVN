@@ -9,7 +9,7 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 
 import { useProfile } from "@/features/auth/useProfile";
-import { useBooking } from "@repo/hooks";
+import { useBooking } from "@/features/bookings/queries";
 
 import { useEffect, useState } from "react";
 import { useVehicle } from "@repo/hooks";
@@ -28,7 +28,7 @@ export default function PaymentPage() {
     data: vehicle = null,
     isLoading: vehicleLoading,
     error: vehicleError,
-  } = useVehicle(booking?.vehicle_id || "");
+  } = useVehicle(booking?.vehicleId || "");
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("vnpay");
 
