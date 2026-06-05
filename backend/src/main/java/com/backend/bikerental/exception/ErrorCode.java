@@ -28,6 +28,9 @@ public enum ErrorCode {
     BOOKING_ALREADY_COMPLETED(1015, "Booking completed", HttpStatus.BAD_REQUEST),
     DUPLICATE_PAYMENT(1016, "duplicate payment",HttpStatus.BAD_REQUEST),
     BOOKING_TIME_CONFLICT(1017, "conflict booking time",HttpStatus.BAD_REQUEST),
+    VEHICLE_ALREADY_LOCKED(1018, "vehicle already locked",HttpStatus.FORBIDDEN),
+    LOCK_NOT_FOUND(1019, "lock not found",HttpStatus.NOT_FOUND),
+    BOOKING_EXPIRED(1020, "booking expired",HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN),
     EXISTED_DATA(5055, "%s already exists", HttpStatus.BAD_REQUEST);

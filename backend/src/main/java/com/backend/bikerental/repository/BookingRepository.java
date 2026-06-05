@@ -34,6 +34,16 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
             LocalDateTime endTime,
             LocalDateTime startTime
     );
+
+    @Query(
+            "SELECT COUNT(b) > 0 FROM Booking b " +
+                    "WHERE b.vehicleId = :vehicleId " +
+                    "AND (b.startTime < :endTime AND b.endTime > :startTime)"
+    )
+    boolean existsApprovedBooking(@Param("vehicleId") String vehicleId,
+                                  @Param("startTime") LocalDateTime startTime,
+                                  @Param("endTime") LocalDateTime endTime);
+
     Optional<Booking> findFirstByUserIdAndStatus(
             String userId,
             BookingStatus status
