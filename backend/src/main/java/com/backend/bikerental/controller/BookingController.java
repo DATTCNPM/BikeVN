@@ -28,10 +28,18 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    ApiResponse<BookingResponse> getBooking(@PathVariable String id)
+    public ApiResponse<BookingResponse> getBooking(@PathVariable String id)
     {
         return ApiResponse.<BookingResponse>builder()
                 .result(bookingService.getBooking(id))
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<List<BookingResponse>> getAllBooking()
+    {
+        return ApiResponse.<List<BookingResponse>>builder()
+                .result(bookingService.getAllBooking())
                 .build();
     }
 
