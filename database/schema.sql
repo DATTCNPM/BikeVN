@@ -196,6 +196,7 @@ CREATE TABLE `payments` (
   `status` enum('pending','completed','failed','refunded') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `transaction_code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'External transaction code - must be unique to prevent duplicate payments',
   `idempotency_key` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Idempotency key for duplicate request prevention',
+  `branch_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Branch where payment was processed',
   `paid_at` datetime DEFAULT NULL COMMENT 'Actual payment date/time',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -204,11 +205,11 @@ CREATE TABLE `payments` (
   UNIQUE KEY `unique_booking_type` (`booking_id`,`type`) COMMENT 'Only one payment of each type per booking',
   UNIQUE KEY `unique_idempotency_key` (`idempotency_key`) COMMENT 'Prevent duplicate API requests',
   KEY `idx_booking_id` (`booking_id`),
+  KEY `idx_branch_id` (`branch_id`),
   KEY `idx_status` (`status`),
   KEY `idx_type` (`type`),
-  KEY `idx_created_at` (`created_at`),
-  KEY `idx_booking_status_type` (`booking_id`,`status`,`type`) COMMENT 'Query optimization for payment status checks',
-  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Payment transactions with duplicate prevention. Uses transaction_code + idempotency_key for deduplication';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -323,10 +324,13 @@ DROP TABLE IF EXISTS `users_roles`;
 CREATE TABLE `users_roles` (
   `user_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `role_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `branch_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Branch where this role applies (for staff/manager)',
   PRIMARY KEY (`user_id`,`role_id`),
   KEY `fk_role` (`role_id`),
+  KEY `idx_ur_branch` (`branch_id`),
   CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ur_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -412,18 +416,20 @@ CREATE TABLE `vehicle_returns` (
   `images` json DEFAULT NULL COMMENT 'Return condition photos (JSON array of URLs)',
   `return_odometer_reading` int DEFAULT NULL COMMENT 'Vehicle odometer reading at return',
   `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional notes about return process',
-  `returned_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Staff member who processed the return',
+  `employee_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Staff member who processed the return (FK to users)',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_booking_return` (`booking_id`) COMMENT 'Only one return record per booking',
   KEY `idx_booking` (`booking_id`),
   KEY `idx_return_branch` (`return_branch_id`),
+  KEY `idx_employee_id` (`employee_id`),
   KEY `idx_condition_status` (`condition_status`),
   KEY `idx_created_at` (`created_at`),
   KEY `idx_booking_condition` (`booking_id`,`condition_status`) COMMENT 'For damage assessment queries',
   CONSTRAINT `vehicle_returns_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `vehicle_returns_ibfk_2` FOREIGN KEY (`return_branch_id`) REFERENCES `branches` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `vehicle_returns_ibfk_2` FOREIGN KEY (`return_branch_id`) REFERENCES `branches` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `vehicle_returns_ibfk_3` FOREIGN KEY (`employee_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Vehicle return tracking with duplicate prevention. One return per booking. vehicle_id can be derived from booking record';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -463,6 +469,34 @@ CREATE TABLE `vehicles` (
   CONSTRAINT `vehicles_ibfk_3` FOREIGN KEY (`current_branch_id`) REFERENCES `branches` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Motorcycle/vehicle inventory';
 /*!40101 SET character_set_client = @saved_cs_client */;
+--
+-- SECURE LOGICAL LAYER (Views)
+-- These views provide safe, role-filtered access to user data 
+-- without changing the underlying physical table structure.
+--
+
+CREATE OR REPLACE VIEW `view_customers` AS
+SELECT u.id, u.name, u.email, u.phone, u.cccd_number, u.is_active, u.created_at
+FROM users u
+LEFT JOIN users_roles ur ON u.id = ur.user_id
+WHERE ur.user_id IS NULL;
+
+CREATE OR REPLACE VIEW `view_staff` AS
+SELECT u.id, u.name, u.email, u.phone, u.is_active, r.name as role_name, b.name as branch_name, b.address as branch_address
+FROM users u
+JOIN users_roles ur ON u.id = ur.user_id
+JOIN roles r ON ur.role_id = r.id
+JOIN branches b ON ur.branch_id = b.id
+WHERE r.name IN ('employee', 'manager');
+
+CREATE OR REPLACE VIEW `view_managers` AS
+SELECT u.id, u.name, u.email, u.phone, u.is_active, b.name as branch_name
+FROM users u
+JOIN users_roles ur ON u.id = ur.user_id
+JOIN roles r ON ur.role_id = r.id
+JOIN branches b ON ur.branch_id = b.id
+WHERE r.name = 'manager';
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

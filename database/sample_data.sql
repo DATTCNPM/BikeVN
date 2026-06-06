@@ -20,18 +20,36 @@ INSERT INTO users (id, name, email, password_hash, phone, cccd_number, is_active
 ('00a58e19-6462-4045-93fe-870e604b9311', 'Tran Thi B', 'tranb@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0902345678', '001234567892', 1),
 ('40039cd5-dc03-48c4-95b8-75061f18a7f0', 'Pham Van C', 'phamc@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0903456789', '001234567893', 1),
 ('2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', 'Le Thi D', 'led@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0904567890', '001234567894', 1),
-('f6869750-0ec9-49a6-a6e8-0a70d4b9e7f7', 'Hoang Van E', 'hoange@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0905678901', '001234567895', 1);
+('f6869750-0ec9-49a6-a6e8-0a70d4b9e7f7', 'Hoang Van E', 'hoange@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0905678901', '001234567895', 1),
+-- Additional Staff for Regional Testing (Standard UUIDs)
+('5f8c11a2-ae32-4b8a-995a-6a56e5df46a2', 'Le Van F', 'levanf@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0906789012', '001234567896', 1),
+('9b7d22c3-bf43-4c9b-886b-7b67f6eg57b3', 'Dang Thi G', 'dangg@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0907890123', '001234567897', 1),
+('1e6e33d4-cf54-4d0c-997c-8c78g7fh68c4', 'Bui Van H', 'buih@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0908901234', '001234567898', 1),
+('2d7f44e5-df65-4e1d-aa8c-9d89h8ij79d5', 'Tran Van I', 'trani@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0909012345', '001234567899', 1),
+('3f8a55f6-e076-4f2e-bb9d-ae90i9jk80e6', 'Le Thi J', 'lej@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0900123456', '001234567900', 1),
+('4a9b6607-f187-403f-cc0e-bf01j0kl91f7', 'Phan Van K', 'phank@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0901234567', '001234567901', 1),
+('5b0c7718-0298-414g-dd1f-c012k1lm02g8', 'Do Van L', 'dol@email.com', '$2y$10$abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopq', '0902345678', '001234567902', 1);
 
 -- ========================================
 -- SAMPLE DATA - users_roles (assign roles to users)
 -- ========================================
-INSERT INTO users_roles (user_id, role_id) VALUES
--- Employee user gets employee and support roles
-('32481aa5-1c15-4efc-8e79-a947f44719f6', 'ac079c2d-da6c-4462-88d6-e025f58c2844'),
-('32481aa5-1c15-4efc-8e79-a947f44719f6', '093317a1-ab50-4e65-be85-ee6e0d442729'),
+-- HCMC Branch Staffing
+('32481aa5-1c15-4efc-8e79-a947f44719f6', 'ac079c2d-da6c-4462-88d6-e025f58c2844', '42ce84a3-e54f-415d-b707-a8a818c00a9c'), -- Nguyen Van A (Staff)
+('32481aa5-1c15-4efc-8e79-a947f44719f6', '093317a1-ab50-4e65-be85-ee6e0d442729', '42ce84a3-e54f-415d-b707-a8a818c00a9c'), -- Nguyen Van A (Support)
+('40039cd5-dc03-48c4-95b8-75061f18a7f0', 'f8ed61b2-add4-4a7c-9d16-7a97fe78dc58', '42ce84a3-e54f-415d-b707-a8a818c00a9c'), -- Pham Van C (Manager)
+('9b7d22c3-bf43-4c9b-886b-7b67f6eg57b3', '093317a1-ab50-4e65-be85-ee6e0d442729', '42ce84a3-e54f-415d-b707-a8a818c00a9c'), -- Dang Thi G (Support)
 
--- Manager role for user Pham Van C
-('40039cd5-dc03-48c4-95b8-75061f18a7f0', 'f8ed61b2-add4-4a7c-9d16-7a97fe78dc58');
+-- Hanoi Branch Staffing
+('3f8a55f6-e076-4f2e-bb9d-ae90i9jk80e6', 'f8ed61b2-add4-4a7c-9d16-7a97fe78dc58', 'e58c1884-0ded-477d-a0e6-7a7cb8099771'), -- Le Thi J (Manager)
+('5f8c11a2-ae32-4b8a-995a-6a56e5df46a2', 'ac079c2d-da6c-4462-88d6-e025f58c2844', 'e58c1884-0ded-477d-a0e6-7a7cb8099771'), -- Le Van F (Staff)
+
+-- Da Nang Branch Staffing
+('1e6e33d4-cf54-4d0c-997c-8c78g7fh68c4', 'f8ed61b2-add4-4a7c-9d16-7a97fe78dc58', '6e2fcdd0-e38b-485a-a168-4836f9b02fbe'), -- Bui Van H (Manager)
+('2d7f44e5-df65-4e1d-aa8c-9d89h8ij79d5', 'ac079c2d-da6c-4462-88d6-e025f58c2844', '6e2fcdd0-e38b-485a-a168-4836f9b02fbe'), -- Tran Van I (Staff)
+
+-- Can Tho Branch Staffing
+('4a9b6607-f187-403f-cc0e-bf01j0kl91f7', 'f8ed61b2-add4-4a7c-9d16-7a97fe78dc58', '8ffb93d8-6e47-4114-a67e-b870919ab33b'), -- Phan Van K (Manager)
+('5b0c7718-0298-414g-dd1f-c012k1lm02g8', 'ac079c2d-da6c-4462-88d6-e025f58c2844', '8ffb93d8-6e47-4114-a67e-b870919ab33b'); -- Do Van L (Staff)
 
 -- ========================================
 -- SAMPLE DATA - vehicle_brands
@@ -196,25 +214,37 @@ INSERT INTO bookings (id, user_id, vehicle_id, pickup_branch_id, return_branch_i
 ('8e980655-1c5c-4dc2-9c0c-bb9226218476', '2de6c709-2b0e-4bd5-8ab5-8b28f75ada6e', '784e9a83-2aa7-488f-91bd-34c523b3abeb', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-01 08:00:00', '2024-02-03 08:00:00', NULL, 'pending', 0, 600000),
 
 -- Rejected booking
-('46a80466-6fce-4592-b44d-9d6df1d54fee', '00a58e19-6462-4045-93fe-870e604b9311', 'd1e3d3b6-31f1-4d52-9d42-bd5eda4d73a1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 11:00:00', '2024-01-18 18:00:00', NULL, 'rejected', 0, 450000);
+('46a80466-6fce-4592-b44d-9d6df1d54fee', '00a58e19-6462-4045-93fe-870e604b9311', 'd1e3d3b6-31f1-4d52-9d42-bd5eda4d73a1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 11:00:00', '2024-01-18 18:00:00', NULL, 'rejected', 0, 450000),
+
+-- ONE-WAY RENTAL: Pick up HCMC, Return Hanoi
+('one-way-booking-uuid-001', '00a58e19-6462-4045-93fe-870e604b9311', 'd5403559-06fe-4645-ad52-948e166e79c1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-10 08:00:00', '2024-02-12 08:00:00', '2024-02-12 10:30:00', 'completed', 1, 300000);
 
 -- ========================================
 -- SAMPLE DATA - payments (UUID primary keys)
 -- ========================================
-INSERT INTO payments (id, booking_id, amount, type, payment_method, status, transaction_code, idempotency_key, paid_at) VALUES
-('1be094c5-c813-4dd5-bfd0-da3725cf7548', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', 'IDEM-20240115-001', '2024-01-15 18:30:00'),
-('bea5e207-a453-4695-a2e9-d1a01da067d8', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 500000, 'rental', 'transfer', 'completed', 'TXN002', 'IDEM-20240117-001', '2024-01-17 10:00:00'),
-('b44d22f8-4ef6-4d2a-bac9-259f42afd195', '2e6d884a-1d71-4651-902e-361d3711b632', 1600000, 'rental', 'cash', 'completed', NULL, 'IDEM-20240120-001', '2024-01-20 11:00:00'),
-('5324521c-f023-4b82-b4f2-41520ce996f4', '6af7ca78-7529-4d8d-8e07-d825cec4ed3e', 300000, 'deposit', 'credit_card', 'pending', 'TXN003', 'IDEM-20240125-001', NULL),
-('7f2b7d60-746e-4ca5-8510-79e26a114781', '8e980655-1c5c-4dc2-9c0c-bb9226218476', 600000, 'rental', 'transfer', 'pending', NULL, 'IDEM-20240201-001', NULL),
-('4f4a17b3-f4c3-4834-9d21-dc2e1f1e5e85', '46a80466-6fce-4592-b44d-9d6df1d54fee', 450000, 'deposit', 'credit_card', 'refunded', 'TXN004', 'IDEM-20240118-001', '2024-01-18 20:00:00');
+INSERT INTO payments (id, booking_id, amount, type, payment_method, status, transaction_code, idempotency_key, branch_id, paid_at) VALUES
+('1be094c5-c813-4dd5-bfd0-da3725cf7548', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', 'IDEM-20240115-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-15 18:30:00'),
+('bea5e207-a453-4695-a2e9-d1a01da067d8', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 500000, 'rental', 'transfer', 'completed', 'TXN002', 'IDEM-20240117-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-17 10:00:00'),
+('b44d22f8-4ef6-4d2a-bac9-259f42afd195', '2e6d884a-1d71-4651-902e-361d3711b632', 1600000, 'rental', 'cash', 'completed', NULL, 'IDEM-20240120-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-20 11:00:00'),
+('5324521c-f023-4b82-b4f2-41520ce996f4', '6af7ca78-7529-4d8d-8e07-d825cec4ed3e', 300000, 'deposit', 'credit_card', 'pending', 'TXN003', 'IDEM-20240125-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', NULL),
+('7f2b7d60-746e-4ca5-8510-79e26a114781', '8e980655-1c5c-4dc2-9c0c-bb9226218476', 600000, 'rental', 'transfer', 'pending', NULL, 'IDEM-20240201-001', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', NULL),
+('4f4a17b3-f4c3-4834-9d21-dc2e1f1e5e85', '46a80466-6fce-4592-b44d-9d6df1d54fee', 450000, 'deposit', 'credit_card', 'refunded', 'TXN004', 'IDEM-20240118-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 20:00:00'),
+
+-- Payments for One-way rental
+-- 1. Initial rental paid at HCMC
+('pay-hcmc-rental-001', 'one-way-booking-uuid-001', 300000, 'rental', 'credit_card', 'completed', 'TXN-HCMC-01', 'IDEM-HCMC-01', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-02-10 08:15:00'),
+-- 2. Late fee paid at Hanoi on return
+('pay-hanoi-extra-001', 'one-way-booking-uuid-001', 150000, 'rental', 'cash', 'completed', 'TXN-HN-01', 'IDEM-HN-01', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-12 10:45:00');
 
 -- ========================================
 -- SAMPLE DATA - vehicle_returns (UUID primary keys)
 -- ========================================
-INSERT INTO vehicle_returns (id, booking_id, return_branch_id, condition_status, damage_description, extra_fee, return_odometer_reading, notes, returned_by) VALUES
-('bb320338-2250-4adc-80a5-d697e2894e89', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'good', NULL, 0, 5050, 'Vehicle returned in excellent condition', 'Staff A'),
-('1cda3da3-b534-45ed-8440-f86f36537672', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'fair', 'Minor scratches on side mirror and body', 200000, 8200, 'Customer liable for damage, fee applied', 'Staff B');
+INSERT INTO vehicle_returns (id, booking_id, return_branch_id, condition_status, damage_description, extra_fee, return_odometer_reading, notes, employee_id) VALUES
+('bb320338-2250-4adc-80a5-d697e2894e89', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'good', NULL, 0, 5050, 'Vehicle returned in excellent condition', '32481aa5-1c15-4efc-8e79-a947f44719f6'),
+('1cda3da3-b534-45ed-8440-f86f36537672', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', '42ce84a3-e54f-415d-b707-a8a818c00a9c', 'fair', 'Minor scratches on side mirror and body', 200000, 8200, 'Customer liable for damage, fee applied', '32481aa5-1c15-4efc-8e79-a947f44719f6'),
+
+-- Return record at Hanoi Branch for the HCMC pickup (Handled by Staff F at Hanoi)
+('return-hanoi-audit-001', 'one-way-booking-uuid-001', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', 'good', 'No damage, but returned 2.5 hours late', 150000, 5250, 'Late return fee collected', '5f8c11a2-ae32-4b8a-995a-6a56e5df46a2');
 
 -- ========================================
 -- SAMPLE DATA - conversations (UUID primary keys)
