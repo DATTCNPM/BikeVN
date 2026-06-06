@@ -1,19 +1,21 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { paymentApi } from "@repo/api";
-import { paymentsKeys } from "@repo/hooks";
+import { useMutation } from "@tanstack/react-query";
+
+import { paymentClientApi } from "@repo/api";
 
 export function useCreatePayment() {
-  const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (payload: any) => paymentApi.createPayment(payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
-      if (variables?.booking_id) {
-        queryClient.invalidateQueries({
-          queryKey: paymentsKeys.byBooking(variables.booking_id),
-        });
-      }
-    },
+    mutationFn: paymentClientApi.createPayment,
+  });
+}
+
+export function useConfirmPayment() {
+  return useMutation({
+    mutationFn: ({
+      id,
+      transactionCode,
+    }: {
+      id: string;
+      transactionCode: string;
+    }) => paymentClientApi.confirmPayment(id, transactionCode),
   });
 }
