@@ -3,20 +3,14 @@ import { MapPin } from "lucide-react";
 import type { Vehicle } from "@repo/types";
 import { useBranches } from "@repo/hooks";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "sonner";
+import { filterImagePrimary } from "@/utils/vehicle";
 
-import { useEffect } from "react";
 export default function PaymentVehicleCard({
   vehicle,
 }: {
   vehicle: Vehicle | null;
 }) {
-  const { data: branches = [], isLoading, error } = useBranches();
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to load branches. Please try again.");
-    }
-  }, [error]);
+  const { data: branches = [], isLoading } = useBranches();
 
   if (isLoading) {
     return (
@@ -27,13 +21,16 @@ export default function PaymentVehicleCard({
   }
 
   const nameBranches =
-    branches.find((branch) => branch.id === vehicle?.current_branch_id)?.name ||
+    branches.find((branch) => branch.id === vehicle?.currentBranchId)?.name ||
     "Unknown Branch";
   return (
     <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm">
       <div className="grid lg:grid-cols-[280px_1fr]">
         <img
-          src={vehicle?.image_url?.[0] || "/placeholder-vehicle.png"}
+          src={
+            filterImagePrimary(vehicle?.images || []) ||
+            "/placeholder-vehicle.png"
+          }
           alt={vehicle?.name}
           className="h-full min-h-[240px] w-full object-cover"
         />

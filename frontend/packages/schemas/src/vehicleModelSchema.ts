@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const vehicleModelSchema = z.object({
+export const vehicleModelCreationSchema = z.object({
   brandId: z.number({
     message: "Vui lòng chọn thương hiệu xe",
   }),
@@ -14,4 +14,9 @@ export const vehicleModelSchema = z.object({
   yearTo: z.number().optional(),
 });
 
-export type VehicleModelFormData = z.infer<typeof vehicleModelSchema>;
+export const vehicleModelUpdateSchema = vehicleModelCreationSchema;
+
+export const vehicleModelSchema = vehicleModelCreationSchema.extend({
+  id: z.number(),
+  createdAt: z.string().datetime(),
+});

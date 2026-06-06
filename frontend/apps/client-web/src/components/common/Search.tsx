@@ -9,13 +9,19 @@ import {
 export default function SearchComponent({
   search,
   results = 0,
+  onChange = () => {},
 }: {
   search: string;
   results: number;
+  onChange: (value: string) => void;
 }) {
   return (
     <InputGroup className="max-w-md">
-      <InputGroupInput placeholder="Search..." value={search} />
+      <InputGroupInput
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => onChange(e.target.value)}
+      />
       <InputGroupAddon>
         <Search />
       </InputGroupAddon>

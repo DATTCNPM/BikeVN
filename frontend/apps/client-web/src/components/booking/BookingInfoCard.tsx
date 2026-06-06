@@ -25,13 +25,13 @@ export default function BookingInfoCard({ booking }: Props) {
 
         <InfoItem label="Status" value={booking?.status || "N/A"} />
 
-        <InfoItem label="Created At" value={booking?.created_at || "N/A"} />
+        <InfoItem label="Created At" value={booking?.createdAt || "N/A"} />
 
         <InfoItem
           label="Total Price"
           value={
-            booking?.total_price
-              ? `${booking.total_price.toLocaleString("vi-VN")}đ`
+            booking?.totalPrice
+              ? `${booking.totalPrice.toLocaleString("vi-VN")}đ`
               : "N/A"
           }
         />

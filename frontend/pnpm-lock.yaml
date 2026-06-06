@@ -376,7 +376,14 @@ importers:
         specifier: workspace:*
         version: link:../types
 
-  packages/types: {}
+  packages/types:
+    dependencies:
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      zod:
+        specifier: ^4.4.1
+        version: 4.4.3
 
   packages/ui:
     dependencies:

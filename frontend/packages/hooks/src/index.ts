@@ -1,5 +1,4 @@
 export * from "./queries/queriesVehicle";
-export * from "./queries/queriesBookings";
 export * from "./queries/queriesPayment";
 export * from "./queries/queriesBranches";
 export * from "./queries/queriesReview";

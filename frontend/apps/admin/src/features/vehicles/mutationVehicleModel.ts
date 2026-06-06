@@ -3,13 +3,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { vehicleModelAdminApi } from "@repo/api";
 
 import { vehicleModelKeys } from "@repo/hooks";
-import type { VehicleModelUpdateRequest } from "@repo/types";
+import type {
+  VehicleModelCreationRequest,
+  VehicleModelUpdateRequest,
+} from "@repo/types";
 
 export const useCreateVehicleModel = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: vehicleModelAdminApi.create,
+    mutationFn: (data: VehicleModelCreationRequest) =>
+      vehicleModelAdminApi.create(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

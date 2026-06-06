@@ -1,6 +1,6 @@
 import type { Notification } from "@repo/types";
 
-import { notificationMockData } from "./data/notificationData";
+import { notificationMockData } from "../data/notificationData";
 
 export const notificationApi = {
   async getNotifications(): Promise<Notification[]> {

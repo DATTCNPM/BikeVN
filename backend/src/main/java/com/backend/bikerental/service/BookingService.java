@@ -7,12 +7,14 @@ import com.backend.bikerental.enums.BookingStatus;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.BookingMapper;
-import com.backend.bikerental.repository.*;
-
+import com.backend.bikerental.repository.BookingRepository;
+import com.backend.bikerental.repository.BranchRepository;
+import com.backend.bikerental.repository.UserRepository;
+import com.backend.bikerental.repository.VehicleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,8 @@ public class BookingService {
     VehicleRepository vehicleRepository;
     BranchRepository branchRepository;
 
+    BookingLockService bookingLockService;
+
     private static final int EXPIRE_MINUTES = 10;
     @Transactional
     public BookingResponse createBooking(BookingCreationRequest request) {
@@ -39,22 +43,28 @@ public class BookingService {
         validateRequest(request);
         validateExistence(request);
 
+        if (bookingRepository.existsApprovedBooking(request.getVehicleId(),
+                request.getStartTime(),
+                request.getEndTime()))
+        {
+            throw new AppException(ErrorCode.VEHICLE_ALREADY_LOCKED);
+        }
+
         bookingRepository.findFirstByUserIdAndStatus(request.getUserId(), BookingStatus.pending)
                 .ifPresent(old -> {
                     old.setStatus(BookingStatus.cancelled);
                     old.setUpdatedAt(LocalDateTime.now());
                     bookingRepository.save(old);
+                    bookingLockService.releaseLockByVehicleAndUser(request.getVehicleId(), request.getUserId());
                 });
+        //create soft lock
+        bookingLockService.createLock(request.getVehicleId(), request.getUserId(),
+                request.getStartTime(), request.getEndTime(), EXPIRE_MINUTES);
 
         Booking booking = bookingMapper.toBooking(request);
-
         enrichBooking(booking, request);
-        if (isTimeConflict(booking)) {
-            throw new AppException(ErrorCode.BOOKING_TIME_CONFLICT);
-        }
 
-        return bookingMapper.toBookingResponse(
-                bookingRepository.save(booking)
+        return bookingMapper.toBookingResponse(bookingRepository.save(booking)
         );
     }
     public BookingResponse getBooking(String id) {
@@ -62,6 +72,10 @@ public class BookingService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         return bookingMapper.toBookingResponse(booking);
+    }
+    public List<BookingResponse> getAllBooking()
+    {
+        return bookingMapper.toListBookingResponse(bookingRepository.findAll());
     }
     public List<BookingResponse> getBookingsByUser(String userId) {
         return bookingRepository.findByUserId(userId)
@@ -106,6 +120,7 @@ public class BookingService {
 
         bookingRepository.save(booking);
     }
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void expireBookings() {
 
@@ -121,15 +136,6 @@ public class BookingService {
         }
 
         bookingRepository.saveAll(bookings);
-    }
-    public boolean isTimeConflict(Booking booking) {
-        return bookingRepository.existsConflict(
-                booking.getVehicleId(),
-                booking.getId(),
-                booking.getStartTime(),
-                booking.getEndTime(),
-                LocalDateTime.now()
-        );
     }
     private void validateRequest(BookingCreationRequest request) {
 
@@ -165,7 +171,7 @@ public class BookingService {
         booking.setTotalPrice(calculatePrice(request));
         booking.setCreatedAt(now);
         booking.setUpdatedAt(now);
-        booking.setExpiresAt(now.plusMinutes(EXPIRE_MINUTES));
+        booking.setExpiresAt(now.plusMinutes(EXPIRE_MINUTES));// set time expire
     }
     private BigDecimal calculatePrice(BookingCreationRequest request) {
 

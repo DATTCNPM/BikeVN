@@ -3,6 +3,7 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { Card } from "@repo/ui/components/ui/card";
 import type { Vehicle, Booking, Branch } from "@repo/types";
+import { filterImagePrimary } from "@/utils/vehicle";
 
 type Props = {
   booking: Booking | null;
@@ -22,7 +23,10 @@ export default function BookingVehicleCard({
       <div className="grid lg:grid-cols-[320px_1fr]">
         <div className="h-full">
           <img
-            src={vehicle?.image_url?.[0]}
+            src={
+              filterImagePrimary(vehicle?.images || []) ||
+              "https://via.placeholder.com/320x240?text=No+Image"
+            }
             alt={vehicle?.name}
             className="h-full w-full object-cover"
           />
@@ -46,9 +50,9 @@ export default function BookingVehicleCard({
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Rental Time</p>
 
-                <p className="font-semibold">{booking?.start_date || "N/A"}</p>
+                <p className="font-semibold">{booking?.startTime || "N/A"}</p>
 
-                <p className="font-semibold">{booking?.end_date || "N/A"}</p>
+                <p className="font-semibold">{booking?.endTime || "N/A"}</p>
               </div>
             </div>
 

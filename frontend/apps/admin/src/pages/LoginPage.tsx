@@ -6,7 +6,7 @@ import { Eye, EyeOff, Home, ShieldCheck } from "lucide-react";
 
 // Schemas & Stores
 import { loginSchema } from "@repo/schemas";
-import type { LoginSchema } from "@repo/schemas";
+import type { LoginPayload } from "@repo/types";
 import { useAdminAuth } from "@/features/auth/useAdminAuth";
 
 // UI Components từ Monorepo Monolith
@@ -38,7 +38,7 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginSchema>({
+  } = useForm<LoginPayload>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -46,7 +46,7 @@ export default function Login() {
     },
   });
 
-  const onSubmit = async (data: LoginSchema) => {
+  const onSubmit = async (data: LoginPayload) => {
     const success = await loginAdmin(data);
     if (success) {
       navigate("/admin");

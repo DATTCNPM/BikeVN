@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { addDays, differenceInDays, format } from "date-fns";
+import {
+  addDays,
+  differenceInDays,
+  format,
+  startOfDay,
+  endOfDay,
+} from "date-fns";
 import { vi } from "date-fns/locale";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -7,9 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import type { DateRange } from "react-day-picker";
 
 import { Badge } from "@repo/ui/components/ui/badge";
-
 import { Button } from "@repo/ui/components/ui/button";
-
 import { Calendar } from "@repo/ui/components/ui/calendar";
 
 import {
@@ -40,10 +44,12 @@ import { Separator } from "@repo/ui/components/ui/separator";
 
 import { useCreateBooking } from "@/features/bookings/mutations";
 
-import type { BookingSchema } from "@/features/bookings/schemas";
-import { bookingSchema } from "@/features/bookings/schemas";
+import type { Branch, Vehicle } from "@repo/types";
 
-import type { Vehicle, Branch } from "@repo/types";
+import { bookingFormSchema } from "@repo/schemas";
+import type { BookingFormValues } from "@repo/types";
+
+import { useProfile } from "@/features/auth/useProfile";
 
 type Props = {
   vehicle: Vehicle;
@@ -53,10 +59,12 @@ type Props = {
 export default function BookingCard({ vehicle, branches }: Props) {
   const navigate = useNavigate();
 
+  const { data: profile } = useProfile();
+
   const { mutate: createBooking, isPending } = useCreateBooking();
 
-  const form = useForm<BookingSchema>({
-    resolver: zodResolver(bookingSchema),
+  const form = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingFormSchema),
 
     defaultValues: {
       pickupBranchId: "",
@@ -64,9 +72,8 @@ export default function BookingCard({ vehicle, branches }: Props) {
       returnBranchId: "",
 
       dateRange: {
-        from: new Date(),
-
-        to: addDays(new Date(), 2),
+        from: startOfDay(addDays(new Date(), 1)),
+        to: endOfDay(addDays(new Date(), 3)),
       },
     },
   });
@@ -78,26 +85,42 @@ export default function BookingCard({ vehicle, branches }: Props) {
   const endDate = dateRange?.to;
 
   const totalDays =
-    startDate && endDate ? differenceInDays(endDate, startDate) || 1 : 0;
+    startDate && endDate
+      ? Math.max(1, differenceInDays(endDate, startDate))
+      : 0;
 
-  const totalPrice = totalDays * (vehicle?.pricePerDay || 0);
+  const totalPrice = totalDays * (vehicle.pricePerDay ?? 0);
 
-  const onSubmit = (values: BookingSchema) => {
-    createBooking({
-      user_id: "u1", // mock user
-      vehicle_id: vehicle.id,
-      pickup_branch_id: values.pickupBranchId,
-      return_branch_id: values.returnBranchId,
-      start_date: values.dateRange.from.toISOString(),
-      end_date: values.dateRange.to.toISOString(),
-      total_price: totalPrice,
-    });
+  if (profile?.id === undefined) {
+    return null;
+  }
 
-    navigate("/payment/booking-1");
+  const onSubmit = (values: BookingFormValues) => {
+    createBooking(
+      {
+        userId: profile.id, // TODO: lấy từ auth
+
+        vehicleId: vehicle.id,
+
+        pickupBranchId: values.pickupBranchId,
+
+        returnBranchId: values.returnBranchId,
+
+        startTime: format(values.dateRange.from, "yyyy-MM-dd'T'HH:mm:ss"),
+
+        endTime: format(values.dateRange.to, "yyyy-MM-dd'T'HH:mm:ss"),
+      },
+      {
+        onSuccess: (booking) => {
+          navigate(`/payment/${booking.id}`);
+        },
+      },
+    );
   };
 
-  const branchOptions = branches?.map((branch) => ({
+  const branchOptions = branches.map((branch) => ({
     label: branch.name,
+
     value: branch.id,
   }));
 
@@ -109,7 +132,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
             <p className="text-sm text-muted-foreground">Giá thuê</p>
 
             <CardTitle className="text-3xl font-bold">
-              {vehicle?.pricePerDay?.toLocaleString("vi-VN") || "0"}đ
+              {vehicle.pricePerDay.toLocaleString("vi-VN")}đ
               <span className="ml-1 text-base font-normal text-muted-foreground">
                 / ngày
               </span>
@@ -136,10 +159,14 @@ export default function BookingCard({ vehicle, branches }: Props) {
                         mode="range"
                         numberOfMonths={2}
                         selected={field.value as DateRange}
-                        onSelect={(value) => field.onChange(value)}
-                        defaultMonth={field.value.from}
+                        onSelect={(value) => {
+                          if (value?.from && value?.to) {
+                            field.onChange(value);
+                          }
+                        }}
+                        defaultMonth={field.value?.from}
                         disabled={(date) =>
-                          date < new Date(new Date().setHours(0, 0, 0, 0))
+                          date <= new Date(new Date().setHours(0, 0, 0, 0))
                         }
                         className="w-full"
                       />
@@ -195,7 +222,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
                       </SelectTrigger>
 
                       <SelectContent>
-                        {branchOptions?.map((branch) => (
+                        {branchOptions.map((branch) => (
                           <SelectItem key={branch.value} value={branch.value}>
                             {branch.label}
                           </SelectItem>
@@ -227,7 +254,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
                       </SelectTrigger>
 
                       <SelectContent>
-                        {branchOptions?.map((branch) => (
+                        {branchOptions.map((branch) => (
                           <SelectItem key={branch.value} value={branch.value}>
                             {branch.label}
                           </SelectItem>
@@ -256,9 +283,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Giá mỗi ngày</span>
 
-              <span>
-                {vehicle?.pricePerDay?.toLocaleString("vi-VN") || "0"}đ
-              </span>
+              <span>{vehicle.pricePerDay.toLocaleString("vi-VN")}đ</span>
             </div>
 
             <Separator />

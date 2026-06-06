@@ -21,8 +21,8 @@ import { Moon, Sun, Lock, Trash2 } from "lucide-react";
 import AlertDialog from "@/components/common/AlertDialog";
 import { toast } from "sonner";
 
-import { updatePasswordSchema } from "@/features/auth/schemas";
-import type { UpdatePasswordSchema } from "@/features/auth/schemas";
+import { updatePasswordSchema } from "@repo/schemas";
+import type { UpdatePasswordPayload } from "@repo/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTheme } from "next-themes";
@@ -34,9 +34,9 @@ export default function SettingsSection() {
   const { theme, setTheme } = useTheme();
   const { data: profile } = useProfile();
 
-  const { mutate: deleteUser, isPending } = useDeleteUser();
+  const { mutate: deleteUser } = useDeleteUser();
 
-  const methods = useForm<UpdatePasswordSchema>({
+  const methods = useForm<UpdatePasswordPayload>({
     resolver: zodResolver(updatePasswordSchema),
   });
   const {
@@ -44,7 +44,7 @@ export default function SettingsSection() {
     handleSubmit,
     formState: { errors },
   } = methods;
-  const onSubmit = (_data: UpdatePasswordSchema) => {
+  const onSubmit = (_data: UpdatePasswordPayload) => {
     toast.error("Tính năng đổi mật khẩu hiện chưa được triển khai.");
   };
 
