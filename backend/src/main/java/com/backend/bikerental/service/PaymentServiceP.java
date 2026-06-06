@@ -14,10 +14,13 @@ import com.backend.bikerental.repository.PaymentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -140,6 +143,26 @@ public class PaymentServiceP {
 
         paymentRepository.saveAll(payments);
     }
+
+   public Page<PaymentResponse> getAllPayments(PaymentStatus status, Pageable pageable)
+   {
+       Page<Payment> paymentPage;
+       if(status != null)
+       {
+           paymentPage = paymentRepository.findByStatus(status, pageable);
+       }
+       else {
+           paymentPage = paymentRepository.findAll(pageable);
+       }
+
+       return paymentPage.map(payment -> {
+           Booking booking = bookingRepository.findById(payment.getBookingId())
+                   .orElse(new Booking());
+           return buildResponse(payment, booking);
+       });
+
+   }
+
     public PaymentResponse getPayment(String id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
@@ -152,6 +175,57 @@ public class PaymentServiceP {
     private boolean isExpired(Payment payment) {
         return payment.getCreatedAt()
                 .isBefore(LocalDateTime.now().minusMinutes(EXPIRE_MINUTES));
+    }
+    //xac nhan thanh toan thu cong
+    public PaymentResponse approvePaymentManually(String paymentId, String adminId)
+    {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(()-> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+        if(payment.getStatus() == PaymentStatus.completed)
+        {
+            throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+
+        Booking booking = bookingRepository.findById(payment.getBookingId())
+                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        payment.setStatus(PaymentStatus.completed);
+        payment.setTransactionCode("MANUAL_" + adminId + "_" + System.currentTimeMillis());//exp
+        payment.setPaidAt(LocalDateTime.now());
+        payment.setUpdatedAt(LocalDateTime.now());
+
+        booking.setStatus(BookingStatus.approved);
+
+        paymentRepository.save(payment);
+        bookingRepository.save(booking);
+
+        bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
+
+        return buildResponse(payment, booking);
+    }
+
+    public PaymentResponse cancelPayment(String paymentId, String reason)
+    {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(()-> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        if(payment.getStatus() == PaymentStatus.pending)
+        {
+            payment.setStatus(PaymentStatus.failed);
+        }
+        payment.setUpdatedAt(LocalDateTime.now());
+
+        Booking booking = bookingRepository.findById(payment.getBookingId())
+                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        booking.setStatus(BookingStatus.rejected);
+        booking.setUpdatedAt(LocalDateTime.now());
+
+        paymentRepository.save(payment);
+        bookingRepository.save(booking);
+
+        bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
+        return buildResponse(payment, booking);
     }
 
     private PaymentResponse buildResponse(Payment payment, Booking booking) {

@@ -39,8 +39,6 @@ public class Booking {
     BigDecimal totalPrice;
     @Enumerated(value = EnumType.STRING)
     BookingStatus status;
-    @Version
-    int version;
     @CreationTimestamp
     @Column(updatable = false)
     LocalDateTime createdAt;
