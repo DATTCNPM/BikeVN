@@ -46,7 +46,8 @@ import { useCreateBooking } from "@/features/bookings/mutations";
 
 import type { Branch, Vehicle } from "@repo/types";
 
-import { bookingFormSchema, type BookingFormValues } from "@repo/schemas";
+import { bookingFormSchema } from "@repo/schemas";
+import type { BookingFormValues } from "@repo/types";
 
 import { useProfile } from "@/features/auth/useProfile";
 

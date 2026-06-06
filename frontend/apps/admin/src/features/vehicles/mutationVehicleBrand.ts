@@ -3,13 +3,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { vehicleBrandAdminApi } from "@repo/api";
 
 import { vehicleBrandKeys } from "@repo/hooks";
-import type { VehicleBrandUpdateRequest } from "@repo/types";
+import type {
+  VehicleBrandCreationRequest,
+  VehicleBrandUpdateRequest,
+} from "@repo/types";
 
 export const useCreateVehicleBrand = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: vehicleBrandAdminApi.create,
+    mutationFn: (data: VehicleBrandCreationRequest) =>
+      vehicleBrandAdminApi.create(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -19,17 +23,17 @@ export const useCreateVehicleBrand = () => {
   });
 };
 
-interface UpdatePayload {
-  id: number;
-  data: VehicleBrandUpdateRequest;
-}
-
 export const useUpdateVehicleBrand = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: UpdatePayload) =>
-      vehicleBrandAdminApi.update(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: VehicleBrandUpdateRequest;
+    }) => vehicleBrandAdminApi.update(id, data),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

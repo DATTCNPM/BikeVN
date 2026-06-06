@@ -2,17 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { vehicleAdminApi } from "@repo/api";
 
-import type {
-  VehicleCreationFormValues,
-  VehicleUpdateFormValues,
-} from "@repo/schemas";
+import type { VehicleCreationRequest, VehicleUpdateRequest } from "@repo/types";
 import { vehiclesKeys } from "@repo/hooks";
 
 export function useCreateVehicle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: VehicleCreationFormValues) => {
+    mutationFn: (payload: VehicleCreationRequest) => {
       console.log("Creating vehicle with payload:", payload);
       return vehicleAdminApi.createVehicle(payload);
     },
@@ -31,7 +28,7 @@ export function useUpdateVehicle() {
       payload,
     }: {
       id: string;
-      payload: VehicleUpdateFormValues;
+      payload: VehicleUpdateRequest;
     }) => {
       console.log("Updating vehicle with id:", id, "and payload:", payload);
       return vehicleAdminApi.updateVehicle(id, payload);

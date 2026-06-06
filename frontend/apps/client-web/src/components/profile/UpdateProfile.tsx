@@ -1,6 +1,6 @@
 import FormDialog from "../common/FormDialog";
 import { updateProfileSchema } from "@repo/schemas";
-import type { UpdateProfileSchema } from "@repo/schemas";
+import type { UpdateProfilePayload } from "@repo/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Input } from "@repo/ui/components/ui/input";
@@ -29,7 +29,7 @@ export default function UpdateProfile({
 }: UpdateProfileProps) {
   const [open, setOpen] = useState(false);
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
-  const methods = useForm<UpdateProfileSchema>({
+  const methods = useForm<UpdateProfilePayload>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       name: "",
@@ -55,7 +55,7 @@ export default function UpdateProfile({
       });
     }
   }, [userProfile, reset]);
-  const onSubmit = (data: UpdateProfileSchema) => {
+  const onSubmit = (data: UpdateProfilePayload) => {
     console.log("Submitting update profile with data:", data);
     updateProfile(
       { userId: userProfile?.id || "", payload: data },

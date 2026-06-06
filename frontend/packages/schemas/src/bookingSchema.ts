@@ -1,33 +1,15 @@
 import { z } from "zod";
 
-type BookingStatus =
-  | "pending"
-  | "approved"
-  | "rejected"
-  | "completed"
-  | "cancelled";
+// Định nghĩa các trạng thái của booking
+export const bookingStatusSchema = z.enum([
+  "pending",
+  "approved",
+  "rejected",
+  "completed",
+  "cancelled",
+]);
 
-export const bookingSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  vehicleId: z.string(),
-  pickupBranchId: z.string(),
-  returnBranchId: z.string(),
-
-  startTime: z.string().datetime(),
-  endTime: z.string().datetime(),
-
-  actualReturnTime: z.string().datetime().nullable().optional(),
-
-  totalPrice: z.number().nullable().optional(),
-
-  status: z.string().refine((v): v is BookingStatus => !!v),
-
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  expiresAt: z.string().datetime(),
-});
-
+// Định nghĩa schema cho việc tạo booking mới
 export const bookingCreationSchema = z.object({
   userId: z.string().min(1),
   vehicleId: z.string().min(1),
@@ -38,20 +20,29 @@ export const bookingCreationSchema = z.object({
   endTime: z.string().datetime(),
 });
 
-export const bookingFormSchema = z.object({
-  pickupBranchId: z.string().min(1, "Vui lòng chọn nơi nhận xe"),
-
-  returnBranchId: z.string().min(1, "Vui lòng chọn nơi trả xe"),
-
-  dateRange: z.object({
-    from: z.date({
-      message: "Vui lòng chọn ngày nhận xe",
-    }),
-
-    to: z.date({
-      message: "Vui lòng chọn ngày trả xe",
-    }),
-  }),
+// Định nghĩa schema cho booking hoàn chỉnh, bao gồm cả các trường tự động sinh ra
+export const bookingSchema = bookingCreationSchema.extend({
+  id: z.string(),
+  actualReturnTime: z.string().datetime().nullable().optional(),
+  totalPrice: z.number().nullable().optional(),
+  status: bookingStatusSchema,
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  expiresAt: z.string().datetime(),
 });
 
-export type BookingFormValues = z.infer<typeof bookingFormSchema>;
+// Tạo kiểu TypeScript từ schema
+export const bookingFormSchema = z.object({
+  pickupBranchId: z.string().min(1),
+  returnBranchId: z.string().min(1),
+
+  dateRange: z
+    .object({
+      from: z.date(),
+      to: z.date(),
+    })
+    .refine((data) => data.to > data.from, {
+      message: "Ngày trả xe phải sau ngày nhận xe",
+      path: ["to"],
+    }),
+});

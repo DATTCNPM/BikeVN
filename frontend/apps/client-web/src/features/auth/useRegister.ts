@@ -1,14 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { authApi } from "@repo/api";
-
-interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-  phone?: string;
-  cccdNumber?: string;
-}
+import type { RegisterPayload } from "@repo/types";
 
 export const useRegister = () => {
   return useMutation({
@@ -16,9 +9,9 @@ export const useRegister = () => {
       const payload = {
         name: userData.name,
         email: userData.email,
-        passwordHash: userData.password,
-        phone: userData.phone || undefined,
-        cccdNumber: userData.cccdNumber || undefined,
+        password: userData.password,
+        phone: userData.phone,
+        cccdNumber: userData.cccdNumber,
       };
 
       const response = await authApi.register(payload);

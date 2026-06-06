@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const vehicleImageSchema = z.object({
+export const vehicleImageCreationSchema = z.object({
   file: z.instanceof(File),
 
   altText: z.string().optional(),
@@ -10,4 +10,17 @@ export const vehicleImageSchema = z.object({
   isPrimary: z.boolean().optional(),
 });
 
-export type VehicleImageFormData = z.infer<typeof vehicleImageSchema>;
+export const vehicleImageUpdateSchema = vehicleImageCreationSchema.partial();
+
+export const vehicleImageSchema = vehicleImageCreationSchema
+  .omit({
+    file: true,
+  })
+  .extend({
+    id: z.string(),
+    vehicleId: z.string(),
+    imageUrl: z.string(),
+    displayOrder: z.number(),
+    isPrimary: z.boolean(),
+    createdAt: z.string().datetime(),
+  });

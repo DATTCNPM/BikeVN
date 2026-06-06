@@ -4,6 +4,11 @@ import { vehicleImageAdminApi } from "@repo/api";
 
 import { vehicleImageKeys } from "@repo/hooks";
 
+import type {
+  VehicleImageCreatePayload,
+  VehicleImageUpdatePayload,
+} from "@repo/types";
+
 export function useUploadVehicleImage() {
   const queryClient = useQueryClient();
 
@@ -14,7 +19,7 @@ export function useUploadVehicleImage() {
     }: {
       vehicleId: string;
 
-      payload: any;
+      payload: VehicleImageCreatePayload;
     }) => vehicleImageAdminApi.uploadImage(vehicleId, payload),
 
     onSuccess: (_, variables) => {
@@ -38,7 +43,7 @@ export function useUpdateVehicleImage() {
 
       imageId: string;
 
-      payload: any;
+      payload: VehicleImageUpdatePayload;
     }) => vehicleImageAdminApi.updateImage(vehicleId, imageId, payload),
 
     onSuccess: (_, variables) => {

@@ -1,8 +1,8 @@
 import AuthCard from "@/components/auth/AuthCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "@/features/auth/schemas";
-import type { RegisterSchema } from "@/features/auth/schemas";
+import { registerSchema } from "@repo/schemas";
+import type { RegisterPayload } from "@repo/types";
 import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
@@ -28,7 +28,7 @@ export default function Register() {
     isPending: loading,
   } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
-  const methods = useForm<RegisterSchema>({
+  const methods = useForm<RegisterPayload>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -42,7 +42,7 @@ export default function Register() {
     handleSubmit,
     formState: { errors },
   } = methods;
-  const onSubmit = async (data: RegisterSchema) => {
+  const onSubmit = async (data: RegisterPayload) => {
     console.log("Submitting registration data:", data);
     const success = await registerUser(data);
     if (success) {

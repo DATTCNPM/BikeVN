@@ -23,13 +23,13 @@ import { List, MapPin } from "lucide-react";
 
 import { useVehicles, useBranches } from "@repo/hooks";
 import { filterImagePrimary } from "@/utils/vehicle";
-
+import type { VehicleType } from "@repo/types";
 export default function HomePage() {
   const [search, setSearch] = useState("");
 
   const [branchId, setBranchId] = useState<string | undefined>();
 
-  const [vehicleType, setVehicleType] = useState<string | undefined>();
+  const [vehicleType, setVehicleType] = useState<VehicleType | undefined>();
 
   const [minPrice, setMinPrice] = useState<number | undefined>();
 
@@ -77,7 +77,7 @@ export default function HomePage() {
       name: vehicle.name,
       vehicle_type: vehicle.vehicleType,
       price: vehicle.pricePerDay,
-      image: filterImagePrimary(vehicle.images),
+      image: filterImagePrimary(vehicle?.images || []),
       location:
         branches.find((branch) => branch.id === vehicle.currentBranchId)
           ?.name || "Unknown",

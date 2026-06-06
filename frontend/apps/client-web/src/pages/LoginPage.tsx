@@ -1,8 +1,8 @@
 import AuthCard from "@/components/auth/AuthCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@/features/auth/schemas";
-import type { LoginSchema } from "@/features/auth/schemas";
+import { loginSchema } from "@repo/schemas";
+import type { LoginPayload } from "@repo/types";
 import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
@@ -27,7 +27,7 @@ export default function Login() {
   const { setIsLogin } = useAuthStore();
 
   const [showPassword, setShowPassword] = useState(false);
-  const methods = useForm<LoginSchema>({
+  const methods = useForm<LoginPayload>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -39,7 +39,7 @@ export default function Login() {
     handleSubmit,
     formState: { errors },
   } = methods;
-  const onSubmit = async (data: LoginSchema) => {
+  const onSubmit = async (data: LoginPayload) => {
     const success = await login(data);
     if (success) {
       setIsLogin(true);

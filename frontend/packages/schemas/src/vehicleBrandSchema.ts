@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const vehicleBrandSchema = z.object({
+export const vehicleBrandCreationSchema = z.object({
   name: z
     .string()
     .min(1, "Tên hãng xe không được để trống")
@@ -12,4 +12,9 @@ export const vehicleBrandSchema = z.object({
     .max(100, "Quốc gia quá dài"),
 });
 
-export type VehicleBrandFormData = z.infer<typeof vehicleBrandSchema>;
+export const vehicleBrandUpdateSchema = vehicleBrandCreationSchema;
+
+export const vehicleBrandSchema = vehicleBrandCreationSchema.extend({
+  id: z.number(),
+  createdAt: z.string().datetime(),
+});
