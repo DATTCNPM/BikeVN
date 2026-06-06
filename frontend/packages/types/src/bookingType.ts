@@ -4,6 +4,7 @@ import {
   bookingCreationSchema,
   bookingStatusSchema,
   bookingFormSchema,
+  bookingUpdateSchema,
 } from "@repo/schemas";
 
 // Kiểu TypeScript cho Booking, được tạo từ bookingSchema
@@ -14,3 +15,6 @@ export type BookingStatus = z.infer<typeof bookingStatusSchema>;
 export type BookingFormValues = z.infer<typeof bookingFormSchema>;
 // Tạo kiểu TypeScript cho payload khi tạo booking mới
 export type BookingCreationPayload = z.infer<typeof bookingCreationSchema>;
+
+// Tạo kiểu TypeScript cho payload khi cập nhật booking
+export type UpdateBookingPayload = z.infer<typeof bookingUpdateSchema>;

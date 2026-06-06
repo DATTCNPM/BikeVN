@@ -20,6 +20,14 @@ export const bookingCreationSchema = z.object({
   endTime: z.string().datetime(),
 });
 
+export const bookingUpdateSchema = z.object({
+  pickupBranchId: z.string().min(1).optional(),
+  returnBranchId: z.string().min(1).optional(),
+  startTime: z.string().datetime().optional(),
+  endTime: z.string().datetime().optional(),
+  status: bookingStatusSchema.optional(),
+});
+
 // Định nghĩa schema cho booking hoàn chỉnh, bao gồm cả các trường tự động sinh ra
 export const bookingSchema = bookingCreationSchema.extend({
   id: z.string(),

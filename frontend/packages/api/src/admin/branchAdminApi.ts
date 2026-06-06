@@ -12,7 +12,6 @@ export const branchAdminApi = {
       "/branch",
       payload,
     );
-    console.log("Created branch with response:", data);
 
     return {
       message: "Tạo chi nhánh thành công",

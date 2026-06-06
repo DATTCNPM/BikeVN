@@ -108,6 +108,7 @@ export default function HomePage() {
 
   const priceRanges = ["Dưới 100k", "100k - 200k", "Trên 200k"];
 
+  console.log("data", vehicles);
   console.log("vehicles", vehicleListData);
 
   return (
