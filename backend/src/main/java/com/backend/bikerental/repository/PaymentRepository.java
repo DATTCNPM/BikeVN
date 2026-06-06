@@ -3,6 +3,8 @@ package com.backend.bikerental.repository;
 import com.backend.bikerental.entity.Payment;
 import com.backend.bikerental.enums.PaymentStatus;
 import com.backend.bikerental.enums.PaymentType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -232,4 +234,6 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
             String bookingId,
             PaymentStatus status
     );
+
+    Page<Payment> findByStatus(PaymentStatus status, Pageable pageable);
 }
