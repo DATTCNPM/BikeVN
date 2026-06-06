@@ -180,12 +180,16 @@
 **Fields**:
 - `user_id` - VARCHAR(36) NOT NULL COMMENT 'Foreign key to users'
 - `role_id` - VARCHAR(36) NOT NULL COMMENT 'Foreign key to roles'
+- `branch_id` - VARCHAR(36) COMMENT 'Branch where this role applies (FK)'
 
 **Indexes**:
 - PRIMARY KEY (user_id, role_id)
 - FOREIGN KEY fk_user (user_id) REFERENCES users(id) ON DELETE CASCADE
 - FOREIGN KEY fk_role (role_id) REFERENCES roles(id) ON DELETE CASCADE
-- KEY fk_role (role_id)
+- FOREIGN KEY fk_ur_branch (branch_id) REFERENCES branches(id) ON DELETE SET NULL
+- INDEX idx_user (user_id)
+- INDEX idx_role (role_id)
+- INDEX idx_branch_id (branch_id)
 
 **Constraints**:
 - Composite PK prevents duplicate user-role assignments
@@ -194,6 +198,7 @@
 **Relationships**:
 - (N) users_roles → (1) users
 - (N) users_roles → (1) roles
+- (N) users_roles → (1) branches
 
 ---
 
@@ -491,6 +496,7 @@ rejected / cancelled → (final)
 - `status` - ENUM('pending', 'completed', 'failed', 'refunded') DEFAULT 'pending'
 - `transaction_code` - VARCHAR(100) UNIQUE COMMENT 'External gateway transaction ID'
 - `idempotency_key` - VARCHAR(100) UNIQUE COMMENT 'Idempotency key for duplicate request prevention'
+- `branch_id` - VARCHAR(36) NOT NULL COMMENT 'Branch that processed this payment (FK)'
 - `paid_at` - DATETIME COMMENT 'When payment was processed'
 - `created_at` - DATETIME DEFAULT CURRENT_TIMESTAMP
 - `updated_at` - DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -500,17 +506,19 @@ rejected / cancelled → (final)
 **Indexes**:
 - PRIMARY KEY (id)
 - FOREIGN KEY fk_payment_booking (booking_id) REFERENCES bookings(id) ON DELETE RESTRICT
+- FOREIGN KEY fk_payment_branch (branch_id) REFERENCES branches(id) ON DELETE RESTRICT
 - UNIQUE KEY unique_transaction_code (transaction_code) **[prevent duplicate transactions]**
 - UNIQUE KEY unique_booking_type (booking_id, type) **[one payment type per booking]**
 - UNIQUE KEY unique_idempotency_key (idempotency_key) **[prevent duplicate API requests]**
 - INDEX idx_booking_id (booking_id)
+- INDEX idx_branch_id (branch_id)
 - INDEX idx_status (status)
 - INDEX idx_type (type)
 - INDEX idx_created_at (created_at)
-- INDEX idx_booking_status_type (booking_id, status, type) **[payment status checks]**
 
 **Relationships**:
 - (N) payments → (1) bookings
+- (N) payments → (1) branches
 
 ---
 
@@ -528,7 +536,7 @@ rejected / cancelled → (final)
 - `images` - JSON COMMENT 'Return condition photos (URL array)'
 - `return_odometer_reading` - INT COMMENT 'Odometer reading at return'
 - `notes` - TEXT COMMENT 'Additional notes about the return process'
-- `returned_by` - VARCHAR(255) COMMENT 'Staff member who processed the return'
+- `employee_id` - VARCHAR(36) NOT NULL COMMENT 'Staff handled return (FK to users)'
 - `created_at` - DATETIME DEFAULT CURRENT_TIMESTAMP
 - `updated_at` - DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
@@ -538,6 +546,7 @@ rejected / cancelled → (final)
 - PRIMARY KEY (id)
 - FOREIGN KEY fk_return_booking (booking_id) REFERENCES bookings(id) ON DELETE RESTRICT
 - FOREIGN KEY fk_return_branch (return_branch_id) REFERENCES branches(id) ON DELETE RESTRICT
+- FOREIGN KEY fk_return_employee (employee_id) REFERENCES users(id) ON DELETE RESTRICT
 - UNIQUE KEY unique_booking_return (booking_id) **[only one return per booking]**
 - INDEX idx_booking (booking_id)
 - INDEX idx_return_branch (return_branch_id)
@@ -546,8 +555,9 @@ rejected / cancelled → (final)
 - INDEX idx_booking_condition (booking_id, condition_status) **[damage assessment queries]**
 
 **Relationships**:
-- (N) vehicle_returns → (1) bookings
+- (1) vehicle_returns → (1) bookings (unique)
 - (N) vehicle_returns → (1) branches
+- (N) vehicle_returns → (1) users (staff)
 
 ---
 
@@ -678,17 +688,11 @@ users (1) ←────────── (N) users_roles
 branches (1) ←────────── (N) vehicles
          ├─── (1) ←─── (N) bookings (pickup)
          ├─── (1) ←─── (N) bookings (return)
-         └─── (1) ←─── (N) vehicle_returns
+         ├─── (1) ←─── (N) vehicle_returns
+         └─── (1) ←─── (N) users_roles
 
-vehicle_brands (1) ←────────── (N) vehicle_models
-               └─── (1) ←─── (N) vehicles (brand_id)
-
-vehicle_models (1) ←────────── (N) vehicles
-
-vehicles (1) ←────────── (N) vehicle_images
-         ├─── (1) ←─── (N) booking_locks
-         ├─── (1) ←─── (N) bookings
-         └─── (1) ←─── (N) reviews
+roles (1) ←────────── (N) users_roles
+      └─── (1) ←─── (N) role_permissions
 
 bookings (1) ←────────── (N) payments
          ├─── (1:1) ←── (1) vehicle_returns (unique)
@@ -791,6 +795,18 @@ conversations (1) ←────────── (N) conversation_members
 
 ---
 
+## 🛡️ SECURE LOGICAL LAYER (Views)
+
+Để đảm bảo bảo mật và tránh nhầm lẫn dữ liệu giữa các loại đối tượng (Khách hàng/Nhân viên) mà không làm thay đổi cấu trúc bảng gốc, dự án sử dụng các **Business Views**:
+
+1. **`view_customers`**: Lấy thông tin khách hàng (Đã lọc theo Role).
+2. **`view_staff`**: Lấy thông tin nhân viên & quản lý (Đã JOIN sẵn chi nhánh).
+3. **`view_managers`**: Chỉ lấy thông tin quản lý chi nhánh.
+
+> **💡 Best Practice**: Khuyến khích lập trình viên truy vấn qua các View này thay vì query trực tiếp bảng `users` để đảm bảo tính chính xác 100%.
+
+---
+
 ## 🎯 CRITICAL BUSINESS LOGIC QUERIES
 
 ### 1. Check Vehicle Availability (with Lock Check)
@@ -875,6 +891,15 @@ DELETE FROM invalidate_token WHERE expiry_time < NOW();
 UPDATE booking_locks SET status = 'expired'
 WHERE status = 'active' AND lock_expires_at < NOW();
 ```
+
+---
+
+### 3. Financial Handling for One-way Rentals (Pick A - Return B)
+
+Trường hợp khách hàng lấy xe tại **Chi nhánh A** và trả tại **Chi nhánh B**:
+- **Thanh toánRental Fee**: Gán cho **Chi nhánh A** (người xuất xe).
+- **Thanh toán Phụ phí**: Các khoản phí phát sinh lúc trả xe (hư hỏng, trễ hạn) được thực hiện tại **Chi nhánh B** (người nhận xe).
+- **Trình tự**: `view_staff` tại Chi nhánh B sẽ dùng thông tin từ `bookings` để đối soát và tạo bản ghi `payments` mới gắn với `branch_id` của mình.
 
 ---
 
