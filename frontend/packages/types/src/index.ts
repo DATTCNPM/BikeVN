@@ -1,4 +1,3 @@
-export * from "./payment";
 export * from "./vehicle";
 export * from "./user";
 export * from "./auth";
@@ -12,3 +11,4 @@ export * from "./vehicleBrand";
 export * from "./vehicleModel";
 export * from "./vehicleImage";
 export * from "./booking";
+export * from "./paymentType";

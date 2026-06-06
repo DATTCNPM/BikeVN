@@ -3,10 +3,7 @@ import { MapPin } from "lucide-react";
 import type { Vehicle } from "@repo/types";
 import { useBranches } from "@repo/hooks";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "sonner";
-
-import { useEffect } from "react";
-import {filterImagePrimary} from "@/utils/vehicle";
+import { filterImagePrimary } from "@/utils/vehicle";
 
 export default function PaymentVehicleCard({
   vehicle,
@@ -30,7 +27,10 @@ export default function PaymentVehicleCard({
     <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm">
       <div className="grid lg:grid-cols-[280px_1fr]">
         <img
-          src={filterImagePrimary(vehicle?.images || []) || "/placeholder-vehicle.png"}
+          src={
+            filterImagePrimary(vehicle?.images || []) ||
+            "/placeholder-vehicle.png"
+          }
           alt={vehicle?.name}
           className="h-full min-h-[240px] w-full object-cover"
         />

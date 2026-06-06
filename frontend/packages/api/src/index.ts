@@ -1,7 +1,8 @@
 export * from "./client/bookingClientApi";
 export * from "./client/authClientApi";
+export * from "./client/paymentClientApi";
 
-export * from "./common/paymentApi";
+export * from "./common/paymentPublicApi";
 export * from "./common/chatApi";
 export * from "./common/reviewApi";
 export * from "./admin/dashboardApi";
@@ -25,3 +26,4 @@ export * from "./common/authApi";
 export * from "./common/vehicleModelPublicApi";
 export * from "./common/vehicleImagePublicApi";
 export * from "./common/bookingPublicApi";
+export * from "./common/paymentPublicApi";

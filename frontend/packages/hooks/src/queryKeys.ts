@@ -20,7 +20,9 @@ export const bookingsKeys = {
 
 export const paymentsKeys = {
   all: ["payments"] as const,
+
   detail: (id: string) => ["payment", id] as const,
+
   byBooking: (bookingId: string) => ["payments", "booking", bookingId] as const,
 };
 

@@ -6,43 +6,24 @@ import PaymentPolicyCard from "@/components/payment/PaymentPolicyCard";
 import PaymentSummaryCard from "@/components/payment/PaymentSummaryCard";
 import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "sonner";
 
 import { useProfile } from "@/features/auth/useProfile";
 import { useBooking } from "@/features/bookings/queries";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useVehicle } from "@repo/hooks";
 import { useParams } from "react-router-dom";
-import type { PaymentMethod } from "node_modules/@repo/types/src/payment";
+import type { PaymentMethod } from "@repo/types";
 
 export default function PaymentPage() {
-  const {
-    data: userProfile,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useProfile();
+  const { data: userProfile, isLoading: profileLoading } = useProfile();
   const { id } = useParams();
-  const { data: booking = null, isLoading, error } = useBooking(id!);
-  const {
-    data: vehicle = null,
-    isLoading: vehicleLoading,
-    error: vehicleError,
-  } = useVehicle(booking?.vehicleId || "");
+  const { data: booking = null, isLoading } = useBooking(id!);
+  const { data: vehicle = null, isLoading: vehicleLoading } = useVehicle(
+    booking?.vehicleId || "",
+  );
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("vnpay");
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Failed to load booking details. Please try again.");
-    }
-    if (vehicleError) {
-      toast.error("Failed to load vehicle details. Please try again.");
-    }
-    if (profileError) {
-      toast.error("Failed to load user profile. Please try again.");
-    }
-  }, [error, vehicleError, profileError]);
 
   if (isLoading || vehicleLoading || profileLoading) {
     return (

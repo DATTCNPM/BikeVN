@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { addDays, differenceInDays, format } from "date-fns";
+import {
+  addDays,
+  differenceInDays,
+  format,
+  startOfDay,
+  endOfDay,
+} from "date-fns";
 import { vi } from "date-fns/locale";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -42,6 +48,8 @@ import type { Branch, Vehicle } from "@repo/types";
 
 import { bookingFormSchema, type BookingFormValues } from "@repo/schemas";
 
+import { useProfile } from "@/features/auth/useProfile";
+
 type Props = {
   vehicle: Vehicle;
   branches: Branch[];
@@ -49,6 +57,8 @@ type Props = {
 
 export default function BookingCard({ vehicle, branches }: Props) {
   const navigate = useNavigate();
+
+  const { data: profile } = useProfile();
 
   const { mutate: createBooking, isPending } = useCreateBooking();
 
@@ -61,9 +71,8 @@ export default function BookingCard({ vehicle, branches }: Props) {
       returnBranchId: "",
 
       dateRange: {
-        from: new Date(),
-
-        to: addDays(new Date(), 2),
+        from: startOfDay(addDays(new Date(), 1)),
+        to: endOfDay(addDays(new Date(), 3)),
       },
     },
   });
@@ -81,10 +90,14 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
   const totalPrice = totalDays * (vehicle.pricePerDay ?? 0);
 
+  if (profile?.id === undefined) {
+    return null;
+  }
+
   const onSubmit = (values: BookingFormValues) => {
     createBooking(
       {
-        userId: "u1", // TODO: lấy từ auth
+        userId: profile.id, // TODO: lấy từ auth
 
         vehicleId: vehicle.id,
 
@@ -92,9 +105,9 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
         returnBranchId: values.returnBranchId,
 
-        startTime: values.dateRange.from.toISOString(),
+        startTime: format(values.dateRange.from, "yyyy-MM-dd'T'HH:mm:ss"),
 
-        endTime: values.dateRange.to.toISOString(),
+        endTime: format(values.dateRange.to, "yyyy-MM-dd'T'HH:mm:ss"),
       },
       {
         onSuccess: (booking) => {
@@ -152,7 +165,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
                         }}
                         defaultMonth={field.value?.from}
                         disabled={(date) =>
-                          date < new Date(new Date().setHours(0, 0, 0, 0))
+                          date <= new Date(new Date().setHours(0, 0, 0, 0))
                         }
                         className="w-full"
                       />

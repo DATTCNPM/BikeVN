@@ -6,3 +6,4 @@ export * from "./vehicleBrandSchema";
 export * from "./vehicleModelSchema";
 export * from "./vehicleImageSchema";
 export * from "./bookingSchema";
+export * from "./paymentSchema";

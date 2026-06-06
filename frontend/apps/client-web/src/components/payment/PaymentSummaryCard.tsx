@@ -5,7 +5,7 @@ import { Card } from "@repo/ui/components/ui/card";
 import { ReceiptText } from "lucide-react";
 import type { Booking } from "@repo/types";
 import type { PaymentMethod } from "@repo/types";
-import type { CreatePaymentPayload } from "@repo/api";
+import type { PaymentCreationPayload } from "@repo/types";
 
 import { useCreatePayment } from "@/features/payments/mutations";
 
@@ -18,14 +18,15 @@ export default function PaymentSummaryCard({ booking, selectedMethod }: Props) {
   const navigate = useNavigate();
   const { mutate: createPayment } = useCreatePayment();
 
+  const idempotencyKey = `${booking?.id}-${Date.now()}`;
+
   const handlePayment = async () => {
     if (!booking) return;
-    const payload: CreatePaymentPayload = {
-      booking_id: booking.id,
+    const payload: PaymentCreationPayload = {
+      bookingId: booking.id,
       amount: booking.totalPrice || 0,
-      type: "rental",
-      card_method: selectedMethod,
-      payment_method: selectedMethod,
+      idempotencyKey,
+      paymentMethod: selectedMethod,
     };
     createPayment(
       {

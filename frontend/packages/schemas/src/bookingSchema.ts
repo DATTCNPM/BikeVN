@@ -25,6 +25,7 @@ export const bookingSchema = z.object({
 
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  expiresAt: z.string().datetime(),
 });
 
 export const bookingCreationSchema = z.object({
