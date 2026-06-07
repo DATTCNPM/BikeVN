@@ -3,7 +3,7 @@ import { MapPin } from "lucide-react";
 import type { Vehicle } from "@repo/types";
 import { useBranches } from "@repo/hooks";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { filterImagePrimary } from "@/utils/vehicle";
+import { filterImagePrimary } from "@repo/utils";
 
 export default function PaymentVehicleCard({
   vehicle,

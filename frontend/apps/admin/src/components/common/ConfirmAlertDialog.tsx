@@ -22,7 +22,7 @@ type Props = {
   title?: string;
   description?: string;
 
-  onConfirm: () => void;
+  onConfirm: () => Promise<void> | void;
 
   loading?: boolean;
 
@@ -57,7 +57,7 @@ export default function ConfirmAlertDialog({
           <AlertDialogAction
             asChild
             variant="destructive"
-            onClick={onConfirm}
+            onClick={() => void onConfirm()}
             disabled={loading}
           >
             <p>

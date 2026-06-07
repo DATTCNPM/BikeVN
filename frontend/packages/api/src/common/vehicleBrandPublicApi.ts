@@ -1,21 +1,21 @@
 import axiosPublic from "../axios/axiosPublic";
-import type { ApiResponse, VehicleBrand } from "@repo/types";
+import type { VehicleBrand } from "@repo/types";
 
 export const vehicleBrandPublicApi = {
-  async getBrands(): Promise<VehicleBrand[]> {
-    const data = await axiosPublic.get<any, ApiResponse<VehicleBrand[]>>(
+  async getBrands() {
+    const data = await axiosPublic.get<VehicleBrand[]>(
       "/brand",
     );
-    console.log("Fetched brands:", data.result);
-    return data.result || [];
+    console.log("Fetched brands:", data);
+    return data || [];
   },
 
-  async getBrandById(id: number): Promise<VehicleBrand> {
-    const data = await axiosPublic.get<any, ApiResponse<VehicleBrand>>(
+  async getBrandById(id: number) {
+    const data = await axiosPublic.get<VehicleBrand>(
       `/brand/${id}`,
     );
-    console.log("Fetched brand:", data.result);
-    if (!data.result) {
+    console.log("Fetched brand:", data);
+    if (!data) {
       throw {
         response: {
           status: 404,
@@ -25,6 +25,6 @@ export const vehicleBrandPublicApi = {
         },
       };
     }
-    return data.result;
+    return data;
   },
 };

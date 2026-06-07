@@ -1,21 +1,21 @@
 import axiosPublic from "../axios/axiosPublic";
-import type { ApiResponse, VehicleModel } from "@repo/types";
+import type { VehicleModel } from "@repo/types";
 
 export const vehicleModelPublicApi = {
-  async getModels(): Promise<VehicleModel[]> {
-    const data = await axiosPublic.get<any, ApiResponse<VehicleModel[]>>(
+  async getModels() {
+    const data = await axiosPublic.get<VehicleModel[]>(
       "/model",
     );
-    console.log("Fetched models:", data.result);
-    return data.result || [];
+    console.log("Fetched models:", data);
+    return data || [];
   },
 
-  async getModelById(id: number): Promise<VehicleModel> {
-    const data = await axiosPublic.get<any, ApiResponse<VehicleModel>>(
+  async getModelById(id: number) {
+    const data = await axiosPublic.get<VehicleModel>(
       `/model/${id}`,
     );
-    console.log("Fetched model:", data.result);
-    if (!data.result) {
+    console.log("Fetched model:", data);
+    if (!data) {
       throw {
         response: {
           status: 404,
@@ -25,6 +25,6 @@ export const vehicleModelPublicApi = {
         },
       };
     }
-    return data.result;
+    return data;
   },
 };

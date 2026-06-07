@@ -1,11 +1,9 @@
 import axiosPublic from "../axios/axiosPublic";
 import type {
-  ApiResponse,
   AuthenticationResponse,
   IntrospectResponse,
   LoginPayload,
-  UserCreationRequest,
-  User,
+  RegisterPayload,
 } from "@repo/types";
 
 export const authApi = {
@@ -16,17 +14,20 @@ export const authApi = {
     } as any);
   },
 
-  async login(
-    payload: LoginPayload,
-  ): Promise<ApiResponse<AuthenticationResponse>> {
-    return axiosPublic.post("/auth/login", payload);
+  async login(payload: LoginPayload): Promise<AuthenticationResponse> {
+    return axiosPublic.post<any, AuthenticationResponse>(
+      "/auth/login",
+      payload,
+    );
   },
 
-  async register(payload: UserCreationRequest): Promise<ApiResponse<User>> {
-    return axiosPublic.post("/user", payload);
+  async register(payload: RegisterPayload): Promise<AuthenticationResponse> {
+    return axiosPublic.post<any, AuthenticationResponse>("/user", payload);
   },
 
-  async introspect(token: string): Promise<ApiResponse<IntrospectResponse>> {
-    return axiosPublic.post("/auth/introspect", { token });
+  async introspect(token: string): Promise<IntrospectResponse> {
+    return axiosPublic.post<any, IntrospectResponse>("/auth/introspect", {
+      token,
+    });
   },
 };

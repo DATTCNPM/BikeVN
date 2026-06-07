@@ -12,7 +12,8 @@
     }
   },
   "dependencies": {
-    "date-fns": "^4.1.0"
+    "date-fns": "^4.1.0",
+    "@repo/types": "workspace:*"
   },
   "private": true
 }

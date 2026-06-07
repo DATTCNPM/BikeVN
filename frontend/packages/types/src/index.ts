@@ -5,6 +5,7 @@ export * from "./branchType";
 export * from "./dashboard";
 export * from "./message";
 export * from "./roleType";
+export * from "./permissionType";
 export * from "./notificationType";
 export * from "./vehicleBrandType";
 export * from "./vehicleModelType";

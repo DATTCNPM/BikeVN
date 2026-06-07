@@ -1,7 +1,6 @@
 import axiosAdmin from "../axios/axiosAdmin";
 
 import type {
-  ApiResponse,
   VehicleImage,
   VehicleImageCreatePayload,
   VehicleImageUpdatePayload,
@@ -11,7 +10,7 @@ export const vehicleImageAdminApi = {
   async uploadImage(
     vehicleId: string,
     payload: VehicleImageCreatePayload,
-  ): Promise<VehicleImage> {
+  ) {
     const formData = new FormData();
 
     formData.append("file", payload.file);
@@ -28,19 +27,19 @@ export const vehicleImageAdminApi = {
       formData.append("isPrimary", payload.isPrimary.toString());
     }
 
-    const response = await axiosAdmin.post<any, ApiResponse<VehicleImage>>(
+    const response = await axiosAdmin.post<VehicleImage>(
       `/vehicle/${vehicleId}/images`,
       formData,
     );
 
-    return response.result;
+    return response;
   },
 
   async updateImage(
     vehicleId: string,
     imageId: string,
     payload: VehicleImageUpdatePayload,
-  ): Promise<VehicleImage> {
+  ){
     const formData = new FormData();
 
     if (payload.file) {
@@ -59,12 +58,12 @@ export const vehicleImageAdminApi = {
       formData.append("isPrimary", payload.isPrimary.toString());
     }
 
-    const response = await axiosAdmin.put<any, ApiResponse<VehicleImage>>(
+    const response = await axiosAdmin.put<VehicleImage>(
       `/vehicle/${vehicleId}/images/${imageId}`,
       formData,
     );
 
-    return response.result;
+    return response;
   },
 
   async deleteImage(vehicleId: string, imageId: string) {

@@ -19,20 +19,18 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateUser } from "@/features/users/mutations";
-import {
-  createUserSchema,
-  type CreateUserValues,
-} from "@/features/users/schemas";
+import { adminUserCreationSchema } from "@repo/schemas";
+import type { AdminUserCreationPayload } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const defaultValues: CreateUserValues = {
+const defaultValues: AdminUserCreationPayload = {
   name: "",
   email: "",
-  passwordHash: "",
+  password: "",
   phone: "",
   cccdNumber: "",
   role: "user",
@@ -47,12 +45,12 @@ export default function UserCreate({ open, onOpenChange }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<CreateUserValues>({
-    resolver: zodResolver(createUserSchema),
+  } = useForm<AdminUserCreationPayload>({
+    resolver: zodResolver(adminUserCreationSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: CreateUserValues) => {
+  const onSubmit = async (values: AdminUserCreationPayload) => {
     try {
       await mutateAsync(values);
       toast.success("Tạo người dùng thành công");
@@ -94,12 +92,12 @@ export default function UserCreate({ open, onOpenChange }: Props) {
           <Field>
             <FieldLabel>Mật khẩu</FieldLabel>
             <Input
-              {...register("passwordHash")}
+              {...register("password")}
               type="password"
               placeholder="********"
             />
-            {errors.passwordHash && (
-              <FieldError>{errors.passwordHash.message}</FieldError>
+            {errors.password && (
+              <FieldError>{errors.password.message}</FieldError>
             )}
           </Field>
 

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
@@ -7,7 +7,6 @@ import StatusBadge from "@/components/common/StatusBadge";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "@repo/ui/components/ui/sonner";
 
 import BranchCreate from "@/components/branch/BranchCreate";
 import BranchEdit from "@/components/branch/BranchEdit";
@@ -17,20 +16,14 @@ import { useBranches } from "@repo/hooks";
 import type { Branch } from "@repo/types";
 
 export default function BranchManagementPage() {
-  const { data: branches = [], isLoading, error } = useBranches();
-  
+  const { data: branches = [], isLoading } = useBranches();
+
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Không thể tải danh sách chi nhánh");
-    }
-  }, [error]);
 
   const columns = useMemo<ColumnDef<Branch>[]>(
     () => [

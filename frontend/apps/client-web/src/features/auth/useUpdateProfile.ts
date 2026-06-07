@@ -21,11 +21,7 @@ export const useUpdateProfile = () => {
     }) => {
       const response = await userApi.updateUser(userId, payload);
 
-      if (response?.code !== 1000 || !response.result) {
-        throw new Error(response?.message || "Cập nhật thất bại");
-      }
-
-      return response.result;
+      return response;
     },
 
     onSuccess: (updatedUser: User) => {

@@ -1,11 +1,11 @@
 import axios from "axios";
+
 import { TOKEN_KEYS } from "@repo/constants";
+
+import { ApiError } from "../error/ApiError";
 
 const axiosAdmin = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
-  // headers: {
-  //   "Content-Type": "application/json",
-  // },
   timeout: 10000,
 });
 
@@ -24,29 +24,51 @@ axiosAdmin.interceptors.request.use(
 
 axiosAdmin.interceptors.response.use(
   (response) => {
-    const config = response.config as any;
+    const config = response.config as {
+      skipAuthCheck?: boolean;
+    };
+
     const data = response.data;
 
-    if (config?.skipAuthCheck) {
-      return data;
+    /**
+     * Backend:
+     * code = 5555 => Unauthenticated
+     */
+    if (data?.code === 5555) {
+      if (!config?.skipAuthCheck) {
+        handleAdminUnauthorized();
+      }
+
+      throw new ApiError(data.code, data.message || "Unauthenticated");
     }
 
-    if (data && (data.code === 401 || data.message === "Unauthenticated")) {
-      handleAdminUnauthorized();
-      return Promise.reject(new Error(data.message || "Unauthenticated"));
+    /**
+     * Success
+     */
+    if (data?.code === 1000) {
+      return data.result;
     }
 
+    /**
+     * Business error
+     */
+    if (typeof data?.code === "number") {
+      throw new ApiError(data.code, data.message || "Logic error");
+    }
+
+    /**
+     * Fallback
+     */
     return data;
   },
   (error) => {
-    const config = error.config as any;
+    const config = error.config as {
+      skipAuthCheck?: boolean;
+    };
+
     const response = error.response;
 
-    if (config?.skipAuthCheck) {
-      return Promise.reject(error);
-    }
-
-    if (response && (response.status === 401 || response?.data?.code === 401)) {
+    if (response?.status === 401 && !config?.skipAuthCheck) {
       handleAdminUnauthorized();
     }
 
@@ -55,13 +77,15 @@ axiosAdmin.interceptors.response.use(
 );
 
 function handleAdminUnauthorized() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
   localStorage.removeItem(TOKEN_KEYS.ADMIN);
 
   const pathname = window.location.pathname;
 
-  if (!pathname.includes("/admin/login")) {
+  if (!pathname.startsWith("/admin/login")) {
     window.location.href = "/admin/login";
   }
 }

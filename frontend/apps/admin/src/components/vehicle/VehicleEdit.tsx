@@ -24,11 +24,8 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useUpdateVehicle } from "@/features/vehicles/mutations";
 import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
-import type { Vehicle } from "@repo/types";
-import {
-  vehicleCreationSchema as vehicleSchema,
-  type VehicleCreationFormValues as VehicleFormValues,
-} from "@repo/schemas";
+import type { Vehicle, VehicleUpdateRequest } from "@repo/types";
+import { vehicleUpdateSchema } from "@repo/schemas";
 
 type Props = {
   open: boolean;
@@ -48,8 +45,8 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleFormValues>({
-    resolver: zodResolver(vehicleSchema),
+  } = useForm<VehicleUpdateRequest>({
+    resolver: zodResolver(vehicleUpdateSchema),
   });
 
   useEffect(() => {
@@ -66,7 +63,6 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
       status: vehicle.status,
       vehicleType: vehicle.vehicleType,
       mileage: vehicle.mileage,
-      imageUrl: vehicle.imageUrl || [""],
       description: vehicle.description ?? "",
       currentBranchId: vehicle.currentBranchId || "",
     });
@@ -77,11 +73,9 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     name: "brandId",
   });
 
-  const filteredModels = models.filter(
-    (m) => m.brandId === selectedBrandId,
-  );
+  const filteredModels = models.filter((m) => m.brandId === selectedBrandId);
 
-  const onSubmit = async (values: VehicleFormValues) => {
+  const onSubmit = async (values: VehicleUpdateRequest) => {
     if (!vehicle) return;
     try {
       await mutateAsync({

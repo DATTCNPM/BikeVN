@@ -1,23 +1,17 @@
 import axiosAdmin from "../axios/axiosAdmin";
-import type {
-  ApiResponse,
-  PermissionResponse,
-  PermissionRequest,
-} from "@repo/types";
+
+import type { Permission, PermissionRequest } from "@repo/types";
 
 export const permissionApi = {
-  async getPermissions(): Promise<ApiResponse<PermissionResponse[]>> {
+  async getPermissions(): Promise<Permission[]> {
     return axiosAdmin.get("/permission");
   },
 
-  async createPermission(
-    payload: PermissionRequest,
-  ): Promise<ApiResponse<PermissionResponse>> {
+  async createPermission(payload: PermissionRequest): Promise<Permission> {
     return axiosAdmin.post("/permission", payload);
   },
 
-  async deletePermission(permissionName: string): Promise<ApiResponse<void>> {
-    // Note: backend API deletes by name
-    return axiosAdmin.delete(`/permission/${permissionName}`);
+  async deletePermission(permissionName: string): Promise<void> {
+    await axiosAdmin.delete(`/permission/${permissionName}`);
   },
 };

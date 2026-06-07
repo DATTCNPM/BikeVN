@@ -39,8 +39,8 @@ export default function VehicleInfo({
       locationName: branches?.find(
         (branch) => branch.id === vehicle?.currentBranchId,
       )?.name,
-      brandName: brands.find((b) => b.id === vehicle?.brandId)?.name || "N/A",
-      modelName: models.find((m) => m.id === vehicle?.modelId)?.name || "N/A",
+      brandName: brands.find((b) => b.id === vehicle.brandId)?.name || "N/A",
+      modelName: models.find((m) => m.id === vehicle.modelId)?.name || "N/A",
     };
   }, [vehicle, branches]);
 

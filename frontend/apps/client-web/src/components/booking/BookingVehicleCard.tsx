@@ -3,7 +3,7 @@
 import { CalendarDays, MapPin } from "lucide-react";
 import { Card } from "@repo/ui/components/ui/card";
 import type { Vehicle, Booking, Branch } from "@repo/types";
-import { filterImagePrimary } from "@/utils/vehicle";
+import { filterImagePrimary } from "@repo/utils";
 
 type Props = {
   booking: Booking | null;

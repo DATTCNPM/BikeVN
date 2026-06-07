@@ -24,20 +24,18 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useCreateVehicle } from "@/features/vehicles/mutations";
 import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
-import {
-  vehicleCreationSchema as vehicleSchema,
-  type VehicleCreationFormValues as VehicleFormValues,
-} from "@repo/schemas";
+import { vehicleCreationSchema } from "@repo/schemas";
+import type { VehicleCreationRequest } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const defaultValues: VehicleFormValues = {
+const defaultValues: VehicleCreationRequest = {
   name: "",
-  brandId: undefined as any,
-  modelId: undefined as any,
+  brandId: 0,
+  modelId: 0,
   licensePlate: "",
   color: "",
   year: new Date().getFullYear(),
@@ -61,8 +59,8 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleFormValues>({
-    resolver: zodResolver(vehicleSchema),
+  } = useForm<VehicleCreationRequest>({
+    resolver: zodResolver(vehicleCreationSchema),
     defaultValues,
   });
 
@@ -73,7 +71,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
 
   const filteredModels = models.filter((m) => m.brandId === selectedBrandId);
 
-  const onSubmit = async (values: VehicleFormValues) => {
+  const onSubmit = async (values: VehicleCreationRequest) => {
     console.log("Submitting vehicle:", values);
     try {
       await mutateAsync(values);

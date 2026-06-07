@@ -7,39 +7,34 @@ import type {
 } from "@repo/types";
 
 export const vehicleAdminApi = {
-  async createVehicle(
-    payload: VehicleCreationRequest,
-  ): Promise<{ message: string; vehicle: Vehicle }> {
-    const data = await axiosAdmin.post<any, ApiResponse<Vehicle>>(
-      "/vehicle",
-      payload,
-    );
+  async createVehicle(payload: VehicleCreationRequest) {
+    const data = await axiosAdmin.post<Vehicle>("/vehicle", payload);
     return {
-      message: data.message || "Thêm xe thành công",
-      vehicle: data.result as Vehicle,
+      message: "Tạo xe thành công",
+      vehicle: data,
     };
   },
 
   async updateVehicle(
     id: string,
     payload: VehicleUpdateRequest,
-  ): Promise<{ message: string; vehicle: Vehicle }> {
-    const data = await axiosAdmin.put<any, ApiResponse<Vehicle>>(
+  ) {
+    const data = await axiosAdmin.put<Vehicle>(
       `/vehicle/${id}`,
       payload,
     );
     return {
-      message: data.message || "Cập nhật xe thành công",
-      vehicle: data.result as Vehicle,
+      message: "Cập nhật xe thành công",
+      vehicle: data,
     };
   },
 
-  async deleteVehicle(id: string): Promise<{ message: string }> {
-    const data = await axiosAdmin.delete<any, ApiResponse<void>>(
+  async deleteVehicle(id: string) {
+    const data = await axiosAdmin.delete(
       `/vehicle/${id}`,
     );
     return {
-      message: data.message || "Xóa xe thành công",
+      message: data || "Xóa xe thành công",
     };
   },
 };

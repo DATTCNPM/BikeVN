@@ -1,22 +1,36 @@
 import axios from "axios";
 
+import { ApiError } from "../error/ApiError";
+
 const axiosPublic = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000,
 });
 
 axiosPublic.interceptors.response.use(
   (response) => {
-    const config = response.config as any;
     const data = response.data;
 
-    if (config?.skipAuthCheck) {
-      return data;
+    /**
+     * Success
+     */
+    if (data?.code === 1000) {
+      return data.result;
     }
 
+    /**
+     * Business error
+     */
+    if (typeof data?.code === "number") {
+      throw new ApiError(data.code, data.message || "Logic error");
+    }
+
+    /**
+     * Fallback
+     */
     return data;
   },
   (error) => Promise.reject(error),

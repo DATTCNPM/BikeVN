@@ -1,6 +1,5 @@
 import axiosAdmin from "../axios/axiosAdmin";
 import type {
-  ApiResponse,
   VehicleBrand,
   VehicleBrandCreationRequest,
   VehicleBrandUpdateRequest,
@@ -8,22 +7,22 @@ import type {
 
 export const vehicleBrandAdminApi = {
   create(data: VehicleBrandCreationRequest) {
-    return axiosAdmin.post<ApiResponse<VehicleBrand>>("/brand", data);
+    return axiosAdmin.post<VehicleBrand>("/brand", data);
   },
 
   getAll() {
-    return axiosAdmin.get<ApiResponse<VehicleBrand[]>>("/brand");
+    return axiosAdmin.get<VehicleBrand[]>("/brand");
   },
 
   getById(id: number) {
-    return axiosAdmin.get<ApiResponse<VehicleBrand>>(`/brand/${id}`);
+    return axiosAdmin.get<VehicleBrand>(`/brand/${id}`);
   },
 
   update(id: number, data: VehicleBrandUpdateRequest) {
-    return axiosAdmin.put<ApiResponse<VehicleBrand>>(`/brand/${id}`, data);
+    return axiosAdmin.put<VehicleBrand>(`/brand/${id}`, data);
   },
 
   delete(id: number) {
-    return axiosAdmin.delete<ApiResponse<void>>(`/brand/${id}`);
+    return axiosAdmin.delete(`/brand/${id}`);
   },
 };

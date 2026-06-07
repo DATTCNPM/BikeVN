@@ -1,18 +1,17 @@
 import axiosAdmin from "../axios/axiosAdmin";
 import type {
-  ApiResponse,
   User,
   UserCreationRequest,
   UpdateProfilePayload,
 } from "@repo/types";
 
 export const userApi = {
-  async getUsers(): Promise<ApiResponse<User[]>> {
-    return axiosAdmin.get("/user");
+  async getUsers() {
+    return axiosAdmin.get<User[]>("/user");
   },
 
-  async getUserById(id: string): Promise<ApiResponse<User>> {
-    return axiosAdmin.get(`/user/${id}`);
+  async getUserById(id: string) {
+    return axiosAdmin.get<User>(`/user/${id}`);
   },
 
   async createUser(
@@ -20,14 +19,14 @@ export const userApi = {
       passwordHash?: string;
       cccdNumber?: string;
     },
-  ): Promise<ApiResponse<User>> {
+  ) {
     const { cccdNumber, passwordHash, ...rest } = payload;
     const requestPayload = {
       ...rest,
       cccdNumber: cccdNumber || undefined,
       passwordHash: passwordHash || "defaultPassword123",
     };
-    return axiosAdmin.post("/user", requestPayload);
+    return axiosAdmin.post<User>("/user", requestPayload);
   },
 
   async createEmployee(
@@ -35,29 +34,29 @@ export const userApi = {
       passwordHash?: string;
       cccdNumber?: string;
     },
-  ): Promise<ApiResponse<User>> {
+  ) {
     const { cccdNumber, passwordHash, ...rest } = payload;
     const requestPayload = {
       ...rest,
       cccdNumber: cccdNumber || "",
       passwordHash: passwordHash || "defaultEmployee123",
     };
-    return axiosAdmin.post("/user/employee", requestPayload);
+    return axiosAdmin.post<User>("/user/employee", requestPayload);
   },
 
   async updateUser(
     id: string,
     payload: Partial<UpdateProfilePayload> & { cccdNumber?: string },
-  ): Promise<ApiResponse<User>> {
+  ) {
     const { cccdNumber, ...rest } = payload;
     const requestPayload = {
       ...rest,
       cccdNumber: cccdNumber || "",
     };
-    return axiosAdmin.put(`/user/${id}`, requestPayload);
+    return axiosAdmin.put<User>(`/user/${id}`, requestPayload);
   },
 
-  async deleteUser(id: string): Promise<ApiResponse<void>> {
+  async deleteUser(id: string) {
     return axiosAdmin.delete(`/user/${id}`);
   },
 };

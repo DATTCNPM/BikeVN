@@ -1,13 +1,13 @@
 import axiosPublic from "../axios/axiosPublic";
 
-import type { ApiResponse, VehicleImage } from "@repo/types";
+import type { VehicleImage } from "@repo/types";
 
 export const vehicleImagePublicApi = {
-  async getImages(vehicleId: string): Promise<VehicleImage[]> {
-    const response = await axiosPublic.get<any, ApiResponse<VehicleImage[]>>(
+  async getImages(vehicleId: string) {
+    const response = await axiosPublic.get<VehicleImage[]>(
       `/vehicle/${vehicleId}/images`,
     );
 
-    return response.result || [];
+    return response || [];
   },
 };
