@@ -62,5 +62,26 @@ public class PaymentController {
                 .message("Confirm!!!")
                 .build();
     }
+
+    @PostMapping("/{id}/approve-manually")
+    public ApiResponse<PaymentResponse> approvePaymentManually(
+            @PathVariable String id,
+            @RequestParam String adminId, // ID của nhân viên đang thao tác
+            @RequestParam String actualPaymentMethod // VD: "cash", "pos", "transfer"
+    ) {
+        return ApiResponse.<PaymentResponse>builder()
+                .result(paymentService.approvePaymentManually(id, adminId, actualPaymentMethod))
+                .build();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ApiResponse<PaymentResponse> cancelPayment(
+            @PathVariable String id,
+            @RequestParam(required = false, defaultValue = "Khách hàng hủy") String reason
+    ) {
+        return ApiResponse.<PaymentResponse>builder()
+                .result(paymentService.cancelPayment(id, reason))
+                .build();
+    }
 }
 

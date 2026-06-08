@@ -17,11 +17,15 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.print.Book;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +89,56 @@ public class PaymentServiceP {
         System.out.println("DB TYPE = " + payment.getType());
 
         return buildResponse(payment, booking);
+    }
+
+    @Transactional
+    public PaymentResponse createExtraFeePayment(String bookingId, BigDecimal damageFee, String branchId)
+    {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        BigDecimal finalDamageFee = (damageFee != null) ? damageFee : BigDecimal.ZERO;
+
+        long lateFee = 0;
+        if(now.isAfter(booking.getEndTime()))
+        {
+            long lateHours = ChronoUnit.HOURS.between(booking.getEndTime(), now);
+            long lateDays = (lateHours / 24) + (lateHours % 24 > 0 ? 1 : 0);
+            lateFee = lateDays * 250000L; //250k per day late
+        }
+
+        BigDecimal totalExtraFee = finalDamageFee.add(BigDecimal.valueOf(lateFee));
+
+        if(totalExtraFee.compareTo(BigDecimal.ZERO) <= 0)
+        {
+            booking.setStatus(BookingStatus.completed);
+            booking.setActualReturnTime(now);
+            bookingRepository.save(booking);
+
+            return null;
+        }
+
+        Payment payment = new Payment();
+        payment.setBookingId(booking.getId());
+        payment.setAmount(totalExtraFee);
+        payment.setStatus(PaymentStatus.pending);
+
+        payment.setPaymentMethod("unspecified");
+        payment.setType(PaymentType.extra_fee);
+
+        payment.setIdempotencyKey("EXTRA_FEE_" + bookingId + "_" + now.toEpochSecond(java.time.ZoneOffset.UTC));
+        payment.setCreatedAt(now);
+        payment.setUpdatedAt(now);
+
+        booking.setActualReturnTime(now);
+
+        paymentRepository.save(payment);
+        bookingRepository.save(booking);
+
+        return buildResponse(payment, booking);
+
     }
     @Transactional
     public void confirmPayment(String paymentId, String transactionCode) {
@@ -173,11 +227,18 @@ public class PaymentServiceP {
         return buildResponse(payment, booking);
     }
     private boolean isExpired(Payment payment) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if(payment.getType() == PaymentType.extra_fee)
+        {
+            return payment.getCreatedAt().isBefore(now.minusHours(2));//2 hours
+        }
         return payment.getCreatedAt()
                 .isBefore(LocalDateTime.now().minusMinutes(EXPIRE_MINUTES));
     }
     //xac nhan thanh toan thu cong
-    public PaymentResponse approvePaymentManually(String paymentId, String adminId)
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public PaymentResponse approvePaymentManually(String paymentId, String adminId, String actualPaymentMethod)
     {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(()-> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
@@ -189,34 +250,52 @@ public class PaymentServiceP {
         Booking booking = bookingRepository.findById(payment.getBookingId())
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
+        payment.setPaymentMethod(actualPaymentMethod);
         payment.setStatus(PaymentStatus.completed);
         payment.setTransactionCode("MANUAL_" + adminId + "_" + System.currentTimeMillis());//exp
         payment.setPaidAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 
-        booking.setStatus(BookingStatus.approved);
+        if(payment.getType() == PaymentType.deposit) {
+            booking.setStatus(BookingStatus.approved);
+            bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
+        } else if (payment.getType() == PaymentType.extra_fee) {
+            booking.setStatus(BookingStatus.completed);
+        }
 
         paymentRepository.save(payment);
         bookingRepository.save(booking);
 
-        bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
-
         return buildResponse(payment, booking);
     }
-
+    @PreAuthorize("isAuthenticated()")
     public PaymentResponse cancelPayment(String paymentId, String reason)
     {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(()-> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        Booking booking = bookingRepository.findById(payment.getBookingId())
+                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        //check
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        boolean isStaff = authentication.getAuthorities().stream()
+                .anyMatch(a-> a.getAuthority().equals("ROLE_admin")
+                        || a.getAuthority().equals("ROLE_employee"));
+        boolean isOwner = booking.getUserId().equals(currentUserId);
+
+        if(!isStaff || !isOwner)
+        {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
 
         if(payment.getStatus() == PaymentStatus.pending)
         {
             payment.setStatus(PaymentStatus.failed);
         }
         payment.setUpdatedAt(LocalDateTime.now());
-
-        Booking booking = bookingRepository.findById(payment.getBookingId())
-                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         booking.setStatus(BookingStatus.rejected);
         booking.setUpdatedAt(LocalDateTime.now());
