@@ -24,7 +24,7 @@ public class VehicleReturnService {
     VehicleReturnRepository vehicleReturnRepository;
     VehicleReturnMapper vehicleReturnMapper;
     FileStorageService fileStorageService;
-    PaymentServiceP paymentServiceP;
+    PaymentServiceP paymentService;
     @Transactional
     @PreAuthorize("hasAnyRole('admin', 'employee')")
     public VehicleReturnResponse createReturn(VehicleReturnRequest request)
@@ -36,26 +36,33 @@ public class VehicleReturnService {
 
         VehicleReturn vehicleReturn = vehicleReturnMapper.toVehicleReturn(request);
 
-        if(vehicleReturn.getExtraFee() == null)
-        {
-            vehicleReturn.setExtraFee(BigDecimal.ZERO);
-        }
-
         List<String> imagesUrl = fileStorageService.storeVehicleReturnImages(request.getImages());
         vehicleReturn.setImages(imagesUrl);
 
-        BigDecimal extraFee = request.getExtraFee() != null ? request.getExtraFee() : BigDecimal.ZERO;
-        PaymentResponse paymentResponse = paymentServiceP.createExtraFeePayment(
+        BigDecimal damageFee = request.getExtraFee() != null ? request.getExtraFee() : BigDecimal.ZERO;
+
+        PaymentResponse paymentResponse = paymentService.createExtraFeePayment(
                 request.getBookingId(),
-                extraFee,
+                damageFee,
                 request.getReturnBranchId()
         );
 
-        if (paymentResponse != null) {
-            // Nếu có Payment sinh ra, cập nhật extraFee bằng tổng số tiền (Damage + Late)
+        if(paymentResponse != null)
+        {
             vehicleReturn.setExtraFee(paymentResponse.getAmount());
-        } else {
-            // Nếu paymentResponse == null (Khách trả đúng giờ, không xước xe)
+
+            String invoiceDetails = paymentResponse.getTransferContent();
+            String currentNotes = vehicleReturn.getNotes();
+
+            if(currentNotes != null && !currentNotes.trim().isEmpty())
+            {
+                vehicleReturn.setNotes(currentNotes + " | " + invoiceDetails);
+            }
+            else {
+                vehicleReturn.setNotes(invoiceDetails);
+            }
+        }
+        else {
             vehicleReturn.setExtraFee(BigDecimal.ZERO);
         }
 

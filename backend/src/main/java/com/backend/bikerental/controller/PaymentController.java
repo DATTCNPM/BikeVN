@@ -77,7 +77,7 @@ public class PaymentController {
     @PostMapping("/{id}/cancel")
     public ApiResponse<PaymentResponse> cancelPayment(
             @PathVariable String id,
-            @RequestParam(required = false, defaultValue = "Khách hàng hủy") String reason
+            @RequestParam(required = false, defaultValue = "User canceled") String reason
     ) {
         return ApiResponse.<PaymentResponse>builder()
                 .result(paymentService.cancelPayment(id, reason))
