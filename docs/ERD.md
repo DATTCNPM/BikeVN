@@ -491,7 +491,7 @@ rejected / cancelled → (final)
 - `id` - VARCHAR(36) PRIMARY KEY COMMENT 'UUID primary key'
 - `booking_id` - VARCHAR(36) NOT NULL COMMENT 'Foreign key to bookings'
 - `amount` - DECIMAL(10,2) NOT NULL COMMENT 'Amount in VND'
-- `type` - ENUM('deposit', 'rental') NOT NULL COMMENT 'Payment type'
+- `type` - ENUM('rental', 'extra_fee','unspecified') NOT NULL COMMENT 'rental (upfront) or extra_fee  (at return), unspecified' 
 - `payment_method` - VARCHAR(50) NOT NULL COMMENT 'credit_card, cash, transfer, e_wallet'
 - `status` - ENUM('pending', 'completed', 'failed', 'refunded') DEFAULT 'pending'
 - `transaction_code` - VARCHAR(100) UNIQUE COMMENT 'External gateway transaction ID'
@@ -807,7 +807,21 @@ conversations (1) ←────────── (N) conversation_members
 
 ---
 
-## 🎯 CRITICAL BUSINESS LOGIC QUERIES
+## 🕒 BUSINESS RULES (v5.0 simplified)
+
+### 1. Booking & Pricing
+- **Payment Stage**: 100% Upfront (Full Rental).
+- **Price Calculation**: `days * price_per_day`.
+- **Status Flow**: `pending` → `approved` (after full payment).
+
+### 2. Vehicle Return & Extra Fees
+- **Correct Branch**: No extra fee.
+- **Wrong Branch (One-way)**: Fixed surcharge **50,000 VND**.
+- **Late Return**: Surcharge **250,000 VND / Day**.
+- **Damage**: Manual entry based on staff assessment.
+- **Settlement**: If extra fees exist, a new payment (type: `extra_fee`) is created. Booking becomes `completed` only when both physical return and extra payments are finished.
+
+---
 
 ### 1. Check Vehicle Availability (with Lock Check)
 ```sql

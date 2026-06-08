@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" pageWidth="1169" pageHeight="1654">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="user" value="Khách hàng" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="50" y="40" width="120" height="900" as="geometry" />
+    </mxCell>
+    <mxCell id="fe" value="Web/App" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="250" y="40" width="120" height="900" as="geometry" />
+    </mxCell>
+    <mxCell id="api" value="Backend API" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="450" y="40" width="120" height="900" as="geometry" />
+    </mxCell>
+    <mxCell id="db" value="Database (v5.0)" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="700" y="40" width="120" height="900" as="geometry" />
+    </mxCell>
+    <mxCell id="pay" value="Payment / Webhook" style="shape=umlLifeline;perimeter=lifelinePerimeter;container=1;collapsible=0;recursiveResize=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="950" y="40" width="120" height="900" as="geometry" />
+    </mxCell>
+    <mxCell id="p1" value="Chọn xe &amp; Đặt 3 ngày" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="user" target="fe">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="100" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p2" value="POST /bookings (Full Pay Request)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="fe" target="api">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="130" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p3" value="Khởi tạo thanh toán 600k (Rental)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="pay">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="160" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p4" value="Yêu cầu Quét mã QR" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="pay" target="user">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="190" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p5" value="Webhook: Success (600k)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="pay" target="api">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="240" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p6" value="UPDATE bookings SET status='approved'" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="db">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="270" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p7" value="INSERT INTO payments (type='rental')" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="db">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="300" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p8" value="Đơn hàng Thành công (Mã nhận xe)" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="fe" target="user">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="330" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p9" value="Trả xe tại Chi nhánh B (Sai chi nhánh)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="user" target="fe">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="420" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p10" value="POST /returns (Audit check)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="fe" target="api">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="450" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p11" value="Calculate Extra: 50k (Branch) + 250k (Late)" style="edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="api">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="480" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p12" value="Thông báo phụ thu: 300k" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="fe">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="520" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p13" value="Khách quét mã trả thêm tiền" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="fe" target="user">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="550" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p14" value="Webhook: Success (300k)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="pay" target="api">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="600" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p15" value="INSERT INTO vehicle_returns" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="db">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="630" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p16" value="INSERT INTO payments (type='extra_fee')" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="db">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="660" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p17" value="UPDATE bookings SET status='completed'" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="db">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="690" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p18" value="Hoàn tất thủ tục trả xe" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=0;endArrow=classic;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="api" target="fe">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="730" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="p19" value="Kết thúc giao dịch" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;verticalAlign=bottom;labelBackgroundColor=none;" edge="1" parent="1" source="fe" target="user">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint as="offset" y="760" />
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>
