@@ -84,7 +84,7 @@ public class UserService {
         return userMapper.toListUsersResponse(userRepository.findAll());
     }
 
-    @PostAuthorize("hasRole('admin') or returnObject.email == authentication.name")
+    @PostAuthorize("hasRole('admin') or returnObject.email == authentication.email")
     public UserResponse getUser(String id)
     {
         return userMapper.toUserResponse(userRepository.findById(id)
