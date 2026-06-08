@@ -37,6 +37,8 @@ CREATE TABLE `bookings` (
   `version` int DEFAULT '0' COMMENT 'Optimistic locking version for concurrency control',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `expires_at` datetime DEFAULT NULL COMMENT 'Booking expiration time',
+
   PRIMARY KEY (`id`),
   KEY `fk_booking_pickup_branch` (`pickup_branch_id`),
   KEY `fk_booking_return_branch` (`return_branch_id`),
@@ -191,7 +193,7 @@ CREATE TABLE `payments` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID primary key',
   `booking_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `amount` decimal(10,2) NOT NULL COMMENT 'Payment amount in VND',
-  `type` enum('deposit','rental') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Payment type: deposit or rental',
+  `type` enum('rental','extra_fee','unspecified') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Payment type: rental (upfront) or extra_fee (at return) unspecified',
   `payment_method` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'e.g., credit_card, cash, transfer',
   `status` enum('pending','completed','failed','refunded') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `transaction_code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'External transaction code - must be unique to prevent duplicate payments',
@@ -306,11 +308,13 @@ CREATE TABLE `users` (
   `is_active` tinyint(1) DEFAULT '1' COMMENT 'User account status',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `branch_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Branch where this role applies (for staff/manager)',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_email` (`email`),
   UNIQUE KEY `unique_cccd` (`cccd_number`),
   KEY `idx_is_active` (`is_active`),
   KEY `idx_created_at` (`created_at`)
+  KEY `idx_ur_branch` (`branch_id`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User accounts and authentication';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -324,10 +328,9 @@ DROP TABLE IF EXISTS `users_roles`;
 CREATE TABLE `users_roles` (
   `user_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `role_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `branch_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Branch where this role applies (for staff/manager)',
+
   PRIMARY KEY (`user_id`,`role_id`),
   KEY `fk_role` (`role_id`),
-  KEY `idx_ur_branch` (`branch_id`),
   CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_ur_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL
@@ -474,37 +477,3 @@ CREATE TABLE `vehicles` (
 -- These views provide safe, role-filtered access to user data 
 -- without changing the underlying physical table structure.
 --
-
-CREATE OR REPLACE VIEW `view_customers` AS
-SELECT u.id, u.name, u.email, u.phone, u.cccd_number, u.is_active, u.created_at
-FROM users u
-LEFT JOIN users_roles ur ON u.id = ur.user_id
-WHERE ur.user_id IS NULL;
-
-CREATE OR REPLACE VIEW `view_staff` AS
-SELECT u.id, u.name, u.email, u.phone, u.is_active, r.name as role_name, b.name as branch_name, b.address as branch_address
-FROM users u
-JOIN users_roles ur ON u.id = ur.user_id
-JOIN roles r ON ur.role_id = r.id
-JOIN branches b ON ur.branch_id = b.id
-WHERE r.name IN ('employee', 'manager');
-
-CREATE OR REPLACE VIEW `view_managers` AS
-SELECT u.id, u.name, u.email, u.phone, u.is_active, b.name as branch_name
-FROM users u
-JOIN users_roles ur ON u.id = ur.user_id
-JOIN roles r ON ur.role_id = r.id
-JOIN branches b ON ur.branch_id = b.id
-WHERE r.name = 'manager';
-
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2026-05-28 20:50:02
