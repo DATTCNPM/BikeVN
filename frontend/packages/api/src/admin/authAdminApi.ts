@@ -1,12 +1,12 @@
 import axiosAdmin from "../axios/axiosAdmin";
-import type { ApiResponse, User } from "@repo/types";
+import type { User } from "@repo/types";
 
 export const authAdminApi = {
-  async getProfile(): Promise<ApiResponse<User>> {
-    return axiosAdmin.get("/user/myInfo");
+  async getProfile() {
+    return axiosAdmin.get<User, User>("/user/myInfo");
   },
 
-  async logout(token: string): Promise<ApiResponse<void>> {
+  async logout(token: string) {
     return axiosAdmin.post("/auth/logout", { token });
   },
 };

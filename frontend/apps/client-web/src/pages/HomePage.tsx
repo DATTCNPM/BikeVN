@@ -22,7 +22,7 @@ import {
 import { List, MapPin } from "lucide-react";
 
 import { useVehicles, useBranches } from "@repo/hooks";
-import { filterImagePrimary } from "@/utils/vehicle";
+import { filterImagePrimary } from "@repo/utils";
 import type { VehicleType } from "@repo/types";
 export default function HomePage() {
   const [search, setSearch] = useState("");
@@ -108,6 +108,7 @@ export default function HomePage() {
 
   const priceRanges = ["Dưới 100k", "100k - 200k", "Trên 200k"];
 
+  console.log("data", vehicles);
   console.log("vehicles", vehicleListData);
 
   return (

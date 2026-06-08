@@ -33,7 +33,7 @@ export default function Register() {
     defaultValues: {
       name: "",
       email: "",
-      password: "",
+      passwordHash: "",
       confirmPassword: "",
     },
   });
@@ -90,7 +90,7 @@ export default function Register() {
               type={showPassword ? "text" : "password"}
               id="password"
               placeholder="********"
-              {...register("password")}
+              {...register("passwordHash")}
             />
             <Button
               type="button"
@@ -102,8 +102,8 @@ export default function Register() {
               {showPassword ? <EyeOff /> : <Eye />}
             </Button>
           </FieldContent>
-          {errors.password && (
-            <FieldError>{errors.password.message}</FieldError>
+          {errors.passwordHash && (
+            <FieldError>{errors.passwordHash.message}</FieldError>
           )}
         </Field>
         <Field className="relative">

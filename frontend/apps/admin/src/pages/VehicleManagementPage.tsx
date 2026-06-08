@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 
+import mockImageMotor from "@/assets/images/motorbike1.png";
+
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
@@ -40,6 +42,7 @@ export default function VehicleManagementPage() {
   const { data: vehicles = [], isLoading, error } = useVehicles();
   const { data: brands = [] } = useVehicleBrands();
   const { data: models = [] } = useVehicleModels();
+
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -66,7 +69,7 @@ export default function VehicleManagementPage() {
           return (
             <div className="flex items-center gap-3">
               <img
-                src={"/placeholder-image.jpg"}
+                src={mockImageMotor}
                 alt={vehicle.name}
                 className="h-14 w-20 rounded-md object-cover"
               />
@@ -156,7 +159,7 @@ export default function VehicleManagementPage() {
         ),
       },
     ],
-    [],
+    [brands, models, navigate],
   );
 
   if (isLoading) {

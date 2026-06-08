@@ -348,6 +348,9 @@ importers:
 
   packages/providers:
     dependencies:
+      '@repo/api':
+        specifier: workspace:*
+        version: link:../api
       '@repo/ui':
         specifier: workspace:*
         version: link:../ui
@@ -439,6 +442,9 @@ importers:
 
   packages/utils:
     dependencies:
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../types
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0

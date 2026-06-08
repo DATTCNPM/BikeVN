@@ -13,7 +13,7 @@ export const useProfile = () => {
     queryFn: async () => {
       //   const response = await authApi.getProfile();
       const response = await authClientApi.getProfile();
-      return response.result;
+      return response;
     },
 
     enabled: !!authStorageService.getToken(),

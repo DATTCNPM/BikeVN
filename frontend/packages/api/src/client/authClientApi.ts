@@ -1,12 +1,15 @@
 import axiosClient from "../axios/axiosClient";
-import type { ApiResponse, User } from "@repo/types";
+
+import type { User } from "@repo/types";
 
 export const authClientApi = {
-  async getProfile(): Promise<ApiResponse<User>> {
-    return axiosClient.get("/user/myInfo");
+  async getProfile() {
+    return axiosClient.get<User>("/user/myInfo");
   },
 
-  async logout(token: string): Promise<ApiResponse<void>> {
-    return axiosClient.post("/auth/logout", { token });
+  async logout(token: string) {
+    await axiosClient.post("/auth/logout", {
+      token,
+    });
   },
 };

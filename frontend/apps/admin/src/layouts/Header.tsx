@@ -20,17 +20,31 @@ import { Separator } from "@repo/ui/components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAdminAuth } from "@/features/auth/useAdminAuth";
+import { useAdminProfile } from "@/features/auth/useAdminProfile";
 
 export default function AppHeader() {
-  const { adminProfile, logoutAdmin } = useAdminAuth();
   const navigate = useNavigate();
+
+  const logoutAdmin = useAdminAuth((state) => state.logoutAdmin);
+
+  const { data: adminProfile } = useAdminProfile();
 
   const handleLogout = async () => {
     const success = await logoutAdmin();
+
     if (success) {
       navigate("/admin/login");
     }
   };
+
+  const initials =
+    adminProfile?.name
+      ?.split(" ")
+      .map((word) => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() ?? "AD";
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
       <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-6">
@@ -81,18 +95,17 @@ export default function AppHeader() {
                 className="h-14 rounded-2xl px-2 hover:bg-muted"
               >
                 <Avatar className="size-11 border">
-                  <AvatarImage src="https://i.pravatar.cc/150?img=12" />
-
-                  <AvatarFallback>AD</AvatarFallback>
+                  <AvatarImage src={adminProfile?.avatarUrl} />
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
 
                 <div className="hidden text-left md:block">
                   <p className="text-sm font-semibold">
-                    {adminProfile?.name || "Admin"}
+                    {adminProfile?.name ?? "Admin"}
                   </p>
 
                   <p className="text-xs text-muted-foreground">
-                    {adminProfile?.email || "administrator@motorent.com"}
+                    {adminProfile?.email ?? ""}
                   </p>
                 </div>
 

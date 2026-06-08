@@ -11,6 +11,8 @@ import "swiper/css/thumbs";
 // 2. (Tùy chọn) Import CSS cho autoplay nếu cần hiệu ứng đặc biệt
 import "swiper/css/autoplay";
 
+import { getImageUrl } from "@repo/utils";
+
 import motorbike1 from "../../assets/images/motorbike1.png";
 import motorbike2 from "../../assets/images/motorbike2.png";
 import motorbike3 from "../../assets/images/motorbike3.png";
@@ -55,10 +57,8 @@ export default function VehicleGallery({
           : images.map((image, index) => (
               <SwiperSlide key={index}>
                 <img
-                  src={
-                    `http://localhost:8080${image.imageUrl}` || image.imageUrl
-                  } // Sử dụng URL hình ảnh thực tế
-                  alt=""
+                  src={getImageUrl(image.imageUrl)}
+                  alt={image.altText || `Vehicle Image ${index + 1}`}
                   className="w-full h-[500px] object-cover"
                 />
               </SwiperSlide>
@@ -77,8 +77,8 @@ export default function VehicleGallery({
           {images.map((image, index) => (
             <SwiperSlide key={index}>
               <img
-                src={`http://localhost:8080${image.imageUrl}` || image.imageUrl} // Sử dụng URL hình ảnh thực tế
-                alt=""
+                src={getImageUrl(image.imageUrl)}
+                alt={image.altText || `Thumbnail ${index + 1}`}
                 className="h-24 w-full rounded-xl object-cover cursor-pointer border"
               />
             </SwiperSlide>

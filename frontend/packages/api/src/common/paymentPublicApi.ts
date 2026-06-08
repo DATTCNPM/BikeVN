@@ -1,14 +1,12 @@
 import axiosClient from "../axios/axiosClient";
 
-import type { ApiResponse, Payment } from "@repo/types";
+import type {  Payment } from "@repo/types";
 
 export const paymentCommonApi = {
-  async getPayment(id: string): Promise<Payment> {
-    const data = await axiosClient.get<any, ApiResponse<Payment>>(
-      `/payments/${id}`,
-    );
+  async getPayment(id: string) {
+    const data = await axiosClient.get<Payment, Payment>(`/payments/${id}`);
 
-    if (!data.result) {
+    if (!data) {
       throw {
         response: {
           status: 404,
@@ -19,6 +17,6 @@ export const paymentCommonApi = {
       };
     }
 
-    return data.result;
+    return data;
   },
 };

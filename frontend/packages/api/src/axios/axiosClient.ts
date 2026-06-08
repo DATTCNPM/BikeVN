@@ -1,12 +1,15 @@
 import axios from "axios";
+
 import { TOKEN_KEYS } from "@repo/constants";
+
+import { ApiError } from "../error/ApiError";
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000,
 });
 
 axiosClient.interceptors.request.use(
@@ -24,29 +27,54 @@ axiosClient.interceptors.request.use(
 
 axiosClient.interceptors.response.use(
   (response) => {
-    const config = response.config as any;
+    const config = response.config as {
+      skipAuthCheck?: boolean;
+    };
+
     const data = response.data;
 
-    if (config?.skipAuthCheck) {
-      return data;
+    /**
+     * Backend contract:
+     * {
+     *   code: number;
+     *   message: string;
+     *   result: T;
+     * }
+     */
+
+    if (data?.code === 5555) {
+      if (!config?.skipAuthCheck) {
+        handleClientUnauthorized();
+      }
+
+      throw new ApiError(data.code, data.message || "Unauthenticated");
     }
 
-    if (data && (data.code === 401 || data.message === "Unauthenticated")) {
-      handleClientUnauthorized();
-      return Promise.reject(new Error(data.message || "Unauthenticated"));
+    if (data?.code === 1000) {
+      return data.result;
     }
 
+    if (typeof data?.code === "number") {
+      throw new ApiError(data.code, data.message || "Logic error");
+    }
+
+    /**
+     * Fallback cho các endpoint
+     * không dùng ApiResponse envelope.
+     */
     return data;
   },
   (error) => {
-    const config = error.config as any;
+    const config = error.config as {
+      skipAuthCheck?: boolean;
+    };
+
     const response = error.response;
 
-    if (config?.skipAuthCheck) {
-      return Promise.reject(error);
-    }
-
-    if (response && (response.status === 401 || response?.data?.code === 401)) {
+    /**
+     * HTTP 401
+     */
+    if (response?.status === 401 && !config?.skipAuthCheck) {
       handleClientUnauthorized();
     }
 
@@ -55,9 +83,13 @@ axiosClient.interceptors.response.use(
 );
 
 function handleClientUnauthorized() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
-  localStorage.removeItem(TOKEN_KEYS.CLIENT);
+  Object.values(TOKEN_KEYS).forEach((key) => {
+    localStorage.removeItem(key);
+  });
 
   const pathname = window.location.pathname;
 

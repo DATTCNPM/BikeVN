@@ -1,20 +1,18 @@
 // src/apis/branchApi.ts
-import type { Branch, ApiResponse } from "@repo/types";
+import type { Branch } from "@repo/types";
 import axiosPublic from "../axios/axiosPublic";
 
 export const branchPublicApi = {
-  async getBranches(): Promise<Branch[]> {
-    const data = await axiosPublic.get<any, ApiResponse<Branch[]>>("/branch");
-    console.log("Fetched branches:", data.result);
-    return data.result || [];
+  async getBranches() {
+    const data = await axiosPublic.get<Branch[], Branch[]>("/branch");
+    console.log("Fetched branches:", data);
+    return data || [];
   },
 
-  async getBranchById(id: string): Promise<Branch> {
-    const data = await axiosPublic.get<any, ApiResponse<Branch>>(
-      `/branch/${id}`,
-    );
+  async getBranchById(id: string) {
+    const data = await axiosPublic.get<Branch, Branch>(`/branch/${id}`);
 
-    if (!data.result) {
+    if (!data) {
       throw {
         response: {
           status: 404,
@@ -25,6 +23,6 @@ export const branchPublicApi = {
       };
     }
 
-    return data.result;
+    return data;
   },
 };

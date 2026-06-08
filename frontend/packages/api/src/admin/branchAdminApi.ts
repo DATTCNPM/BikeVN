@@ -1,35 +1,29 @@
 // src/apis/branchApi.ts
-import type { Branch, ApiResponse } from "@repo/types";
+import type { Branch } from "@repo/types";
 import axiosAdmin from "../axios/axiosAdmin";
 
 import type { CreateBranchPayload, UpdateBranchPayload } from "@repo/types";
 
 export const branchAdminApi = {
-  async createBranch(
-    payload: CreateBranchPayload,
-  ): Promise<{ message: string; branch: Branch }> {
-    const data = await axiosAdmin.post<any, ApiResponse<Branch>>(
-      "/branch",
-      payload,
-    );
-    console.log("Created branch with response:", data);
+  async createBranch(payload: CreateBranchPayload) {
+    const data = await axiosAdmin.post<Branch>("/branch", payload);
 
     return {
       message: "Tạo chi nhánh thành công",
-      branch: data.result!,
+      branch: data,
     };
   },
 
   async updateBranch(
     id: string,
     payload: UpdateBranchPayload,
-  ): Promise<{ message: string; branch: Branch }> {
-    const data = await axiosAdmin.put<any, ApiResponse<Branch>>(
+  ) {
+    const data = await axiosAdmin.put<Branch>(
       `/branch/${id}`,
       payload,
     );
 
-    if (!data.result) {
+    if (!data) {
       throw {
         response: {
           status: 404,
@@ -42,11 +36,11 @@ export const branchAdminApi = {
 
     return {
       message: "Cập nhật chi nhánh thành công",
-      branch: data.result,
+      branch: data,
     };
   },
 
-  async deleteBranch(id: string): Promise<{ message: string }> {
+  async deleteBranch(id: string){
     await axiosAdmin.delete(`/branch/${id}`);
 
     return {

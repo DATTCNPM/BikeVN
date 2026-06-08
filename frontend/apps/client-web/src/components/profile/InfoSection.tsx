@@ -67,8 +67,8 @@ export default function InfoSection() {
     {
       icon: <Calendar className="text-muted-foreground" />,
       label: "Ngày tham gia",
-      value: user?.created_at
-        ? new Date(user.created_at).toLocaleDateString("vi-VN")
+      value: user?.createdAt
+        ? new Date(user.createdAt).toLocaleDateString("vi-VN")
         : "Chưa cập nhật",
     },
   ];

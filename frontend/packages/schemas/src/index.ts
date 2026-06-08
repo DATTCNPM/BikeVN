@@ -1,5 +1,6 @@
 export * from "./authSchema";
 export * from "./roleSchema";
+export * from "./permissionSchema";
 export * from "./vehicleSchema";
 export * from "./notificationSchema";
 export * from "./vehicleBrandSchema";

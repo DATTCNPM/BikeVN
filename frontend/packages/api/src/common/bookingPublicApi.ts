@@ -1,13 +1,11 @@
 import axiosClient from "../axios/axiosClient";
-import type { ApiResponse, Booking } from "@repo/types";
+import type { Booking } from "@repo/types";
 
 export const bookingApi = {
-  async getBooking(id: string): Promise<Booking> {
-    const data = await axiosClient.get<any, ApiResponse<Booking>>(
-      `/booking/${id}`,
-    );
+  async getBooking(id: string) {
+    const data = await axiosClient.get<Booking, Booking>(`/booking/${id}`);
 
-    if (!data.result) {
+    if (!data) {
       throw {
         response: {
           status: 404,
@@ -18,14 +16,14 @@ export const bookingApi = {
       };
     }
 
-    return data.result;
+    return data;
   },
 
-  async getBookingsByUser(userId: string): Promise<Booking[]> {
-    const data = await axiosClient.get<any, ApiResponse<Booking[]>>(
+  async getBookingsByUser(userId: string) {
+    const data = await axiosClient.get<Booking[], Booking[]>(
       `/booking/user/${userId}`,
     );
 
-    return data.result || [];
+    return data || [];
   },
 };

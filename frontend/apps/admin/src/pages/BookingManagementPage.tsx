@@ -1,18 +1,17 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
-import TableActionDropdown from "@/components/common/TableActionDropdown";
+// import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "@repo/ui/components/ui/sonner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 
-import BookingCreate from "@/components/booking/BookingCreate";
-import BookingEdit from "@/components/booking/BookingEdit";
-import BookingDelete from "@/components/booking/BookingDelete";
+// import BookingCreate from "@/components/booking/BookingCreate";
+// import BookingEdit from "@/components/booking/BookingEdit";
+// import BookingDelete from "@/components/booking/BookingDelete";
 
 import { useBookings } from "@/features/bookings/queries";
 import type { Booking } from "@repo/types";
@@ -36,20 +35,14 @@ const bookingStatusLabel = {
 };
 
 export default function BookingManagementPage() {
-  const { data: bookings = [], isLoading, error } = useBookings();
+  const { data: bookings = [], isLoading } = useBookings();
 
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  // const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  // const [openEditDialog, setOpenEditDialog] = useState(false);
+  // const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  // const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Không thể tải danh sách đặt xe");
-    }
-  }, [error]);
 
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
@@ -58,7 +51,7 @@ export default function BookingManagementPage() {
         header: "Khách hàng",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
-            User #{row.original.user_id.substring(0, 4)}
+            User #{row.original.userId.substring(0, 4)}
           </span>
         ),
       },
@@ -67,7 +60,7 @@ export default function BookingManagementPage() {
         header: "Xe",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
-            Xe #{row.original.vehicle_id.substring(0, 4)}
+            Xe #{row.original.vehicleId.substring(0, 4)}
           </span>
         ),
       },
@@ -76,7 +69,7 @@ export default function BookingManagementPage() {
         header: "Chi nhánh nhận",
         cell: ({ row }) => (
           <span className="text-sm">
-            CN #{row.original.pickup_branch_id.substring(0, 4)}
+            CN #{row.original.pickupBranchId.substring(0, 4)}
           </span>
         ),
       },
@@ -85,7 +78,7 @@ export default function BookingManagementPage() {
         header: "Chi nhánh trả",
         cell: ({ row }) => (
           <span className="text-sm">
-            CN #{row.original.return_branch_id.substring(0, 4)}
+            CN #{row.original.returnBranchId.substring(0, 4)}
           </span>
         ),
       },
@@ -93,18 +86,18 @@ export default function BookingManagementPage() {
         accessorKey: "start_date",
         header: "Bắt đầu",
         cell: ({ row }) =>
-          new Date(row.original.start_date).toLocaleDateString("vi-VN"),
+          new Date(row.original.startTime).toLocaleDateString("vi-VN"),
       },
       {
         accessorKey: "end_date",
         header: "Kết thúc",
         cell: ({ row }) =>
-          new Date(row.original.end_date).toLocaleDateString("vi-VN"),
+          new Date(row.original.endTime).toLocaleDateString("vi-VN"),
       },
       {
         accessorKey: "total_price",
         header: "Tổng tiền",
-        cell: ({ row }) => `${row.original.total_price.toLocaleString()}đ`,
+        cell: ({ row }) => `${row.original.totalPrice?.toLocaleString()}đ`,
       },
       {
         accessorKey: "status",
@@ -115,22 +108,22 @@ export default function BookingManagementPage() {
           </Badge>
         ),
       },
-      {
-        id: "actions",
-        header: "",
-        cell: ({ row }) => (
-          <TableActionDropdown
-            onEdit={() => {
-              setSelectedBooking(row.original);
-              setOpenEditDialog(true);
-            }}
-            onDelete={() => {
-              setSelectedBooking(row.original);
-              setOpenDeleteDialog(true);
-            }}
-          />
-        ),
-      },
+      // {
+      //   id: "actions",
+      //   header: "",
+      //   cell: ({ row }) => (
+      //     <TableActionDropdown
+      //       onEdit={() => {
+      //         setSelectedBooking(row.original);
+      //         setOpenEditDialog(true);
+      //       }}
+      //       onDelete={() => {
+      //         setSelectedBooking(row.original);
+      //         setOpenDeleteDialog(true);
+      //       }}
+      //     />
+      //   ),
+      // },
     ],
     [],
   );
@@ -143,12 +136,14 @@ export default function BookingManagementPage() {
     );
   }
 
+  console.log("Bookings:", bookings);
+
   return (
     <div>
       <DataTableToolbar
         search={search}
         onSearchChange={setSearch}
-        onCreateOpen={() => setOpenCreateDialog(true)}
+        // onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
       <DataTable columns={columns} data={bookings} />
@@ -159,7 +154,7 @@ export default function BookingManagementPage() {
         onPageChange={(page) => console.log(page)}
       />
 
-      <BookingCreate
+      {/* <BookingCreate
         open={openCreateDialog}
         onOpenChange={setOpenCreateDialog}
       />
@@ -172,7 +167,7 @@ export default function BookingManagementPage() {
         open={openDeleteDialog}
         onOpenChange={setOpenDeleteDialog}
         booking={selectedBooking}
-      />
+      /> */}
     </div>
   );
 }

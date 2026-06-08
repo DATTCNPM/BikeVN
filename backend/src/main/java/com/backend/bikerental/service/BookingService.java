@@ -4,17 +4,16 @@ import com.backend.bikerental.dto.request.BookingCreationRequest;
 import com.backend.bikerental.dto.response.BookingResponse;
 import com.backend.bikerental.entity.Booking;
 import com.backend.bikerental.enums.BookingStatus;
+import com.backend.bikerental.enums.PaymentStatus;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.BookingMapper;
-import com.backend.bikerental.repository.BookingRepository;
-import com.backend.bikerental.repository.BranchRepository;
-import com.backend.bikerental.repository.UserRepository;
-import com.backend.bikerental.repository.VehicleRepository;
+import com.backend.bikerental.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +32,10 @@ public class BookingService {
     UserRepository userRepository;
     VehicleRepository vehicleRepository;
     BranchRepository branchRepository;
-
     BookingLockService bookingLockService;
-
+    PaymentRepository paymentRepository;
     private static final int EXPIRE_MINUTES = 10;
+
     @Transactional
     public BookingResponse createBooking(BookingCreationRequest request) {
 
@@ -84,6 +83,7 @@ public class BookingService {
                 .toList();
     }
     @Transactional
+    @PreAuthorize("isAuthenticated()")
     public void cancelBooking(String id) {
 
         Booking booking = bookingRepository.findById(id)
@@ -92,13 +92,13 @@ public class BookingService {
         if (booking.getStatus() == BookingStatus.completed) {
             throw new AppException(ErrorCode.BOOKING_ALREADY_COMPLETED);
         }
-
         booking.setStatus(BookingStatus.cancelled);
         booking.setUpdatedAt(LocalDateTime.now());
 
         bookingRepository.save(booking);
     }
     @Transactional
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public void approveBooking(String bookingId) {
 
         Booking booking = bookingRepository.findById(bookingId)
@@ -110,6 +110,7 @@ public class BookingService {
         bookingRepository.save(booking);
     }
     @Transactional
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public void rejectBooking(String bookingId) {
 
         Booking booking = bookingRepository.findById(bookingId)
@@ -125,13 +126,20 @@ public class BookingService {
     public void expireBookings() {
 
         List<Booking> bookings = bookingRepository.findByStatus(BookingStatus.pending);
-
         LocalDateTime now = LocalDateTime.now();
 
         for (Booking b : bookings) {
             if (b.getExpiresAt() != null && b.getExpiresAt().isBefore(now)) {
                 b.setStatus(BookingStatus.cancelled);
                 b.setUpdatedAt(now);
+
+                bookingLockService.releaseLockByVehicleAndUser(b.getVehicleId(), b.getUserId());
+                paymentRepository.findFirstByBookingIdAndStatus(b.getId(), PaymentStatus.pending)
+                        .ifPresent(payment -> {
+                            payment.setStatus(PaymentStatus.failed);
+                            payment.setUpdatedAt(now);
+                            paymentRepository.save(payment);
+                        });
             }
         }
 
@@ -183,6 +191,6 @@ public class BookingService {
         if (hours <= 0) {
             hours = 1;
         }
-        return BigDecimal.valueOf(hours * 100_000);
+        return BigDecimal.valueOf(hours * 150_000);
     }
 }

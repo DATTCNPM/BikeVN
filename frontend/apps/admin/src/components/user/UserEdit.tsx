@@ -20,8 +20,8 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateUser } from "@/features/users/mutations";
-import { userSchema, type UserFormValues } from "@/features/users/schemas";
-import type { User } from "@repo/types";
+import { updateUserSchema } from "@repo/schemas";
+import type { UpdateUserPayload, User } from "@repo/types";
 
 type Props = {
   open: boolean;
@@ -38,8 +38,8 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
+  } = useForm<UpdateUserPayload>({
+    resolver: zodResolver(updateUserSchema),
   });
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
     });
   }, [user, reset]);
 
-  const onSubmit = async (values: UserFormValues) => {
+  const onSubmit = async (values: UpdateUserPayload) => {
     if (!user) return;
     try {
       await mutateAsync({ id: user.id, payload: values });

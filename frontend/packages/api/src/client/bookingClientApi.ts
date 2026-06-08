@@ -1,11 +1,12 @@
 import axiosClient from "../axios/axiosClient";
 
-import type { ApiResponse, Booking, BookingCreationPayload } from "@repo/types";
+import type { Booking, BookingCreationPayload } from "@repo/types";
 
 export const bookingClientApi = {
-  async createBooking(payload: BookingCreationPayload): Promise<Booking> {
+  async createBooking(payload: BookingCreationPayload) {
     const idempotencyKey = crypto.randomUUID();
-    const data = await axiosClient.post<any, ApiResponse<Booking>>(
+
+    return axiosClient.post<Booking, Booking, BookingCreationPayload>(
       "/booking",
       payload,
       {
@@ -14,15 +15,9 @@ export const bookingClientApi = {
         },
       },
     );
-
-    return data.result!;
   },
 
-  async cancelBooking(bookingId: string): Promise<{ message: string }> {
+  async cancelBooking(bookingId: string) {
     await axiosClient.post(`/booking/${bookingId}/cancel`);
-
-    return {
-      message: "Hủy booking thành công",
-    };
   },
 };

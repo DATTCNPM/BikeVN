@@ -1,6 +1,6 @@
 import CardProduct from "@/components/common/CardProduct";
 import { useVehicles, useBranches } from "@repo/hooks";
-import { filterImagePrimary } from "@/utils/vehicle";
+import { filterImagePrimary } from "@repo/utils";
 export default function Vehicle() {
   const { data: vehicles, isLoading } = useVehicles();
   const { data: branches } = useBranches();
@@ -26,7 +26,7 @@ export default function Vehicle() {
                 ?.name || "Location not found"
             }
             status={vehicle.status}
-            image={filterImagePrimary(vehicle.images)}
+            image={filterImagePrimary(vehicle.images || [])}
           />
         ))}
       </div>

@@ -7,7 +7,6 @@ import { Eye, EyeOff, Home, ShieldCheck } from "lucide-react";
 // Schemas & Stores
 import { loginSchema } from "@repo/schemas";
 import type { LoginPayload } from "@repo/types";
-import { useAdminAuth } from "@/features/auth/useAdminAuth";
 
 // UI Components từ Monorepo Monolith
 import { Input } from "@repo/ui/components/ui/input";
@@ -29,9 +28,11 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 
+import { useLoginAdmin } from "@/features/auth/useLoginAdmin";
+
 export default function Login() {
   const navigate = useNavigate();
-  const { loginAdmin, loading, error } = useAdminAuth();
+  const { mutate: loginAdmin, isPending } = useLoginAdmin();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -78,13 +79,6 @@ export default function Login() {
 
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Hiển thị lỗi tổng quan từ Server nếu có */}
-            {error && (
-              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive font-medium animate-in fade-in-50">
-                {error}
-              </div>
-            )}
-
             <FieldGroup className="space-y-3">
               {/* Trường Email */}
               <Field>
@@ -152,10 +146,10 @@ export default function Login() {
               <Button
                 type="submit"
                 size="lg"
-                disabled={loading}
+                disabled={isPending}
                 className="w-full mt-2 font-semibold bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400 transition-colors duration-200 shadow-lg shadow-zinc-950/10 dark:shadow-amber-500/5"
               >
-                {loading ? (
+                {isPending ? (
                   <span className="flex items-center justify-center gap-2">
                     <Spinner className="h-4 w-4 animate-spin text-current" />
                     Xác thực hệ thống...

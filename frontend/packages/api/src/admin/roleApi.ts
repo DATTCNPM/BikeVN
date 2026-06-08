@@ -1,17 +1,17 @@
 import axiosAdmin from "../axios/axiosAdmin";
-import type { ApiResponse, RoleResponse, RoleRequest } from "@repo/types";
+
+import type { Role, RoleRequest } from "@repo/types";
 
 export const roleApi = {
-  async getRoles(): Promise<ApiResponse<RoleResponse[]>> {
+  async getRoles(): Promise<Role[]> {
     return axiosAdmin.get("/role");
   },
 
-  async createRole(payload: RoleRequest): Promise<ApiResponse<RoleResponse>> {
+  async createRole(payload: RoleRequest): Promise<Role> {
     return axiosAdmin.post("/role", payload);
   },
 
-  async deleteRole(roleName: string): Promise<ApiResponse<void>> {
-    // Note: backend API deletes by role name (which has bugs, but this is the endpoint structure)
-    return axiosAdmin.delete(`/role/${roleName}`);
+  async deleteRole(roleName: string): Promise<void> {
+    await axiosAdmin.delete(`/role/${roleName}`);
   },
 };
