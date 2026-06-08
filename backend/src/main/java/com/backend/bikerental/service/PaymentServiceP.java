@@ -92,31 +92,55 @@ public class PaymentServiceP {
     }
 
     @Transactional
-    public PaymentResponse createExtraFeePayment(String bookingId, BigDecimal damageFee, String branchId)
+    public PaymentResponse createExtraFeePayment(String bookingId, BigDecimal damageFee,
+                                                 String actualReturnBranchId)
     {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         LocalDateTime now = LocalDateTime.now();
 
-        BigDecimal finalDamageFee = (damageFee != null) ? damageFee : BigDecimal.ZERO;
+        BigDecimal totalExtraFee = BigDecimal.ZERO;
 
-        long lateFee = 0;
+        //Hoa don
+        StringBuilder feeDetailsBuilder = new StringBuilder("Surcharge details: ");
+        boolean hasFee = false;
+        //WRONG BRANCH
+        if(!booking.getReturnBranchId().equals(actualReturnBranchId))
+        {
+            totalExtraFee = totalExtraFee.add(BigDecimal.valueOf(50000));
+            feeDetailsBuilder.append("Wrong Branch: 50,000VND");
+            hasFee = true;
+        }
+
+        //DAMAGE FEE
+        if(damageFee != null && damageFee.compareTo(BigDecimal.ZERO) > 0)
+        {
+            totalExtraFee = totalExtraFee.add(damageFee);
+            feeDetailsBuilder.append("Damage Fee: ").append(damageFee).append("VND");
+            hasFee = true;
+        }
+
+        //LATE RETURN
         if(now.isAfter(booking.getEndTime()))
         {
             long lateHours = ChronoUnit.HOURS.between(booking.getEndTime(), now);
-            long lateDays = (lateHours / 24) + (lateHours % 24 > 0 ? 1 : 0);
-            lateFee = lateDays * 250000L; //250k per day late
+            long lateDays = (lateHours / 24) + (lateHours % 24 > 0 ? 1 :0);
+
+            if (lateDays > 0)
+            {
+                BigDecimal lateFee = BigDecimal.valueOf(lateDays * 250000L);
+                totalExtraFee = totalExtraFee.add(lateFee);
+                feeDetailsBuilder.append("Late Day Fee: ").append(lateDays).append("VND");
+                hasFee = true;
+            }
         }
 
-        BigDecimal totalExtraFee = finalDamageFee.add(BigDecimal.valueOf(lateFee));
-
-        if(totalExtraFee.compareTo(BigDecimal.ZERO) <= 0)
+        if (totalExtraFee.compareTo(BigDecimal.ZERO) <= 0)
         {
             booking.setStatus(BookingStatus.completed);
             booking.setActualReturnTime(now);
             bookingRepository.save(booking);
-
             return null;
         }
 
@@ -134,10 +158,13 @@ public class PaymentServiceP {
 
         booking.setActualReturnTime(now);
 
-        paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
         bookingRepository.save(booking);
 
-        return buildResponse(payment, booking);
+        PaymentResponse paymentResponse = buildResponse(savedPayment, booking);
+        paymentResponse.setTransferContent(feeDetailsBuilder.toString());
+
+        return paymentResponse;
 
     }
     @Transactional
