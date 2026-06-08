@@ -16,7 +16,7 @@ export const useCreateVehicleModel = () => {
       vehicleModelAdminApi.create(data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleModelKeys.all,
       });
     },
@@ -36,11 +36,11 @@ export const useUpdateVehicleModel = () => {
       vehicleModelAdminApi.update(id, data),
 
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleModelKeys.all,
       });
 
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleModelKeys.detail(variables.id),
       });
     },
@@ -54,7 +54,7 @@ export const useDeleteVehicleModel = () => {
     mutationFn: (id: number) => vehicleModelAdminApi.delete(id),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleModelKeys.all,
       });
     },

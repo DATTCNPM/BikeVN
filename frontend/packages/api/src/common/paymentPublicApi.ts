@@ -4,9 +4,7 @@ import type {  Payment } from "@repo/types";
 
 export const paymentCommonApi = {
   async getPayment(id: string) {
-    const data = await axiosClient.get<Payment>(
-      `/payments/${id}`,
-    );
+    const data = await axiosClient.get<Payment, Payment>(`/payments/${id}`);
 
     if (!data) {
       throw {

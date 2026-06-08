@@ -6,6 +6,6 @@ import { bookingsKeys } from "@repo/hooks";
 export function useBookings() {
   return useQuery({
     queryKey: bookingsKeys.all,
-    queryFn: bookingAdminApi.getAllBooking,
+    queryFn: () => bookingAdminApi.getAllBooking(),
   });
 }

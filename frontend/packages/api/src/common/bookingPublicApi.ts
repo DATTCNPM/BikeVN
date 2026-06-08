@@ -1,11 +1,9 @@
 import axiosClient from "../axios/axiosClient";
-import type {  Booking } from "@repo/types";
+import type { Booking } from "@repo/types";
 
 export const bookingApi = {
-  async getBooking(id: string){
-    const data = await axiosClient.get<Booking>(
-      `/booking/${id}`,
-    );
+  async getBooking(id: string) {
+    const data = await axiosClient.get<Booking, Booking>(`/booking/${id}`);
 
     if (!data) {
       throw {
@@ -22,7 +20,7 @@ export const bookingApi = {
   },
 
   async getBookingsByUser(userId: string) {
-    const data = await axiosClient.get<Booking[]>(
+    const data = await axiosClient.get<Booking[], Booking[]>(
       `/booking/user/${userId}`,
     );
 

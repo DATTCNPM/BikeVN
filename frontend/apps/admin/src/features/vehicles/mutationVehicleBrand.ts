@@ -16,7 +16,7 @@ export const useCreateVehicleBrand = () => {
       vehicleBrandAdminApi.create(data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleBrandKeys.all,
       });
     },
@@ -36,11 +36,11 @@ export const useUpdateVehicleBrand = () => {
     }) => vehicleBrandAdminApi.update(id, data),
 
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleBrandKeys.all,
       });
 
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleBrandKeys.detail(variables.id),
       });
     },
@@ -54,7 +54,7 @@ export const useDeleteVehicleBrand = () => {
     mutationFn: (id: number) => vehicleBrandAdminApi.delete(id),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleBrandKeys.all,
       });
     },

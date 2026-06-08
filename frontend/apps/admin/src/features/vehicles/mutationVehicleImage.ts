@@ -23,7 +23,7 @@ export function useUploadVehicleImage() {
     }) => vehicleImageAdminApi.uploadImage(vehicleId, payload),
 
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleImageKeys.list(variables.vehicleId),
       });
     },
@@ -47,7 +47,7 @@ export function useUpdateVehicleImage() {
     }) => vehicleImageAdminApi.updateImage(vehicleId, imageId, payload),
 
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleImageKeys.list(variables.vehicleId),
       });
     },
@@ -68,7 +68,7 @@ export function useDeleteVehicleImage() {
     }) => vehicleImageAdminApi.deleteImage(vehicleId, imageId),
 
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: vehicleImageKeys.list(variables.vehicleId),
       });
     },

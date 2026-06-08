@@ -4,15 +4,13 @@ import axiosPublic from "../axios/axiosPublic";
 
 export const branchPublicApi = {
   async getBranches() {
-    const data = await axiosPublic.get<Branch[]>("/branch");
+    const data = await axiosPublic.get<Branch[], Branch[]>("/branch");
     console.log("Fetched branches:", data);
     return data || [];
   },
 
   async getBranchById(id: string) {
-    const data = await axiosPublic.get<Branch>(
-      `/branch/${id}`,
-    );
+    const data = await axiosPublic.get<Branch, Branch>(`/branch/${id}`);
 
     if (!data) {
       throw {
