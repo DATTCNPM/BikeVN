@@ -15,14 +15,17 @@ export const authApi = {
   },
 
   async login(payload: LoginPayload): Promise<AuthenticationResponse> {
-    return axiosPublic.post<any, AuthenticationResponse>(
+    return axiosPublic.post<LoginPayload, AuthenticationResponse>(
       "/auth/login",
       payload,
     );
   },
 
   async register(payload: RegisterPayload): Promise<AuthenticationResponse> {
-    return axiosPublic.post<any, AuthenticationResponse>("/user", payload);
+    return axiosPublic.post<RegisterPayload, AuthenticationResponse>(
+      "/user",
+      payload,
+    );
   },
 
   async introspect(token: string): Promise<IntrospectResponse> {

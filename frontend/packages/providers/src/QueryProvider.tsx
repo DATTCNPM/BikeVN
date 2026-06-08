@@ -3,6 +3,21 @@ import { QueryCache, MutationCache } from "@tanstack/react-query";
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { ReactNode } from "react";
 
+import { ApiError } from "@repo/api";
+import { ERROR_MESSAGES } from "./errorMessages";
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    return ERROR_MESSAGES[error.code] ?? error.message;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Đã xảy ra lỗi";
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -20,18 +35,13 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error: any) => {
       if (error?.response?.status === 401) return;
-      const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Something went wrong";
+      const message = getErrorMessage(error);
       toast.error(`Query Error: ${message}`);
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error: any) => {
-      const message =
-        error?.response?.data?.message || error?.message || "Action failed";
-      toast.error(`Mutation Error: ${message}`);
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   }),
 });

@@ -12,7 +12,6 @@
     }
   },
   "dependencies": {
-    "@repo/ui": "workspace:*",
     "@repo/constants": "workspace:*",
     "@repo/services": "workspace:*",
     "@repo/types": "workspace:*",

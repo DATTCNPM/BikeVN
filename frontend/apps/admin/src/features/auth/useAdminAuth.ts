@@ -1,143 +1,101 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+
 import { authApi, authAdminApi } from "@repo/api";
-import { authStorageService, tokenService } from "@repo/services";
 import { ROLES } from "@repo/constants";
-import type { User } from "@repo/types";
+import { authStorageService, tokenService } from "@repo/services";
+
 import type { LoginPayload } from "@repo/types";
 
 interface AdminAuthState {
   isAdminLogin: boolean;
-  adminProfile: User | null;
-  loading: boolean;
-  error: string | null;
 
   loginAdmin: (credentials: LoginPayload) => Promise<boolean>;
   logoutAdmin: () => Promise<boolean>;
-  fetchAdminProfile: () => Promise<void>;
-  setError: (msg: string | null) => void;
+  initializeAuth: () => void;
 }
+
+const hasAdminAccess = (token: string) => {
+  const roles = tokenService.getRoles(token);
+
+  return roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
+};
 
 export const useAdminAuth = create<AdminAuthState>()(
   devtools(
     (set) => ({
       isAdminLogin: !!authStorageService.getAdminToken(),
-      adminProfile: null,
-      loading: false,
-      error: null,
 
       loginAdmin: async (credentials) => {
-        set({
-          loading: true,
-          error: null,
-        });
-
         try {
           const auth = await authApi.login(credentials);
 
           const token = auth.token;
 
-          const roles = tokenService.getRoles(token);
-
-          const hasAdminAccess =
-            roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
-
-          if (!hasAdminAccess) {
-            set({
-              error: "Tài khoản không có quyền quản trị viên",
-            });
-
+          if (!hasAdminAccess(token)) {
             return false;
           }
 
           authStorageService.setAdminToken(token);
 
-          const profile = await authAdminApi.getProfile();
-
           set({
             isAdminLogin: true,
-            adminProfile: profile,
           });
 
           return true;
-        } catch (err: any) {
-          set({
-            error: err?.message || "Sai tài khoản hoặc mật khẩu",
-          });
-
+        } catch {
           return false;
-        } finally {
-          set({
-            loading: false,
-          });
         }
       },
 
       logoutAdmin: async () => {
-        set({ loading: true });
         const token = authStorageService.getAdminToken();
+
         if (token) {
           try {
             await authAdminApi.logout(token);
-          } catch (err) {
-            console.error("Admin logout failed:", err);
+          } catch {
+            // ignore
           }
         }
+
         authStorageService.clearAdminToken();
-        set({ isAdminLogin: false, adminProfile: null, error: null });
+
+        set({
+          isAdminLogin: false,
+        });
+
         return true;
       },
 
-      fetchAdminProfile: async () => {
+      initializeAuth: () => {
         const token = authStorageService.getAdminToken();
 
         if (!token) {
+          set({
+            isAdminLogin: false,
+          });
+
           return;
         }
 
-        set({
-          loading: true,
-        });
-
-        try {
-          const roles = tokenService.getRoles(token);
-
-          const hasAdminAccess =
-            roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
-
-          if (!hasAdminAccess || tokenService.isExpired(token)) {
-            authStorageService.clearAdminToken();
-
-            set({
-              isAdminLogin: false,
-              adminProfile: null,
-            });
-
-            return;
-          }
-
-          const profile = await authAdminApi.getProfile();
-
-          set({
-            adminProfile: profile,
-            isAdminLogin: true,
-          });
-        } catch {
+        if (tokenService.isExpired(token) || !hasAdminAccess(token)) {
           authStorageService.clearAdminToken();
 
           set({
             isAdminLogin: false,
-            adminProfile: null,
           });
-        } finally {
-          set({
-            loading: false,
-          });
-        }
-      },
 
-      setError: (msg) => set({ error: msg }),
+          return;
+        }
+
+        set({
+          isAdminLogin: true,
+        });
+      },
     }),
-    { name: "admin-auth-store" },
+    {
+      name: "admin-auth-store",
+    },
   ),
 );

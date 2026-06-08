@@ -6,10 +6,22 @@ import { Card, CardContent } from "@repo/ui/components/ui/card";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 
-import { useAdminAuth } from "@/features/auth/useAdminAuth";
+import { useAdminProfile } from "@/features/auth/useAdminProfile";
 
 export default function InfoPage() {
-  const { adminProfile } = useAdminAuth();
+  const { data: adminProfile, isLoading } = useAdminProfile();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const initials =
+    adminProfile?.name
+      ?.split(" ")
+      .map((word) => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() ?? "AD";
 
   return (
     <div className="space-y-6">
@@ -25,19 +37,13 @@ export default function InfoPage() {
         <CardContent className="p-6">
           <div className="mb-8 flex flex-col items-center gap-4 md:flex-row">
             <Avatar className="size-24">
-              <AvatarFallback>
-                <User className="size-10" />
-              </AvatarFallback>
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
 
             <div>
-              <h2 className="text-xl font-bold">
-                {adminProfile?.name || "Admin System"}
-              </h2>
+              <h2 className="text-xl font-bold">{adminProfile?.name}</h2>
 
-              <p className="text-muted-foreground">
-                {adminProfile?.email || "administrator@motorent.com"}
-              </p>
+              <p className="text-muted-foreground">{adminProfile?.email}</p>
             </div>
           </div>
 
@@ -45,10 +51,14 @@ export default function InfoPage() {
             <div className="space-y-2">
               <Label>Họ tên</Label>
 
-              <Input
-                defaultValue={adminProfile?.name || "Admin System"}
-                className="h-11 rounded-2xl"
-              />
+              <div className="relative">
+                <User className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={adminProfile?.name ?? ""}
+                  readOnly
+                  className="h-11 rounded-2xl pl-11"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -58,9 +68,8 @@ export default function InfoPage() {
                 <Mail className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
 
                 <Input
-                  defaultValue={
-                    adminProfile?.email || "administrator@motorent.com"
-                  }
+                  value={adminProfile?.email ?? ""}
+                  readOnly
                   className="h-11 rounded-2xl pl-11"
                 />
               </div>
@@ -73,14 +82,17 @@ export default function InfoPage() {
                 <Phone className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
 
                 <Input
-                  defaultValue={adminProfile?.phone || "0901234567"}
+                  value={adminProfile?.phone ?? ""}
+                  readOnly
                   className="h-11 rounded-2xl pl-11"
                 />
               </div>
             </div>
           </div>
 
-          <Button className="mt-6 h-11 rounded-2xl">Lưu thông tin</Button>
+          <Button disabled className="mt-6 h-11 rounded-2xl">
+            Chỉnh sửa hồ sơ
+          </Button>
         </CardContent>
       </Card>
     </div>

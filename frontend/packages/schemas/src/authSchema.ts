@@ -9,10 +9,10 @@ export const registerSchema = z
   .object({
     name: z.string().min(1, "Họ tên là bắt buộc"),
     email: z.string().min(1, "Email là bắt buộc").email("Email không hợp lệ"),
-    password: z.string().min(6, "PASSWORD_INVALID"),
+    passwordHash: z.string().min(6, "PASSWORD_INVALID"),
     confirmPassword: z.string().min(1, "Xác nhận mật khẩu là bắt buộc"),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.passwordHash === data.confirmPassword, {
     message: "Mật khẩu xác nhận không khớp",
     path: ["confirmPassword"],
   });

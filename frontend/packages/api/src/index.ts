@@ -28,3 +28,5 @@ export * from "./common/vehicleModelPublicApi";
 export * from "./common/vehicleImagePublicApi";
 export * from "./common/bookingPublicApi";
 export * from "./common/paymentPublicApi";
+
+export * from "./error/ApiError";
