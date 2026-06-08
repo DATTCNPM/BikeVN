@@ -6,6 +6,7 @@ import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.dto.response.VehicleImageResponse;
 import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.entity.VehicleImage;
+import com.backend.bikerental.enums.StatusVehicleEnum;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.VehicleMapper;
@@ -87,6 +88,18 @@ public class VehicleService {
     {
         vehicleRepository.deleteById(id);
     }
+
+    @Transactional
+    @PreAuthorize("hasRole('admin') or hasRole('employee')")
+    public void updateVehicleStatus(String id, StatusVehicleEnum status)
+    {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
+        vehicle.setStatus(status);
+        vehicleRepository.save(vehicle);
+    }
+
 
     @Transactional
     @PreAuthorize("hasRole('admin') or hasRole('employee')")
