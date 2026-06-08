@@ -11,13 +11,7 @@ export function useUsers() {
     queryKey: usersKeys.all,
     queryFn: async () => {
       const response = await userApi.getUsers();
-      // Map cccdNumber to cccd_number if needed, and default roles to "user"
-      const usersList = response?.result || [];
-      return usersList.map((u) => ({
-        ...u,
-        cccd_number: u.cccdNumber,
-        role: u.role || "user", // fallback display role
-      }));
+      return response;
     },
   });
 }
@@ -27,13 +21,7 @@ export function useUser(id: string) {
     queryKey: usersKeys.detail(id),
     queryFn: async () => {
       const response = await userApi.getUserById(id);
-      const user = response?.result;
-      if (!user) return null;
-      return {
-        ...user,
-        cccd_number: user.cccdNumber,
-        role: user.role || "user",
-      };
+      return response;
     },
     enabled: !!id,
   });

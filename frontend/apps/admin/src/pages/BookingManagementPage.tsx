@@ -143,7 +143,7 @@ export default function BookingManagementPage() {
       <DataTableToolbar
         search={search}
         onSearchChange={setSearch}
-        onCreateOpen={() => setOpenCreateDialog(true)}
+        // onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
       <DataTable columns={columns} data={bookings} />

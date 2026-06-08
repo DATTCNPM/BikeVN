@@ -4,6 +4,9 @@ import type { Payment, PaymentCreationPayload } from "@repo/types";
 
 export const paymentClientApi = {
   async createPayment(payload: PaymentCreationPayload) {
-    return axiosClient.post<Payment>("/payments", payload);
+    return axiosClient.post<Payment, Payment, PaymentCreationPayload>(
+      "/payments",
+      payload,
+    );
   },
 };

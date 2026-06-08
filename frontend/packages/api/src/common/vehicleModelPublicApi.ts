@@ -3,7 +3,7 @@ import type { VehicleModel } from "@repo/types";
 
 export const vehicleModelPublicApi = {
   async getModels() {
-    const data = await axiosPublic.get<VehicleModel[]>(
+    const data = await axiosPublic.get<VehicleModel[], VehicleModel[]>(
       "/model",
     );
     console.log("Fetched models:", data);
@@ -11,7 +11,7 @@ export const vehicleModelPublicApi = {
   },
 
   async getModelById(id: number) {
-    const data = await axiosPublic.get<VehicleModel>(
+    const data = await axiosPublic.get<VehicleModel, VehicleModel>(
       `/model/${id}`,
     );
     console.log("Fetched model:", data);

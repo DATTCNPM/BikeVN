@@ -3,7 +3,7 @@ import type { VehicleBrand } from "@repo/types";
 
 export const vehicleBrandPublicApi = {
   async getBrands() {
-    const data = await axiosPublic.get<VehicleBrand[]>(
+    const data = await axiosPublic.get<VehicleBrand[], VehicleBrand[]>(
       "/brand",
     );
     console.log("Fetched brands:", data);
@@ -11,7 +11,7 @@ export const vehicleBrandPublicApi = {
   },
 
   async getBrandById(id: number) {
-    const data = await axiosPublic.get<VehicleBrand>(
+    const data = await axiosPublic.get<VehicleBrand, VehicleBrand>(
       `/brand/${id}`,
     );
     console.log("Fetched brand:", data);

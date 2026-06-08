@@ -30,7 +30,7 @@ type Props = {
 const defaultValues: AdminUserCreationPayload = {
   name: "",
   email: "",
-  password: "",
+  passwordHash: "",
   phone: "",
   cccdNumber: "",
   role: "user",
@@ -92,12 +92,12 @@ export default function UserCreate({ open, onOpenChange }: Props) {
           <Field>
             <FieldLabel>Mật khẩu</FieldLabel>
             <Input
-              {...register("password")}
+              {...register("passwordHash")}
               type="password"
               placeholder="********"
             />
-            {errors.password && (
-              <FieldError>{errors.password.message}</FieldError>
+            {errors.passwordHash && (
+              <FieldError>{errors.passwordHash.message}</FieldError>
             )}
           </Field>
 
