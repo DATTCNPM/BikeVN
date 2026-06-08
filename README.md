@@ -1,173 +1,188 @@
 # BikeVN
 
-Ứng dụng cho thuê xe máy tay ga theo vị trí, hỗ trợ đặt xe và chat realtime giữa khách và chủ xe.
+A full-stack motorbike rental platform built with Spring Boot, React, TypeScript, MySQL, and Docker.
 
-## Features
+---
 
-- Authentication (JWT)
-- Booking system (check trùng lịch)
-- Map tìm xe gần (Google Maps)
-- Chat realtime (WebSocket)
-- Admin dashboard
+## Overview
+
+BikeVN is a motorbike rental management system that supports:
+
+- Vehicle browsing and search
+- Online booking
+- Payment processing
+- Booking lifecycle management
+- Vehicle return workflow
+- Customer reviews
+- Real-time messaging
+- Administrative dashboard
+
+The project is designed using modern full-stack development practices with a clear separation between frontend and backend services.
+
+---
 
 ## Tech Stack
 
-Frontend: React  
-Backend: Spring Boot  
-Database: MySQL  
-Map: Google Maps API  
-Realtime: WebSocket
+### Frontend
 
-## Architecture
+- React
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- Zustand
+- Tailwind CSS
+- Shadcn UI
 
-## 📁 Folder Structure
+### Backend
 
-```
+- Java 21
+- Spring Boot
+- Spring Security
+- Spring Data JPA
+- Hibernate
+
+### Database
+
+- MySQL
+
+### DevOps
+
+- Docker
+- Docker Compose
+
+---
+
+## Project Structure
+
+```text
 BikeVN/
 │
-├── frontend/                # React + TypeScript (pnpm monorepo)
-│   ├── apps/
-│   │   ├── admin/          # Admin dashboard
-│   │   └── client-web/     # Client web app
-│   ├── packages/           # Shared packages (ui, api, hooks, etc)
-│   └── pnpm-workspace.yaml
+├── backend/
 │
-├── backend/                 # Spring Boot
-│   ├── src/main/java/com/app/
-│   │   ├── controller/      # API endpoints
-│   │   ├── service/         # Business logic
-│   │   ├── repository/      # Data access
-│   │   ├── model/           # JPA entities
-│   │   ├── dto/             # Request/Response DTO
-│   │   └── config/          # Security, WebSocket config
-│   ├── pom.xml
-│   └── docker-compose.yml   # Backend services
+├── frontend/
+│   ├── apps/
+│   │   ├── admin/
+│   │   └── client-web/
+│   │
+│   └── packages/
 │
 ├── database/
-│   ├── schema.sql           # 10 tables with UUID PKs
-│   ├── sample_data.sql      # 64+ sample records
-│   └── QUERIES_REFERENCE.sql
 │
-├── docker/                  # Docker configuration
-│   ├── docker-compose.yml   # MySQL, phpMyAdmin, Adminer
-│   └── mysql.cnf           # MySQL configuration
+├── docker/
 │
-├── docs/                    # Project documentation
-│   ├── API.md              # API endpoints
-│   ├── Architecture.md      # System architecture
-│   ├── ERD.md              # Entity relationship diagram
-│   ├── SRS.docx            # Software requirements
-│   └── ...
+├── docs/
+│   ├── architecture.md
+│   ├── erd.md
+│   ├── api.md
+│   ├── backend.md
+│   ├── frontend.md
+│   ├── deployment.md
+│   │
+│   └── decisions/
 │
-├── diagrams/               # Project diagrams
-│   └── BikeVN.drawio.png
-│
-├── README.md               # This file
-├── START.md                # Quick start guide
-├── QUICK_REFERENCE.md      # Daily commands
-├── SETUP_CHECKLIST.md      # Step-by-step setup
-├── GIT_COMMIT_GUIDE.md     # Git deployment guide
-│
-├── setup-env.ps1           # Windows PowerShell setup
-├── setup-env.bat           # Windows CMD setup
-├── setup-env.sh            # Linux/Mac Bash setup
-│
-├── .env                    # Environment configuration
-├── .env.example            # Configuration template
-└── .gitignore
+├── README.md
+└── CONTRIBUTING.md
 ```
 
-## 🐳 Docker Setup
+---
 
-The project includes Docker configuration for easy local development setup.
+## Quick Start
 
-### Quick Start
+### Prerequisites
 
-1. **Clone repository**
-   ```bash
-   git clone <repository-url>
-   cd BikeVN
-   ```
+Install:
 
-2. **Start Docker services** (choose your OS)
-   
-   **Windows (PowerShell)**
-   ```powershell
-   .\setup-env.ps1 up
-   ```
-   
-   **Windows (CMD)**
-   ```cmd
-   setup-env.bat up
-   ```
-   
-   **Linux/Mac**
-   ```bash
-   chmod +x setup-env.sh
-   ./setup-env.sh up
-   ```
+- Docker Desktop
+- Git
+- Node.js
+- Java 21
 
-3. **Access services**
-   - phpMyAdmin: http://localhost:8080
-   - Adminer: http://localhost:8081
-   - MySQL: localhost:3307
-   - Credentials: `bikevn_user` / `bikevn_pass`
+---
 
-### Docker Structure
+### Start Infrastructure
 
-```
-docker/
-├── docker-compose.yml   # 3 services (MySQL, phpMyAdmin, Adminer)
-└── mysql.cnf           # MySQL configuration
+Windows
+
+```powershell
+.\setup-env.ps1 up
 ```
 
-### Available Commands
+Linux / macOS
 
 ```bash
-# Start containers
-setup-env.ps1 up          # PowerShell
-setup-env.bat up          # Windows CMD
-./setup-env.sh up         # Linux/Mac
-
-# Stop containers
-setup-env.ps1 down
-setup-env.bat down
-./setup-env.sh down
-
-# View status
-setup-env.ps1 status
-setup-env.bat status
-./setup-env.sh status
-
-# View logs
-setup-env.ps1 logs
-setup-env.bat logs
-./setup-env.sh logs
+./setup-env.sh up
 ```
 
-## 📚 Documentation
+---
 
-### Quick Start
-- **[START.md](./START.md)** - Begin here! Choose your role
-- **[INDEX.md](./INDEX.md)** - Find any documentation quickly
+### Verify Services
 
-### Daily Reference
-- **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Commands cheat sheet (bookmark!)
-- **[SETUP_CHECKLIST.md](./SETUP_CHECKLIST.md)** - Step-by-step setup guide
+| Service    | URL                   |
+| ---------- | --------------------- |
+| phpMyAdmin | http://localhost:8080 |
+| Adminer    | http://localhost:8081 |
 
-### Project Info
-- **[README.md](./README.md)** - This file (project overview)
-- **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Complete file organization
+---
+
+### Database
+
+```text
+Host: localhost
+Port: 3307
+
+Database: bikevn_db
+
+Username: bikevn_user
+Password: bikevn_pass
+```
+
+---
+
+## Documentation
+
+### Architecture
+
+- docs/architecture.md
+- docs/erd.md
+
+### API
+
+- docs/api.md
+
+### Backend
+
+- docs/backend.md
+
+### Frontend
+
+- docs/frontend.md
 
 ### Deployment
-- **[GIT_COMMIT_GUIDE.md](./GIT_COMMIT_GUIDE.md)** - How to commit and deploy
 
-### Additional Documentation
-- See **[docs/](./docs/)** folder for API, Architecture, ERD, and more
-- See **[INDEX.md](./INDEX.md)** for complete documentation index
+- docs/deployment.md
 
-## 👥 Team Members
+### Engineering Decisions
 
-- Trần Hải Đăng (Frontend)
-- Trần Hoàng Phương (Backend)
-- Hồ Tấn Đạt (Database, API docs, Project management)
+- docs/decisions/ConcurrentBookingControl.md
+- docs/decisions/DuplicatePaymentPrevention.md
+- docs/decisions/VehicleReturnDuplicatePrevention.md
+
+---
+
+## Development Workflow
+
+1. Pull latest changes
+2. Start Docker services
+3. Run backend
+4. Run frontend
+5. Implement feature
+6. Create Pull Request
+
+See CONTRIBUTING.md for development standards.
+
+---
+
+## License
+
+This project is intended for educational and portfolio purposes.

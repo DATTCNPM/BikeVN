@@ -7,15 +7,3 @@ export function useCreatePayment() {
     mutationFn: paymentClientApi.createPayment,
   });
 }
-
-export function useConfirmPayment() {
-  return useMutation({
-    mutationFn: ({
-      id,
-      transactionCode,
-    }: {
-      id: string;
-      transactionCode: string;
-    }) => paymentClientApi.confirmPayment(id, transactionCode),
-  });
-}
