@@ -20,6 +20,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,11 +76,29 @@ public class VehicleService {
                 new AppException(ErrorCode.VEHICLE_NOT_EXISTED)));
     }
     @Transactional
-    @PreAuthorize("hasRole('admin') or hasRole('employee')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public VehicleResponse updateVehicle(String id, VehicleUpdateRequest request)
     {
         Vehicle vehicle = vehicleRepository.findById(id).orElseThrow(()->
                 new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a-> a.getAuthority().equals("ROLE_admin"));
+
+        if(!isAdmin)
+        {
+            if(auth instanceof JwtAuthenticationToken jwtAuthenticationToken)
+            {
+                String tokenBranchId = (String) jwtAuthenticationToken.getTokenAttributes().get("branchId");
+                String vehicleBranchId = vehicle.getCurrentBranch() != null ? vehicle.getCurrentBranch().getId() : null;
+
+                if(tokenBranchId == null || !tokenBranchId.equals(vehicleBranchId))
+                {
+                    throw new AppException(ErrorCode.UNAUTHORIZED);
+                }
+            }
+        }
+
         vehicleMapper.updateVehicle(vehicle, request);
         return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
