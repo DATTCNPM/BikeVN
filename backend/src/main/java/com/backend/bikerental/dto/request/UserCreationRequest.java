@@ -22,4 +22,6 @@ public class UserCreationRequest {
     String phone;
 
     String cccdNumber;
+
+    String branchId;
 }

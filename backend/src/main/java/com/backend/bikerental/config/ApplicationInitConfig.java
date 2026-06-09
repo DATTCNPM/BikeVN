@@ -44,6 +44,7 @@ public class ApplicationInitConfig {
                         .email("admin@gmail.com")
                         .passwordHash(passwordEncoder.encode("admin"))
                         .roles(Set.of(adminRole))
+                        .branch(null)
                         .build();
                 userRepository.save(user);
                 System.out.println("ADMIN CREATED!");

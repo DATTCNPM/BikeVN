@@ -23,4 +23,5 @@ public class UserResponse {
 
     String phone;
     String cccdNumber;
+    String branchId;
 }

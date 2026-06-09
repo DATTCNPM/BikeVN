@@ -12,11 +12,15 @@ import java.util.List;
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "branch", ignore = true)
     User toUser(UserCreationRequest request);
+
+    @Mapping(source = "branch.id", target = "branchId")
     UserResponse toUserResponse(User user);
     List<UserResponse> toListUsersResponse(List<User> users);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "branch", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }

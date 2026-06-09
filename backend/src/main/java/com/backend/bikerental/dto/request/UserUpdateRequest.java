@@ -15,4 +15,5 @@ public class UserUpdateRequest {
      String password;
      String phone;
      String cccdNumber;
+     String branchId;
 }
