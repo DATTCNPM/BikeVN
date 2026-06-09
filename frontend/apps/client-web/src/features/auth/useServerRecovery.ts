@@ -5,15 +5,17 @@ import { authApi } from "@repo/api";
 import { useAuthStore } from "./authStore";
 import { useEffect } from "react";
 
-export const usePingServer = () => {
+export const useServerRecovery = () => {
+  const isServerDown = useAuthStore((state) => state.isServerDown);
+
   const setIsServerDown = useAuthStore((state) => state.setIsServerDown);
 
   const query = useQuery({
-    queryKey: ["server-ping"],
+    queryKey: ["server-recovery"],
 
-    queryFn: async () => {
-      return authApi.ping();
-    },
+    queryFn: authApi.ping,
+
+    enabled: isServerDown,
 
     retry: false,
 
@@ -21,22 +23,19 @@ export const usePingServer = () => {
 
     gcTime: 0,
 
-    refetchInterval: 3000,
+    refetchInterval: isServerDown ? 3000 : false,
 
     refetchIntervalInBackground: true,
   });
-
   useEffect(() => {
+    console.log("STATUS:", query.status);
+
     if (query.isSuccess) {
       setIsServerDown(false);
     }
-  }, [query.isSuccess, setIsServerDown]);
 
-  useEffect(() => {
     if (query.isError) {
       setIsServerDown(true);
     }
-  }, [query.isError, setIsServerDown]);
-
-  return query;
+  }, [query.isSuccess, query.isError, setIsServerDown]);
 };

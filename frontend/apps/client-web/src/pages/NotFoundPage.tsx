@@ -2,11 +2,10 @@ import { useEffect, useRef } from "react";
 
 import { motion } from "framer-motion";
 
-import { ArrowLeft, Compass, MoveRight } from "lucide-react";
+import { Compass } from "lucide-react";
 
-import { Link } from "react-router-dom";
-
-import { Button } from "@repo/ui/components/ui/button";
+import ErrorPageLayout from "@/layouts/ErrorPageLayout";
+import MovingEmoji from "@/components/common/MovingEmoji";
 
 export default function NotFoundPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -139,166 +138,41 @@ export default function NotFoundPage() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background text-foreground transition-colors duration-500">
-      {/* Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0" />
-
-      {/* Blur Glow */}
-      <div className="absolute top-1/2 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl dark:bg-primary/15" />
-
-      {/* Grid Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:80px_80px] dark:opacity-100 opacity-30" />
-
-      {/* Content */}
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 40,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.8,
-        }}
-        className="relative z-10 mx-auto flex max-w-2xl flex-col items-center px-6 text-center"
-      >
-        {/* 404 */}
-        <motion.h1
-          initial={{
-            scale: 0.8,
-          }}
-          animate={{
-            scale: 1,
-          }}
-          transition={{
-            duration: 0.6,
-          }}
-          className="bg-gradient-to-b from-primary via-amber-400 to-primary/30 bg-clip-text text-[120px] leading-none font-black tracking-tight text-transparent drop-shadow-[0_0_30px_rgba(251,191,36,0.25)] md:text-[180px]"
-        >
-          404
-        </motion.h1>
-
-        {/* Title */}
-        <motion.h2
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          transition={{
-            delay: 0.2,
-          }}
-          className="mt-4 text-3xl font-bold tracking-tight text-foreground md:text-5xl"
-        >
-          Lạc đường giữa hành trình
-        </motion.h2>
-
-        {/* Description */}
-        <motion.p
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          transition={{
-            delay: 0.35,
-          }}
-          className="mt-5 max-w-xl text-base leading-7 text-muted-foreground md:text-lg"
-        >
-          Có vẻ tuyến đường bạn tìm kiếm không tồn tại hoặc đã được thay đổi.
-          Hãy quay lại gara và tiếp tục hành trình với chiếc xe phù hợp hơn.
-        </motion.p>
-
-        {/* Bike Line */}
+    <ErrorPageLayout
+      canvas={<canvas ref={canvasRef} className="absolute inset-0" />}
+      glowClassName="absolute top-1/2 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl dark:bg-primary/15"
+      code="404"
+      title="Lạc đường giữa hành trình"
+      description="Có vẻ tuyến đường bạn tìm kiếm không tồn tại hoặc đã được thay đổi. Hãy quay lại gara và tiếp tục hành trình với chiếc xe phù hợp hơn."
+      showGrid
+      codeClassName="bg-gradient-to-b from-primary via-amber-400 to-primary/30 bg-clip-text text-[120px] leading-none font-black tracking-tight text-transparent drop-shadow-[0_0_30px_rgba(251,191,36,0.25)] md:text-[180px]"
+      middleContent={
+        <MovingEmoji
+          emoji="🏍️"
+          gradientClassName="bg-gradient-to-r from-transparent via-primary to-transparent"
+        />
+      }
+      actions={
         <motion.div
-          initial={{
-            width: 0,
-          }}
-          animate={{
-            width: "220px",
-          }}
-          transition={{
-            delay: 0.5,
-            duration: 1,
-          }}
-          className="relative mt-10 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"
-        >
-          <motion.div
-            animate={{
-              x: [0, 180, 0],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute -top-4 text-xl"
-          >
-            🏍️
-          </motion.div>
-        </motion.div>
-
-        {/* Actions */}
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.7,
-          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
           className="mt-12 flex flex-col gap-4 sm:flex-row"
         >
-          <Button
-            asChild
-            size="lg"
-            className="h-12 rounded-2xl px-6 text-base shadow-lg shadow-primary/20"
-          >
-            <Link to="/">
-              <ArrowLeft className="mr-2 size-4" />
-              Quay về trang chủ
-            </Link>
-          </Button>
-
-          <Button
-            asChild
-            size="lg"
-            variant="secondary"
-            className="h-12 rounded-2xl px-6 text-base"
-          >
-            <Link to="/vehicles">
-              Khám phá xe
-              <MoveRight className="ml-2 size-4" />
-            </Link>
-          </Button>
+          {/* giữ nguyên button */}
         </motion.div>
-
-        {/* Footer */}
+      }
+      footer={
         <motion.div
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          transition={{
-            delay: 1,
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
           className="mt-16 flex items-center gap-2 text-sm text-muted-foreground"
         >
           <Compass className="size-4" />
-
           <span>MotoRent Premium Experience</span>
         </motion.div>
-      </motion.div>
-    </div>
+      }
+    />
   );
 }
