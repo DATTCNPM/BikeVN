@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
-import { usePingServer } from "@/features/auth/authHook";
+import { useInitialServerCheck } from "@/features/auth/useInitialServerCheck";
 
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
@@ -27,16 +27,21 @@ import { Outlet } from "react-router-dom";
 import { useAuthStore } from "@/features/auth/authStore";
 function GlobalRootLayout() {
   const navigate = useNavigate();
-  usePingServer();
+  console.log("GlobalRootLayout mounted");
+
+  useInitialServerCheck();
+
   const isServerDown = useAuthStore((state) => state.isServerDown);
 
   useEffect(() => {
     if (isServerDown) {
       navigate("/server-error");
     }
-  }, [isServerDown]);
+  }, [isServerDown, navigate]);
+
   return <Outlet />;
 }
+
 function ProtectedRoute() {
   const navigate = useNavigate();
   const isLogin = useAuthStore((state) => state.isLogin);
@@ -62,91 +67,91 @@ const router = createBrowserRouter([
         index: true,
         element: <Landing />,
       },
-    ],
-  },
-  {
-    path: "*",
-    element: <NotFoundPage />,
-  },
-  {
-    element: <AuthLayout />,
-    children: [
       {
-        path: "/login",
-        element: <Login />,
+        path: "*",
+        element: <NotFoundPage />,
       },
       {
-        path: "/register",
-        element: <Register />,
-      },
-    ],
-  },
-  {
-    element: <MainLayout />,
-    children: [
-      {
-        path: "/home",
-        element: <HomePage />,
+        path: "server-error",
+        element: <ServerErrorPage />,
       },
       {
-        path: "/vehicles/:id",
-        element: <VehicleDetail />,
+        element: <AuthLayout />,
+        children: [
+          {
+            path: "login",
+            element: <Login />,
+          },
+          {
+            path: "register",
+            element: <Register />,
+          },
+        ],
+      },
+      {
+        element: <MainLayout />,
+        children: [
+          {
+            path: "home",
+            element: <HomePage />,
+          },
+          {
+            path: "vehicles/:id",
+            element: <VehicleDetail />,
+          },
+          {
+            element: <ProtectedRoute />, // Bọc các route cần bảo vệ bằng ProtectedRoute
+            children: [
+              {
+                path: "booking-result/:id",
+                element: <BookingResultPage />,
+              },
+              {
+                path: "payment/:id",
+                element: <PaymentPage />,
+              },
+              {
+                path: "notifications",
+                element: <NotificationPage />,
+              },
+            ],
+          },
+        ],
       },
       {
         element: <ProtectedRoute />, // Bọc các route cần bảo vệ bằng ProtectedRoute
         children: [
           {
-            path: "/booking-result/:id",
-            element: <BookingResultPage />,
+            element: <ChatLayout />,
+            children: [
+              {
+                path: "chat",
+                element: <ChatPage />,
+              },
+            ],
           },
           {
-            path: "/payment/:id",
-            element: <PaymentPage />,
-          },
-          {
-            path: "/notifications",
-            element: <NotificationPage />,
+            path: "profile",
+            element: <ProfileLayout />,
+            children: [
+              {
+                index: true,
+                path: "info",
+                element: <InfoSection />,
+              },
+              {
+                path: "settings",
+                element: <SettingSection />,
+              },
+              {
+                path: "bookings",
+                element: <MyBookingSection />,
+              },
+            ],
           },
         ],
       },
     ],
-  },
-  {
-    element: <ProtectedRoute />, // Bọc các route cần bảo vệ bằng ProtectedRoute
-    children: [
-      {
-        element: <ChatLayout />,
-        children: [
-          {
-            path: "/chat",
-            element: <ChatPage />,
-          },
-        ],
-      },
-      {
-        path: "/profile",
-        element: <ProfileLayout />,
-        children: [
-          {
-            index: true,
-            path: "info",
-            element: <InfoSection />,
-          },
-          {
-            path: "settings",
-            element: <SettingSection />,
-          },
-          {
-            path: "bookings",
-            element: <MyBookingSection />,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    path: "/server-error",
-    element: <ServerErrorPage />,
   },
 ]);
 

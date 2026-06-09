@@ -9,9 +9,11 @@ import type {
 export const authApi = {
   async ping() {
     // Truyền thêm flag ẩn dưới dạng AxiosRequestConfig
-    return axiosPublic.get("/auth/test", {
+
+    const response = await axiosPublic.get("/auth/test", {
       skipAuthCheck: true,
     } as any);
+    return response;
   },
 
   async login(payload: LoginPayload): Promise<AuthenticationResponse> {
