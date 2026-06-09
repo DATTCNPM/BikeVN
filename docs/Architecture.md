@@ -1,108 +1,195 @@
-# SYSTEM ARCHITECTURE
+# System Architecture
 
-## 1. Overview
+This document describes the overall architecture of BikeVN.
 
-Hệ thống sử dụng kiến trúc client-server:
+---
 
+# High-Level Architecture
+
+```text
+┌─────────────────────┐
+│ Client Web          │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Spring Boot API     │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ MySQL Database      │
+└─────────────────────┘
+
+           ▲
+           │
+ ┌─────────┴─────────┐
+ │ Admin Dashboard   │
+ └───────────────────┘
 ```
-Frontend (React)
-    ↓ REST API
-Backend (Spring Boot)
-    ↓
-MySQL Database
+
+---
+
+# Core Domains
+
+BikeVN is organized around several business domains.
+
+## Identity Domain
+
+Responsibilities:
+
+- Authentication
+- Authorization
+- User management
+
+Entities:
+
+- User
+
+---
+
+## Vehicle Domain
+
+Responsibilities:
+
+- Vehicle management
+- Availability management
+- Vehicle lifecycle
+
+Entities:
+
+- Vehicle
+- Branch
+
+---
+
+## Booking Domain
+
+Responsibilities:
+
+- Booking creation
+- Booking validation
+- Booking lifecycle
+
+Entities:
+
+- Booking
+
+---
+
+## Payment Domain
+
+Responsibilities:
+
+- Transaction processing
+- Payment verification
+
+Entities:
+
+- Payment
+
+---
+
+## Return Domain
+
+Responsibilities:
+
+- Vehicle return workflow
+- Damage reporting
+- Additional fee calculation
+
+Entities:
+
+- VehicleReturn
+
+---
+
+## Communication Domain
+
+Responsibilities:
+
+- Conversations
+- Messaging
+
+Entities:
+
+- Conversation
+- Message
+
+---
+
+## Review Domain
+
+Responsibilities:
+
+- Ratings
+- Customer feedback
+
+Entities:
+
+- Review
+
+---
+
+# Request Flow
+
+```text
+Client
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
+Database
 ```
 
-Ngoài ra:
+---
 
-- Chat sử dụng WebSocket
-- Map sử dụng Google Maps API
+# Security Architecture
+
+Authentication:
+
+- JWT
+
+Authorization:
+
+- Role Based Access Control
+
+Roles:
+
+```text
+ADMIN
+STAFF
+CUSTOMER
+```
 
 ---
 
-## 2. Components
+# Concurrency Strategy
 
-### 2.1 Frontend
+Critical workflows:
 
-- React + Hooks
-- React Router
-- Axios gọi API
-- Google Maps hiển thị vị trí
-- WebSocket client cho chat
+- Booking creation
+- Payment processing
+- Vehicle return processing
 
----
+See:
 
-### 2.2 Backend
-
-- Spring Boot (REST API)
-- JWT Authentication
-- WebSocket (chat realtime)
-
-Layer:
-
-- Controller
-- Service
-- Repository
+- decisions/ConcurrentBookingControl.md
+- decisions/DuplicatePaymentPrevention.md
+- decisions/VehicleReturnDuplicatePrevention.md
 
 ---
 
-### 2.3 Database
+# Architectural Goals
 
-- MySQL
-- Các bảng:
-  - Users
-  - Vehicles
-  - Bookings
-  - Messages
+The system prioritizes:
 
----
+1. Maintainability
+2. Correctness
+3. Scalability
+4. Security
 
-## 3. Data Flow
-
-### 3.1 Booking Flow
-
-1. User chọn xe
-2. Gửi request → backend
-3. Backend check trùng lịch
-4. Lưu DB
-5. Trả response
-
----
-
-### 3.2 Map Flow
-
-1. Frontend lấy vị trí user
-2. Call API /vehicles/nearby
-3. Render marker
-
----
-
-### 3.3 Chat Flow
-
-1. Client connect WebSocket
-2. Gửi message
-3. Backend broadcast
-4. Client nhận realtime
-
----
-
-## 4. Security
-
-- JWT Authentication
-- Password hash
-- Role-based access
-
----
-
-## 5. Deployment (optional)
-
-- Frontend: Vercel
-- Backend: Render
-- Database: Railway / MySQL local
-
----
-
-## 6. Scalability (basic)
-
-- Có thể mở rộng:
-  - Redis cache
-  - Microservices
+Over-engineering should be avoided unless justified by business requirements.

@@ -1,164 +1,228 @@
-# API DOCUMENTATION
+# API Documentation
 
-## Base URL
+This document provides a high-level overview of BikeVN APIs.
 
+Detailed request/response contracts should be generated through OpenAPI/Swagger.
+
+---
+
+# Base URL
+
+Development
+
+```text
 http://localhost:8080/api
+```
 
 ---
 
-# 1. AUTH
+# Authentication
 
-## POST /auth/register
+Authentication uses JWT.
 
-Request:
-{
-"name": "John",
-"email": "john@gmail.com",
-"password": "123456"
-}
+Protected endpoints require:
 
-Response:
-{
-"message": "Register success"
-}
+```http
+Authorization: Bearer <access_token>
+```
 
 ---
 
-## POST /auth/login
+# API Modules
 
-Request:
-{
-"email": "john@gmail.com",
-"password": "123456"
-}
+## Authentication
 
-Response:
-{
-"token": "JWT_TOKEN"
-}
+Responsibilities:
 
----
+- Login
+- Register
+- Refresh Token
+- Logout
 
-# 2. VEHICLES
+Example endpoints:
 
-## GET /vehicles
-
-Query:
-?search=sh
-?minPrice=100
-?maxPrice=500
-
-Response:
-[
-{
-"id": 1,
-"name": "Honda SH",
-"price": 200,
-"lat": 10.123,
-"lng": 106.123
-}
-]
+```text
+POST /auth/login
+POST /auth/register
+POST /auth/refresh
+POST /auth/logout
+```
 
 ---
 
-## POST /vehicles (Admin)
+## Users
 
-Headers:
-Authorization: Bearer TOKEN
+Responsibilities:
 
-Request:
-{
-"name": "Air Blade",
-"price": 150,
-"lat": 10.1,
-"lng": 106.2
-}
+- Profile management
+- Identity verification
+- Account updates
 
----
+Example endpoints:
 
-## PUT /vehicles/{id}
-
-## DELETE /vehicles/{id}
+```text
+GET /users/me
+PUT /users/me
+```
 
 ---
 
-# 3. BOOKINGS
+## Vehicles
 
-## POST /bookings
+Responsibilities:
 
-Headers:
-Authorization: Bearer TOKEN
+- Vehicle listing
+- Vehicle detail
+- Availability checking
 
-Request:
-{
-"vehicleId": 1,
-"startDate": "2026-04-20",
-"endDate": "2026-04-22"
-}
+Example endpoints:
 
-Response:
-{
-"message": "Booking created"
-}
+```text
+GET /vehicles
+GET /vehicles/{id}
+```
 
 ---
 
-## GET /bookings/user
+## Branches
 
-## PUT /bookings/{id}/status
+Responsibilities:
 
-(Admin)
+- Rental branch information
 
-Request:
-{
-"status": "APPROVED"
-}
+Example endpoints:
 
----
-
-# 4. MAP
-
-## GET /vehicles/nearby
-
-Query:
-?lat=10.12&lng=106.12&radius=5
-
-Response:
-[
-{ "id": 1, "name": "SH", "lat": 10.1, "lng": 106.2 }
-]
+```text
+GET /branches
+GET /branches/{id}
+```
 
 ---
 
-# 5. CHAT
+## Bookings
 
-## GET /messages/{userId}
+Responsibilities:
 
-Response:
-[
-{
-"senderId": 1,
-"content": "Hello",
-"timestamp": "2026-04-14"
-}
-]
+- Create booking
+- Cancel booking
+- View booking history
+
+Example endpoints:
+
+```text
+POST /bookings
+GET /bookings
+GET /bookings/{id}
+```
 
 ---
 
-## WebSocket
+## Payments
 
-Endpoint:
-/ws
+Responsibilities:
 
-Send:
+- Payment processing
+- Transaction tracking
+- Refund support
+
+Example endpoints:
+
+```text
+POST /payments
+GET /payments/{id}
+```
+
+---
+
+## Vehicle Returns
+
+Responsibilities:
+
+- Return workflow
+- Damage reporting
+- Fee calculation
+
+Example endpoints:
+
+```text
+POST /vehicle-returns
+```
+
+---
+
+## Reviews
+
+Responsibilities:
+
+- Customer feedback
+- Vehicle ratings
+
+Example endpoints:
+
+```text
+POST /reviews
+GET /reviews
+```
+
+---
+
+## Conversations
+
+Responsibilities:
+
+- Chat rooms
+- Messaging
+
+Example endpoints:
+
+```text
+GET /conversations
+POST /messages
+```
+
+---
+
+# Response Format
+
+Success
+
+```json
 {
-"senderId": 1,
-"receiverId": 2,
-"content": "Hello"
+  "data": {}
 }
+```
 
-Receive:
+Error
+
+```json
 {
-"senderId": 1,
-"content": "Hello"
+  "code": 4001,
+  "message": "BOOKING_NOT_FOUND"
 }
+```
+
+---
+
+# Error Handling
+
+Common categories:
+
+| Category       | Example               |
+| -------------- | --------------------- |
+| Validation     | INVALID_REQUEST       |
+| Authentication | UNAUTHORIZED          |
+| Authorization  | FORBIDDEN             |
+| Business Rule  | VEHICLE_NOT_AVAILABLE |
+| System         | INTERNAL_SERVER_ERROR |
+
+---
+
+# API Versioning
+
+Current version:
+
+```text
+v1
+```
+
+Future versions should maintain backward compatibility whenever possible.
