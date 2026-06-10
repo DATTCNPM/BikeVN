@@ -8,10 +8,10 @@ import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useProfile } from "@/features/auth/useProfile";
+import { useVehicle } from "@repo/hooks";
 import { useBooking } from "@/features/bookings/queries";
 
 import { useState } from "react";
-import { useVehicle } from "@repo/hooks";
 import { useParams } from "react-router-dom";
 import type { PaymentMethod } from "@repo/types";
 

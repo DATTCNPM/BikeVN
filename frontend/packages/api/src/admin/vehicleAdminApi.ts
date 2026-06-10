@@ -15,14 +15,8 @@ export const vehicleAdminApi = {
     };
   },
 
-  async updateVehicle(
-    id: string,
-    payload: VehicleUpdateRequest,
-  ) {
-    const data = await axiosAdmin.put<Vehicle>(
-      `/vehicle/${id}`,
-      payload,
-    );
+  async updateVehicle(id: string, payload: VehicleUpdateRequest) {
+    const data = await axiosAdmin.put<Vehicle>(`/vehicle/${id}`, payload);
     return {
       message: "Cập nhật xe thành công",
       vehicle: data,
@@ -30,9 +24,7 @@ export const vehicleAdminApi = {
   },
 
   async deleteVehicle(id: string) {
-    const data = await axiosAdmin.delete(
-      `/vehicle/${id}`,
-    );
+    const data = await axiosAdmin.delete(`/vehicle/${id}`);
     return {
       message: data || "Xóa xe thành công",
     };

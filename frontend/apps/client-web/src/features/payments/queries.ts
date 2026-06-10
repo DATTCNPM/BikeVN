@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { paymentCommonApi } from "@repo/api";
-
-import { paymentsKeys } from "../queryKeys";
-
+import { paymentClientApi } from "@repo/api";
+import { paymentsKeys } from "@repo/hooks";
 export function usePayment(id: string) {
   return useQuery({
     queryKey: paymentsKeys.detail(id),
 
-    queryFn: () => paymentCommonApi.getPayment(id),
+    queryFn: () => paymentClientApi.getPayment(id),
 
     enabled: !!id,
   });

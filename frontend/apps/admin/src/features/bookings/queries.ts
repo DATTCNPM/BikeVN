@@ -9,3 +9,11 @@ export function useBookings() {
     queryFn: () => bookingAdminApi.getAllBooking(),
   });
 }
+
+export function useBooking(id: string) {
+  return useQuery({
+    queryKey: bookingsKeys.detail(id),
+    queryFn: () => bookingAdminApi.getBooking(id),
+    enabled: !!id,
+  });
+}
