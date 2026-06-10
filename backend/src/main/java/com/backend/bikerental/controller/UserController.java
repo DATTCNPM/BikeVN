@@ -3,17 +3,19 @@ package com.backend.bikerental.controller;
 import com.backend.bikerental.dto.request.UserCreationRequest;
 import com.backend.bikerental.dto.request.UserUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.UserResponse;
 import com.backend.bikerental.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
-    @Autowired
     UserService userService;
 
     @PostMapping
@@ -33,10 +35,11 @@ public class UserController {
     }
 
     @GetMapping
-    ApiResponse<List<UserResponse>> getAllUsers()
+    ApiResponse<PageResponse<UserResponse>> getAllUsers(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                        @RequestParam(value = "size", defaultValue = "10") int size)
     {
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.getAllUsers())
+        return ApiResponse.<PageResponse<UserResponse>>builder()
+                .result(userService.getAllUsers(page, size))
                 .build();
     }
 
@@ -57,7 +60,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request)
+    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId,
+                                         @RequestBody UserUpdateRequest request)
     {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
