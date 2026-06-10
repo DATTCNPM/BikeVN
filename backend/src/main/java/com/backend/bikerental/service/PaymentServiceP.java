@@ -1,5 +1,6 @@
 package com.backend.bikerental.service;
 
+import com.backend.bikerental.component.PricingCalculator;
 import com.backend.bikerental.dto.request.PaymentCreationRequest;
 import com.backend.bikerental.dto.response.PaymentResponse;
 import com.backend.bikerental.entity.Booking;
@@ -11,6 +12,7 @@ import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.repository.BookingRepository;
 import com.backend.bikerental.repository.PaymentRepository;
+import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +38,8 @@ public class PaymentServiceP {
 
     PaymentRepository paymentRepository;
     BookingRepository bookingRepository;
-    BookingService bookingService;
+    BranchSecurityUtil branchSecurityUtil;
+    PricingCalculator pricingCalculator;
     BookingLockService bookingLockService;
     static final String BANK_NAME = "";
     static final String BANK_ACCOUNT = "1223445";
@@ -100,43 +103,16 @@ public class PaymentServiceP {
 
         LocalDateTime now = LocalDateTime.now();
 
-        BigDecimal totalExtraFee = BigDecimal.ZERO;
+        var fee = pricingCalculator.calculateTotalExtraFee(
+                booking.getReturnBranchId(),
+                actualReturnBranchId,
+                damageFee,
+                booking.getEndTime(),
+                now
+        );
 
-        //Hoa don
-        StringBuilder feeDetailsBuilder = new StringBuilder("Surcharge details: ");
-        boolean hasFee = false;
-        //WRONG BRANCH
-        if(!booking.getReturnBranchId().equals(actualReturnBranchId))
-        {
-            totalExtraFee = totalExtraFee.add(BigDecimal.valueOf(50000));
-            feeDetailsBuilder.append("Wrong Branch: 50,000VND");
-            hasFee = true;
-        }
 
-        //DAMAGE FEE
-        if(damageFee != null && damageFee.compareTo(BigDecimal.ZERO) > 0)
-        {
-            totalExtraFee = totalExtraFee.add(damageFee);
-            feeDetailsBuilder.append("Damage Fee: ").append(damageFee).append("VND");
-            hasFee = true;
-        }
-
-        //LATE RETURN
-        if(now.isAfter(booking.getEndTime()))
-        {
-            long lateHours = ChronoUnit.HOURS.between(booking.getEndTime(), now);
-            long lateDays = (lateHours / 24) + (lateHours % 24 > 0 ? 1 :0);
-
-            if (lateDays > 0)
-            {
-                BigDecimal lateFee = BigDecimal.valueOf(lateDays * 250000L);
-                totalExtraFee = totalExtraFee.add(lateFee);
-                feeDetailsBuilder.append("Late Day Fee: ").append(lateDays).append("VND");
-                hasFee = true;
-            }
-        }
-
-        if (totalExtraFee.compareTo(BigDecimal.ZERO) <= 0)
+        if (fee.totalFee().compareTo(BigDecimal.ZERO) <= 0)
         {
             booking.setStatus(BookingStatus.completed);
             booking.setActualReturnTime(now);
@@ -146,7 +122,7 @@ public class PaymentServiceP {
 
         Payment payment = new Payment();
         payment.setBookingId(booking.getId());
-        payment.setAmount(totalExtraFee);
+        payment.setAmount(fee.totalFee());
         payment.setStatus(PaymentStatus.pending);
 
         payment.setPaymentMethod("unspecified");
@@ -162,7 +138,7 @@ public class PaymentServiceP {
         bookingRepository.save(booking);
 
         PaymentResponse paymentResponse = buildResponse(savedPayment, booking);
-        paymentResponse.setTransferContent(feeDetailsBuilder.toString());
+        paymentResponse.setTransferContent(fee.invoiceDetails());
 
         return paymentResponse;
 
@@ -225,6 +201,7 @@ public class PaymentServiceP {
         paymentRepository.saveAll(payments);
     }
 
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
    public Page<PaymentResponse> getAllPayments(PaymentStatus status, Pageable pageable)
    {
        Page<Payment> paymentPage;
@@ -243,7 +220,7 @@ public class PaymentServiceP {
        });
 
    }
-
+    @PreAuthorize("hasAnyRole('admin', 'employee') or returnObject.email == authentication.name")
     public PaymentResponse getPayment(String id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
