@@ -3,8 +3,11 @@ package com.backend.bikerental.service;
 import com.backend.bikerental.dto.request.BookingCreationRequest;
 import com.backend.bikerental.dto.response.BookingResponse;
 import com.backend.bikerental.entity.Booking;
+import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.enums.BookingStatus;
 import com.backend.bikerental.enums.PaymentStatus;
+import com.backend.bikerental.enums.StatusVehicleEnum;
+import com.backend.bikerental.enums.VehicleType;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.BookingMapper;
@@ -42,6 +45,14 @@ public class BookingService {
         validateRequest(request);
         validateExistence(request);
 
+        Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
+                .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
+        if(!vehicle.getStatus().equals(StatusVehicleEnum.available))
+        {
+            throw new AppException(ErrorCode.VEHICLE_NOT_AVAILABLE);
+        }
+
         if (bookingRepository.existsApprovedBooking(request.getVehicleId(),
                 request.getStartTime(),
                 request.getEndTime()))
@@ -61,7 +72,7 @@ public class BookingService {
                 request.getStartTime(), request.getEndTime(), EXPIRE_MINUTES);
 
         Booking booking = bookingMapper.toBooking(request);
-        enrichBooking(booking, request);
+        enrichBooking(booking, request, vehicle);
 
         return bookingMapper.toBookingResponse(bookingRepository.save(booking)
         );
@@ -162,26 +173,22 @@ public class BookingService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
-        if (!vehicleRepository.existsById(request.getVehicleId())) {
-            throw new AppException(ErrorCode.VEHICLE_NOT_EXISTED);
-        }
-
         if (!branchRepository.existsById(request.getPickupBranchId())
                 || !branchRepository.existsById(request.getReturnBranchId())) {
             throw new AppException(ErrorCode.BRANCH_NOT_EXISTED);
         }
     }
-    private void enrichBooking(Booking booking, BookingCreationRequest request) {
+    private void enrichBooking(Booking booking, BookingCreationRequest request, Vehicle vehicle) {
 
         LocalDateTime now = LocalDateTime.now();
 
         booking.setStatus(BookingStatus.pending);
-        booking.setTotalPrice(calculatePrice(request));
+        booking.setTotalPrice(calculatePrice(request, vehicle));
         booking.setCreatedAt(now);
         booking.setUpdatedAt(now);
         booking.setExpiresAt(now.plusMinutes(EXPIRE_MINUTES));// set time expire
     }
-    private BigDecimal calculatePrice(BookingCreationRequest request) {
+    private BigDecimal calculatePrice(BookingCreationRequest request, Vehicle vehicle) {
 
         long hours = Duration.between(
                 request.getStartTime(),
@@ -191,6 +198,12 @@ public class BookingService {
         if (hours <= 0) {
             hours = 1;
         }
-        return BigDecimal.valueOf(hours * 150_000);
+
+        long days = (long) Math.ceil((double) hours / 24);
+        if(days <= 0)
+        {
+            days = 1;
+        }
+        return vehicle.getPricePerDay().multiply(BigDecimal.valueOf(days));
     }
 }

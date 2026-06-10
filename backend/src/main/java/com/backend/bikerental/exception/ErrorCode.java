@@ -32,6 +32,8 @@ public enum ErrorCode {
     LOCK_NOT_FOUND(1019, "lock not found",HttpStatus.NOT_FOUND),
     BOOKING_EXPIRED(1020, "booking expired",HttpStatus.BAD_REQUEST),
     PAYMENT_ALREADY_COMPLETED(1021, "payment completed", HttpStatus.BAD_REQUEST),
+    VEHICLE_NOT_AVAILABLE(1022, "vehicle is not available", HttpStatus.BAD_REQUEST),
+    RETURN_ALREADY_EXISTS(1023, "return already exist", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN),
     EXISTED_DATA(5055, "%s already exists", HttpStatus.BAD_REQUEST);

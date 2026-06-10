@@ -2,6 +2,7 @@ package com.backend.bikerental.service;
 
 import com.backend.bikerental.dto.request.UserCreationRequest;
 import com.backend.bikerental.dto.request.UserUpdateRequest;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.UserResponse;
 import com.backend.bikerental.entity.Role;
 import com.backend.bikerental.entity.User;
@@ -17,11 +18,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -36,6 +41,8 @@ public class UserService {
     RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
     BranchRepository branchRepository;
+
+    @Transactional
     public UserResponse createUser(UserCreationRequest request)
     {
         if(userRepository.existsByEmail(request.getEmail()))
@@ -59,6 +66,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @Transactional
     @PreAuthorize("hasRole('admin')")
     public UserResponse createEmployee(UserCreationRequest request)
     {
@@ -89,9 +97,22 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('admin')")
-    public List<UserResponse> getAllUsers()
+    public PageResponse<UserResponse> getAllUsers(int page, int size)
     {
-        return userMapper.toListUsersResponse(userRepository.findAll());
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<User> pageData = userRepository.findAll(pageable);
+
+        var userResponses = pageData.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+
+        return PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(pageData.getSize())
+                .totalElements(pageData.getTotalElements())
+                .data(userResponses)
+                .build();
     }
 
     @PostAuthorize("hasRole('admin') or returnObject.email == authentication.name")
@@ -101,10 +122,22 @@ public class UserService {
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
+    @Transactional
     public UserResponse updateUser(String id, UserUpdateRequest request)
     {
         User user = userRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a-> a.getAuthority().equals("ROLE_admin"));
+
+        if(!isAdmin ||  !user.getEmail().equals(auth.getName()))
+        {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
         userMapper.updateUser(user, request);
+
         if(request.getPassword() != null && !request.getPassword().isBlank())
         {
             user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
@@ -116,6 +149,10 @@ public class UserService {
 
         if (requiresBranch) {
             if (request.getBranchId() != null) {
+                if(!isAdmin)
+                {
+                    throw new AppException(ErrorCode.UNAUTHORIZED);
+                }
                 if (request.getBranchId().isBlank()) {
                     user.setBranch(null);
                 } else {
@@ -131,9 +168,14 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-
+    @Transactional
+    @PreAuthorize("hasRole('admin')")
     public void deleteUser(String id)
     {
+        if(!userRepository.existsById(id))
+        {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
         userRepository.deleteById(id);
     }
 
