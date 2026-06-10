@@ -16,7 +16,6 @@ export * from "./admin/vehicleModelAdminApi";
 export * from "./admin/vehicleImageAdminApi";
 export * from "./admin/paymentAdminApi";
 
-export * from "./common/paymentPublicApi";
 export * from "./common/chatApi";
 export * from "./common/reviewApi";
 export * from "./common/notificationApi";
@@ -26,7 +25,7 @@ export * from "./common/branchPublicApi";
 export * from "./common/authApi";
 export * from "./common/vehicleModelPublicApi";
 export * from "./common/vehicleImagePublicApi";
-export * from "./common/bookingPublicApi";
-export * from "./common/paymentPublicApi";
+export * from "./common/createBookingCommonApi";
+export * from "./common/createPaymentCommonApi";
 
 export * from "./error/ApiError";

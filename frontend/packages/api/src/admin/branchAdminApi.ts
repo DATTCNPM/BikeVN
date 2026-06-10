@@ -14,14 +14,8 @@ export const branchAdminApi = {
     };
   },
 
-  async updateBranch(
-    id: string,
-    payload: UpdateBranchPayload,
-  ) {
-    const data = await axiosAdmin.put<Branch>(
-      `/branch/${id}`,
-      payload,
-    );
+  async updateBranch(id: string, payload: UpdateBranchPayload) {
+    const data = await axiosAdmin.put<Branch>(`/branch/${id}`, payload);
 
     if (!data) {
       throw {
@@ -40,7 +34,7 @@ export const branchAdminApi = {
     };
   },
 
-  async deleteBranch(id: string){
+  async deleteBranch(id: string) {
     await axiosAdmin.delete(`/branch/${id}`);
 
     return {

@@ -7,3 +7,9 @@ export function useCreatePayment() {
     mutationFn: paymentClientApi.createPayment,
   });
 }
+
+export function useCancelPayment(id: string) {
+  return useMutation({
+    mutationFn: () => paymentClientApi.cancelPayment(id),
+  });
+}

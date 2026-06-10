@@ -11,9 +11,8 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";
 import { useEffect } from "react";
 
+import { useVehicle, useBranches } from "@repo/hooks";
 import { useBooking } from "@/features/bookings/queries";
-import { useVehicle } from "@repo/hooks";
-import { useBranches } from "@repo/hooks";
 
 export default function BookingResultPage() {
   const { id } = useParams();

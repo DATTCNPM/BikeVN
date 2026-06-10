@@ -9,3 +9,13 @@ export function usePayments() {
     queryFn: () => paymentAdminApi.getAllPayments(),
   });
 }
+
+export function usePayment(id: string) {
+  return useQuery({
+    queryKey: paymentsKeys.detail(id),
+
+    queryFn: () => paymentAdminApi.getPayment(id),
+
+    enabled: !!id,
+  });
+}

@@ -3,15 +3,12 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
-// import TableActionDropdown from "@/components/common/TableActionDropdown";
+import BookingActionDropdown from "@/components/booking/BookingActionDropdown";
+import BookingStatusDialog from "@/components/booking/BookingStatusDialog";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
-
-// import BookingCreate from "@/components/booking/BookingCreate";
-// import BookingEdit from "@/components/booking/BookingEdit";
-// import BookingDelete from "@/components/booking/BookingDelete";
 
 import { useBookings } from "@/features/bookings/queries";
 import type { Booking } from "@repo/types";
@@ -37,10 +34,11 @@ const bookingStatusLabel = {
 export default function BookingManagementPage() {
   const { data: bookings = [], isLoading } = useBookings();
 
-  // const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  // const [openEditDialog, setOpenEditDialog] = useState(false);
-  // const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  // const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+
+  const [dialogMode, setDialogMode] = useState<"approve" | "reject" | null>(
+    null,
+  );
 
   const [search, setSearch] = useState("");
 
@@ -108,22 +106,30 @@ export default function BookingManagementPage() {
           </Badge>
         ),
       },
-      // {
-      //   id: "actions",
-      //   header: "",
-      //   cell: ({ row }) => (
-      //     <TableActionDropdown
-      //       onEdit={() => {
-      //         setSelectedBooking(row.original);
-      //         setOpenEditDialog(true);
-      //       }}
-      //       onDelete={() => {
-      //         setSelectedBooking(row.original);
-      //         setOpenDeleteDialog(true);
-      //       }}
-      //     />
-      //   ),
-      // },
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => {
+          const booking = row.original;
+
+          if (booking.status !== "pending") {
+            return null;
+          }
+
+          return (
+            <BookingActionDropdown
+              onApprove={() => {
+                setSelectedBooking(booking);
+                setDialogMode("approve");
+              }}
+              onReject={() => {
+                setSelectedBooking(booking);
+                setDialogMode("reject");
+              }}
+            />
+          );
+        },
+      },
     ],
     [],
   );
@@ -153,21 +159,17 @@ export default function BookingManagementPage() {
         totalPages={Math.ceil(bookings.length / 10) || 1}
         onPageChange={(page) => console.log(page)}
       />
-
-      {/* <BookingCreate
-        open={openCreateDialog}
-        onOpenChange={setOpenCreateDialog}
-      />
-      <BookingEdit
-        open={openEditDialog}
-        onOpenChange={setOpenEditDialog}
+      <BookingStatusDialog
         booking={selectedBooking}
+        open={!!selectedBooking && dialogMode !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedBooking(null);
+            setDialogMode(null);
+          }
+        }}
+        mode={dialogMode ?? "approve"}
       />
-      <BookingDelete
-        open={openDeleteDialog}
-        onOpenChange={setOpenDeleteDialog}
-        booking={selectedBooking}
-      /> */}
     </div>
   );
 }

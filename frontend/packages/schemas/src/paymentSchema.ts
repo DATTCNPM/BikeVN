@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export const paymentTypeSchema = z.enum(["rental", "extra_fee"]);
 export const paymentStatusSchema = z.enum(["pending", "completed", "failed"]);
 
 export const paymentSchema = z.object({
@@ -9,7 +10,7 @@ export const paymentSchema = z.object({
 
   amount: z.coerce.number(),
 
-  type: z.enum(["deposit", "rental"]),
+  type: paymentTypeSchema,
 
   paymentMethod: z.string(),
 
@@ -24,6 +25,11 @@ export const paymentSchema = z.object({
   transferContent: z.string().nullable().optional(),
 
   qrContent: z.string().nullable().optional(),
+  transactionCode: z.string().nullable().optional(),
+
+  paidAt: z.string().datetime().nullable().optional(),
+
+  updatedAt: z.string().datetime().optional(),
 
   createdAt: z.string().datetime(),
 });

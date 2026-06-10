@@ -7,10 +7,7 @@ import type {
 } from "@repo/types";
 
 export const vehicleImageAdminApi = {
-  async uploadImage(
-    vehicleId: string,
-    payload: VehicleImageCreatePayload,
-  ) {
+  async uploadImage(vehicleId: string, payload: VehicleImageCreatePayload) {
     const formData = new FormData();
 
     formData.append("file", payload.file);
@@ -39,7 +36,7 @@ export const vehicleImageAdminApi = {
     vehicleId: string,
     imageId: string,
     payload: VehicleImageUpdatePayload,
-  ){
+  ) {
     const formData = new FormData();
 
     if (payload.file) {

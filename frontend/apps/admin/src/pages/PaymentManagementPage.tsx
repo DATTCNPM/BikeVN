@@ -1,52 +1,50 @@
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
-import TableActionDropdown from "@/components/common/TableActionDropdown";
-import TablePagination from "@/components/common/TablePagination";
+import PaymentActionDropdown from "@/components/payment/PaymentActionDropdown";
+import PaymentStatusDialog from "@/components/payment/PaymentStatusDialog";
+
+import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { Badge } from "@repo/ui/components/ui/badge";
-
-// import PaymentCreate from "@/components/payment/PaymentCreate";
-// import PaymentEdit from "@/components/payment/PaymentEdit";
-// import PaymentDelete from "@/components/payment/PaymentDelete";
-
 import { usePayments } from "@/features/payments/queries";
-import type { Payment } from "@repo/types";
 
-const paymentStatusMap = {
+import type { Payment, PaymentStatus, PaymentType } from "@repo/types";
+
+const paymentStatusMap: Record<PaymentStatus, string> = {
   pending:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
+
   completed:
     "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
+
   failed: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
-  refunded: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
 };
 
-const paymentStatusLabel = {
+const paymentStatusLabel: Record<PaymentStatus, string> = {
   pending: "Chờ xử lý",
   completed: "Hoàn thành",
   failed: "Thất bại",
-  refunded: "Đã hoàn tiền",
 };
 
-const paymentTypeLabel = {
-  deposit: "Đặt cọc",
-  rental: "Thuê xe",
+const paymentTypeLabel: Record<PaymentType, string> = {
+  rental: "Thanh toán thuê xe",
+  extra_fee: "Phí phát sinh",
 };
 
 export default function PaymentManagementPage() {
-  const { data: payments = [], isLoading, error } = usePayments();
-
-  // const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  // const [openEditDialog, setOpenEditDialog] = useState(false);
-  // const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  // const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
-
   const [search, setSearch] = useState("");
+
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+
+  const [dialogMode, setDialogMode] = useState<
+    "confirm" | "approve-manually" | "cancel" | null
+  >(null);
+
+  const { data: payments, isLoading, error } = usePayments();
 
   useEffect(() => {
     if (error) {
@@ -54,72 +52,104 @@ export default function PaymentManagementPage() {
     }
   }, [error]);
 
+  const filteredPayments = useMemo(() => {
+    const content = payments?.content ?? [];
+
+    if (!search.trim()) {
+      return content;
+    }
+
+    const keyword = search.toLowerCase();
+
+    return content.filter(
+      (payment) =>
+        payment.bookingId.toLowerCase().includes(keyword) ||
+        payment.paymentMethod.toLowerCase().includes(keyword),
+    );
+  }, [payments, search]);
+
   const columns = useMemo<ColumnDef<Payment>[]>(
     () => [
       {
         accessorKey: "bookingId",
         header: "Mã đơn",
         cell: ({ row }) => (
-          <span className="text-sm font-medium">
-            #{row.original.bookingId.substring(0, 6)}
+          <span className="font-medium">
+            #{row.original.bookingId.slice(0, 8)}
           </span>
         ),
       },
+
       {
         accessorKey: "amount",
         header: "Số tiền",
-        cell: ({ row }) => `${row.original.amount.toLocaleString()}đ`,
+        cell: ({ row }) => `${row.original.amount.toLocaleString("vi-VN")} đ`,
       },
+
       {
         accessorKey: "type",
-        header: "Loại thanh toán",
+        header: "Loại",
         cell: ({ row }) => (
           <Badge variant="secondary">
-            {paymentTypeLabel[row.original.type] || row.original.type}
+            {paymentTypeLabel[row.original.type as PaymentType] ??
+              row.original.type}
           </Badge>
         ),
       },
+
       {
-        accessorKey: "payment_method",
+        accessorKey: "paymentMethod",
         header: "Phương thức",
       },
+
       {
         accessorKey: "status",
         header: "Trạng thái",
         cell: ({ row }) => (
-          <Badge className={paymentStatusMap[row.original.status]}>
-            {paymentStatusLabel[row.original.status] || row.original.status}
+          <Badge
+            className={paymentStatusMap[row.original.status as PaymentStatus]}
+          >
+            {paymentStatusLabel[row.original.status as PaymentStatus] ??
+              row.original.status}
           </Badge>
         ),
       },
+
       {
-        accessorKey: "transaction_code",
-        header: "Mã giao dịch",
-        cell: ({ row }) => row.original.transaction_code || "--",
-      },
-      {
-        accessorKey: "paid_at",
-        header: "Thời gian TT",
+        accessorKey: "createdAt",
+        header: "Ngày tạo",
         cell: ({ row }) =>
-          row.original.paid_at
-            ? new Date(row.original.paid_at).toLocaleString("vi-VN")
-            : "--",
+          new Date(row.original.createdAt).toLocaleString("vi-VN"),
       },
+
       {
         id: "actions",
         header: "",
-        cell: ({ row }) => (
-          <TableActionDropdown
-            onEdit={() => {
-              setSelectedPayment(row.original);
-              setOpenEditDialog(true);
-            }}
-            onDelete={() => {
-              setSelectedPayment(row.original);
-              setOpenDeleteDialog(true);
-            }}
-          />
-        ),
+
+        cell: ({ row }) => {
+          const payment = row.original;
+
+          // if (payment.status !== "failed") {
+          //   return null;
+          // }
+
+          return (
+            <PaymentActionDropdown
+              onConfirm={() => {
+                setSelectedPayment(payment);
+                setDialogMode("confirm");
+              }}
+              onApproveManually={() => {
+                setSelectedPayment(payment);
+                setDialogMode("approve-manually");
+              }}
+              onCancel={() => {
+                setSelectedPayment(payment);
+                setDialogMode("cancel");
+              }}
+            />
+          );
+        },
       },
     ],
     [],
@@ -133,36 +163,25 @@ export default function PaymentManagementPage() {
     );
   }
 
+  console.log("Payments:", payments);
+
   return (
-    <div>
-      <DataTableToolbar
-        search={search}
-        onSearchChange={setSearch}
-        onCreateOpen={() => setOpenCreateDialog(true)}
-      />
+    <div className="space-y-4">
+      <DataTableToolbar search={search} onSearchChange={setSearch} />
 
-      <DataTable columns={columns} data={payments} />
+      <DataTable columns={columns} data={filteredPayments} />
 
-      <TablePagination
-        page={1}
-        totalPages={Math.ceil(payments.length / 10) || 1}
-        onPageChange={(page) => console.log(page)}
-      />
-
-      {/* <PaymentCreate
-        open={openCreateDialog}
-        onOpenChange={setOpenCreateDialog}
-      />
-      <PaymentEdit
-        open={openEditDialog}
-        onOpenChange={setOpenEditDialog}
+      <PaymentStatusDialog
         payment={selectedPayment}
+        open={!!selectedPayment && dialogMode !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedPayment(null);
+            setDialogMode(null);
+          }
+        }}
+        mode={dialogMode ?? "confirm"}
       />
-      <PaymentDelete
-        open={openDeleteDialog}
-        onOpenChange={setOpenDeleteDialog}
-        payment={selectedPayment}
-      /> */}
     </div>
   );
 }
