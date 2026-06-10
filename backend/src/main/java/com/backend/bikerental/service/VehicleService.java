@@ -16,6 +16,7 @@ import com.backend.bikerental.repository.VehicleBrandRepository;
 import com.backend.bikerental.repository.VehicleModelRepository;
 import com.backend.bikerental.repository.VehicleImageRepository;
 import com.backend.bikerental.repository.VehicleRepository;
+import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,6 +42,8 @@ public class VehicleService {
     VehicleBrandRepository vehicleBrandRepository;
     VehicleModelRepository vehicleModelRepository;
     BranchRepository branchRepository;
+    BranchSecurityUtil branchSecurityUtil;
+    FileStorageService fileStorageService;
     @Transactional
     @PreAuthorize("hasRole('admin') or hasRole('employee')")
     public VehicleResponse createVehicle(VehicleCreationRequest request)
@@ -122,7 +126,7 @@ public class VehicleService {
 
 
     @Transactional
-    @PreAuthorize("hasRole('admin') or hasRole('employee')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public VehicleImageResponse addVehicleImage(String vehicleId, MultipartFile file,
                                                 String altText, Integer displayOrder,
                                                 Boolean isPrimary) {
@@ -147,6 +151,58 @@ public class VehicleService {
         }
 
         return vehicleImageMapper.toVehicleImageResponse(vehicleImageRepository.saveAndFlush(image));
+    }
+
+
+    @Transactional
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public List<VehicleImageResponse> addVehicleImages(String vehicleId, List<MultipartFile> files)
+    {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
+        String vehicleBranchId = vehicle.getCurrentBranch() != null ? vehicle.getCurrentBranch().getId() : null;
+        branchSecurityUtil.verifyBranchAccess(vehicleBranchId);
+
+        if(files == null || files.isEmpty())
+        {
+            return new ArrayList<>();
+        }
+        List<VehicleImage> savedImages = new ArrayList<>();
+
+        boolean hasPrimary = vehicle.getImages().stream().anyMatch(VehicleImage::getIsPrimary);
+
+        int currentMaxOrder = vehicle.getImages().stream()
+                .mapToInt(img -> img.getDisplayOrder() != null ? img.getDisplayOrder() : 0)
+                .max()
+                .orElse(-1);
+        for(int i = 0; i < files.size(); i++)
+        {
+            MultipartFile file = files.get(i);
+            if (file == null || file.isEmpty())
+            {
+                continue;
+            }
+
+            String storedUrl = fileStorageService.storeVehicleImage(file);
+
+            VehicleImage vehicleImage = new VehicleImage();
+            vehicleImage.setVehicle(vehicle);
+            vehicleImage.setImageUrl(storedUrl);
+            vehicleImage.setAltText(vehicle.getName() + " image " + (currentMaxOrder + i + 2));
+            vehicleImage.setDisplayOrder(currentMaxOrder + i + 1);
+
+            if(!hasPrimary && i == 0)
+            {
+                vehicleImage.setIsPrimary(true);
+                hasPrimary = true;
+            }
+            else {
+                vehicleImage.setIsPrimary(false);
+            }
+            savedImages.add(vehicleImageRepository.save(vehicleImage));
+        }
+        return vehicleImageMapper.toListVehicleImageResponse(savedImages);
     }
 
     @Transactional(readOnly = true)

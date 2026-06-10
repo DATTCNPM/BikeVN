@@ -69,16 +69,27 @@ public class VehicleController {
                 .message("Update status vehicle successfully")
                 .build();
     }
-    @PostMapping(value = "/{vehicleId}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ApiResponse<VehicleImageResponse> addVehicleImage(@PathVariable("vehicleId") String vehicleId,
-                                                      @RequestPart("file") MultipartFile file,
-                                                      @RequestParam(value = "altText", required = false) String altText,
-                                                      @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
-                                                      @RequestParam(value = "isPrimary", required = false) Boolean isPrimary) {
-        return ApiResponse.<VehicleImageResponse>builder()
-                .result(vehicleService.addVehicleImage(vehicleId, file, altText, displayOrder, isPrimary))
-            .build();
-        }
+//    @PostMapping(value = "/{vehicleId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    ApiResponse<VehicleImageResponse> addVehicleImage(@PathVariable("vehicleId") String vehicleId,
+//                                                      @RequestPart("file") MultipartFile file,
+//                                                      @RequestParam(value = "altText", required = false) String altText,
+//                                                      @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
+//                                                      @RequestParam(value = "isPrimary", required = false) Boolean isPrimary) {
+//        return ApiResponse.<VehicleImageResponse>builder()
+//                .result(vehicleService.addVehicleImage(vehicleId, file, altText, displayOrder, isPrimary))
+//            .build();
+//    }
+
+    @PostMapping("/{vehicleId}/images")
+    public ApiResponse<List<VehicleImageResponse>> uploadVehicleImages(
+            @PathVariable String vehicleId,
+            @RequestParam("files") List<MultipartFile> files) {
+
+        return ApiResponse.<List<VehicleImageResponse>>builder()
+                .result(vehicleService.addVehicleImages(vehicleId, files))
+                .build();
+    }
+
     @GetMapping("/{vehicleId}/images")
     ApiResponse<List<VehicleImageResponse>> getVehicleImages(@PathVariable("vehicleId") String vehicleId) {
         return ApiResponse.<List<VehicleImageResponse>>builder()
