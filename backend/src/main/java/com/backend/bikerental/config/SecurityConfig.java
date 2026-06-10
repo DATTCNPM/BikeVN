@@ -37,6 +37,10 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(req -> req
                 .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                 .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+
+                .requestMatchers("/admin/**").hasAuthority("ROLE_admin")
+                .requestMatchers("/employee/**").hasAnyAuthority("ROLE_employee", "ROLE_admin")
+
                 .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2-> oauth2.jwt(jwtConfigurer ->
