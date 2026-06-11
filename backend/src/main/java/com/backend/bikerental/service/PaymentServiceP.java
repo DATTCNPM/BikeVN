@@ -2,6 +2,7 @@ package com.backend.bikerental.service;
 
 import com.backend.bikerental.component.PricingCalculator;
 import com.backend.bikerental.dto.request.PaymentCreationRequest;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
 import com.backend.bikerental.entity.Booking;
 import com.backend.bikerental.entity.Payment;
@@ -10,6 +11,7 @@ import com.backend.bikerental.enums.PaymentStatus;
 import com.backend.bikerental.enums.PaymentType;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
+import com.backend.bikerental.mapper.PaymentMapper;
 import com.backend.bikerental.repository.BookingRepository;
 import com.backend.bikerental.repository.PaymentRepository;
 import com.backend.bikerental.util.BranchSecurityUtil;
@@ -17,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,9 +41,9 @@ public class PaymentServiceP {
 
     PaymentRepository paymentRepository;
     BookingRepository bookingRepository;
-    BranchSecurityUtil branchSecurityUtil;
     PricingCalculator pricingCalculator;
     BookingLockService bookingLockService;
+    PaymentMapper paymentMapper;
     static final String BANK_NAME = "";
     static final String BANK_ACCOUNT = "1223445";
     static final String ACCOUNT_NAME = "Tran Hoang Phuong";
@@ -202,24 +205,24 @@ public class PaymentServiceP {
     }
 
     @PreAuthorize("hasAnyRole('admin', 'employee')")
-   public Page<PaymentResponse> getAllPayments(PaymentStatus status, Pageable pageable)
+   public PageResponse<PaymentResponse> getAllPayments(int page, int size)
    {
-       Page<Payment> paymentPage;
-       if(status != null)
-       {
-           paymentPage = paymentRepository.findByStatus(status, pageable);
-       }
-       else {
-           paymentPage = paymentRepository.findAll(pageable);
-       }
+       Pageable pageable = PageRequest.of(page - 1, size);
+       Page<Payment> pageData = paymentRepository.findAll(pageable);
 
-       return paymentPage.map(payment -> {
-           Booking booking = bookingRepository.findById(payment.getBookingId())
-                   .orElse(new Booking());
-           return buildResponse(payment, booking);
-       });
+       var paymentResponses = pageData.getContent().stream()
+               .map(paymentMapper::toPaymentResponse)
+               .toList();
 
+       return PageResponse.<PaymentResponse>builder()
+               .currentPage(page)
+               .totalPages(pageData.getTotalPages())
+               .pageSize(size)
+               .totalElements(pageData.getTotalElements())
+               .data(paymentResponses)
+               .build();
    }
+
     @PreAuthorize("hasAnyRole('admin', 'employee') or returnObject.email == authentication.name")
     public PaymentResponse getPayment(String id) {
         Payment payment = paymentRepository.findById(id)
@@ -230,6 +233,7 @@ public class PaymentServiceP {
 
         return buildResponse(payment, booking);
     }
+
     private boolean isExpired(Payment payment) {
         LocalDateTime now = LocalDateTime.now();
 
@@ -240,6 +244,7 @@ public class PaymentServiceP {
         return payment.getCreatedAt()
                 .isBefore(LocalDateTime.now().minusMinutes(EXPIRE_MINUTES));
     }
+
     //xac nhan thanh toan thu cong
     @PreAuthorize("hasAnyRole('admin', 'employee')")
     public PaymentResponse approvePaymentManually(String paymentId, String adminId, String actualPaymentMethod)
@@ -272,6 +277,7 @@ public class PaymentServiceP {
 
         return buildResponse(payment, booking);
     }
+
     @PreAuthorize("isAuthenticated()")
     public PaymentResponse cancelPayment(String paymentId, String reason)
     {

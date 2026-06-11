@@ -3,6 +3,7 @@ package com.backend.bikerental.controller;
 import com.backend.bikerental.dto.request.VehicleCreationRequest;
 import com.backend.bikerental.dto.request.VehicleUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.dto.response.VehicleImageResponse;
 import com.backend.bikerental.enums.StatusVehicleEnum;
@@ -29,10 +30,12 @@ public class VehicleController {
     }
 
     @GetMapping
-    ApiResponse<List<VehicleResponse>> getAllVehicles()
+    ApiResponse<PageResponse<VehicleResponse>> getAllVehicles(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size)
     {
-        return ApiResponse.<List<VehicleResponse>>builder()
-                .result(vehicleService.getAllVehicles())
+        return ApiResponse.<PageResponse<VehicleResponse>>builder()
+                .result(vehicleService.getAllVehicles(page, size))
                 .build();
     }
 

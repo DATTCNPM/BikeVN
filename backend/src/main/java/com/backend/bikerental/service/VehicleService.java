@@ -2,6 +2,7 @@ package com.backend.bikerental.service;
 
 import com.backend.bikerental.dto.request.VehicleCreationRequest;
 import com.backend.bikerental.dto.request.VehicleUpdateRequest;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.dto.response.VehicleImageResponse;
 import com.backend.bikerental.entity.Vehicle;
@@ -20,6 +21,9 @@ import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -68,9 +72,22 @@ public class VehicleService {
     }
 
     @Transactional(readOnly = true)
-    public List<VehicleResponse> getAllVehicles()
+    public PageResponse<VehicleResponse> getAllVehicles(int page, int size)
     {
-        return vehicleMapper.toListVehicleResponse(vehicleRepository.findAll());
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Vehicle> pageData = vehicleRepository.findAll(pageable);
+
+        var vehicleResponses = pageData.getContent().stream()
+                .map(vehicleMapper::toVehicleResponse)
+                .toList();
+
+        return PageResponse.<VehicleResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(vehicleResponses)
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -107,14 +124,14 @@ public class VehicleService {
         return vehicleMapper.toVehicleResponse(vehicleRepository.save(vehicle));
     }
     @Transactional
-    @PreAuthorize("hasRole('admin') or hasRole('employee')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public void deleteVehicle(String id)
     {
         vehicleRepository.deleteById(id);
     }
 
     @Transactional
-    @PreAuthorize("hasRole('admin') or hasRole('employee')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public void updateVehicleStatus(String id, StatusVehicleEnum status)
     {
         Vehicle vehicle = vehicleRepository.findById(id)
@@ -215,7 +232,7 @@ public class VehicleService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('admin') or hasRole('employee')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public VehicleImageResponse updateVehicleImage(String vehicleId, String imageId, MultipartFile file, String altText, Integer displayOrder, Boolean isPrimary) {
         VehicleImage image = vehicleImageRepository.findByIdAndVehicle_Id(imageId, vehicleId)
                 .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
@@ -241,7 +258,7 @@ public class VehicleService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('admin') or hasRole('employee')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public void deleteVehicleImage(String vehicleId, String imageId) {
         VehicleImage image = vehicleImageRepository.findByIdAndVehicle_Id(imageId, vehicleId)
                 .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));

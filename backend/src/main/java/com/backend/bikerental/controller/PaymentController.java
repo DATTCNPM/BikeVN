@@ -2,6 +2,7 @@ package com.backend.bikerental.controller;
 
 import com.backend.bikerental.dto.request.PaymentCreationRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
 import com.backend.bikerental.enums.PaymentStatus;
 import com.backend.bikerental.service.PaymentServiceP;
@@ -31,17 +32,13 @@ public class PaymentController {
     }
 
     @GetMapping()
-    public ApiResponse<Page<PaymentResponse>> getAllPayments(
-            @RequestParam(required = false) PaymentStatus status,
-            @RequestParam(defaultValue = "0") int page, //mac dinh trang 0
-            @RequestParam(defaultValue = "10") int size //mac dinh 10pt/1 trang
+    public ApiResponse<PageResponse<PaymentResponse>> getAllPayments(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
             )
     {
-        //yeu cau lay trang, so luong pt/trang, sap xep theo thoi gian tao giam dan
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-
-        return ApiResponse.<Page<PaymentResponse>>builder()
-                .result(paymentService.getAllPayments(status, pageable))
+        return ApiResponse.<PageResponse<PaymentResponse>>builder()
+                .result(paymentService.getAllPayments(page,size))
                 .build();
     }
 
