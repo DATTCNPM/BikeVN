@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 
-import AppFooter from "@/layouts/Footer";
-import AppHeader from "@/layouts/Header";
-import AppSidebar from "@/layouts/Sidebar";
+import AppFooter from "@/components/layouts/Footer";
+import AppHeader from "@/components/layouts/Header";
+import AppSidebar from "@/components/layouts/Sidebar";
 
 import {
   SidebarProvider,

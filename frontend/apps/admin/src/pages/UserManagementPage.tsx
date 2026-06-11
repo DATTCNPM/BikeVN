@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
@@ -6,31 +6,29 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import StatusBadge from "@/components/common/StatusBadge";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
-import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "@repo/ui/components/ui/sonner";
 
-import UserCreate from "@/components/user/UserCreate";
-import UserEdit from "@/components/user/UserEdit";
-import UserDelete from "@/components/user/UserDelete";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+
+import UserCreate from "@/features/users/components/UserCreate";
+import UserEdit from "@/features/users/components/UserEdit";
+import UserDelete from "@/features/users/components/UserDelete";
 
 import { useUsers } from "@/features/users/queries";
+
 import type { User } from "@repo/types";
 
 export default function UserManagementPage() {
-  const { data: users = [], isLoading, error } = useUsers();
-  
+  const [page, setPage] = useState(1);
+
+  const { data: usersResponse, isLoading } = useUsers(page, 10);
+
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Không thể tải danh sách người dùng");
-    }
-  }, [error]);
 
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
@@ -47,7 +45,7 @@ export default function UserManagementPage() {
         header: "Số điện thoại",
       },
       {
-        accessorKey: "cccd_number",
+        accessorKey: "cccdNumber",
         header: "CCCD",
       },
       {
@@ -95,24 +93,24 @@ export default function UserManagementPage() {
         onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
-      <DataTable columns={columns} data={users} />
+      <DataTable columns={columns} data={usersResponse?.data ?? []} />
 
       <TablePagination
-        page={1}
-        totalPages={Math.ceil(users.length / 10) || 1}
-        onPageChange={(page) => console.log(page)}
+        page={usersResponse?.currentPage ?? 1}
+        totalPages={usersResponse?.totalPages ?? 1}
+        totalElements={usersResponse?.totalElements ?? 0}
+        pageSize={usersResponse?.pageSize ?? 10}
+        onPageChange={setPage}
       />
 
-      {/* Dialogs */}
-      <UserCreate
-        open={openCreateDialog}
-        onOpenChange={setOpenCreateDialog}
-      />
+      <UserCreate open={openCreateDialog} onOpenChange={setOpenCreateDialog} />
+
       <UserEdit
         open={openEditDialog}
         onOpenChange={setOpenEditDialog}
         user={selectedUser}
       />
+
       <UserDelete
         open={openDeleteDialog}
         onOpenChange={setOpenDeleteDialog}

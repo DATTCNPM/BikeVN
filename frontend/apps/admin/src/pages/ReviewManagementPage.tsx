@@ -12,8 +12,8 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 
-import ReviewEdit from "@/components/review/ReviewEdit";
-import ReviewDelete from "@/components/review/ReviewDelete";
+import ReviewEdit from "@/features/reviews/components/ReviewEdit";
+import ReviewDelete from "@/features/reviews/components/ReviewDelete";
 
 import { useAllReviews } from "@repo/hooks";
 import type { Review } from "@repo/types";
@@ -38,17 +38,29 @@ export default function ReviewManagementPage() {
       {
         accessorKey: "booking_id",
         header: "Mã đơn",
-        cell: ({ row }) => <span className="text-sm font-medium">#{row.original.booking_id.substring(0, 6)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            #{row.original.booking_id.substring(0, 6)}
+          </span>
+        ),
       },
       {
         accessorKey: "user_id",
         header: "Mã người dùng",
-        cell: ({ row }) => <span className="text-sm">User #{row.original.user_id.substring(0, 6)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm">
+            User #{row.original.user_id.substring(0, 6)}
+          </span>
+        ),
       },
       {
         accessorKey: "vehicle_id",
         header: "Mã xe",
-        cell: ({ row }) => <span className="text-sm font-medium">Xe #{row.original.vehicle_id.substring(0, 6)}</span>,
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            Xe #{row.original.vehicle_id.substring(0, 6)}
+          </span>
+        ),
       },
       {
         accessorKey: "rating",
@@ -56,7 +68,10 @@ export default function ReviewManagementPage() {
         cell: ({ row }) => (
           <div className="flex items-center gap-1">
             {Array.from({ length: row.original.rating }).map((_, index) => (
-              <Star key={index} className="size-4 fill-yellow-400 text-yellow-400" />
+              <Star
+                key={index}
+                className="size-4 fill-yellow-400 text-yellow-400"
+              />
             ))}
           </div>
         ),
@@ -76,7 +91,8 @@ export default function ReviewManagementPage() {
       {
         accessorKey: "created_at",
         header: "Ngày đánh giá",
-        cell: ({ row }) => new Date(row.original.created_at).toLocaleString("vi-VN"),
+        cell: ({ row }) =>
+          new Date(row.original.created_at).toLocaleString("vi-VN"),
       },
       {
         id: "status",
@@ -117,10 +133,7 @@ export default function ReviewManagementPage() {
 
   return (
     <div>
-      <DataTableToolbar
-        search={search}
-        onSearchChange={setSearch}
-      />
+      <DataTableToolbar search={search} onSearchChange={setSearch} />
 
       <DataTable columns={columns} data={reviews} />
 

@@ -9,9 +9,9 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 
-import VehicleImageCreate from "@/components/vehicleImage/ImageCreate";
-import VehicleImageEdit from "@/components/vehicleImage/ImageEdit";
-import VehicleImageDelete from "@/components/vehicleImage/ImageDelete";
+import VehicleImageCreate from "@/features/vehicleImages/components/ImageCreate";
+import VehicleImageEdit from "@/features/vehicleImages/components/ImageEdit";
+import VehicleImageDelete from "@/features/vehicleImages/components/ImageDelete";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";

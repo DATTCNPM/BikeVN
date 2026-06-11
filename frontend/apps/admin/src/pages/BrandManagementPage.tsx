@@ -7,9 +7,9 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 
-import BrandCreate from "@/components/vehicleBrand/BrandCreate";
-import BrandEdit from "@/components/vehicleBrand/BrandEdit";
-import BrandDelete from "@/components/vehicleBrand/BrandDelete";
+import BrandCreate from "@/features/vehicleBrand/components/BrandCreate";
+import BrandEdit from "@/features/vehicleBrand/components/BrandEdit";
+import BrandDelete from "@/features/vehicleBrand/components/BrandDelete";
 
 import { Spinner } from "@repo/ui/components/ui/spinner";
 

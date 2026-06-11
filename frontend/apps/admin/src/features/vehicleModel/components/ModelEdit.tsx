@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
@@ -22,27 +24,22 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateVehicleModel } from "@/features/vehicles/mutationVehicleModel";
-
 import { useVehicleBrands } from "@repo/hooks";
 
 import { vehicleModelSchema, type VehicleModelFormData } from "@repo/schemas";
 
+import type { VehicleModel } from "@repo/types";
+
+import { useUpdateVehicleModel } from "@/features/vehicleModel/mutationVehicleModel";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  model: VehicleModel | null;
 };
 
-const defaultValues: VehicleModelFormData = {
-  name: "",
-  brandId: undefined as any,
-  engineCapacity: 110,
-  yearFrom: undefined,
-  yearTo: undefined,
-};
-
-export default function ModelCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateVehicleModel();
+export default function ModelEdit({ open, onOpenChange, model }: Props) {
+  const { mutateAsync, isPending } = useUpdateVehicleModel();
 
   const { data: brands = [] } = useVehicleBrands();
 
@@ -54,20 +51,34 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
     formState: { errors },
   } = useForm<VehicleModelFormData>({
     resolver: zodResolver(vehicleModelSchema),
-    defaultValues,
   });
 
+  useEffect(() => {
+    if (!model) return;
+
+    reset({
+      name: model.name,
+      brandId: model.brandId,
+      engineCapacity: model.engineCapacity,
+      yearFrom: model.yearFrom,
+      yearTo: model.yearTo,
+    });
+  }, [model, reset]);
+
   const onSubmit = async (values: VehicleModelFormData) => {
+    if (!model) return;
+
     try {
-      await mutateAsync(values);
+      await mutateAsync({
+        id: model.id,
+        data: values,
+      });
 
-      toast.success("Tạo model xe thành công");
-
-      reset(defaultValues);
+      toast.success("Cập nhật model xe thành công");
 
       onOpenChange(false);
     } catch {
-      toast.error("Tạo model xe thất bại");
+      toast.error("Cập nhật model xe thất bại");
     }
   };
 
@@ -75,18 +86,18 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm model xe"
-      description="Tạo model xe mới"
+      title="Chỉnh sửa model xe"
+      description="Cập nhật thông tin model xe"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Lưu thay đổi"
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
             <FieldLabel>Tên model xe</FieldLabel>
 
-            <Input {...register("name")} placeholder="Wave Alpha" />
+            <Input {...register("name")} />
 
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
@@ -103,7 +114,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
                   onValueChange={(value) => field.onChange(Number(value))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn hãng xe" />
+                    <SelectValue />
                   </SelectTrigger>
 
                   <SelectContent>
@@ -125,7 +136,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Field>
-            <FieldLabel>Dung tích động cơ (cc)</FieldLabel>
+            <FieldLabel>Dung tích động cơ</FieldLabel>
 
             <Input
               type="number"
@@ -144,15 +155,10 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
 
             <Input
               type="number"
-              placeholder="2018"
               {...register("yearFrom", {
                 valueAsNumber: true,
               })}
             />
-
-            {errors.yearFrom && (
-              <FieldError>{errors.yearFrom.message}</FieldError>
-            )}
           </Field>
 
           <Field>
@@ -160,13 +166,10 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
 
             <Input
               type="number"
-              placeholder="2025"
               {...register("yearTo", {
                 valueAsNumber: true,
               })}
             />
-
-            {errors.yearTo && <FieldError>{errors.yearTo.message}</FieldError>}
           </Field>
         </div>
       </FieldGroup>

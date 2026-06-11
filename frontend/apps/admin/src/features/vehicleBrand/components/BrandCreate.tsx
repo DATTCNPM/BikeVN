@@ -14,7 +14,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateVehicleBrand } from "@/features/vehicles/mutationVehicleBrand";
+import { useCreateVehicleBrand } from "@/features/vehicleBrand/mutationVehicleBrand";
 
 import { vehicleBrandSchema, type VehicleBrandFormData } from "@repo/schemas";
 
@@ -55,8 +55,8 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
     }
   };
 
-    return (
-      <EntityFormDialog
+  return (
+    <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
       title="Thêm hãng xe"
@@ -69,33 +69,19 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
         <Field>
           <FieldLabel>Tên hãng xe</FieldLabel>
 
-          <Input
-            {...register("name")}
-            placeholder="Honda"
-          />
+          <Input {...register("name")} placeholder="Honda" />
 
-          {errors.name && (
-            <FieldError>
-              {errors.name.message}
-            </FieldError>
-          )}
+          {errors.name && <FieldError>{errors.name.message}</FieldError>}
         </Field>
 
         <Field>
           <FieldLabel>Quốc gia</FieldLabel>
 
-          <Input
-            {...register("country")}
-            placeholder="Japan"
-          />
+          <Input {...register("country")} placeholder="Japan" />
 
-          {errors.country && (
-            <FieldError>
-              {errors.country.message}
-            </FieldError>
-          )}
+          {errors.country && <FieldError>{errors.country.message}</FieldError>}
         </Field>
       </FieldGroup>
     </EntityFormDialog>
-    );
+  );
 }

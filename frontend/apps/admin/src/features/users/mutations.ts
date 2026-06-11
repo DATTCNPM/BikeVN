@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@repo/api";
-import { usersKeys } from "./queries";
+import { usersKeys } from "./usersKeys";
 import type { UserCreationRequest, UpdateProfilePayload } from "@repo/types";
 
 export function useCreateUser() {

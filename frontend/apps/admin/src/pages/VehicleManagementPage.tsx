@@ -9,9 +9,9 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 
-import VehicleCreate from "@/components/vehicle/VehicleCreate";
-import VehicleDelete from "@/components/vehicle/VehicleDelete";
-import VehicleEdit from "@/components/vehicle/VehicleEdit";
+import VehicleCreate from "@/features/vehicles/components/VehicleCreate";
+import VehicleDelete from "@/features/vehicles/components/VehicleDelete";
+import VehicleEdit from "@/features/vehicles/components/VehicleEdit";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
@@ -19,7 +19,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { type Vehicle } from "@repo/types";
 import { useVehicles, useVehicleBrands, useVehicleModels } from "@repo/hooks";
-import VehicleInfoDropdown from "@/components/vehicle/VehicleInfoDropdown";
+import VehicleInfoDropdown from "@/features/vehicles/components/VehicleInfoDropdown";
 import { useNavigate } from "react-router-dom";
 
 const vehicleStatusMap = {

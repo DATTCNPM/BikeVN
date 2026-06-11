@@ -7,59 +7,39 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 
-import ModelCreate from "@/components/vehicleModel/ModelCreate";
-import ModelEdit from "@/components/vehicleModel/ModelEdit";
-import ModelDelete from "@/components/vehicleModel/ModelDelete";
+import ModelCreate from "@/features/vehicleModel/components/ModelCreate";
+import ModelEdit from "@/features/vehicleModel/components/ModelEdit";
+import ModelDelete from "@/features/vehicleModel/components/ModelDelete";
 
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import {
-  useVehicleBrands,
-  useVehicleModels,
-} from "@repo/hooks";
+import { useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
-import type {
-  VehicleBrand,
-  VehicleModel,
-} from "@repo/types";
+import type { VehicleBrand, VehicleModel } from "@repo/types";
 
 export default function ModelManagementPage() {
-  const {
-    data: models = [],
-    isLoading,
-    error,
-  } = useVehicleModels();
+  const { data: models = [], isLoading, error } = useVehicleModels();
 
-  const { data: brands = [] } =
-    useVehicleBrands();
+  const { data: brands = [] } = useVehicleBrands();
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
-  const [selectedModel, setSelectedModel] =
-    useState<VehicleModel | null>(null);
+  const [selectedModel, setSelectedModel] = useState<VehicleModel | null>(null);
 
-  const [openCreate, setOpenCreate] =
-    useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
 
-  const [openEdit, setOpenEdit] =
-    useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
-  const [openDelete, setOpenDelete] =
-    useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   useEffect(() => {
     if (error) {
-      toast.error(
-        "Không thể tải danh sách model xe",
-      );
+      toast.error("Không thể tải danh sách model xe");
     }
   }, [error]);
 
-  const columns = useMemo<
-    ColumnDef<VehicleModel>[]
-  >(
+  const columns = useMemo<ColumnDef<VehicleModel>[]>(
     () => [
       {
         accessorKey: "name",
@@ -72,29 +52,20 @@ export default function ModelManagementPage() {
         header: "Hãng xe",
 
         cell: ({ row }) => {
-          const brand =
-            brands.find(
-              (
-                item: VehicleBrand,
-              ) =>
-                item.id ===
-                row.original.brandId,
-            );
-
-          return (
-            brand?.name ?? "N/A"
+          const brand = brands.find(
+            (item: VehicleBrand) => item.id === row.original.brandId,
           );
+
+          return brand?.name ?? "N/A";
         },
       },
 
       {
-        accessorKey:
-          "engineCapacity",
+        accessorKey: "engineCapacity",
 
         header: "Dung tích",
 
-        cell: ({ row }) =>
-          `${row.original.engineCapacity}cc`,
+        cell: ({ row }) => `${row.original.engineCapacity}cc`,
       },
 
       {
@@ -104,23 +75,17 @@ export default function ModelManagementPage() {
 
         cell: ({ row }) =>
           `${row.original.yearFrom ?? "-"} - ${
-            row.original.yearTo ??
-            "Hiện tại"
+            row.original.yearTo ?? "Hiện tại"
           }`,
       },
 
       {
-        accessorKey:
-          "createdAt",
+        accessorKey: "createdAt",
 
         header: "Ngày tạo",
 
         cell: ({ row }) =>
-          new Date(
-            row.original.createdAt,
-          ).toLocaleDateString(
-            "vi-VN",
-          ),
+          new Date(row.original.createdAt).toLocaleDateString("vi-VN"),
       },
 
       {
@@ -131,16 +96,12 @@ export default function ModelManagementPage() {
         cell: ({ row }) => (
           <TableActionDropdown
             onEdit={() => {
-              setSelectedModel(
-                row.original,
-              );
+              setSelectedModel(row.original);
 
               setOpenEdit(true);
             }}
             onDelete={() => {
-              setSelectedModel(
-                row.original,
-              );
+              setSelectedModel(row.original);
 
               setOpenDelete(true);
             }}
@@ -164,28 +125,14 @@ export default function ModelManagementPage() {
       <DataTableToolbar
         search={search}
         onSearchChange={setSearch}
-        onCreateOpen={() =>
-          setOpenCreate(true)
-        }
+        onCreateOpen={() => setOpenCreate(true)}
       />
 
-      <DataTable
-        columns={columns}
-        data={models}
-      />
+      <DataTable columns={columns} data={models} />
 
-      <TablePagination
-        page={1}
-        totalPages={1}
-        onPageChange={() => {}}
-      />
+      <TablePagination page={1} totalPages={1} onPageChange={() => {}} />
 
-      <ModelCreate
-        open={openCreate}
-        onOpenChange={
-          setOpenCreate
-        }
-      />
+      <ModelCreate open={openCreate} onOpenChange={setOpenCreate} />
 
       <ModelEdit
         open={openEdit}
@@ -195,9 +142,7 @@ export default function ModelManagementPage() {
 
       <ModelDelete
         open={openDelete}
-        onOpenChange={
-          setOpenDelete
-        }
+        onOpenChange={setOpenDelete}
         model={selectedModel}
       />
     </>

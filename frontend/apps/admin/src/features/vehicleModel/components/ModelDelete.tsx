@@ -4,7 +4,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import type { VehicleModel } from "@repo/types";
 
-import { useDeleteVehicleModel } from "@/features/vehicles/mutationVehicleModel";
+import { useDeleteVehicleModel } from "@/features/vehicleModel/mutationVehicleModel";
 
 type Props = {
   open: boolean;

@@ -1,16 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { userApi } from "@repo/api";
+import { usersKeys } from "./usersKeys";
 
-export const usersKeys = {
-  all: ["users"] as const,
-  detail: (id: string) => ["user", id] as const,
-};
-
-export function useUsers() {
+export function useUsers(page: number = 1, size: number = 10) {
   return useQuery({
     queryKey: usersKeys.all,
     queryFn: async () => {
-      const response = await userApi.getUsers();
+      const response = await userApi.getUsers({ page, size });
       return response;
     },
   });

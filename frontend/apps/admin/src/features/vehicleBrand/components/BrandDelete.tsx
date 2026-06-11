@@ -2,7 +2,7 @@ import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useDeleteVehicleBrand } from "@/features/vehicles/mutationVehicleBrand";
+import { useDeleteVehicleBrand } from "@/features/vehicleBrand/mutationVehicleBrand";
 
 import type { VehicleBrand } from "@repo/types";
 

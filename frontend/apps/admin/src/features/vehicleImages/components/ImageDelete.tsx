@@ -2,7 +2,7 @@ import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useDeleteVehicleImage } from "@/features/vehicles/mutationVehicleImage";
+import { useDeleteVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
 
 import type { VehicleImage } from "@repo/types";
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -16,25 +16,40 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useUploadVehicleImage } from "@/features/vehicles/mutationVehicleImage";
+import { useUpdateVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
 
-import { vehicleImageSchema, type VehicleImageFormData } from "@repo/schemas";
+import type { VehicleImage } from "@repo/types";
+
+import { z } from "zod";
+
+const vehicleImageUpdateSchema = z.object({
+  file: z.instanceof(File).optional(),
+
+  altText: z.string().optional(),
+
+  displayOrder: z.number().min(0).optional(),
+
+  isPrimary: z.boolean().optional(),
+});
+
+type FormValues = z.infer<typeof vehicleImageUpdateSchema>;
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+
   vehicleId: string;
+
+  image: VehicleImage | null;
 };
 
-const defaultValues: VehicleImageFormData = {
-  file: undefined as unknown as File,
-  altText: "",
-  displayOrder: 0,
-  isPrimary: false,
-};
-
-export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
-  const { mutateAsync, isPending } = useUploadVehicleImage();
+export default function ImageEdit({
+  open,
+  onOpenChange,
+  vehicleId,
+  image,
+}: Props) {
+  const { mutateAsync, isPending } = useUpdateVehicleImage();
 
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -45,10 +60,21 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<VehicleImageFormData>({
-    resolver: zodResolver(vehicleImageSchema),
-    defaultValues,
+  } = useForm<FormValues>({
+    resolver: zodResolver(vehicleImageUpdateSchema),
   });
+
+  useEffect(() => {
+    if (!image) return;
+
+    reset({
+      altText: image.altText ?? "",
+      displayOrder: image.displayOrder,
+      isPrimary: image.isPrimary,
+    });
+
+    setPreview(image.imageUrl);
+  }, [image, reset]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -57,16 +83,16 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
 
     setValue("file", file);
 
-    const url = URL.createObjectURL(file);
-
-    setPreview(url);
+    setPreview(URL.createObjectURL(file));
   };
 
-  const onSubmit = async (values: VehicleImageFormData) => {
+  const onSubmit = async (values: FormValues) => {
+    if (!image) return;
+
     try {
       await mutateAsync({
         vehicleId,
-
+        imageId: image.id,
         payload: {
           file: values.file,
           altText: values.altText,
@@ -75,15 +101,11 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
         },
       });
 
-      toast.success("Tải ảnh lên thành công");
-
-      reset(defaultValues);
-
-      setPreview(null);
+      toast.success("Cập nhật ảnh thành công");
 
       onOpenChange(false);
     } catch {
-      toast.error("Tải ảnh lên thất bại");
+      toast.error("Cập nhật ảnh thất bại");
     }
   };
 
@@ -91,15 +113,15 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm ảnh xe"
-      description="Tải ảnh mới cho xe"
+      title="Chỉnh sửa ảnh"
+      description="Cập nhật thông tin ảnh xe"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tải lên"
+      submitText="Lưu thay đổi"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Chọn ảnh</FieldLabel>
+          <FieldLabel>Đổi ảnh</FieldLabel>
 
           <Input type="file" accept="image/*" onChange={handleFileChange} />
 
@@ -111,9 +133,9 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
             <FieldLabel>Xem trước</FieldLabel>
 
             <img
-              src={preview}
-              alt="Preview"
-              className="h-48 w-full rounded-md border object-cover"
+              src={`http://localhost:8080${preview}`}
+              alt="preview"
+              className="h-56 w-full rounded-md border object-cover"
             />
           </Field>
         )}
@@ -123,7 +145,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
 
           <Input
             {...register("altText")}
-            placeholder="Ví dụ: Góc nhìn phía trước"
+            placeholder="Ví dụ: Góc nhìn bên trái"
           />
 
           {errors.altText && <FieldError>{errors.altText.message}</FieldError>}
@@ -145,7 +167,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
         </Field>
 
         <Field>
-          <FieldLabel>Đặt làm ảnh chính</FieldLabel>
+          <FieldLabel>Ảnh chính</FieldLabel>
           <div>
             <Controller
               control={control}

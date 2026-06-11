@@ -17,7 +17,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useUpdateVehicleBrand } from "@/features/vehicles/mutationVehicleBrand";
+import { useUpdateVehicleBrand } from "@/features/vehicleBrand/mutationVehicleBrand";
 
 import type { VehicleBrand } from "@repo/types";
 

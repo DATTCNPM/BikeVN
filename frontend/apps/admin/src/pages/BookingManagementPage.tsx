@@ -3,8 +3,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
-import BookingActionDropdown from "@/components/booking/BookingActionDropdown";
-import BookingStatusDialog from "@/components/booking/BookingStatusDialog";
+import BookingActionDropdown from "@/features/bookings/components/BookingActionDropdown";
+import BookingStatusDialog from "@/features/bookings/components/BookingStatusDialog";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 

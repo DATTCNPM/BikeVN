@@ -7,14 +7,14 @@ import {
   Users,
 } from "lucide-react";
 
-import DashboardCard from "@/components/dashboard/DashboardCard";
-import RevenueChart from "@/components/dashboard/RevenueChart";
-import BookingStatusChart from "@/components/dashboard/BookingStatusChart";
-import VehicleStatusChart from "@/components/dashboard/VehicleStatusChart";
-import BranchPerformanceChart from "@/components/dashboard/BranchPerformanceChart";
-import TopVehiclesChart from "@/components/dashboard/TopVehiclesChart";
-import RecentBookingsTable from "@/components/dashboard/RecentBookingsTable";
-import RecentReviews from "@/components/dashboard/RecentReviews";
+import DashboardCard from "@/features/dashboard/components/DashboardCard";
+import RevenueChart from "@/features/dashboard/components/RevenueChart";
+import BookingStatusChart from "@/features/dashboard/components/BookingStatusChart";
+import VehicleStatusChart from "@/features/dashboard/components/VehicleStatusChart";
+import BranchPerformanceChart from "@/features/dashboard/components/BranchPerformanceChart";
+import TopVehiclesChart from "@/features/dashboard/components/TopVehiclesChart";
+import RecentBookingsTable from "@/features/dashboard/components/RecentBookingsTable";
+import RecentReviews from "@/features/dashboard/components/RecentReviews";
 
 import { useDashboardOverview } from "@/features/dashboard/queries";
 

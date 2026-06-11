@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -16,40 +16,25 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useUpdateVehicleImage } from "@/features/vehicles/mutationVehicleImage";
+import { useUploadVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
 
-import type { VehicleImage } from "@repo/types";
-
-import { z } from "zod";
-
-const vehicleImageUpdateSchema = z.object({
-  file: z.instanceof(File).optional(),
-
-  altText: z.string().optional(),
-
-  displayOrder: z.number().min(0).optional(),
-
-  isPrimary: z.boolean().optional(),
-});
-
-type FormValues = z.infer<typeof vehicleImageUpdateSchema>;
+import { vehicleImageSchema, type VehicleImageFormData } from "@repo/schemas";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-
   vehicleId: string;
-
-  image: VehicleImage | null;
 };
 
-export default function ImageEdit({
-  open,
-  onOpenChange,
-  vehicleId,
-  image,
-}: Props) {
-  const { mutateAsync, isPending } = useUpdateVehicleImage();
+const defaultValues: VehicleImageFormData = {
+  file: undefined as unknown as File,
+  altText: "",
+  displayOrder: 0,
+  isPrimary: false,
+};
+
+export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
+  const { mutateAsync, isPending } = useUploadVehicleImage();
 
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -60,21 +45,10 @@ export default function ImageEdit({
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(vehicleImageUpdateSchema),
+  } = useForm<VehicleImageFormData>({
+    resolver: zodResolver(vehicleImageSchema),
+    defaultValues,
   });
-
-  useEffect(() => {
-    if (!image) return;
-
-    reset({
-      altText: image.altText ?? "",
-      displayOrder: image.displayOrder,
-      isPrimary: image.isPrimary,
-    });
-
-    setPreview(image.imageUrl);
-  }, [image, reset]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -83,16 +57,16 @@ export default function ImageEdit({
 
     setValue("file", file);
 
-    setPreview(URL.createObjectURL(file));
+    const url = URL.createObjectURL(file);
+
+    setPreview(url);
   };
 
-  const onSubmit = async (values: FormValues) => {
-    if (!image) return;
-
+  const onSubmit = async (values: VehicleImageFormData) => {
     try {
       await mutateAsync({
         vehicleId,
-        imageId: image.id,
+
         payload: {
           file: values.file,
           altText: values.altText,
@@ -101,11 +75,15 @@ export default function ImageEdit({
         },
       });
 
-      toast.success("Cập nhật ảnh thành công");
+      toast.success("Tải ảnh lên thành công");
+
+      reset(defaultValues);
+
+      setPreview(null);
 
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật ảnh thất bại");
+      toast.error("Tải ảnh lên thất bại");
     }
   };
 
@@ -113,15 +91,15 @@ export default function ImageEdit({
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa ảnh"
-      description="Cập nhật thông tin ảnh xe"
+      title="Thêm ảnh xe"
+      description="Tải ảnh mới cho xe"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Tải lên"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Đổi ảnh</FieldLabel>
+          <FieldLabel>Chọn ảnh</FieldLabel>
 
           <Input type="file" accept="image/*" onChange={handleFileChange} />
 
@@ -133,9 +111,9 @@ export default function ImageEdit({
             <FieldLabel>Xem trước</FieldLabel>
 
             <img
-              src={`http://localhost:8080${preview}`}
-              alt="preview"
-              className="h-56 w-full rounded-md border object-cover"
+              src={preview}
+              alt="Preview"
+              className="h-48 w-full rounded-md border object-cover"
             />
           </Field>
         )}
@@ -145,7 +123,7 @@ export default function ImageEdit({
 
           <Input
             {...register("altText")}
-            placeholder="Ví dụ: Góc nhìn bên trái"
+            placeholder="Ví dụ: Góc nhìn phía trước"
           />
 
           {errors.altText && <FieldError>{errors.altText.message}</FieldError>}
@@ -167,7 +145,7 @@ export default function ImageEdit({
         </Field>
 
         <Field>
-          <FieldLabel>Ảnh chính</FieldLabel>
+          <FieldLabel>Đặt làm ảnh chính</FieldLabel>
           <div>
             <Controller
               control={control}

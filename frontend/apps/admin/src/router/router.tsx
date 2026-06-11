@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import MainLayout from "@/layouts/MainLayout";
+import MainLayout from "@/components/layouts/MainLayout";
 import ProtectedRoute from "@/features/auth/ProtectedRoute";
 import HomePage from "../pages/HomePage";
 import VehicleManagementPage from "@/pages/VehicleManagementPage";

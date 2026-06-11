@@ -8,9 +8,9 @@ import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-import BranchCreate from "@/components/branch/BranchCreate";
-import BranchEdit from "@/components/branch/BranchEdit";
-import BranchDelete from "@/components/branch/BranchDelete";
+import BranchCreate from "@/features/branches/components/BranchCreate";
+import BranchEdit from "@/features/branches/components/BranchEdit";
+import BranchDelete from "@/features/branches/components/BranchDelete";
 
 import { useBranches } from "@repo/hooks";
 import type { Branch } from "@repo/types";

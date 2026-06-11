@@ -6,8 +6,8 @@ import type {
 } from "@repo/types";
 
 export const userApi = {
-  async getUsers() {
-    return axiosAdmin.get<User[]>("/user");
+  async getUsers({ page, size }: { page: number; size: number }) {
+    return axiosAdmin.get<User[]>("/user", { params: { page, size } });
   },
 
   async getUserById(id: string) {

@@ -3,8 +3,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
-import PaymentActionDropdown from "@/components/payment/PaymentActionDropdown";
-import PaymentStatusDialog from "@/components/payment/PaymentStatusDialog";
+import PaymentActionDropdown from "@/features/payments/components/PaymentActionDropdown";
+import PaymentStatusDialog from "@/features/payments/components/PaymentStatusDialog";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
