@@ -18,14 +18,6 @@ export type PaymentCreationPayload = z.infer<typeof paymentCreationSchema>;
 
 export type PaymentConfirmPayload = z.infer<typeof paymentConfirmSchema>;
 
-export interface PaymentPage {
-  content: Payment[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
-
 export type ApprovePaymentPayload = {
   id: string;
   adminId: string;
@@ -35,4 +27,10 @@ export type ApprovePaymentPayload = {
 export type CancelPaymentPayload = {
   id: string;
   reason?: string;
+};
+
+export type PaymentParams = {
+  page?: number;
+  size?: number;
+  status?: PaymentStatus;
 };

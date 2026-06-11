@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import PaymentActionDropdown from "@/features/payments/components/PaymentActionDropdown";
 import PaymentStatusDialog from "@/features/payments/components/PaymentStatusDialog";
+import TablePagination from "@/components/common/TablePagination";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "@repo/ui/components/ui/sonner";
 
 import { usePayments } from "@/features/payments/queries";
 
@@ -37,37 +37,28 @@ const paymentTypeLabel: Record<PaymentType, string> = {
 
 export default function PaymentManagementPage() {
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
 
   const [dialogMode, setDialogMode] = useState<
     "confirm" | "approve-manually" | "cancel" | null
   >(null);
+  const params = {
+    search,
+    page,
+    pageSize: 10,
+  };
 
-  const { data: payments, isLoading, error } = usePayments();
+  const { data: payments, isLoading } = usePayments(params);
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Không thể tải danh sách thanh toán");
-    }
-  }, [error]);
-
-  const filteredPayments = useMemo(() => {
-    const content = payments?.content ?? [];
-
-    if (!search.trim()) {
-      return content;
-    }
-
-    const keyword = search.toLowerCase();
-
-    return content.filter(
-      (payment) =>
-        payment.bookingId.toLowerCase().includes(keyword) ||
-        payment.paymentMethod.toLowerCase().includes(keyword),
-    );
-  }, [payments, search]);
-
+  const paymentData = payments?.data || [];
+  const pagination = {
+    page: payments?.page || 1,
+    pageSize: payments?.pageSize || 10,
+    totalPages: payments?.totalPages || 1,
+    totalElements: payments?.totalElements || 0,
+  };
   const columns = useMemo<ColumnDef<Payment>[]>(
     () => [
       {
@@ -169,7 +160,7 @@ export default function PaymentManagementPage() {
     <div className="space-y-4">
       <DataTableToolbar search={search} onSearchChange={setSearch} />
 
-      <DataTable columns={columns} data={filteredPayments} />
+      <DataTable columns={columns} data={paymentData} />
 
       <PaymentStatusDialog
         payment={selectedPayment}
@@ -181,6 +172,15 @@ export default function PaymentManagementPage() {
           }
         }}
         mode={dialogMode ?? "confirm"}
+      />
+      <TablePagination
+        page={pagination.page || 1}
+        pageSize={pagination.pageSize || 10}
+        totalPages={pagination.totalPages || 1}
+        totalElements={pagination.totalElements || 0}
+        onPageChange={(page) => {
+          setPage(page);
+        }}
       />
     </div>
   );

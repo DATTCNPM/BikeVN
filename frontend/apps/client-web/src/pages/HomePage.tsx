@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
 
 import SearchComponent from "@/components/common/Search";
 import Filter from "@/components/common/Filter";
@@ -39,11 +37,7 @@ export default function HomePage() {
 
   const pageSize = 12;
 
-  const {
-    data: vehicles = [],
-    isLoading,
-    error,
-  } = useVehicles({
+  const { data: vehicles = [], isLoading } = useVehicles({
     search,
     branchId,
     vehicleType,
@@ -53,37 +47,30 @@ export default function HomePage() {
     pageSize,
   });
 
-  const {
-    data: branches = [],
-    isLoading: branchLoading,
-    error: branchError,
-  } = useBranches();
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Lấy danh sách xe thất bại");
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (branchError) {
-      toast.error("Lấy danh sách chi nhánh thất bại");
-    }
-  }, [branchError]);
+  const { data: branches = [], isLoading: branchLoading } = useBranches();
 
   const vehicleListData = useMemo(() => {
-    return vehicles.map((vehicle) => ({
-      id: vehicle.id,
-      name: vehicle.name,
-      vehicle_type: vehicle.vehicleType,
-      price: vehicle.pricePerDay,
-      image: filterImagePrimary(vehicle?.images || []),
-      location:
-        branches.find((branch) => branch.id === vehicle.currentBranchId)
-          ?.name || "Unknown",
-      status: vehicle.status,
-    }));
+    return vehicles.data
+      ? vehicles.data.map((vehicle) => ({
+          id: vehicle.id,
+          name: vehicle.name,
+          vehicle_type: vehicle.vehicleType,
+          price: vehicle.pricePerDay,
+          image: filterImagePrimary(vehicle?.images || []),
+          location:
+            branches.find((branch) => branch.id === vehicle.currentBranchId)
+              ?.name || "Unknown",
+          status: vehicle.status,
+        }))
+      : [];
   }, [vehicles, branches]);
+
+  const pagination = {
+    page: vehicles?.currentPage ?? 1,
+    pageSize: vehicles?.pageSize ?? pageSize,
+    totalElements: vehicles?.totalElements ?? 0,
+    totalPages: vehicles?.totalPages ?? 1,
+  };
 
   const resetFilter = () => {
     setSearch("");
@@ -107,18 +94,18 @@ export default function HomePage() {
   const vehicleTypes = ["Xe số", "Xe ga", "Xe côn"];
 
   const priceRanges = ["Dưới 100k", "100k - 200k", "Trên 200k"];
-
-  console.log("data", vehicles);
-  console.log("vehicles", vehicleListData);
-
+  console.log("vehicles", vehicles);
   return (
     <div>
       <Tabs defaultValue="list" className="w-full space-y-4">
         <div className="flex items-center justify-center gap-4">
           <SearchComponent
             value={search}
-            onChange={setSearch}
-            results={vehicleListData.length}
+            onChange={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            results={pagination.totalElements}
           />
 
           <Filter title="Filter by location" content={locations} />
@@ -144,14 +131,18 @@ export default function HomePage() {
           </TabsList>
 
           <p className="text-sm text-muted-foreground">
-            Hiển thị {vehicleListData.length} xe
+            Hiển thị {pagination.totalElements} xe
           </p>
         </div>
 
         <Separator />
 
         <TabsContent value="list">
-          <ListVehicle vehicles={vehicleListData} />
+          <ListVehicle
+            vehicles={vehicleListData}
+            pagination={pagination}
+            onPageChange={setPage}
+          />
         </TabsContent>
 
         <TabsContent value="map">

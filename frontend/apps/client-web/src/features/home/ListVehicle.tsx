@@ -10,12 +10,23 @@ interface VehicleCardData {
   location: string;
   status: string;
 }
+type Pagination = {
+  page: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+};
 
 interface ListVehicleProps {
   vehicles: VehicleCardData[];
+  pagination: Pagination;
 }
 
-export default function ListVehicle({ vehicles }: ListVehicleProps) {
+export default function ListVehicle({
+  vehicles,
+  pagination,
+  onPageChange,
+}: ListVehicleProps & { onPageChange: (page: number) => void }) {
   return (
     <>
       <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-4">
@@ -33,7 +44,12 @@ export default function ListVehicle({ vehicles }: ListVehicleProps) {
         ))}
       </div>
 
-      <PaginationComponent />
+      <PaginationComponent
+        page={pagination.page}
+        totalPages={pagination.totalPages}
+        totalElements={pagination.totalElements}
+        onPageChange={onPageChange}
+      />
     </>
   );
 }

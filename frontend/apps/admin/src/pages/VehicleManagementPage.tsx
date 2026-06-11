@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 
 import mockImageMotor from "@/assets/images/motorbike1.png";
 
@@ -15,7 +15,6 @@ import VehicleEdit from "@/features/vehicles/components/VehicleEdit";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "@repo/ui/components/ui/sonner";
 
 import { type Vehicle } from "@repo/types";
 import { useVehicles, useVehicleBrands, useVehicleModels } from "@repo/hooks";
@@ -39,7 +38,7 @@ const vehicleStatusLabel = {
 };
 
 export default function VehicleManagementPage() {
-  const { data: vehicles = [], isLoading, error } = useVehicles();
+  const { data: vehicles, isLoading } = useVehicles();
   const { data: brands = [] } = useVehicleBrands();
   const { data: models = [] } = useVehicleModels();
 
@@ -51,11 +50,14 @@ export default function VehicleManagementPage() {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
-  useEffect(() => {
-    if (error) {
-      toast.error("Không thể tải danh sách xe");
-    }
-  }, [error]);
+
+  const vehicleData = vehicles?.data || [];
+  const pagination = {
+    page: vehicles?.page,
+    pageSize: vehicles?.pageSize,
+    totalPages: vehicles?.totalPages,
+    totalElements: vehicles?.totalElements,
+  };
 
   const columns = useMemo<ColumnDef<Vehicle>[]>(
     () => [
@@ -170,6 +172,10 @@ export default function VehicleManagementPage() {
     );
   }
 
+  console.log("Vehicle data:", vehicleData);
+  console.log("Pagination info:", pagination);
+  console.log("vehicle", vehicles);
+
   return (
     <div>
       <DataTableToolbar
@@ -178,11 +184,13 @@ export default function VehicleManagementPage() {
         onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
-      <DataTable columns={columns} data={vehicles} />
+      <DataTable columns={columns} data={vehicleData} />
 
       <TablePagination
-        page={1}
-        totalPages={10}
+        page={pagination.page || 1}
+        pageSize={pagination.pageSize || 10}
+        totalPages={pagination.totalPages || 1}
+        totalElements={pagination.totalElements || 0}
         onPageChange={(page) => console.log(page)}
       />
       {/* Dialogs */}

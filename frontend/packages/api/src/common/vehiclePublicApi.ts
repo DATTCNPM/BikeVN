@@ -1,20 +1,24 @@
 import axiosPublic from "../axios/axiosPublic";
-import type { Vehicle, VehicleQueryParams } from "@repo/types";
+import type {
+  Vehicle,
+  VehicleQueryParams,
+  PaginationResponse,
+} from "@repo/types";
 
 export const vehiclePublicApi = {
   async getVehicles(params?: VehicleQueryParams) {
-    const data = await axiosPublic.get<Vehicle[], Vehicle[]>("/vehicle", {
+    const data = await axiosPublic.get<
+      PaginationResponse<Vehicle>,
+      PaginationResponse<Vehicle>
+    >("/vehicle", {
       params,
     });
 
-    return data || [];
+    return data;
   },
 
   async getVehicleById(id: string) {
     const data = await axiosPublic.get<Vehicle, Vehicle>(`/vehicle/${id}`);
-    if (!data) {
-      throw new Error("Xe không tồn tại");
-    }
     return data;
   },
 };

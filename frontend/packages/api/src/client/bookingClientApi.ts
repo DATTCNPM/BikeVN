@@ -25,7 +25,7 @@ export const bookingClientApi = {
       `/booking/user/${userId}`,
     );
 
-    return data || [];
+    return data;
   },
 
   async cancelBooking(bookingId: string) {

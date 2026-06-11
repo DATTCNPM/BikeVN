@@ -12,3 +12,11 @@ export interface AuthenticationResponse {
 export interface IntrospectResponse {
   valid: boolean;
 }
+
+export interface PaginationResponse<T> {
+  data: T[];
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  totalElements: number;
+}

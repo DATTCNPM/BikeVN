@@ -1,4 +1,4 @@
-import { VehicleQueryParams } from "@repo/types";
+import { PaymentParams, VehicleQueryParams } from "@repo/types";
 export const vehiclesKeys = {
   all: ["vehicles"] as const,
 
@@ -20,6 +20,8 @@ export const bookingsKeys = {
 
 export const paymentsKeys = {
   all: ["payments"] as const,
+
+  list: (params?: PaymentParams) => ["payments", params] as const,
 
   detail: (id: string) => ["payment", id] as const,
 

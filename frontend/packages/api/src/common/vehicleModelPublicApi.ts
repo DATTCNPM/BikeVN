@@ -7,24 +7,14 @@ export const vehicleModelPublicApi = {
       "/model",
     );
     console.log("Fetched models:", data);
-    return data || [];
+    return data;
   },
 
   async getModelById(id: number) {
     const data = await axiosPublic.get<VehicleModel, VehicleModel>(
       `/model/${id}`,
     );
-    console.log("Fetched model:", data);
-    if (!data) {
-      throw {
-        response: {
-          status: 404,
-          data: {
-            message: "Dòng xe không tồn tại",
-          },
-        },
-      };
-    }
+
     return data;
   },
 };

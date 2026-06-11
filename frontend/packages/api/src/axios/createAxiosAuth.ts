@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { ApiError } from "../error/ApiError";
+import type { ApiResponse } from "@repo/types";
 
 type CreateAxiosAuthOptions = {
   tokenKey: string;
@@ -35,7 +36,7 @@ export function createAxiosAuth({
         skipAuthCheck?: boolean;
       };
 
-      const data = response.data;
+      const data = response.data as ApiResponse<any>;
 
       if (data?.code === 5555) {
         if (!config?.skipAuthCheck) {

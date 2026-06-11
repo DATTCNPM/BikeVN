@@ -8,6 +8,6 @@ export const vehicleImagePublicApi = {
       `/vehicle/${vehicleId}/images`,
     );
 
-    return response || [];
+    return response;
   },
 };

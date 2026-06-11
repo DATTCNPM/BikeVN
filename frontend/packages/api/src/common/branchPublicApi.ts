@@ -5,23 +5,11 @@ import axiosPublic from "../axios/axiosPublic";
 export const branchPublicApi = {
   async getBranches() {
     const data = await axiosPublic.get<Branch[], Branch[]>("/branch");
-    console.log("Fetched branches:", data);
-    return data || [];
+    return data;
   },
 
   async getBranchById(id: string) {
     const data = await axiosPublic.get<Branch, Branch>(`/branch/${id}`);
-
-    if (!data) {
-      throw {
-        response: {
-          status: 404,
-          data: {
-            message: "Chi nhánh không tồn tại",
-          },
-        },
-      };
-    }
 
     return data;
   },
