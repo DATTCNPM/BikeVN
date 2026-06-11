@@ -34,6 +34,10 @@ public enum ErrorCode {
     PAYMENT_ALREADY_COMPLETED(1021, "payment completed", HttpStatus.BAD_REQUEST),
     VEHICLE_NOT_AVAILABLE(1022, "vehicle is not available", HttpStatus.BAD_REQUEST),
     RETURN_ALREADY_EXISTS(1023, "return already exist", HttpStatus.BAD_REQUEST),
+    ROLE_NOT_FOUND(2000, "role not found", HttpStatus.NOT_FOUND),
+    PERMISSION_NOT_FOUND(2001, "permission not found", HttpStatus.NOT_FOUND),
+    ROLE_EXISTED(2002, "role existed", HttpStatus.BAD_REQUEST),
+    PERMISSION_EXISTED(2003, "permission existed", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(5555,"Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(5050, "You don't have permission", HttpStatus.FORBIDDEN),
     EXISTED_DATA(5055, "%s already exists", HttpStatus.BAD_REQUEST);

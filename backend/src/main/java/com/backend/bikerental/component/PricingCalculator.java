@@ -9,6 +9,8 @@ import java.time.temporal.ChronoUnit;
 
 @Component
 public class PricingCalculator {
+    private static final BigDecimal WRONG_BRANCH_FEE = BigDecimal.valueOf(50000);
+    private static final long LATE_RETURN_FEE = 250000L;
 
     // Record chứa 2 kết quả trả về: Tổng tiền và Chi tiết hóa đơn
     public record ExtraFeeResult(BigDecimal totalFee, String invoiceDetails) {}
@@ -61,7 +63,7 @@ public class PricingCalculator {
 
         // WRONG BRANCH
         if (expectedReturnBranchId != null && !expectedReturnBranchId.equals(actualReturnBranchId)) {
-            totalExtraFee = totalExtraFee.add(BigDecimal.valueOf(50000));
+            totalExtraFee = totalExtraFee.add(WRONG_BRANCH_FEE);
             feeDetailsBuilder.append("Wrong Branch: 50,000 VND | ");
             hasFee = true;
         }
@@ -79,7 +81,7 @@ public class PricingCalculator {
             long lateDays = (lateHours / 24) + (lateHours % 24 > 0 ? 1 : 0);
 
             if (lateDays > 0) {
-                BigDecimal lateFee = BigDecimal.valueOf(lateDays * 250000L);
+                BigDecimal lateFee = BigDecimal.valueOf(lateDays * LATE_RETURN_FEE);
                 totalExtraFee = totalExtraFee.add(lateFee);
                 feeDetailsBuilder.append("Late Fee (").append(lateDays).append(" days): ").append(lateFee).append(" VND | ");
                 hasFee = true;
