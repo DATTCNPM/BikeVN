@@ -21,7 +21,7 @@ public class RoleController {
     ApiResponse<RoleResponse> create(@RequestBody RoleRequest request)
     {
         return ApiResponse.<RoleResponse>builder()
-                .result(roleService.create(request))
+                .result(roleService.createRole(request))
                 .build();
     }
 
@@ -30,6 +30,14 @@ public class RoleController {
     {
         return ApiResponse.<List<RoleResponse>>builder()
                 .result(roleService.getAllRoles())
+                .build();
+    }
+
+    @GetMapping("/{role}")
+    ApiResponse<RoleResponse> getRole(String role)
+    {
+        return ApiResponse.<RoleResponse>builder()
+                .result(roleService.getRole(role))
                 .build();
     }
 

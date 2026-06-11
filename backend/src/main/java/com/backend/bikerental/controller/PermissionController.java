@@ -33,6 +33,14 @@ public class PermissionController {
                 .build();
     }
 
+    @GetMapping("/{permission}")
+    ApiResponse<PermissionResponse> getPermission(String permission)
+    {
+        return ApiResponse.<PermissionResponse>builder()
+                .result(permissionService.getPermission(permission))
+                .build();
+    }
+
     @DeleteMapping("/{permission}")
     ApiResponse<String> delete(@PathVariable String permission)
     {

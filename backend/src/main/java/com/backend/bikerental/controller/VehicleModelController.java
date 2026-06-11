@@ -3,6 +3,7 @@ package com.backend.bikerental.controller;
 import com.backend.bikerental.dto.request.VehicleModelCreationRequest;
 import com.backend.bikerental.dto.request.VehicleModelUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleModelResponse;
 import com.backend.bikerental.service.VehicleModelService;
 import lombok.AccessLevel;
@@ -27,10 +28,19 @@ public class VehicleModelController {
     }
 
     @GetMapping
-    ApiResponse<List<VehicleModelResponse>> getAllModels()
+    ApiResponse<PageResponse<VehicleModelResponse>> getAllModels(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<VehicleModelResponse>>builder()
+                .result(vehicleModelService.getAllModels(page, size))
+                .build();
+    }
+    @GetMapping
+    ApiResponse<List<VehicleModelResponse>> getAllModelsUnPaged()
     {
         return ApiResponse.<List<VehicleModelResponse>>builder()
-                .result(vehicleModelService.getAllModels())
+                .result(vehicleModelService.getAllModelsUnPaged())
                 .build();
     }
 

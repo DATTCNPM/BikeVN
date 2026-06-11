@@ -3,6 +3,7 @@ package com.backend.bikerental.controller;
 import com.backend.bikerental.dto.request.VehicleBrandCreationRequest;
 import com.backend.bikerental.dto.request.VehicleBrandUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleBrandResponse;
 import com.backend.bikerental.service.VehicleBrandService;
 import lombok.AccessLevel;
@@ -27,10 +28,20 @@ public class VehicleBrandController {
     }
 
     @GetMapping
-    ApiResponse<List<VehicleBrandResponse>> getAllBrands()
+    ApiResponse<PageResponse<VehicleBrandResponse>> getAllBrand(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<VehicleBrandResponse>>builder()
+                .result(vehicleBrandService.getAllBranches(page, size))
+                .build();
+    }
+
+    @GetMapping
+    ApiResponse<List<VehicleBrandResponse>> getAllBrandsUnPaged()
     {
         return ApiResponse.<List<VehicleBrandResponse>>builder()
-                .result(vehicleBrandService.getAllBranches())
+                .result(vehicleBrandService.getAllBranchesUnPaged())
                 .build();
     }
 
