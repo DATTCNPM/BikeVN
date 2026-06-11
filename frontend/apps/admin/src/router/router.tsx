@@ -12,12 +12,12 @@ import VehicleImageManagementPage from "@/pages/VehicleImageManagementPage";
 import BookingManagementPage from "@/pages/BookingManagementPage";
 import ReviewManagementPage from "@/pages/ReviewManagementPage";
 import PaymentManagementPage from "@/pages/PaymentManagementPage";
-import VehicleReturnManagementPage from "@/pages/VehicleReturnManagementPage";
 import ChatManagementPage from "@/pages/ChatManagementPage";
 import InfoPage from "@/pages/InfoPage";
 import SecurityPage from "@/pages/SecurityPage";
 import SettingPage from "@/pages/SettingPage";
 import LoginPage from "@/pages/LoginPage";
+import BookingReturnPage from "@/pages/BookingReturnPage";
 
 const router = createBrowserRouter([
   {
@@ -69,8 +69,8 @@ const router = createBrowserRouter([
         element: <PaymentManagementPage />,
       },
       {
-        path: "vehicle-returns",
-        element: <VehicleReturnManagementPage />,
+        path: "bookings/:bookingId/return",
+        element: <BookingReturnPage />,
       },
       {
         path: "chats",

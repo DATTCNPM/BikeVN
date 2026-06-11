@@ -172,10 +172,6 @@ export default function VehicleManagementPage() {
     );
   }
 
-  console.log("Vehicle data:", vehicleData);
-  console.log("Pagination info:", pagination);
-  console.log("vehicle", vehicles);
-
   return (
     <div>
       <DataTableToolbar

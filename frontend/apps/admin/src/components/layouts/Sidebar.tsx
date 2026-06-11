@@ -62,11 +62,6 @@ const menuItems = [
     href: "/admin/bookings",
   },
   {
-    title: "Vehicle Returns",
-    icon: Bike,
-    href: "/admin/vehicle-returns",
-  },
-  {
     title: "Đánh giá",
     icon: Star,
     href: "/admin/reviews",

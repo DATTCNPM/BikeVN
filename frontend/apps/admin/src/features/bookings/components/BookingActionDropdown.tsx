@@ -11,9 +11,14 @@ import {
 type Props = {
   onApprove?: () => void;
   onReject?: () => void;
+  onManagerVehicleReturn?: () => void;
 };
 
-export default function BookingActionDropdown({ onApprove, onReject }: Props) {
+export default function BookingActionDropdown({
+  onApprove,
+  onReject,
+  onManagerVehicleReturn,
+}: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,6 +42,12 @@ export default function BookingActionDropdown({ onApprove, onReject }: Props) {
           >
             <X className="mr-2 size-4" />
             Từ chối đơn
+          </DropdownMenuItem>
+        )}
+
+        {onManagerVehicleReturn && (
+          <DropdownMenuItem onClick={onManagerVehicleReturn}>
+            <span className="mr-2">Quản lý trả xe</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import BookingActionDropdown from "@/features/bookings/components/BookingActionDropdown";
 import BookingStatusDialog from "@/features/bookings/components/BookingStatusDialog";
+import BookingInfoDropdown from "@/features/bookings/components/BookingInfoDropdown";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
@@ -32,6 +34,7 @@ const bookingStatusLabel = {
 };
 
 export default function BookingManagementPage() {
+  const navigate = useNavigate();
   const { data: bookings = [], isLoading } = useBookings();
 
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -81,16 +84,9 @@ export default function BookingManagementPage() {
         ),
       },
       {
-        accessorKey: "start_date",
-        header: "Bắt đầu",
-        cell: ({ row }) =>
-          new Date(row.original.startTime).toLocaleDateString("vi-VN"),
-      },
-      {
-        accessorKey: "end_date",
-        header: "Kết thúc",
-        cell: ({ row }) =>
-          new Date(row.original.endTime).toLocaleDateString("vi-VN"),
+        id: "info",
+        header: "",
+        cell: ({ row }) => <BookingInfoDropdown booking={row.original} />,
       },
       {
         accessorKey: "total_price",
@@ -106,15 +102,12 @@ export default function BookingManagementPage() {
           </Badge>
         ),
       },
+
       {
         id: "actions",
         header: "",
         cell: ({ row }) => {
           const booking = row.original;
-
-          if (booking.status !== "pending") {
-            return null;
-          }
 
           return (
             <BookingActionDropdown
@@ -126,6 +119,9 @@ export default function BookingManagementPage() {
                 setSelectedBooking(booking);
                 setDialogMode("reject");
               }}
+              onManagerVehicleReturn={() =>
+                navigate(`/admin/bookings/${booking.id}/return`)
+              }
             />
           );
         },

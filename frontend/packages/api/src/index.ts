@@ -15,6 +15,7 @@ export * from "./admin/vehicleBrandAdminApi";
 export * from "./admin/vehicleModelAdminApi";
 export * from "./admin/vehicleImageAdminApi";
 export * from "./admin/paymentAdminApi";
+export * from "./admin/vehicleReturnAdminApi";
 
 export * from "./common/chatApi";
 export * from "./common/reviewApi";

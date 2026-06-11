@@ -14,3 +14,4 @@ export * from "./bookingType";
 export * from "./paymentType";
 export * from "./apiType";
 export * from "./userType";
+export * from "./vehicleReturnType";
