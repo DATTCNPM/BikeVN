@@ -96,6 +96,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @Transactional(readOnly = true)
     @PreAuthorize("hasRole('admin')")
     public PageResponse<UserResponse> getAllUsers(int page, int size)
     {
@@ -115,6 +116,7 @@ public class UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @PostAuthorize("hasRole('admin') or returnObject.email == authentication.name")
     public UserResponse getUser(String id)
     {
@@ -123,15 +125,17 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("isAuthenticated()")
     public UserResponse updateUser(String id, UserUpdateRequest request)
     {
-        User user = userRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a-> a.getAuthority().equals("ROLE_admin"));
 
-        if(!isAdmin ||  !user.getEmail().equals(auth.getName()))
+        if(!isAdmin && !user.getEmail().equals(auth.getName()))
         {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
@@ -179,6 +183,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public UserResponse getMyInfo()
     {
         var context = SecurityContextHolder.getContext();

@@ -78,7 +78,8 @@ public class VehicleReturnService {
 
         return vehicleReturnMapper.toVehicleReturnResponse(vehicleReturnRepository.save(vehicleReturn));
     }
-
+    @Transactional
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     private void updateVehicleAfterReturn(String bookingId, String returnBranchId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
@@ -97,11 +98,11 @@ public class VehicleReturnService {
 
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    @PreAuthorize("hasAnyRole('admin', 'employee') or returnObject.booking.userId == authentication.name")
     public VehicleReturnResponse getReturnByBookingId(String bookingId)
     {
         VehicleReturn vehicleReturn = vehicleReturnRepository.findByBookingId(bookingId)
-                .orElseThrow(()-> new RuntimeException("return not found"));
+                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
         return vehicleReturnMapper.toVehicleReturnResponse(vehicleReturn);
     }
 }
