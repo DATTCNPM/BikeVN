@@ -27,8 +27,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useTheme } from "next-themes";
 
-import { useDeleteUser } from "@/features/auth/useDeleteUser";
-import { useProfile } from "@/features/auth/useProfile";
+import { useDeleteUser } from "@/features/profile/useDeleteUser";
+import { useProfile } from "@/features/profile/useProfile";
 
 export default function SettingsSection() {
   const { theme, setTheme } = useTheme();

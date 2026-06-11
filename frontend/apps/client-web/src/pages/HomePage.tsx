@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import SearchComponent from "@/components/common/Search";
 import Filter from "@/components/common/Filter";
 
-import ListVehicle from "../components/home/ListVehicle";
-import MapVehicle from "../components/home/MapVehicle";
+import ListVehicle from "../features/home/ListVehicle";
+import MapVehicle from "../features/home/MapVehicle";
 
 import { Button } from "@repo/ui/components/ui/button";
 import { Separator } from "@repo/ui/components/ui/separator";

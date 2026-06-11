@@ -1,6 +1,6 @@
 // src/layouts/ChatLayout.tsx
 
-import Header from "@/layouts/Header";
+import Header from "@/components/layouts/Header";
 import { Outlet } from "react-router-dom";
 
 export default function ChatLayout() {

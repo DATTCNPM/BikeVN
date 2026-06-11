@@ -1,10 +1,10 @@
 import { Button } from "@repo/ui/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import Vehicle from "@/components/landing/Vehicle";
-import Hero from "@/components/landing/Hero";
-import CTA from "@/components/landing/CTA";
-import HowItWorks from "@/components/landing/HowItWorks";
-import Features from "@/components/landing/Features";
+import Vehicle from "@/features/landing/Vehicle";
+import Hero from "@/features/landing/Hero";
+import CTA from "@/features/landing/CTA";
+import HowItWorks from "@/features/landing/HowItWorks";
+import Features from "@/features/landing/Features";
 import LogoYellow from "@/assets/icons/Logo_yellow.svg";
 import LogoWhite from "@/assets/icons/Logo_white.svg";
 import {

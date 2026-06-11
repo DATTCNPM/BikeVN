@@ -11,7 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@repo/ui/components/ui/breadcrumb";
-import { ProfileSidebar } from "@/components/profile/ProfileSidebar";
+import { ProfileSidebar } from "@/features/profile/components/ProfileSidebar";
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Logo from "@/assets/icons/Logo_yellow.svg";

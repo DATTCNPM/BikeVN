@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
 
-import { useProfile } from "@/features/auth/useProfile";
+import { useProfile } from "@/features/profile/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 

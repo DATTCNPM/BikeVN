@@ -4,20 +4,20 @@ import { useEffect } from "react";
 
 import { useInitialServerCheck } from "@/features/auth/useInitialServerCheck";
 
-import MainLayout from "@/layouts/MainLayout";
-import AuthLayout from "@/layouts/AuthLayout";
+import MainLayout from "@/components/layouts/MainLayout";
+import AuthLayout from "@/components/layouts/AuthLayout";
 import Landing from "@/pages/LandingPage";
 import HomePage from "@/pages/HomePage";
 import VehicleDetail from "@/pages/VehicleDetailPage";
 import ChatPage from "@/pages/ChatPage";
 import Login from "@/pages/LoginPage";
 import Register from "@/pages/RegisterPage";
-import ProfileLayout from "@/layouts/ProfileLayout";
-import InfoSection from "@/components/profile/InfoSection";
-import SettingSection from "@/components/profile/SettingSection";
-import ChatLayout from "@/layouts/ChatLayout";
+import ProfileLayout from "@/components/layouts/ProfileLayout";
+import InfoSection from "@/features/profile/components/InfoSection";
+import SettingSection from "@/features/profile/components/SettingSection";
+import ChatLayout from "@/components/layouts/ChatLayout";
 import BookingResultPage from "@/pages/BookingResultPage";
-import MyBookingSection from "@/components/profile/MyBookingSection";
+import MyBookingSection from "@/features/profile/components/MyBookingSection";
 import PaymentPage from "@/pages/PaymentPage";
 import NotificationPage from "@/pages/NotificationPage";
 import NotFoundPage from "@/pages/NotFoundPage";

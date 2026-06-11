@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
-import ChatContent from "@/components/chat/content/ChatContent";
-import ChatSidebar from "@/components/chat/sidebar/ChatSidebar";
+import ChatContent from "@/features/chat/components/content/ChatContent";
+import ChatSidebar from "@/features/chat/components/sidebar/ChatSidebar";
 
 import { useConversations, useMessages } from "@repo/hooks";
 

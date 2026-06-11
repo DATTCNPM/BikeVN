@@ -4,7 +4,7 @@ import { authClientApi } from "@repo/api";
 
 import { authStorageService } from "@repo/services";
 
-import { authKeys } from "./authKeys";
+import { authKeys } from "../auth/authKeys";
 
 export const useProfile = () => {
   return useQuery({

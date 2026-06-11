@@ -4,7 +4,7 @@ import { userApi } from "@repo/api";
 
 import type { UpdateProfilePayload } from "@repo/types";
 
-import { authKeys } from "./authKeys";
+import { authKeys } from "../auth/authKeys";
 
 import type { User } from "@repo/types";
 

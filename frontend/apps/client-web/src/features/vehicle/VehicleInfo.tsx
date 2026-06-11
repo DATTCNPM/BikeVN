@@ -1,4 +1,4 @@
-import VehicleGallery from "@/components/vehicle/VehicleGallery";
+import VehicleGallery from "@/features/vehicle/VehicleGallery";
 import { Badge } from "@repo/ui/components/ui/badge";
 import {
   MapPin,
@@ -15,7 +15,7 @@ import {
 import { formatDateTime } from "@repo/utils";
 
 import Map from "@/components/map/Map";
-import ReviewSection from "@/components/vehicle/review/ReviewSection";
+import ReviewSection from "@/features/reviews/components/ReviewSection";
 
 import type { Vehicle, Branch, VehicleBrand, VehicleModel } from "@repo/types";
 

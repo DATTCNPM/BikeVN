@@ -5,7 +5,7 @@ import { Wrench, Home } from "lucide-react";
 
 import { Button } from "@repo/ui/components/ui/button";
 
-import ErrorPageLayout from "@/layouts/ErrorPageLayout";
+import ErrorPageLayout from "@/components/layouts/ErrorPageLayout";
 import MovingEmoji from "@/components/common/MovingEmoji";
 
 import { useServerRecovery } from "@/features/auth/useServerRecovery";

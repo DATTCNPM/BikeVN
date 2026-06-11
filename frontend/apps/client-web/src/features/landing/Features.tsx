@@ -1,4 +1,4 @@
-import Card from "../../components/landing/Card";
+import Card from "./Card";
 import {
   Zap,
   Motorbike,

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 
-import VehicleInfo from "@/components/vehicle/VehicleInfo";
-import CardBooking from "@/components/booking/BookingCard";
+import VehicleInfo from "@/features/vehicle/VehicleInfo";
+import CardBooking from "@/features/bookings/components/BookingCard";
 
 import {
   useBranches,

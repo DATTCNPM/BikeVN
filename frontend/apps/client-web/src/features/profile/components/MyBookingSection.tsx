@@ -15,7 +15,7 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useBookingsByUser } from "@/features/bookings/queries";
 import { useVehicles } from "@repo/hooks";
-import { useProfile } from "@/features/auth/useProfile";
+import { useProfile } from "@/features/profile/useProfile";
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {

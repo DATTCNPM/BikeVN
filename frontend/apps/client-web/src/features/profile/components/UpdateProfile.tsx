@@ -1,4 +1,4 @@
-import FormDialog from "../common/FormDialog";
+import FormDialog from "@/components/common/FormDialog";
 import { updateProfileSchema } from "@repo/schemas";
 import type { UpdateProfilePayload } from "@repo/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 
 import type { User } from "@repo/types";
-import { useUpdateProfile } from "@/features/auth/useUpdateProfile";
+import { useUpdateProfile } from "@/features/profile/useUpdateProfile";
 
 type UpdateProfileProps = {
   userProfile: User;

@@ -1,11 +1,11 @@
 // pages/BookingResultPage.tsx
 import { useParams } from "react-router-dom";
 
-import BookingActions from "@/components/booking/BookingActions";
-import BookingInfoCard from "@/components/booking/BookingInfoCard";
-import BookingStatusHero from "@/components/booking/BookingStatusHero";
-import BookingTimeline from "@/components/booking/BookingTimeline";
-import BookingVehicleCard from "@/components/booking/BookingVehicleCard";
+import BookingActions from "@/features/bookings/components/BookingActions";
+import BookingInfoCard from "@/features/bookings/components/BookingInfoCard";
+import BookingStatusHero from "@/features/bookings/components/BookingStatusHero";
+import BookingTimeline from "@/features/bookings/components/BookingTimeline";
+import BookingVehicleCard from "@/features/bookings/components/BookingVehicleCard";
 
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { toast } from "sonner";

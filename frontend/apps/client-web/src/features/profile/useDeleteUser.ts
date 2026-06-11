@@ -6,7 +6,7 @@ import { authStorageService } from "@repo/services";
 
 import { userApi } from "@repo/api";
 // Giả định bạn có userKeys quản lý cache key giống authKeys, nếu không có bạn có thể thay bằng ["users"]
-import { userKeys } from "./userKeys";
+import { userKeys } from "./profileKeys";
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();

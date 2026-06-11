@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import VehicleGallery from "@/components/vehicle/VehicleGallery";
+import VehicleGallery from "@/features/vehicle/VehicleGallery";
 
 import "swiper/css";
 import "swiper/css/navigation";

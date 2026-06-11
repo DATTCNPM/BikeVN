@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 import { Compass } from "lucide-react";
 
-import ErrorPageLayout from "@/layouts/ErrorPageLayout";
+import ErrorPageLayout from "@/components/layouts/ErrorPageLayout";
 import MovingEmoji from "@/components/common/MovingEmoji";
 
 export default function NotFoundPage() {

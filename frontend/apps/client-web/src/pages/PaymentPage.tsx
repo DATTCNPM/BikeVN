@@ -1,13 +1,13 @@
-import PaymentBookingCard from "@/components/payment/PaymentBookingCard";
-import PaymentCustomerCard from "@/components/payment/PaymentCustomerCard";
-import PaymentHeader from "@/components/payment/PaymentHeader";
-import PaymentMethodCard from "@/components/payment/PaymentMethodCard";
-import PaymentPolicyCard from "@/components/payment/PaymentPolicyCard";
-import PaymentSummaryCard from "@/components/payment/PaymentSummaryCard";
-import PaymentVehicleCard from "@/components/payment/PaymentVehicleCard";
+import PaymentBookingCard from "@/features/payments/components/PaymentBookingCard";
+import PaymentCustomerCard from "@/features/payments/components/PaymentCustomerCard";
+import PaymentHeader from "@/features/payments/components/PaymentHeader";
+import PaymentMethodCard from "@/features/payments/components/PaymentMethodCard";
+import PaymentPolicyCard from "@/features/payments/components/PaymentPolicyCard";
+import PaymentSummaryCard from "@/features/payments/components/PaymentSummaryCard";
+import PaymentVehicleCard from "@/features/payments/components/PaymentVehicleCard";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-import { useProfile } from "@/features/auth/useProfile";
+import { useProfile } from "@/features/profile/useProfile";
 import { useVehicle } from "@repo/hooks";
 import { useBooking } from "@/features/bookings/queries";
 

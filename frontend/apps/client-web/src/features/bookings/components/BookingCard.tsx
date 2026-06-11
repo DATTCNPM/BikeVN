@@ -49,7 +49,7 @@ import type { Branch, Vehicle } from "@repo/types";
 import { bookingFormSchema } from "@repo/schemas";
 import type { BookingFormValues } from "@repo/types";
 
-import { useProfile } from "@/features/auth/useProfile";
+import { useProfile } from "@/features/profile/useProfile";
 
 type Props = {
   vehicle: Vehicle;

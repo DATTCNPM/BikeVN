@@ -11,9 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
-import { NotificationPopover } from "@/components/notification/notificationPopover";
+import { NotificationPopover } from "@/features/notifications/components/notificationPopover";
 
-import { useProfile } from "@/features/auth/useProfile";
+import { useProfile } from "@/features/profile/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
 
 export default function Header() {

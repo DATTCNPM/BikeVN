@@ -17,8 +17,8 @@ import {
   Edit2,
 } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
-import UpdateProfile from "@/components/profile/UpdateProfile";
-import { useProfile } from "@/features/auth/useProfile";
+import UpdateProfile from "./UpdateProfile";
+import { useProfile } from "@/features/profile/useProfile";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export default function InfoSection() {
