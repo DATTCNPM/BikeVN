@@ -57,7 +57,13 @@ export default function InfoSection() {
       label: "Vai trò hệ thống",
       value: (
         <Badge
-          variant={user?.role === "admin" ? "default" : "outline"}
+          variant={
+            user?.role === "admin"
+              ? "default"
+              : user?.role === "employee"
+                ? "secondary"
+                : "outline"
+          }
           className="capitalize"
         >
           {user?.role || "Chưa cập nhật"}
@@ -99,6 +105,11 @@ export default function InfoSection() {
                       id: "",
                       name: "",
                       email: "",
+                      role: "user",
+                      phone: "",
+                      cccdNumber: "",
+                      createdAt: "",
+                      updatedAt: "",
                     }
               }
               trigger={

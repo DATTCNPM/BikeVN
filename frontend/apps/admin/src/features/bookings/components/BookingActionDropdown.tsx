@@ -9,9 +9,9 @@ import {
 } from "@repo/ui/components/ui/dropdown-menu";
 
 type Props = {
-  onApprove?: () => void;
-  onReject?: () => void;
-  onManagerVehicleReturn?: () => void;
+  onApprove?: () => void | Promise<void>;
+  onReject?: () => void | Promise<void>;
+  onManagerVehicleReturn?: () => void | Promise<void>;
 };
 
 export default function BookingActionDropdown({
@@ -29,7 +29,11 @@ export default function BookingActionDropdown({
 
       <DropdownMenuContent align="end" className="w-48 rounded-2xl">
         {onApprove && (
-          <DropdownMenuItem onClick={onApprove}>
+          <DropdownMenuItem
+            onClick={() => {
+              void onApprove();
+            }}
+          >
             <Check className="mr-2 size-4" />
             Duyệt đơn
           </DropdownMenuItem>
@@ -37,7 +41,9 @@ export default function BookingActionDropdown({
 
         {onReject && (
           <DropdownMenuItem
-            onClick={onReject}
+            onClick={() => {
+              void onReject();
+            }}
             className="text-destructive focus:text-destructive"
           >
             <X className="mr-2 size-4" />
@@ -46,7 +52,11 @@ export default function BookingActionDropdown({
         )}
 
         {onManagerVehicleReturn && (
-          <DropdownMenuItem onClick={onManagerVehicleReturn}>
+          <DropdownMenuItem
+            onClick={() => {
+              void onManagerVehicleReturn();
+            }}
+          >
             <span className="mr-2">Quản lý trả xe</span>
           </DropdownMenuItem>
         )}

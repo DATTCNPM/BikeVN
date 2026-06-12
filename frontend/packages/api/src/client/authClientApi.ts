@@ -4,7 +4,7 @@ import type { User } from "@repo/types";
 
 export const authClientApi = {
   async getProfile() {
-    return axiosClient.get<User>("/user/myInfo");
+    return axiosClient.get<User, User>("/user/myInfo");
   },
 
   async logout(token: string) {

@@ -14,13 +14,13 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateBranch } from "@/features/branches/mutations";
-import { vehicleBrandUpdateSchema } from "@repo/schemas";
-import type { VehicleBrandUpdateRequest, VehicleBrand } from "@repo/types";
+import { updateBranchSchema } from "@repo/schemas";
+import type { UpdateBranchPayload, Branch } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  branch: VehicleBrand | null;
+  branch: Branch | null;
 };
 
 export default function BranchEdit({ open, onOpenChange, branch }: Props) {
@@ -31,19 +31,22 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleBrandUpdateRequest>({
-    resolver: zodResolver(vehicleBrandUpdateSchema),
+  } = useForm<UpdateBranchPayload>({
+    resolver: zodResolver(updateBranchSchema),
   });
 
   useEffect(() => {
     if (!branch) return;
     reset({
       name: branch.name,
-      country: branch.country,
+      address: branch.address,
+      lat: branch.lat,
+      lng: branch.lng,
+      status: branch.status,
     });
   }, [branch, reset]);
 
-  const onSubmit = async (values: VehicleBrandUpdateRequest) => {
+  const onSubmit = async (values: UpdateBranchPayload) => {
     if (!branch) return;
     try {
       await mutateAsync({ id: branch.id, payload: values });
@@ -73,11 +76,29 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Quốc gia</FieldLabel>
-            <Input {...register("country")} />
-            {errors.country && (
-              <FieldError>{errors.country.message}</FieldError>
+            <FieldLabel>Địa chỉ</FieldLabel>
+            <Input {...register("address")} />
+            {errors.address && (
+              <FieldError>{errors.address.message}</FieldError>
             )}
+          </Field>
+
+          <Field>
+            <FieldLabel>Latitude</FieldLabel>
+            <Input {...register("lat")} />
+            {errors.lat && <FieldError>{errors.lat.message}</FieldError>}
+          </Field>
+
+          <Field>
+            <FieldLabel>Longitude</FieldLabel>
+            <Input {...register("lng")} />
+            {errors.lng && <FieldError>{errors.lng.message}</FieldError>}
+          </Field>
+
+          <Field>
+            <FieldLabel>Trạng thái</FieldLabel>
+            <Input {...register("status")} />
+            {errors.status && <FieldError>{errors.status.message}</FieldError>}
           </Field>
         </FieldGroup>
       </div>

@@ -9,9 +9,9 @@ import {
 } from "@repo/ui/components/ui/dropdown-menu";
 
 type Props = {
-  onEdit?: () => void;
-  onDelete?: () => void;
-  onManageImage?: () => void;
+  onEdit?: () => void | Promise<void>;
+  onDelete?: () => void | Promise<void>;
+  onManageImage?: () => void | Promise<void>;
 };
 
 export default function TableActionDropdown({
@@ -29,19 +29,19 @@ export default function TableActionDropdown({
 
       <DropdownMenuContent align="end" className="w-44 rounded-2xl">
         {onManageImage && (
-          <DropdownMenuItem onClick={onManageImage}>
+          <DropdownMenuItem onClick={() => void onManageImage?.()}>
             <Image className="mr-2 size-4" />
             Quản lý hình ảnh
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem onClick={onEdit}>
+        <DropdownMenuItem onClick={() => void onEdit?.()}>
           <Pencil className="mr-2 size-4" />
           Chỉnh sửa
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={onDelete}
+          onClick={() => void onDelete?.()}
           className="text-destructive focus:text-destructive"
         >
           <Trash2 className="mr-2 size-4" />

@@ -7,7 +7,7 @@ import type {
 
 export const userApi = {
   async getUsers({ page, size }: { page: number; size: number }) {
-    return axiosAdmin.get<User[]>("/user", { params: { page, size } });
+    return axiosAdmin.get<User[], User[]>("/user", { params: { page, size } });
   },
 
   async getUserById(id: string) {

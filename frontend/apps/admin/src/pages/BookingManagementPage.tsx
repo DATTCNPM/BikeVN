@@ -7,7 +7,7 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import BookingActionDropdown from "@/features/bookings/components/BookingActionDropdown";
 import BookingStatusDialog from "@/features/bookings/components/BookingStatusDialog";
 import BookingInfoDropdown from "@/features/bookings/components/BookingInfoDropdown";
-import TablePagination from "@/components/common/TablePagination";
+// import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
@@ -127,7 +127,7 @@ export default function BookingManagementPage() {
         },
       },
     ],
-    [],
+    [navigate],
   );
 
   if (isLoading) {
@@ -150,11 +150,11 @@ export default function BookingManagementPage() {
 
       <DataTable columns={columns} data={bookings} />
 
-      <TablePagination
+      {/* <TablePagination
         page={1}
         totalPages={Math.ceil(bookings.length / 10) || 1}
         onPageChange={(page) => console.log(page)}
-      />
+      /> */}
       <BookingStatusDialog
         booking={selectedBooking}
         open={!!selectedBooking && dialogMode !== null}

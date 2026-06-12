@@ -5,7 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
-import TablePagination from "@/components/common/TablePagination";
+// import TablePagination from "@/components/common/TablePagination";
 
 import BrandCreate from "@/features/vehicleBrand/components/BrandCreate";
 import BrandEdit from "@/features/vehicleBrand/components/BrandEdit";
@@ -93,7 +93,7 @@ export default function BrandManagementPage() {
 
       <DataTable columns={columns} data={brands} />
 
-      <TablePagination page={1} totalPages={1} onPageChange={() => {}} />
+      {/* <TablePagination page={1} totalPages={1} onPageChange={() => {}} /> */}
 
       <BrandCreate open={openCreate} onOpenChange={setOpenCreate} />
 

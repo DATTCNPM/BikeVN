@@ -1,17 +1,14 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-import { authApi, authAdminApi } from "@repo/api";
 import { ROLES } from "@repo/constants";
 import { authStorageService, tokenService } from "@repo/services";
-
-import type { LoginPayload } from "@repo/types";
 
 interface AdminAuthState {
   isAdminLogin: boolean;
 
-  loginAdmin: (credentials: LoginPayload) => Promise<boolean>;
-  logoutAdmin: () => Promise<boolean>;
+  setAdminLogin: (value: boolean) => void;
+  logoutAdmin: () => void;
   initializeAuth: () => void;
 }
 
@@ -24,48 +21,20 @@ const hasAdminAccess = (token: string) => {
 export const useAdminAuth = create<AdminAuthState>()(
   devtools(
     (set) => ({
-      isAdminLogin: !!authStorageService.getAdminToken(),
+      isAdminLogin: false,
 
-      loginAdmin: async (credentials) => {
-        try {
-          const auth = await authApi.login(credentials);
-
-          const token = auth.token;
-
-          if (!hasAdminAccess(token)) {
-            return false;
-          }
-
-          authStorageService.setAdminToken(token);
-
-          set({
-            isAdminLogin: true,
-          });
-
-          return true;
-        } catch {
-          return false;
-        }
+      setAdminLogin: (value) => {
+        set({
+          isAdminLogin: value,
+        });
       },
 
-      logoutAdmin: async () => {
-        const token = authStorageService.getAdminToken();
-
-        if (token) {
-          try {
-            await authAdminApi.logout(token);
-          } catch {
-            // ignore
-          }
-        }
-
+      logoutAdmin: () => {
         authStorageService.clearAdminToken();
 
         set({
           isAdminLogin: false,
         });
-
-        return true;
       },
 
       initializeAuth: () => {

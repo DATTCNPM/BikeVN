@@ -26,7 +26,9 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useVehicleBrands } from "@repo/hooks";
 
-import { vehicleModelSchema, type VehicleModelFormData } from "@repo/schemas";
+import { vehicleModelUpdateSchema } from "@repo/schemas";
+
+import type { VehicleModelUpdateRequest } from "@repo/types";
 
 import type { VehicleModel } from "@repo/types";
 
@@ -49,8 +51,8 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleModelFormData>({
-    resolver: zodResolver(vehicleModelSchema),
+  } = useForm<VehicleModelUpdateRequest>({
+    resolver: zodResolver(vehicleModelUpdateSchema),
   });
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
     });
   }, [model, reset]);
 
-  const onSubmit = async (values: VehicleModelFormData) => {
+  const onSubmit = async (values: VehicleModelUpdateRequest) => {
     if (!model) return;
 
     try {

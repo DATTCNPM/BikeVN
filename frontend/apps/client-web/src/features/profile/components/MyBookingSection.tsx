@@ -64,11 +64,10 @@ export default function MyBookingSection() {
       </div>
     );
   }
-  console.log("bookings", bookings);
-  console.log("vehicles", vehicles);
+  const vehicleData = vehicles?.data || [];
 
   const bookingData = bookings?.map((b) => {
-    const vehicle = vehicles?.find((v) => v.id === b.vehicleId);
+    const vehicle = vehicleData.find((v) => v.id === b.vehicleId);
     return {
       ...b,
       vehicleName: vehicle ? vehicle.name : "Unknown Vehicle",

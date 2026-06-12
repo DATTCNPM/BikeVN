@@ -9,7 +9,7 @@ import { createBookingCommonApi } from "../common/createBookingCommonApi";
 export const bookingAdminApi = {
   ...createBookingCommonApi(axiosAdmin),
   async getAllBooking() {
-    const data = await axiosAdmin.get<Booking[]>("/booking");
+    const data = await axiosAdmin.get<Booking[], Booking[]>("/booking");
     return data;
   },
   async approveBooking(id: string) {
