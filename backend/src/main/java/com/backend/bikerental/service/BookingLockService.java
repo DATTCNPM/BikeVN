@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingLockService {
     BookingLockRepository bookingLockRepository;
+    @Transactional
     public void createLock(String vehicleId, String userId, LocalDateTime start, LocalDateTime end, int lockMinutes)
     {
         if(bookingLockRepository.existsActiveLock(vehicleId, start, end))
@@ -27,7 +29,6 @@ public class BookingLockService {
         }
 
         BookingLock bookingLock = new BookingLock();
-        //bookingLock.setId(UUID.randomUUID().toString());
         bookingLock.setVehicleId(vehicleId);
         bookingLock.setUserId(userId);
         bookingLock.setStartTime(start);
@@ -38,18 +39,21 @@ public class BookingLockService {
         bookingLockRepository.save(bookingLock);
     }
 
+    @Transactional
     public BookingLock validateLock(String vehicleId, String userId)
     {
         return bookingLockRepository.findActiveLock(vehicleId, userId)
                 .orElseThrow(()-> new AppException(ErrorCode.LOCK_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public void releaseLock(BookingLock bookingLock)
     {
         bookingLock.setStatus(BookingLockEnum.released);
         bookingLockRepository.save(bookingLock);
     }
 
+    @Transactional
     public void releaseLockByVehicleAndUser(String vehicleId, String userId)
     {
         bookingLockRepository.findActiveLock(vehicleId, userId)

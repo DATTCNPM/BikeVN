@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/branch")
+@RequestMapping({"/branches", "/branch"})
 public class BranchController {
     @Autowired
     BranchService branchService;

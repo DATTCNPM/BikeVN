@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,8 @@ import java.util.List;
 public class BranchService {
     BranchRepository branchRepository;
     BranchMapper branchMapper;
+
+    @Transactional
     @PreAuthorize("hasRole('admin')")
     public BranchResponse createBranch(BranchCreationRequest request)
     {
@@ -33,15 +36,18 @@ public class BranchService {
         return branchMapper.toBranchResponse(branchRepository.save(branch));
     }
 
+    @Transactional(readOnly = true)
     public BranchResponse getBranch(String id) {
         return branchMapper.toBranchResponse(branchRepository.findById(id)
                 .orElseThrow(()-> new AppException(ErrorCode.BRANCH_NOT_EXISTED)));
     }
 
+    @Transactional(readOnly = true)
     public List<BranchResponse> getAllBranches() {
         return branchMapper.toListBranchResponse(branchRepository.findAll());
     }
 
+    @Transactional
     @PreAuthorize("hasRole('admin')")
     public BranchResponse updateBranch(String id, BranchUpdateRequest request)
     {
@@ -51,9 +57,13 @@ public class BranchService {
         return branchMapper.toBranchResponse(branchRepository.save(branch));
     }
 
+    @Transactional
     @PreAuthorize("hasRole('admin')")
     public void deleteBranch(String id)
     {
+        if (!branchRepository.existsById(id)) {
+            throw new AppException(ErrorCode.BRANCH_NOT_EXISTED);
+        }
         branchRepository.deleteById(id);
     }
 }

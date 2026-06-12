@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehicle")
+@RequestMapping({"/vehicles", "/vehicle"})
 public class VehicleController {
     @Autowired
     VehicleService vehicleService;

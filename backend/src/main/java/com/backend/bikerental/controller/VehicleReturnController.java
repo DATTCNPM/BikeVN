@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
-@RequestMapping("/bookings/return")
+@RequestMapping({"/bookings/returns", "/bookings/return"})
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VehicleReturnController {
