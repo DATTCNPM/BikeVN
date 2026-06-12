@@ -24,13 +24,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Book;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,10 +44,10 @@ public class PaymentServiceP {
     PricingCalculator pricingCalculator;
     BookingLockService bookingLockService;
     PaymentMapper paymentMapper;
-    static final String BANK_NAME = "";
+    BranchSecurityUtil branchSecurityUtil;
+    static final String BANK_NAME = "MB BANK";
     static final String BANK_ACCOUNT = "1223445";
     static final String ACCOUNT_NAME = "Tran Hoang Phuong";
-
     static final int EXPIRE_MINUTES = 10;
     @Transactional
     public PaymentResponse createPayment(PaymentCreationRequest request) {
@@ -84,6 +84,7 @@ public class PaymentServiceP {
         payment.setStatus(PaymentStatus.pending);
         payment.setPaymentMethod("bank_transfer");
         payment.setIdempotencyKey(request.getIdempotencyKey());
+        payment.setBranchId(booking.getPickupBranchId());
         payment.setType(PaymentType.deposit);
         payment.setCreatedAt(now);
         payment.setUpdatedAt(now);
@@ -125,6 +126,7 @@ public class PaymentServiceP {
 
         Payment payment = new Payment();
         payment.setBookingId(booking.getId());
+        payment.setBranchId(actualReturnBranchId);
         payment.setAmount(fee.totalFee());
         payment.setStatus(PaymentStatus.pending);
 
@@ -148,7 +150,6 @@ public class PaymentServiceP {
     }
     @Transactional
     public void confirmPayment(String paymentId, String transactionCode) {
-
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
 
@@ -180,7 +181,15 @@ public class PaymentServiceP {
         payment.setPaidAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 
-        booking.setStatus(BookingStatus.approved);
+        if(PaymentType.deposit.equals(payment.getType()))
+        {
+            booking.setStatus(BookingStatus.approved);
+            bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
+        }
+        else if(PaymentType.extra_fee.equals(payment.getType()))
+        {
+            booking.setStatus(BookingStatus.completed);
+        }
 
         paymentRepository.save(payment);
         bookingRepository.save(booking);
@@ -191,7 +200,6 @@ public class PaymentServiceP {
     @Transactional
     public void expirePayments() {
         List<Payment> payments = paymentRepository.findByStatus(PaymentStatus.pending);
-
         LocalDateTime now = LocalDateTime.now();
 
         for (Payment p : payments) {
@@ -204,7 +212,8 @@ public class PaymentServiceP {
         paymentRepository.saveAll(payments);
     }
 
-    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('admin')")
    public PageResponse<PaymentResponse> getAllPayments(int page, int size)
    {
        Pageable pageable = PageRequest.of(page - 1, size);
@@ -223,6 +232,40 @@ public class PaymentServiceP {
                .build();
    }
 
+   @Transactional(readOnly = true)
+   @PreAuthorize("hasRole('employee')")
+   public PageResponse<PaymentResponse> getAllPaymentPerBranch(int page, int size)
+   {
+       var auth = SecurityContextHolder.getContext().getAuthentication();
+       if(!(auth instanceof JwtAuthenticationToken jwtAuthenticationToken))
+       {
+           throw new AppException(ErrorCode.UNAUTHENTICATED);
+       }
+
+       String tokenBranchId = (String) jwtAuthenticationToken.getTokenAttributes().get("branchId");
+       if(tokenBranchId == null)
+       {
+           throw new AppException(ErrorCode.UNAUTHORIZED);
+       }
+
+       Pageable pageable = PageRequest.of(page - 1, size);
+
+       Page<Payment> pageData = paymentRepository.findByBranchId(tokenBranchId, pageable);
+
+       var paymentResponses = pageData.getContent().stream()
+               .map(paymentMapper::toPaymentResponse)
+               .toList();
+
+       return PageResponse.<PaymentResponse>builder()
+               .currentPage(page)
+               .totalPages(pageData.getTotalPages())
+               .pageSize(size)
+               .totalElements(pageData.getTotalElements())
+               .data(paymentResponses)
+               .build();
+   }
+
+    @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('admin', 'employee') or returnObject.email == authentication.name")
     public PaymentResponse getPayment(String id) {
         Payment payment = paymentRepository.findById(id)
@@ -256,6 +299,8 @@ public class PaymentServiceP {
             throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
         }
 
+        branchSecurityUtil.verifyBranchAccess(payment.getBranchId());
+
         Booking booking = bookingRepository.findById(payment.getBookingId())
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
@@ -278,6 +323,7 @@ public class PaymentServiceP {
         return buildResponse(payment, booking);
     }
 
+    @Transactional
     @PreAuthorize("isAuthenticated()")
     public PaymentResponse cancelPayment(String paymentId, String reason)
     {
@@ -287,27 +333,23 @@ public class PaymentServiceP {
         Booking booking = bookingRepository.findById(payment.getBookingId())
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
-        //check
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
         boolean isStaff = authentication.getAuthorities().stream()
-                .anyMatch(a-> a.getAuthority().equals("ROLE_admin")
-                        || a.getAuthority().equals("ROLE_employee"));
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin") || a.getAuthority().equals("ROLE_employee"));
         boolean isOwner = booking.getUserId().equals(currentUserId);
 
-        if(!isStaff || !isOwner)
-        {
+        if (!isStaff && !isOwner) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        if(payment.getStatus() == PaymentStatus.pending)
-        {
+        if(payment.getStatus() == PaymentStatus.pending) {
             payment.setStatus(PaymentStatus.failed);
         }
-        payment.setUpdatedAt(LocalDateTime.now());
 
-        booking.setStatus(BookingStatus.rejected);
+        payment.setUpdatedAt(LocalDateTime.now());
+        booking.setStatus(BookingStatus.cancelled);
         booking.setUpdatedAt(LocalDateTime.now());
 
         paymentRepository.save(payment);
@@ -323,7 +365,7 @@ public class PaymentServiceP {
 
         String qrContent = "BANK:" + BANK_NAME
                 + "|ACC:" + BANK_ACCOUNT
-                + "|AMOUNT:" + booking.getTotalPrice()
+                + "|AMOUNT:" + payment.getAmount()
                 + "|INFO:" + content;
 
         return PaymentResponse.builder()

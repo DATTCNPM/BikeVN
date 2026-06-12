@@ -29,4 +29,5 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
     @Query("SELECT p FROM Payment p WHERE p.status = 'PENDING' ORDER BY p.createdAt DESC")
     List<Payment> findPendingPayments();
     long countByBookingIdAndStatus(String bookingId, PaymentStatus status);
+    Page<Payment> findByBranchId(String branchId, Pageable pageable);
 }

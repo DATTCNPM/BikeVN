@@ -31,7 +31,7 @@ public class PaymentController {
                 .build();
     }
 
-    @GetMapping()
+    @GetMapping
     public ApiResponse<PageResponse<PaymentResponse>> getAllPayments(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
@@ -39,6 +39,17 @@ public class PaymentController {
     {
         return ApiResponse.<PageResponse<PaymentResponse>>builder()
                 .result(paymentService.getAllPayments(page,size))
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<PageResponse<PaymentResponse>> getAllPaymentPerBranch(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    )
+    {
+        return ApiResponse.<PageResponse<PaymentResponse>>builder()
+                .result(paymentService.getAllPaymentPerBranch(page, size))
                 .build();
     }
 
