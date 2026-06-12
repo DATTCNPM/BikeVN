@@ -28,12 +28,12 @@ import { useBranches } from "@repo/hooks";
 
 import { useCreateVehicleReturn } from "@/features/vehicleReturns/vehicleReturnMutations";
 
-import { createVehicleReturnSchema } from "@repo/schemas";
+import {
+  createVehicleReturnSchema,
+  vehicleConditionStatusSchema,
+} from "@repo/schemas";
 
-import type {
-  CreateVehicleReturnRequest,
-  VehicleConditionStatus,
-} from "@repo/types";
+import type { CreateVehicleReturnRequest } from "@repo/types";
 
 type Props = {
   open: boolean;
@@ -54,7 +54,7 @@ export default function VehicleReturnCreate({
     bookingId,
     returnBranchId: "",
 
-    conditionStatus: "excellent" as VehicleConditionStatus,
+    conditionStatus: "excellent",
 
     damageDescription: "",
 
@@ -156,11 +156,17 @@ export default function VehicleReturnCreate({
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="GOOD">Bình thường</SelectItem>
-
-                    <SelectItem value="MINOR_DAMAGE">Hư hỏng nhẹ</SelectItem>
-
-                    <SelectItem value="MAJOR_DAMAGE">Hư hỏng nặng</SelectItem>
+                    {vehicleConditionStatusSchema.options.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status === "excellent"
+                          ? "Xuất sắc"
+                          : status === "good"
+                            ? "Tốt"
+                            : status === "fair"
+                              ? "Khá"
+                              : "Hư hỏng"}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

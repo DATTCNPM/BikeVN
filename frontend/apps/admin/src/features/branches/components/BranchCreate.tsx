@@ -12,18 +12,24 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateBranch } from "@/features/branches/mutations";
-import { vehicleBrandCreationSchema } from "@repo/schemas";
-import type { VehicleBrandCreationRequest } from "@repo/types";
+import { createBranchSchema } from "@repo/schemas";
+import type { CreateBranchPayload } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const defaultValues: VehicleBrandCreationRequest = {
+const defaultValues: CreateBranchPayload = {
   name: "",
 
-  country: "",
+  address: "",
+
+  lat: 0,
+
+  lng: 0,
+
+  status: "active",
 };
 
 export default function BranchCreate({ open, onOpenChange }: Props) {
@@ -34,12 +40,12 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleBrandCreationRequest>({
-    resolver: zodResolver(vehicleBrandCreationSchema),
+  } = useForm<CreateBranchPayload>({
+    resolver: zodResolver(createBranchSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: VehicleBrandCreationRequest) => {
+  const onSubmit = async (values: CreateBranchPayload) => {
     console.log("Submitting branch creation with values:", values);
     try {
       await mutateAsync(values);
@@ -70,11 +76,32 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Quốc gia</FieldLabel>
-            <Input {...register("country")} placeholder="Việt Nam" />
-            {errors.country && (
-              <FieldError>{errors.country.message}</FieldError>
+            <FieldLabel>Địa chỉ</FieldLabel>
+            <Input
+              {...register("address")}
+              placeholder="123 Đường ABC, Quận XYZ"
+            />
+            {errors.address && (
+              <FieldError>{errors.address.message}</FieldError>
             )}
+          </Field>
+
+          <Field>
+            <FieldLabel>Latitude</FieldLabel>
+            <Input {...register("lat")} placeholder="10.7754" />
+            {errors.lat && <FieldError>{errors.lat.message}</FieldError>}
+          </Field>
+
+          <Field>
+            <FieldLabel>Longitude</FieldLabel>
+            <Input {...register("lng")} placeholder="106.6626" />
+            {errors.lng && <FieldError>{errors.lng.message}</FieldError>}
+          </Field>
+
+          <Field>
+            <FieldLabel>Trạng thái</FieldLabel>
+            <Input {...register("status")} placeholder="active" />
+            {errors.status && <FieldError>{errors.status.message}</FieldError>}
           </Field>
         </FieldGroup>
       </div>

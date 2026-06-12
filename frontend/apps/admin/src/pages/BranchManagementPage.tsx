@@ -5,7 +5,7 @@ import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import StatusBadge from "@/components/common/StatusBadge";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
-import TablePagination from "@/components/common/TablePagination";
+// import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import BranchCreate from "@/features/branches/components/BranchCreate";
@@ -86,11 +86,11 @@ export default function BranchManagementPage() {
 
       <DataTable columns={columns} data={branches} />
 
-      <TablePagination
+      {/* <TablePagination
         page={1}
         totalPages={Math.ceil(branches.length / 10) || 1}
         onPageChange={(page) => console.log(page)}
-      />
+      /> */}
 
       <BranchCreate
         open={openCreateDialog}

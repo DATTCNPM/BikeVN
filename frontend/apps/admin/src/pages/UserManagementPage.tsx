@@ -96,7 +96,7 @@ export default function UserManagementPage() {
       <DataTable columns={columns} data={usersResponse?.data ?? []} />
 
       <TablePagination
-        page={usersResponse?.currentPage ?? 1}
+        page={usersResponse?.page ?? 1}
         totalPages={usersResponse?.totalPages ?? 1}
         totalElements={usersResponse?.totalElements ?? 0}
         pageSize={usersResponse?.pageSize ?? 10}

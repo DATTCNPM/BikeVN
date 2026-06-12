@@ -29,7 +29,7 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export function ProfileSidebar() {
   const { data: userProfile, isLoading: profileLoading } = useProfile();
-  const { mutate: logout, isPending } = useLogout();
+  const { mutate: logout } = useLogout();
   if (profileLoading) {
     return (
       <div className="flex items-center justify-center h-48">

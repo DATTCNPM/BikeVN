@@ -37,7 +37,7 @@ export default function HomePage() {
 
   const pageSize = 12;
 
-  const { data: vehicles = [], isLoading } = useVehicles({
+  const { data: vehicles, isLoading } = useVehicles({
     search,
     branchId,
     vehicleType,
@@ -49,9 +49,10 @@ export default function HomePage() {
 
   const { data: branches = [], isLoading: branchLoading } = useBranches();
 
+  const vehicleData = vehicles?.data || [];
   const vehicleListData = useMemo(() => {
-    return vehicles.data
-      ? vehicles.data.map((vehicle) => ({
+    return vehicleData
+      ? vehicleData.map((vehicle) => ({
           id: vehicle.id,
           name: vehicle.name,
           vehicle_type: vehicle.vehicleType,
@@ -63,10 +64,10 @@ export default function HomePage() {
           status: vehicle.status,
         }))
       : [];
-  }, [vehicles, branches]);
+  }, [vehicleData, branches]);
 
   const pagination = {
-    page: vehicles?.currentPage ?? 1,
+    page: vehicles?.page ?? 1,
     pageSize: vehicles?.pageSize ?? pageSize,
     totalElements: vehicles?.totalElements ?? 0,
     totalPages: vehicles?.totalPages ?? 1,
