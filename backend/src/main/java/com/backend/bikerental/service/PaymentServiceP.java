@@ -6,14 +6,17 @@ import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
 import com.backend.bikerental.entity.Booking;
 import com.backend.bikerental.entity.Payment;
+import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.enums.BookingStatus;
 import com.backend.bikerental.enums.PaymentStatus;
 import com.backend.bikerental.enums.PaymentType;
+import com.backend.bikerental.enums.StatusVehicleEnum;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.PaymentMapper;
 import com.backend.bikerental.repository.BookingRepository;
 import com.backend.bikerental.repository.PaymentRepository;
+import com.backend.bikerental.repository.VehicleRepository;
 import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +46,7 @@ public class PaymentServiceP {
     PricingCalculator pricingCalculator;
     BookingLockService bookingLockService;
     PaymentMapper paymentMapper;
+    VehicleRepository vehicleRepository;
     BranchSecurityUtil branchSecurityUtil;
     static final String BANK_NAME = "MB BANK";
     static final String BANK_ACCOUNT = "1223445";
@@ -85,12 +88,12 @@ public class PaymentServiceP {
         payment.setPaymentMethod("bank_transfer");
         payment.setIdempotencyKey(request.getIdempotencyKey());
         payment.setBranchId(booking.getPickupBranchId());
-        payment.setType(PaymentType.deposit);
+        payment.setType(PaymentType.rental);
         payment.setCreatedAt(now);
         payment.setUpdatedAt(now);
 
         System.out.println(payment.getType());
-        System.out.println(PaymentType.deposit);
+        System.out.println(PaymentType.rental);
 
         paymentRepository.save(payment);
         System.out.println("DB TYPE = " + payment.getType());
@@ -181,9 +184,15 @@ public class PaymentServiceP {
         payment.setPaidAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 
-        if(PaymentType.deposit.equals(payment.getType()))
+        if(PaymentType.rental.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.approved);
+
+            Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
+                    .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+            vehicle.setStatus(StatusVehicleEnum.unavailable);
+            vehicleRepository.save(vehicle);
+
             bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
         }
         else if(PaymentType.extra_fee.equals(payment.getType()))
@@ -310,8 +319,14 @@ public class PaymentServiceP {
         payment.setPaidAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 
-        if(payment.getType() == PaymentType.deposit) {
+        if(payment.getType() == PaymentType.rental) {
             booking.setStatus(BookingStatus.approved);
+
+            Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
+                    .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+            vehicle.setStatus(StatusVehicleEnum.unavailable);
+            vehicleRepository.save(vehicle);
+
             bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
         } else if (payment.getType() == PaymentType.extra_fee) {
             booking.setStatus(BookingStatus.completed);
@@ -371,6 +386,7 @@ public class PaymentServiceP {
         return PaymentResponse.builder()
                 .id(payment.getId())
                 .bookingId(booking.getId())
+                .branchId(payment.getBranchId())
                 .amount(payment.getAmount())
                 .type(payment.getType().name())
                 .paymentMethod(payment.getPaymentMethod())
