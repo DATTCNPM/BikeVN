@@ -21,12 +21,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_POST_ENDPOINTS = {"/auth/login",
-            "/auth/logout",  "/auth/introspect",
-            "/user", "/role", "/permission"};
+    private final String[] PUBLIC_POST_ENDPOINTS = {
+            "/auth/login",
+            "/auth/logout",
+            "/auth/introspect",
+            "/user", "/role",
+            "/permission",
+    };
             
-    private final String[] PUBLIC_GET_ENDPOINTS = {"/auth/test", "/branch", "/branch/**", "/model", "/model/**",
-            "/brand", "/brand/**", "/vehicle", "/vehicle/**", "/uploads", "/uploads/**"};
+    private final String[] PUBLIC_GET_ENDPOINTS = {
+            "/auth/test",
+            "/branches", "/branches/**",
+            "/vehicle-models", "/vehicle-models/**",
+            "/vehicle-brands", "/vehicle-brands/**",
+            "/vehicles", "/vehicles/**",
+            "/uploads", "/uploads/**"
+    };
 
     @Autowired
     private CustomJWTDecoder customJWTDecoder;
