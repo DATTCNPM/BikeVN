@@ -39,6 +39,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     @Query(
             "SELECT COUNT(b) > 0 FROM Booking b " +
                     "WHERE b.vehicleId = :vehicleId " +
+                    "AND b.status IN ('approved', 'completed') " +
                     "AND (b.startTime < :endTime AND b.endTime > :startTime)"
     )
     boolean existsApprovedBooking(@Param("vehicleId") String vehicleId,
@@ -52,4 +53,5 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     List<Booking> findByStatus(BookingStatus status);
     List<Booking> findByUserId(String userId);
     List<Booking> findByStatusAndExpiresAtBefore(BookingStatus status, LocalDateTime time);
+    List<String> findIdsByPickupBranchId(String branchId);
 }
