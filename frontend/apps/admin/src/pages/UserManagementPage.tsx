@@ -70,6 +70,10 @@ export default function UserManagementPage() {
               setSelectedUser(row.original);
               setOpenDeleteDialog(true);
             }}
+            onCreateEmployee={() => {
+              setSelectedUser(row.original);
+              setOpenCreateEmployeeDialog(true);
+            }}
           />
         ),
       },

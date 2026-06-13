@@ -9,7 +9,7 @@ export function useAdminProfile() {
 
   return useQuery({
     queryKey: adminAuthKeys.profile(),
-    queryFn: authAdminApi.getProfile,
+    queryFn: () => authAdminApi.getProfile(),
 
     enabled: !!token,
 

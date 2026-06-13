@@ -13,6 +13,17 @@ export function useCreateUser() {
   });
 }
 
+export function useCreateEmployee() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Omit<UserCreationRequest, "passwordHash">) =>
+      userApi.createEmployee(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: usersKeys.all });
+    },
+  });
+}
+
 export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({

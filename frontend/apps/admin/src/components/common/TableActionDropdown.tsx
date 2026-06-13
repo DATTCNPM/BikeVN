@@ -11,12 +11,14 @@ import {
 type Props = {
   onEdit?: () => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
+  onCreateEmployee?: () => void | Promise<void>;
   onManageImage?: () => void | Promise<void>;
 };
 
 export default function TableActionDropdown({
   onEdit,
   onDelete,
+  onCreateEmployee,
   onManageImage,
 }: Props) {
   return (
@@ -35,18 +37,29 @@ export default function TableActionDropdown({
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem onClick={() => void onEdit?.()}>
-          <Pencil className="mr-2 size-4" />
-          Chỉnh sửa
-        </DropdownMenuItem>
+        {onEdit && (
+          <DropdownMenuItem onClick={() => void onEdit?.()}>
+            <Pencil className="mr-2 size-4" />
+            Chỉnh sửa
+          </DropdownMenuItem>
+        )}
 
-        <DropdownMenuItem
-          onClick={() => void onDelete?.()}
-          className="text-destructive focus:text-destructive"
-        >
-          <Trash2 className="mr-2 size-4" />
-          Xóa
-        </DropdownMenuItem>
+        {onDelete && (
+          <DropdownMenuItem
+            onClick={() => void onDelete?.()}
+            className="text-destructive focus:text-destructive"
+          >
+            <Trash2 className="mr-2 size-4" />
+            Xóa
+          </DropdownMenuItem>
+        )}
+
+        {onCreateEmployee && (
+          <DropdownMenuItem onClick={() => void onCreateEmployee?.()}>
+            <Image className="mr-2 size-4" />
+            Tạo nhân viên
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

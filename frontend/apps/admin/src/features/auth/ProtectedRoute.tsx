@@ -9,21 +9,17 @@ export default function ProtectedRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAdminLogin, loading } = useAdminAuth();
-  const { data: adminProfile, refetch: fetchAdminProfile } = useAdminProfile();
+  const { isAdminLogin } = useAdminAuth();
+  const { data: adminProfile } = useAdminProfile();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAdminProfile();
-  }, [fetchAdminProfile]);
-
-  useEffect(() => {
-    if (!loading && !isAdminLogin) {
-      navigate("/admin/login");
+    if (!isAdminLogin) {
+      void navigate("/admin/login");
     }
-  }, [loading, isAdminLogin, navigate]);
+  }, [isAdminLogin, navigate]);
 
-  if (loading || !adminProfile) {
+  if (!adminProfile) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950">
         <Spinner className="h-8 w-8" />

@@ -8,7 +8,7 @@ export function useLogoutAdmin() {
   const logoutAdmin = useAdminAuth((state) => state.logoutAdmin);
 
   return useMutation({
-    mutationFn: logoutAdmin,
+    mutationFn: () => logoutAdmin(),
 
     onSuccess: () => {
       queryClient.removeQueries({

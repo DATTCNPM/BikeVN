@@ -4,14 +4,14 @@ import type { Permission, PermissionRequest } from "@repo/types";
 
 export const permissionApi = {
   async getPermissions(): Promise<Permission[]> {
-    return axiosAdmin.get("/permission");
+    return axiosAdmin.get("/permissions");
   },
 
   async createPermission(payload: PermissionRequest): Promise<Permission> {
-    return axiosAdmin.post("/permission", payload);
+    return axiosAdmin.post("/permissions", payload);
   },
 
-  async deletePermission(permissionName: string): Promise<void> {
-    await axiosAdmin.delete(`/permission/${permissionName}`);
+  async deletePermission(permissionId: string): Promise<void> {
+    await axiosAdmin.delete(`/permissions/${permissionId}`);
   },
 };

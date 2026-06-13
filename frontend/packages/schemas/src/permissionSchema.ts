@@ -7,5 +7,5 @@ export const permissionCreationSchema = z.object({
 });
 
 export const permissionSchema = permissionCreationSchema.extend({
-  id: z.string().optional(),
+  id: z.string(),
 });

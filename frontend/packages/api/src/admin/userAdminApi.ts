@@ -7,11 +7,24 @@ import type {
 
 export const userApi = {
   async getUsers({ page, size }: { page: number; size: number }) {
-    return axiosAdmin.get<User[], User[]>("/user", { params: { page, size } });
+    return axiosAdmin.get<User[], User[]>("/users", { params: { page, size } });
   },
 
   async getUserById(id: string) {
-    return axiosAdmin.get<User>(`/user/${id}`);
+    return axiosAdmin.get<User>(`/users/${id}`);
+  },
+
+  async createEmployee(
+    payload: Omit<UserCreationRequest, "passwordHash"> & {
+      passwordHash?: string;
+    },
+  ) {
+    const { passwordHash, ...rest } = payload;
+    const requestPayload = {
+      ...rest,
+      passwordHash: passwordHash || "defaultEmployee123",
+    };
+    return axiosAdmin.post<User>("/users/employee", requestPayload);
   },
 
   async createUser(
@@ -26,22 +39,7 @@ export const userApi = {
       cccdNumber: cccdNumber || undefined,
       passwordHash: passwordHash || "defaultPassword123",
     };
-    return axiosAdmin.post<User>("/user", requestPayload);
-  },
-
-  async createEmployee(
-    payload: Omit<UserCreationRequest, "passwordHash"> & {
-      passwordHash?: string;
-      cccdNumber?: string;
-    },
-  ) {
-    const { cccdNumber, passwordHash, ...rest } = payload;
-    const requestPayload = {
-      ...rest,
-      cccdNumber: cccdNumber || "",
-      passwordHash: passwordHash || "defaultEmployee123",
-    };
-    return axiosAdmin.post<User>("/user/employee", requestPayload);
+    return axiosAdmin.post<User>("/users", requestPayload);
   },
 
   async updateUser(
@@ -53,10 +51,10 @@ export const userApi = {
       ...rest,
       cccdNumber: cccdNumber || "",
     };
-    return axiosAdmin.put<User>(`/user/${id}`, requestPayload);
+    return axiosAdmin.put<User>(`/users/${id}`, requestPayload);
   },
 
   async deleteUser(id: string) {
-    return axiosAdmin.delete(`/user/${id}`);
+    return axiosAdmin.delete(`/users/${id}`);
   },
 };

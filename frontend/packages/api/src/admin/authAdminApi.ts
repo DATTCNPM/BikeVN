@@ -3,7 +3,7 @@ import type { User } from "@repo/types";
 
 export const authAdminApi = {
   async getProfile() {
-    return axiosAdmin.get<User, User>("/user/myInfo");
+    return axiosAdmin.get<User, User>("/users/myInfo");
   },
 
   async logout(token: string) {

@@ -76,6 +76,16 @@ const menuItems = [
     icon: MessageSquare,
     href: "/admin/chats",
   },
+  {
+    title: "Quyền",
+    icon: Users,
+    href: "/admin/permissions",
+  },
+  {
+    title: "Vai trò",
+    icon: Users,
+    href: "/admin/roles",
+  },
 ];
 
 export default function AppSidebar() {
