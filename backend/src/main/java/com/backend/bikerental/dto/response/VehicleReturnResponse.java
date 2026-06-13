@@ -24,6 +24,7 @@ public class VehicleReturnResponse {
     Integer returnOdometerReading;
     String notes;
     String employeeId;
+    PaymentResponse payment;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

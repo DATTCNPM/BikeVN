@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -37,11 +38,16 @@ public class VehicleReturnService {
     BookingRepository bookingRepository;
     BranchRepository branchRepository;
     VehicleRepository vehicleRepository;
+    UserRepository userRepository;
     @Transactional
     @PreAuthorize("hasAnyRole('admin', 'employee')")
     public VehicleReturnResponse createReturn(VehicleReturnRequest request)
     {
         branchSecurityUtil.verifyBranchAccess(request.getReturnBranchId());
+
+        if(!userRepository.existsById(request.getEmployeeId())) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
 
         if(vehicleReturnRepository.existsByBookingId(request.getBookingId()))
         {
@@ -49,6 +55,10 @@ public class VehicleReturnService {
         }
 
         VehicleReturn vehicleReturn = vehicleReturnMapper.toVehicleReturn(request);
+
+        LocalDateTime now = LocalDateTime.now();
+        vehicleReturn.setCreatedAt(now);
+        vehicleReturn.setUpdatedAt(now);
 
         List<String> imagesUrl = fileStorageService.storeVehicleReturnImages(request.getImages());
         vehicleReturn.setImages(imagesUrl);
@@ -76,10 +86,17 @@ public class VehicleReturnService {
 
         updateVehicleAfterReturn(request.getBookingId(), request.getReturnBranchId());
 
-        return vehicleReturnMapper.toVehicleReturnResponse(vehicleReturnRepository.save(vehicleReturn));
+        VehicleReturn savedReturn = vehicleReturnRepository.save(vehicleReturn);
+        VehicleReturnResponse vehicleReturnResponse = vehicleReturnMapper.toVehicleReturnResponse(savedReturn);
+
+        if(paymentResponse != null)
+        {
+            vehicleReturnResponse.setPayment(paymentResponse);
+        }
+
+        return vehicleReturnResponse;
     }
     @Transactional
-    @PreAuthorize("hasAnyRole('admin', 'employee')")
     private void updateVehicleAfterReturn(String bookingId, String returnBranchId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
@@ -90,7 +107,7 @@ public class VehicleReturnService {
         Branch returnBranch = branchRepository.findById(returnBranchId)
                 .orElseThrow(() -> new AppException(ErrorCode.BRANCH_NOT_EXISTED));
 
-        vehicle.setStatus(StatusVehicleEnum.available);
+        vehicle.setStatus(StatusVehicleEnum.maintenance);
         vehicle.setCurrentBranch(returnBranch);
 
         vehicleRepository.save(vehicle);
