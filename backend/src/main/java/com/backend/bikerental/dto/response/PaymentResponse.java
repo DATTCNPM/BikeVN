@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class PaymentResponse {
     String id;
     String bookingId;
+    String branchId;
     BigDecimal amount;
     String type;
     String paymentMethod;
@@ -23,7 +24,7 @@ public class PaymentResponse {
     String bankName;
     String bankAccount;
     String accountName;
-    String transferContent; ;
+    String transferContent;
     String qrContent;
     LocalDateTime createdAt;
 }
