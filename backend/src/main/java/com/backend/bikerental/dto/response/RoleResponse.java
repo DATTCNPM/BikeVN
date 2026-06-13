@@ -11,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleResponse {
+    String id;
     String name;
     String description;
     Set<PermissionResponse> permissions;

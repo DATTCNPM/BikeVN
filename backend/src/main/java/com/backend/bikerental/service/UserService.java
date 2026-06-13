@@ -25,6 +25,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,6 +124,60 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public PageResponse<UserResponse> getAllCustomers(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<User> pageData = userRepository.findByBranchIdIsNull(pageable);
+
+        var userResponses = pageData.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+
+        return PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(userResponses)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public PageResponse<UserResponse> getAllEmployees(int page, int size) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<User> pageData;
+
+        if (isAdmin) {
+            pageData = userRepository.findByBranchIdIsNotNull(pageable);
+        } else {
+            if (auth instanceof JwtAuthenticationToken jwtToken) {
+                String tokenBranchId = (String) jwtToken.getTokenAttributes().get("branchId");
+                pageData = userRepository.findByBranchId(tokenBranchId, pageable);
+            } else {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
+
+        var userResponses = pageData.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+
+        return PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(userResponses)
+                .build();
+    }
+
 
     @Transactional
     @PreAuthorize("isAuthenticated()")

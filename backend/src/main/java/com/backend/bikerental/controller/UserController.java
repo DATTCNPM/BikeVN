@@ -51,6 +51,26 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/customers")
+    public ApiResponse<PageResponse<UserResponse>> getCustomers(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<UserResponse>>builder()
+                .result(userService.getAllCustomers(page, size))
+                .build();
+    }
+
+    @GetMapping("/employees")
+    public ApiResponse<PageResponse<UserResponse>> getEmployees(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<UserResponse>>builder()
+                .result(userService.getAllEmployees(page, size))
+                .build();
+    }
+
     @GetMapping("/{userId}")
     ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId)
     {
