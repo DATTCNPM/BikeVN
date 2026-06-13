@@ -1,21 +1,50 @@
 import axiosAdmin from "../axios/axiosAdmin";
 import type {
   User,
+  Employee,
+  AdminEmployeeCreationPayload,
   UserCreationRequest,
   UpdateProfilePayload,
+  PaginationResponse,
+  AdminUserCreationPayload,
 } from "@repo/types";
 
 export const userApi = {
-  async getUsers({ page, size }: { page: number; size: number }) {
-    return axiosAdmin.get<User[], User[]>("/users", { params: { page, size } });
+  async getUsers({
+    page,
+    size,
+  }: {
+    page: number;
+    size: number;
+  }): Promise<PaginationResponse<User>> {
+    return axiosAdmin.get<PaginationResponse<User>, PaginationResponse<User>>(
+      "/users/customers",
+      {
+        params: { page, size },
+      },
+    );
   },
 
   async getUserById(id: string) {
     return axiosAdmin.get<User>(`/users/${id}`);
   },
 
+  async getEmployees({
+    page,
+    size,
+  }: {
+    page: number;
+    size: number;
+  }): Promise<PaginationResponse<Employee>> {
+    return axiosAdmin.get<
+      PaginationResponse<Employee>,
+      PaginationResponse<Employee>
+    >("/users/employees", {
+      params: { page, size },
+    });
+  },
   async createEmployee(
-    payload: Omit<UserCreationRequest, "passwordHash"> & {
+    payload: Omit<AdminEmployeeCreationPayload, "passwordHash"> & {
       passwordHash?: string;
     },
   ) {
@@ -24,11 +53,11 @@ export const userApi = {
       ...rest,
       passwordHash: passwordHash || "defaultEmployee123",
     };
-    return axiosAdmin.post<User>("/users/employee", requestPayload);
+    return axiosAdmin.post<Employee>("/users/employee", requestPayload);
   },
 
   async createUser(
-    payload: Omit<UserCreationRequest, "passwordHash"> & {
+    payload: Omit<AdminUserCreationPayload, "passwordHash"> & {
       passwordHash?: string;
       cccdNumber?: string;
     },

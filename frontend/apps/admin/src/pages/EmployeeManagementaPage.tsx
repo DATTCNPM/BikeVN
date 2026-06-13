@@ -12,14 +12,16 @@ import UserCreate from "@/features/users/components/UserCreate";
 import UserEdit from "@/features/users/components/UserEdit";
 import UserDelete from "@/features/users/components/UserDelete";
 
-import { useUsers } from "@/features/users/queries";
+import { useEmployees } from "@/features/users/queries";
+import { useBranches } from "@repo/hooks";
 
 import type { User } from "@repo/types";
 
 export default function UserManagementPage() {
   const [page, setPage] = useState(1);
 
-  const { data: usersResponse, isLoading } = useUsers(page, 10);
+  const { data: usersResponse, isLoading } = useEmployees(page, 10);
+  const { data: branches } = useBranches();
 
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -29,11 +31,15 @@ export default function UserManagementPage() {
 
   const [search, setSearch] = useState("");
 
-  const filteredUsers = useMemo(() => {
-    return usersResponse?.data.filter((user) => {
-      return user.email !== "admin@gmail.com";
+  const filterEmployee = useMemo(() => {
+    return usersResponse?.data.map((employee) => {
+      const branch = branches?.find((b) => b.id === employee.branchId);
+      return {
+        ...employee,
+        branchName: branch ? branch.name : "N/A",
+      };
     });
-  }, [usersResponse]);
+  }, [usersResponse, branches]);
 
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
@@ -53,7 +59,10 @@ export default function UserManagementPage() {
         accessorKey: "cccdNumber",
         header: "CCCD",
       },
-
+      {
+        accessorKey: "branchId",
+        header: "Chi nhánh",
+      },
       {
         id: "actions",
         header: "",
@@ -90,7 +99,7 @@ export default function UserManagementPage() {
         onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
-      <DataTable columns={columns} data={filteredUsers ?? []} />
+      <DataTable columns={columns} data={filterEmployee ?? []} />
 
       <TablePagination
         page={usersResponse?.page ?? 1}

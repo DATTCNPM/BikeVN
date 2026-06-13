@@ -10,7 +10,7 @@ export const vehiclePublicApi = {
     const data = await axiosPublic.get<
       PaginationResponse<Vehicle>,
       PaginationResponse<Vehicle>
-    >("/vehicle", {
+    >("/vehicles", {
       params,
     });
 
@@ -18,7 +18,7 @@ export const vehiclePublicApi = {
   },
 
   async getVehicleById(id: string) {
-    const data = await axiosPublic.get<Vehicle, Vehicle>(`/vehicle/${id}`);
+    const data = await axiosPublic.get<Vehicle, Vehicle>(`/vehicles/${id}`);
     return data;
   },
 };

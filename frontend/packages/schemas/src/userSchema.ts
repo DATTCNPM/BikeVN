@@ -21,6 +21,14 @@ export const userCreationSchema = userBaseSchema.extend({
   passwordHash: z.string().min(6),
 });
 
+export const employeeSchema = userSchema.extend({
+  branchId: z.string(),
+});
+
+export const adminEmployeeCreationSchema = userCreationSchema.extend({
+  role: z.literal("employee"),
+  branchId: z.string().min(1, "Chi nhánh không được để trống"),
+});
 export const adminUserCreationSchema = userCreationSchema.extend({
   role: userRoleSchema,
 });

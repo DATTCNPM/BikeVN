@@ -20,6 +20,7 @@ import LoginPage from "@/pages/LoginPage";
 import BookingReturnPage from "@/pages/BookingReturnPage";
 import PermissionManagementPage from "@/pages/PermissionManagementPage";
 import RoleManagementPage from "@/pages/RoleManagementPage";
+import EmployeeManagementPage from "@/pages/EmployeeManagementaPage";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "models",
         element: <ModelManagementPage />,
+      },
+      {
+        path: "employees",
+        element: <EmployeeManagementPage />,
       },
       {
         path: "users",

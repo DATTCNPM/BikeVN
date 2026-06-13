@@ -32,6 +32,11 @@ const menuItems = [
     href: "/admin",
   },
   {
+    title: "Nhân viên",
+    icon: Users,
+    href: "/admin/employees",
+  },
+  {
     title: "Khách hàng",
     icon: Users,
     href: "/admin/users",
