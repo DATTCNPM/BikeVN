@@ -5,15 +5,18 @@ import com.backend.bikerental.dto.request.BranchUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.BranchResponse;
 import com.backend.bikerental.service.BranchService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping({"/branches", "/branch"})
+@RequestMapping("/branches")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BranchController {
-    @Autowired
     BranchService branchService;
 
     @PostMapping

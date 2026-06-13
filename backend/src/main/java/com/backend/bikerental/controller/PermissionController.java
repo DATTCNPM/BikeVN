@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping({"/permissions", "/permission"})
+@RequestMapping("/permissions")
 public class PermissionController {
     PermissionService permissionService;
     @PostMapping

@@ -4,11 +4,13 @@ import com.backend.bikerental.dto.request.VehicleCreationRequest;
 import com.backend.bikerental.dto.request.VehicleUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.PageResponse;
-import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.dto.response.VehicleImageResponse;
+import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.enums.StatusVehicleEnum;
 import com.backend.bikerental.service.VehicleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/vehicles", "/vehicle"})
+@RequestMapping("/vehicles")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class VehicleController {
-    @Autowired
     VehicleService vehicleService;
 
     @PostMapping
@@ -72,16 +75,6 @@ public class VehicleController {
                 .message("Update status vehicle successfully")
                 .build();
     }
-//    @PostMapping(value = "/{vehicleId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    ApiResponse<VehicleImageResponse> addVehicleImage(@PathVariable("vehicleId") String vehicleId,
-//                                                      @RequestPart("file") MultipartFile file,
-//                                                      @RequestParam(value = "altText", required = false) String altText,
-//                                                      @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
-//                                                      @RequestParam(value = "isPrimary", required = false) Boolean isPrimary) {
-//        return ApiResponse.<VehicleImageResponse>builder()
-//                .result(vehicleService.addVehicleImage(vehicleId, file, altText, displayOrder, isPrimary))
-//            .build();
-//    }
 
     @PostMapping("/{vehicleId}/images")
     public ApiResponse<List<VehicleImageResponse>> uploadVehicleImages(
