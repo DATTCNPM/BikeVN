@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/model")
+@RequestMapping("/vehicle-models")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VehicleModelController {
@@ -36,7 +36,7 @@ public class VehicleModelController {
                 .result(vehicleModelService.getAllModels(page, size))
                 .build();
     }
-    @GetMapping
+    @GetMapping("/all")
     ApiResponse<List<VehicleModelResponse>> getAllModelsUnPaged()
     {
         return ApiResponse.<List<VehicleModelResponse>>builder()

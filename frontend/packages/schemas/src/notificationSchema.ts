@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export const typeOptions = ["system", "order", "payment", "promotion"] as const;
 export const notificationSchema = z.object({
   title: z
     .string()
@@ -11,7 +12,7 @@ export const notificationSchema = z.object({
     .min(5, "Nội dung quá ngắn")
     .max(500, "Nội dung quá dài"),
 
-  type: z.enum(["system", "order", "payment", "promotion"]),
+  type: z.enum(typeOptions),
 
   href: z.string().optional(),
 });

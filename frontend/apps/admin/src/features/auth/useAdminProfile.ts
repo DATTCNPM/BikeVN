@@ -2,10 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { authAdminApi } from "@repo/api";
 import { authStorageService } from "@repo/services";
-
-export const adminAuthKeys = {
-  profile: () => ["admin-profile"] as const,
-};
+import { adminAuthKeys } from "./adminAuthKeys";
 
 export function useAdminProfile() {
   const token = authStorageService.getAdminToken();

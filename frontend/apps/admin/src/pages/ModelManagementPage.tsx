@@ -5,7 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
-import TablePagination from "@/components/common/TablePagination";
+// import TablePagination from "@/components/common/TablePagination";
 
 import ModelCreate from "@/features/vehicleModel/components/ModelCreate";
 import ModelEdit from "@/features/vehicleModel/components/ModelEdit";
@@ -130,7 +130,7 @@ export default function ModelManagementPage() {
 
       <DataTable columns={columns} data={models} />
 
-      <TablePagination page={1} totalPages={1} onPageChange={() => {}} />
+      {/* <TablePagination page={1} totalPages={1} onPageChange={() => {}} /> */}
 
       <ModelCreate open={openCreate} onOpenChange={setOpenCreate} />
 

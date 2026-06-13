@@ -7,11 +7,11 @@ import {
 } from "@repo/ui/components/ui/input-group";
 
 export default function SearchComponent({
-  search,
+  value,
   results = 0,
   onChange = () => {},
 }: {
-  search: string;
+  value: string;
   results: number;
   onChange: (value: string) => void;
 }) {
@@ -19,7 +19,7 @@ export default function SearchComponent({
     <InputGroup className="max-w-md">
       <InputGroupInput
         placeholder="Search..."
-        value={search}
+        value={value}
         onChange={(e) => onChange(e.target.value)}
       />
       <InputGroupAddon>

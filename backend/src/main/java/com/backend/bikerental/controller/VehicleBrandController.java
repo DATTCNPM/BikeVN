@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/brand")
+@RequestMapping("/vehicle-brands")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VehicleBrandController {
@@ -37,7 +37,7 @@ public class VehicleBrandController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("/all")
     ApiResponse<List<VehicleBrandResponse>> getAllBrandsUnPaged()
     {
         return ApiResponse.<List<VehicleBrandResponse>>builder()

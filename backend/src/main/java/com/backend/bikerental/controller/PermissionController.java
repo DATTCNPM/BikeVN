@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/permission")
+@RequestMapping("/permissions")
 public class PermissionController {
     PermissionService permissionService;
     @PostMapping
@@ -34,7 +34,7 @@ public class PermissionController {
     }
 
     @GetMapping("/{permission}")
-    ApiResponse<PermissionResponse> getPermission(String permission)
+    ApiResponse<PermissionResponse> getPermission(@PathVariable("permission") String permission)
     {
         return ApiResponse.<PermissionResponse>builder()
                 .result(permissionService.getPermission(permission))

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/roles")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleController {
@@ -34,7 +34,7 @@ public class RoleController {
     }
 
     @GetMapping("/{role}")
-    ApiResponse<RoleResponse> getRole(String role)
+    ApiResponse<RoleResponse> getRole(@PathVariable("role") String role)
     {
         return ApiResponse.<RoleResponse>builder()
                 .result(roleService.getRole(role))

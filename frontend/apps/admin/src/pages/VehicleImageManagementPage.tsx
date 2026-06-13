@@ -7,7 +7,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
-import TablePagination from "@/components/common/TablePagination";
+// import TablePagination from "@/components/common/TablePagination";
 
 import VehicleImageCreate from "@/features/vehicleImages/components/ImageCreate";
 import VehicleImageEdit from "@/features/vehicleImages/components/ImageEdit";
@@ -131,7 +131,7 @@ export default function VehicleImageManagementPage() {
 
       <DataTable columns={columns} data={images} />
 
-      <TablePagination page={1} totalPages={1} onPageChange={() => {}} />
+      {/* <TablePagination page={1} totalPages={1} onPageChange={() => {}} /> */}
 
       <VehicleImageCreate
         open={openCreate}

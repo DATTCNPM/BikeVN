@@ -47,6 +47,8 @@ public class Payment {
     @Column(length = 100)
     String idempotencyKey;
 
+    @Column(length = 36)
+    String branchId;
     LocalDateTime paidAt;
 
     @Column(updatable = false)

@@ -16,14 +16,15 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateVehicleBrand } from "@/features/vehicleBrand/mutationVehicleBrand";
 
-import { vehicleBrandSchema, type VehicleBrandFormData } from "@repo/schemas";
+import { vehicleBrandCreationSchema } from "@repo/schemas";
+import type { VehicleBrandCreationRequest } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const defaultValues: VehicleBrandFormData = {
+const defaultValues: VehicleBrandCreationRequest = {
   name: "",
   country: "",
 };
@@ -36,12 +37,12 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleBrandFormData>({
-    resolver: zodResolver(vehicleBrandSchema),
+  } = useForm<VehicleBrandCreationRequest>({
+    resolver: zodResolver(vehicleBrandCreationSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: VehicleBrandFormData) => {
+  const onSubmit = async (values: VehicleBrandCreationRequest) => {
     try {
       await mutateAsync(values);
 

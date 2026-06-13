@@ -4,7 +4,7 @@ export const vehicleConditionStatusSchema = z.enum([
   "excellent",
   "good",
   "fair",
-  " damaged",
+  "damaged",
 ]);
 
 export const vehicleReturnSchema = z.object({

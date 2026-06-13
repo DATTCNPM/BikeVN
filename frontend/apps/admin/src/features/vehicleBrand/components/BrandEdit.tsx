@@ -21,7 +21,8 @@ import { useUpdateVehicleBrand } from "@/features/vehicleBrand/mutationVehicleBr
 
 import type { VehicleBrand } from "@repo/types";
 
-import { vehicleBrandSchema, type VehicleBrandFormData } from "@repo/schemas";
+import { vehicleBrandUpdateSchema } from "@repo/schemas";
+import type { VehicleBrandUpdateRequest } from "@repo/types";
 
 type Props = {
   open: boolean;
@@ -37,8 +38,8 @@ export default function BrandEdit({ open, onOpenChange, brand }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleBrandFormData>({
-    resolver: zodResolver(vehicleBrandSchema),
+  } = useForm<VehicleBrandUpdateRequest>({
+    resolver: zodResolver(vehicleBrandUpdateSchema),
   });
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function BrandEdit({ open, onOpenChange, brand }: Props) {
     });
   }, [brand, reset]);
 
-  const onSubmit = async (values: VehicleBrandFormData) => {
+  const onSubmit = async (values: VehicleBrandUpdateRequest) => {
     if (!brand) return;
 
     try {

@@ -26,16 +26,17 @@ import { useCreateVehicleModel } from "@/features/vehicleModel/mutationVehicleMo
 
 import { useVehicleBrands } from "@repo/hooks";
 
-import { vehicleModelSchema, type VehicleModelFormData } from "@repo/schemas";
+import { vehicleModelCreationSchema } from "@repo/schemas";
+import type { VehicleModelCreationRequest } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const defaultValues: VehicleModelFormData = {
+const defaultValues: VehicleModelCreationRequest = {
   name: "",
-  brandId: undefined as any,
+  brandId: 0,
   engineCapacity: 110,
   yearFrom: undefined,
   yearTo: undefined,
@@ -52,12 +53,12 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<VehicleModelFormData>({
-    resolver: zodResolver(vehicleModelSchema),
+  } = useForm<VehicleModelCreationRequest>({
+    resolver: zodResolver(vehicleModelCreationSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: VehicleModelFormData) => {
+  const onSubmit = async (values: VehicleModelCreationRequest) => {
     try {
       await mutateAsync(values);
 

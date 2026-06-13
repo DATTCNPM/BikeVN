@@ -3,21 +3,20 @@ package com.backend.bikerental.controller;
 import com.backend.bikerental.dto.request.BookingCreationRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.BookingResponse;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.service.BookingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/booking")
+@RequestMapping("/bookings")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingController {
-    @Autowired
     BookingService bookingService;
     @PostMapping
     ApiResponse<BookingResponse> createBooking(@RequestBody BookingCreationRequest request)
@@ -36,10 +35,13 @@ public class BookingController {
     }
 
     @GetMapping
-    public ApiResponse<List<BookingResponse>> getAllBooking()
+    public ApiResponse<PageResponse<BookingResponse>> getAllBooking(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    )
     {
-        return ApiResponse.<List<BookingResponse>>builder()
-                .result(bookingService.getAllBooking())
+        return ApiResponse.<PageResponse<BookingResponse>>builder()
+                .result(bookingService.getAllBooking(page, size))
                 .build();
     }
 

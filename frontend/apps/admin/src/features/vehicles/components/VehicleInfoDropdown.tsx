@@ -29,11 +29,9 @@ export default function VehicleInfoDropdown({ vehicle }: Props) {
 
         <DropdownMenuItem>Màu: {vehicle.color}</DropdownMenuItem>
 
-        <DropdownMenuItem>
-          Động cơ: {vehicle.engine_capacity}cc
-        </DropdownMenuItem>
+        <DropdownMenuItem>Động cơ: {vehicle.licensePlate}cc</DropdownMenuItem>
 
-        <DropdownMenuItem>Nhiên liệu: {vehicle.fuel_type}</DropdownMenuItem>
+        <DropdownMenuItem>Nhiên liệu: {vehicle.vehicleType}</DropdownMenuItem>
 
         <DropdownMenuItem>
           Số km: {vehicle.mileage.toLocaleString()}km

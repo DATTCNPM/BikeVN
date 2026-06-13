@@ -4,18 +4,11 @@ import com.backend.bikerental.dto.request.PaymentCreationRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
-import com.backend.bikerental.enums.PaymentStatus;
 import com.backend.bikerental.service.PaymentServiceP;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/payments")
@@ -31,7 +24,7 @@ public class PaymentController {
                 .build();
     }
 
-    @GetMapping()
+    @GetMapping
     public ApiResponse<PageResponse<PaymentResponse>> getAllPayments(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
@@ -39,6 +32,17 @@ public class PaymentController {
     {
         return ApiResponse.<PageResponse<PaymentResponse>>builder()
                 .result(paymentService.getAllPayments(page,size))
+                .build();
+    }
+
+    @GetMapping("/my-branch")
+    public ApiResponse<PageResponse<PaymentResponse>> getAllPaymentPerBranch(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    )
+    {
+        return ApiResponse.<PageResponse<PaymentResponse>>builder()
+                .result(paymentService.getAllPaymentPerBranch(page, size))
                 .build();
     }
 
