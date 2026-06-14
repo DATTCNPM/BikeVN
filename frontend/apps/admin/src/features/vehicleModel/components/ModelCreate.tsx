@@ -45,7 +45,7 @@ const defaultValues: VehicleModelCreationRequest = {
 export default function ModelCreate({ open, onOpenChange }: Props) {
   const { mutateAsync, isPending } = useCreateVehicleModel();
 
-  const { data: brands = [] } = useVehicleBrands();
+  const { data: brands } = useVehicleBrands();
 
   const {
     register,
@@ -108,7 +108,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {brands.map((brand) => (
+                    {brands?.data?.map((brand) => (
                       <SelectItem key={brand.id} value={brand.id.toString()}>
                         {brand.name}
                       </SelectItem>

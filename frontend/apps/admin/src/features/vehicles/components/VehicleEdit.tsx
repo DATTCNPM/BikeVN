@@ -36,8 +36,8 @@ type Props = {
 export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
   const { mutateAsync, isPending } = useUpdateVehicle();
   const { data: branches = [] } = useBranches();
-  const { data: brands = [] } = useVehicleBrands();
-  const { data: models = [] } = useVehicleModels();
+  const { data: brands } = useVehicleBrands();
+  const { data: models } = useVehicleModels();
 
   const {
     register,
@@ -73,7 +73,9 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     name: "brandId",
   });
 
-  const filteredModels = models.filter((m) => m.brandId === selectedBrandId);
+  const filteredModels = models?.data?.filter(
+    (m) => m.brandId === selectedBrandId,
+  );
 
   const onSubmit = async (values: VehicleUpdateRequest) => {
     if (!vehicle) return;
@@ -121,7 +123,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                     <SelectValue placeholder="Chọn hãng xe" />
                   </SelectTrigger>
                   <SelectContent>
-                    {brands.map((b) => (
+                    {brands?.data?.map((b) => (
                       <SelectItem key={b.id} value={b.id.toString()}>
                         {b.name}
                       </SelectItem>
@@ -150,7 +152,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                     <SelectValue placeholder="Chọn dòng xe" />
                   </SelectTrigger>
                   <SelectContent>
-                    {filteredModels.map((m) => (
+                    {filteredModels?.map((m) => (
                       <SelectItem key={m.id} value={m.id.toString()}>
                         {m.name}
                       </SelectItem>

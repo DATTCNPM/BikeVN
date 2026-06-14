@@ -16,7 +16,7 @@ export function useCreateRole() {
 export function useDeleteRole() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (roleName: string) => roleApi.deleteRole(roleName),
+    mutationFn: (roleId: string) => roleApi.deleteRole(roleId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: roleKeys.all });
     },

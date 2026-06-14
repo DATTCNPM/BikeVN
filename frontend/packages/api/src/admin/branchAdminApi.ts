@@ -6,7 +6,7 @@ import type { CreateBranchPayload, UpdateBranchPayload } from "@repo/types";
 
 export const branchAdminApi = {
   async createBranch(payload: CreateBranchPayload) {
-    const data = await axiosAdmin.post<Branch>("/branch", payload);
+    const data = await axiosAdmin.post<Branch>("/branches", payload);
 
     return {
       message: "Tạo chi nhánh thành công",
@@ -15,7 +15,7 @@ export const branchAdminApi = {
   },
 
   async updateBranch(id: string, payload: UpdateBranchPayload) {
-    const data = await axiosAdmin.put<Branch>(`/branch/${id}`, payload);
+    const data = await axiosAdmin.put<Branch>(`/branches/${id}`, payload);
 
     if (!data) {
       throw {
@@ -35,7 +35,7 @@ export const branchAdminApi = {
   },
 
   async deleteBranch(id: string) {
-    await axiosAdmin.delete(`/branch/${id}`);
+    await axiosAdmin.delete(`/branches/${id}`);
 
     return {
       message: "Xóa chi nhánh thành công",

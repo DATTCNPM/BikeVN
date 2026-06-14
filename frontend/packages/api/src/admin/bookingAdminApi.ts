@@ -2,20 +2,23 @@
 
 import axiosAdmin from "../axios/axiosAdmin";
 
-import type { Booking } from "@repo/types";
+import type { Booking, PaginationResponse } from "@repo/types";
 
 import { createBookingCommonApi } from "../common/createBookingCommonApi";
 
 export const bookingAdminApi = {
   ...createBookingCommonApi(axiosAdmin),
   async getAllBooking() {
-    const data = await axiosAdmin.get<Booking[], Booking[]>("/booking");
+    const data = await axiosAdmin.get<
+      PaginationResponse<Booking>,
+      PaginationResponse<Booking>
+    >("/bookings");
     return data;
   },
   async approveBooking(id: string) {
-    await axiosAdmin.post(`/booking/${id}/approve`);
+    await axiosAdmin.post(`/bookings/${id}/approve`);
   },
   async rejectBooking(id: string) {
-    await axiosAdmin.post(`/booking/${id}/reject`);
+    await axiosAdmin.post(`/bookings/${id}/reject`);
   },
 };

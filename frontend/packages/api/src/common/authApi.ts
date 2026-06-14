@@ -25,7 +25,7 @@ export const authApi = {
 
   async register(payload: RegisterPayload): Promise<AuthenticationResponse> {
     return axiosPublic.post<RegisterPayload, AuthenticationResponse>(
-      "/user",
+      "/users",
       payload,
     );
   },

@@ -5,7 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
-// import TablePagination from "@/components/common/TablePagination";
+import TablePagination from "@/components/common/TablePagination";
 
 import BrandCreate from "@/features/vehicleBrand/components/BrandCreate";
 import BrandEdit from "@/features/vehicleBrand/components/BrandEdit";
@@ -18,7 +18,7 @@ import { useVehicleBrands } from "@repo/hooks";
 import type { VehicleBrand } from "@repo/types";
 
 export default function BrandManagementPage() {
-  const { data: brands = [], isLoading } = useVehicleBrands();
+  const { data: brands, isLoading } = useVehicleBrands();
 
   const [search, setSearch] = useState("");
 
@@ -29,6 +29,8 @@ export default function BrandManagementPage() {
   const [openEdit, setOpenEdit] = useState(false);
 
   const [openDelete, setOpenDelete] = useState(false);
+
+  const [page, setPage] = useState(1);
 
   const columns = useMemo<ColumnDef<VehicleBrand>[]>(
     () => [
@@ -91,9 +93,15 @@ export default function BrandManagementPage() {
         onCreateOpen={() => setOpenCreate(true)}
       />
 
-      <DataTable columns={columns} data={brands} />
+      <DataTable columns={columns} data={brands?.data || []} />
 
-      {/* <TablePagination page={1} totalPages={1} onPageChange={() => {}} /> */}
+      <TablePagination
+        page={page}
+        totalPages={brands?.totalPages || 1}
+        totalElements={brands?.totalElements || 0}
+        pageSize={brands?.pageSize || 10}
+        onPageChange={setPage}
+      />
 
       <BrandCreate open={openCreate} onOpenChange={setOpenCreate} />
 

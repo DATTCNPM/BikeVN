@@ -25,7 +25,7 @@ export const vehicleImageAdminApi = {
     }
 
     const response = await axiosAdmin.post<VehicleImage>(
-      `/vehicle/${vehicleId}/images`,
+      `/vehicles/${vehicleId}/images`,
       formData,
     );
 
@@ -56,7 +56,7 @@ export const vehicleImageAdminApi = {
     }
 
     const response = await axiosAdmin.put<VehicleImage>(
-      `/vehicle/${vehicleId}/images/${imageId}`,
+      `/vehicles/${vehicleId}/images/${imageId}`,
       formData,
     );
 
@@ -64,6 +64,6 @@ export const vehicleImageAdminApi = {
   },
 
   async deleteImage(vehicleId: string, imageId: string) {
-    await axiosAdmin.delete(`/vehicle/${vehicleId}/images/${imageId}`);
+    await axiosAdmin.delete(`/vehicles/${vehicleId}/images/${imageId}`);
   },
 };

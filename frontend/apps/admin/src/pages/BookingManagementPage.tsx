@@ -7,7 +7,7 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import BookingActionDropdown from "@/features/bookings/components/BookingActionDropdown";
 import BookingStatusDialog from "@/features/bookings/components/BookingStatusDialog";
 import BookingInfoDropdown from "@/features/bookings/components/BookingInfoDropdown";
-// import TablePagination from "@/components/common/TablePagination";
+import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
@@ -35,7 +35,7 @@ const bookingStatusLabel = {
 
 export default function BookingManagementPage() {
   const navigate = useNavigate();
-  const { data: bookings = [], isLoading } = useBookings();
+  const { data: bookings, isLoading } = useBookings();
 
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
@@ -44,6 +44,8 @@ export default function BookingManagementPage() {
   );
 
   const [search, setSearch] = useState("");
+
+  const [page, setPage] = useState(1);
 
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
@@ -148,13 +150,15 @@ export default function BookingManagementPage() {
         // onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
-      <DataTable columns={columns} data={bookings} />
+      <DataTable columns={columns} data={bookings?.data || []} />
 
-      {/* <TablePagination
-        page={1}
-        totalPages={Math.ceil(bookings.length / 10) || 1}
-        onPageChange={(page) => console.log(page)}
-      /> */}
+      <TablePagination
+        page={bookings?.pageCurrent || 1}
+        totalPages={bookings?.totalPages || 1}
+        totalElements={bookings?.totalElements || 0}
+        pageSize={bookings?.pageSize || 10}
+        onPageChange={setPage}
+      />
       <BookingStatusDialog
         booking={selectedBooking}
         open={!!selectedBooking && dialogMode !== null}

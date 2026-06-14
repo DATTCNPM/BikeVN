@@ -54,7 +54,7 @@ export default function PaymentManagementPage() {
 
   const paymentData = payments?.data || [];
   const pagination = {
-    page: payments?.page || 1,
+    page: payments?.pageCurrent || 1,
     pageSize: payments?.pageSize || 10,
     totalPages: payments?.totalPages || 1,
     totalElements: payments?.totalElements || 0,

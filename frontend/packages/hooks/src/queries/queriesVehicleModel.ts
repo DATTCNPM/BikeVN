@@ -2,12 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { vehicleModelPublicApi } from "@repo/api";
 import { vehicleModelKeys } from "../queryKeys";
 
+import type { VehicleModel, PaginationResponse } from "@repo/types";
+
 export const useVehicleModels = () => {
-  return useQuery({
+  return useQuery<PaginationResponse<VehicleModel>>({
     queryKey: vehicleModelKeys.list(),
     queryFn: async () => {
       const res = await vehicleModelPublicApi.getModels();
-      console.log(res);
 
       return res;
     },

@@ -35,15 +35,14 @@ export const vehicleReturnAdminApi = {
       formData.append("images", file);
     });
 
-    const data = await axiosAdmin.post<VehicleReturn>(
-      "/bookings/return",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    const data = await axiosAdmin.post<
+      VehicleReturn,
+      CreateVehicleReturnRequest
+    >("/bookings/return", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
+    });
 
     return {
       message: "Trả xe thành công",

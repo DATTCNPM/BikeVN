@@ -11,7 +11,7 @@ export const roleApi = {
     return axiosAdmin.post<Role, RoleRequest>("/roles", payload);
   },
 
-  async deleteRole(roleName: string): Promise<void> {
-    await axiosAdmin.delete(`/role/${roleName}`);
+  async deleteRole(roleId: string): Promise<void> {
+    await axiosAdmin.delete(`/roles/${roleId}`);
   },
 };

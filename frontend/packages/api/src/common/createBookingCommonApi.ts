@@ -3,7 +3,7 @@ import type { Booking } from "@repo/types";
 
 export const createBookingCommonApi = (axiosInstance: AxiosInstance) => ({
   async getBooking(id: string) {
-    const data = await axiosInstance.get<Booking, Booking>(`/booking/${id}`);
+    const data = await axiosInstance.get<Booking, Booking>(`/bookings/${id}`);
 
     if (!data) {
       throw {

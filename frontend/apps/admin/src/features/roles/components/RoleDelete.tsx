@@ -14,7 +14,6 @@ type Props = {
 
 export default function RoleDelete({ open, onOpenChange, role }: Props) {
   const { mutateAsync, isPending } = useDeleteRole();
-
   const handleDelete = async () => {
     if (!role) return;
 
