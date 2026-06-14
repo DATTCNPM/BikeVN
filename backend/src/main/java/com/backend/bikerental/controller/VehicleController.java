@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/vehicles")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class VehicleController {
     VehicleService vehicleService;
 
