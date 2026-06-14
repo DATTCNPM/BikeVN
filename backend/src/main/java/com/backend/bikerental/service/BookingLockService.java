@@ -1,11 +1,11 @@
 package com.backend.bikerental.service;
 
-import com.backend.bikerental.entity.Booking;
 import com.backend.bikerental.entity.BookingLock;
 import com.backend.bikerental.enums.BookingLockEnum;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.repository.BookingLockRepository;
+import com.backend.bikerental.repository.VehicleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,16 +13,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingLockService {
     BookingLockRepository bookingLockRepository;
+    VehicleRepository vehicleRepository;
     @Transactional
     public void createLock(String vehicleId, String userId, LocalDateTime start, LocalDateTime end, int lockMinutes)
     {
+        //Goi luong nay truoc duoc xu ly xe truoc
+        vehicleRepository.findByIdForUpdate(vehicleId)
+                .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
         if(bookingLockRepository.existsActiveLock(vehicleId, start, end))
         {
             throw new AppException(ErrorCode.VEHICLE_ALREADY_LOCKED);
@@ -46,7 +50,7 @@ public class BookingLockService {
                 .orElseThrow(()-> new AppException(ErrorCode.LOCK_NOT_FOUND));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void releaseLock(BookingLock bookingLock)
     {
         bookingLock.setStatus(BookingLockEnum.released);
