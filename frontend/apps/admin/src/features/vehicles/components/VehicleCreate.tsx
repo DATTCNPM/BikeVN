@@ -50,8 +50,8 @@ const defaultValues: VehicleCreationRequest = {
 export default function VehicleCreate({ open, onOpenChange }: Props) {
   const { mutateAsync, isPending } = useCreateVehicle();
   const { data: branches = [] } = useBranches();
-  const { data: brands = [] } = useVehicleBrands();
-  const { data: models = [] } = useVehicleModels();
+  const { data: brands } = useVehicleBrands();
+  const { data: models } = useVehicleModels();
 
   const {
     register,
@@ -69,7 +69,9 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     name: "brandId",
   });
 
-  const filteredModels = models.filter((m) => m.brandId === selectedBrandId);
+  const filteredModels = models?.data?.filter(
+    (m) => m.brandId === selectedBrandId,
+  );
 
   const onSubmit = async (values: VehicleCreationRequest) => {
     console.log("Submitting vehicle:", values);
@@ -117,7 +119,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                     <SelectValue placeholder="Chọn hãng xe" />
                   </SelectTrigger>
                   <SelectContent>
-                    {brands.map((b) => (
+                    {brands?.data?.map((b) => (
                       <SelectItem key={b.id} value={b.id.toString()}>
                         {b.name}
                       </SelectItem>
@@ -146,7 +148,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                     <SelectValue placeholder="Chọn dòng xe" />
                   </SelectTrigger>
                   <SelectContent>
-                    {filteredModels.map((m) => (
+                    {filteredModels?.map((m) => (
                       <SelectItem key={m.id} value={m.id.toString()}>
                         {m.name}
                       </SelectItem>

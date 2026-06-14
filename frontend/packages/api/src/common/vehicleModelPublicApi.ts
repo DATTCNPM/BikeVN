@@ -1,18 +1,18 @@
 import axiosPublic from "../axios/axiosPublic";
-import type { VehicleModel } from "@repo/types";
+import type { VehicleModel, PaginationResponse } from "@repo/types";
 
 export const vehicleModelPublicApi = {
   async getModels() {
-    const data = await axiosPublic.get<VehicleModel[], VehicleModel[]>(
-      "/model",
-    );
-    console.log("Fetched models:", data);
+    const data = await axiosPublic.get<
+      PaginationResponse<VehicleModel>,
+      PaginationResponse<VehicleModel>
+    >("/vehicle-models");
     return data;
   },
 
   async getModelById(id: number) {
     const data = await axiosPublic.get<VehicleModel, VehicleModel>(
-      `/model/${id}`,
+      `/vehicle-models/${id}`,
     );
 
     return data;

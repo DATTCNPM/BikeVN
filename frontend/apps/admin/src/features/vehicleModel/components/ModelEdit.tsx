@@ -43,7 +43,7 @@ type Props = {
 export default function ModelEdit({ open, onOpenChange, model }: Props) {
   const { mutateAsync, isPending } = useUpdateVehicleModel();
 
-  const { data: brands = [] } = useVehicleBrands();
+  const { data: brands } = useVehicleBrands();
 
   const {
     register,
@@ -120,7 +120,7 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {brands.map((brand) => (
+                    {brands?.data?.map((brand) => (
                       <SelectItem key={brand.id} value={brand.id.toString()}>
                         {brand.name}
                       </SelectItem>

@@ -7,22 +7,28 @@ import type {
 
 export const vehicleBrandAdminApi = {
   create(data: VehicleBrandCreationRequest) {
-    return axiosAdmin.post<VehicleBrand>("/brand", data);
+    return axiosAdmin.post<VehicleBrand, VehicleBrandCreationRequest>(
+      "/vehicle-brands",
+      data,
+    );
   },
 
   getAll() {
-    return axiosAdmin.get<VehicleBrand[]>("/brand");
+    return axiosAdmin.get<VehicleBrand[], VehicleBrand[]>("/vehicle-brands");
   },
 
   getById(id: number) {
-    return axiosAdmin.get<VehicleBrand>(`/brand/${id}`);
+    return axiosAdmin.get<VehicleBrand, VehicleBrand>(`/vehicle-brands/${id}`);
   },
 
   update(id: number, data: VehicleBrandUpdateRequest) {
-    return axiosAdmin.put<VehicleBrand>(`/brand/${id}`, data);
+    return axiosAdmin.put<VehicleBrand, VehicleBrandUpdateRequest>(
+      `/vehicle-brands/${id}`,
+      data,
+    );
   },
 
   delete(id: number) {
-    return axiosAdmin.delete(`/brand/${id}`);
+    return axiosAdmin.delete(`/vehicle-brands/${id}`);
   },
 };

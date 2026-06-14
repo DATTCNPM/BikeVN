@@ -17,7 +17,12 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { type Vehicle } from "@repo/types";
-import { useVehicles, useVehicleBrands, useVehicleModels } from "@repo/hooks";
+import {
+  useVehicles,
+  useVehicleBrands,
+  useVehicleModels,
+  useBranches,
+} from "@repo/hooks";
 import VehicleInfoDropdown from "@/features/vehicles/components/VehicleInfoDropdown";
 import { useNavigate } from "react-router-dom";
 
@@ -39,8 +44,9 @@ const vehicleStatusLabel = {
 
 export default function VehicleManagementPage() {
   const { data: vehicles, isLoading } = useVehicles();
-  const { data: brands = [] } = useVehicleBrands();
-  const { data: models = [] } = useVehicleModels();
+  const { data: brands } = useVehicleBrands();
+  const { data: models } = useVehicleModels();
+  const { data: branches } = useBranches();
 
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -53,7 +59,7 @@ export default function VehicleManagementPage() {
 
   const vehicleData = vehicles?.data || [];
   const pagination = {
-    page: vehicles?.page,
+    page: vehicles?.pageCurrent,
     pageSize: vehicles?.pageSize,
     totalPages: vehicles?.totalPages,
     totalElements: vehicles?.totalElements,
@@ -93,8 +99,8 @@ export default function VehicleManagementPage() {
         header: "Hãng",
 
         cell: ({ row }) => {
-          const brand = brands.find((b) => b.id === row.original.brandId);
-          const model = models.find((m) => m.id === row.original.modelId);
+          const brand = brands?.data.find((b) => b.id === row.original.brandId);
+          const model = models?.data.find((m) => m.id === row.original.modelId);
           return (
             <div>
               <p className="font-medium">{brand?.name || "N/A"}</p>
@@ -118,7 +124,10 @@ export default function VehicleManagementPage() {
         header: "Chi nhánh",
 
         cell: ({ row }) => (
-          <span>CN #{row.original.currentBranchId || "N/A"}</span>
+          <span>
+            {branches?.find((b) => b.id === row.original.currentBranchId)
+              ?.name || "N/A"}
+          </span>
         ),
       },
 

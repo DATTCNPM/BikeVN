@@ -12,14 +12,20 @@ import type {
 export function useVehicles(params?: VehicleQueryParams) {
   return useQuery<PaginationResponse<Vehicle>>({
     queryKey: vehiclesKeys.list(params),
-    queryFn: () => vehiclePublicApi.getVehicles(params),
+    queryFn: async () => {
+      const res = await vehiclePublicApi.getVehicles(params);
+      return res;
+    },
   });
 }
 
 export function useVehicle(id: string) {
   return useQuery<Vehicle>({
     queryKey: vehiclesKeys.detail(id),
-    queryFn: () => vehiclePublicApi.getVehicleById(id),
+    queryFn: async () => {
+      const res = await vehiclePublicApi.getVehicleById(id);
+      return res;
+    },
     enabled: !!id,
   });
 }

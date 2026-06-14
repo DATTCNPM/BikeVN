@@ -10,7 +10,7 @@ export const bookingClientApi = {
     const idempotencyKey = crypto.randomUUID();
 
     return axiosClient.post<Booking, Booking, BookingCreationPayload>(
-      "/booking",
+      "/bookings",
       payload,
       {
         headers: {
@@ -22,13 +22,13 @@ export const bookingClientApi = {
 
   async getBookingsByUser(userId: string) {
     const data = await axiosClient.get<Booking[], Booking[]>(
-      `/booking/user/${userId}`,
+      `/bookings/user/${userId}`,
     );
 
     return data;
   },
 
   async cancelBooking(bookingId: string) {
-    await axiosClient.post(`/booking/${bookingId}/cancel`);
+    await axiosClient.post(`/bookings/${bookingId}/cancel`);
   },
 };
