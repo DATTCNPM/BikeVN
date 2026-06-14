@@ -1,0 +1,90 @@
+import { useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+
+import DataTable from "@/components/common/DataTable";
+import DataTableToolbar from "@/components/common/DataTableToolbar";
+import TableActionDropdown from "@/components/common/TableActionDropdown";
+
+import { Spinner } from "@repo/ui/components/ui/spinner";
+
+import RoleCreate from "@/features/roles/components/RoleCreate";
+import RoleDelete from "@/features/roles/components/RoleDelete";
+
+import { useRoles } from "@/features/roles/queriesRole";
+
+import type { Role } from "@repo/types";
+
+export default function RoleManagementPage() {
+  const { data: roles = [], isLoading } = useRoles();
+
+  const [search, setSearch] = useState("");
+
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const filteredRoles = roles.filter((role) =>
+    role.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const columns = useMemo<ColumnDef<Role>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Tên vai trò",
+      },
+      {
+        accessorKey: "description",
+        header: "Mô tả",
+        cell: ({ row }) => row.original.description || "-",
+      },
+      {
+        accessorKey: "permissions",
+        header: "Quyền",
+        cell: ({ row }) => row.original.permissions.join(", "),
+      },
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => (
+          <TableActionDropdown
+            onDelete={() => {
+              setSelectedRole(row.original);
+              setOpenDeleteDialog(true);
+            }}
+          />
+        ),
+      },
+    ],
+    [],
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <DataTableToolbar
+        search={search}
+        onSearchChange={setSearch}
+        onCreateOpen={() => setOpenCreateDialog(true)}
+      />
+
+      <DataTable columns={columns} data={filteredRoles} />
+
+      <RoleCreate open={openCreateDialog} onOpenChange={setOpenCreateDialog} />
+
+      <RoleDelete
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+        role={selectedRole}
+      />
+    </div>
+  );
+}

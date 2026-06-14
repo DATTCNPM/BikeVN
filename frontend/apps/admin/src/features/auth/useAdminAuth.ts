@@ -21,7 +21,7 @@ const hasAdminAccess = (token: string) => {
 export const useAdminAuth = create<AdminAuthState>()(
   devtools(
     (set) => ({
-      isAdminLogin: false,
+      isAdminLogin: !!authStorageService.getAdminToken(),
 
       setAdminLogin: (value) => {
         set({

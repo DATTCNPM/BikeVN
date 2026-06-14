@@ -18,6 +18,9 @@ import SecurityPage from "@/pages/SecurityPage";
 import SettingPage from "@/pages/SettingPage";
 import LoginPage from "@/pages/LoginPage";
 import BookingReturnPage from "@/pages/BookingReturnPage";
+import PermissionManagementPage from "@/pages/PermissionManagementPage";
+import RoleManagementPage from "@/pages/RoleManagementPage";
+import EmployeeManagementPage from "@/pages/EmployeeManagementaPage";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "models",
         element: <ModelManagementPage />,
+      },
+      {
+        path: "employees",
+        element: <EmployeeManagementPage />,
       },
       {
         path: "users",
@@ -87,6 +94,14 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <SettingPage />,
+      },
+      {
+        path: "permissions",
+        element: <PermissionManagementPage />,
+      },
+      {
+        path: "roles",
+        element: <RoleManagementPage />,
       },
     ],
   },

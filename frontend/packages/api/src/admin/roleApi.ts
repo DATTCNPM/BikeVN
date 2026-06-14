@@ -3,12 +3,12 @@ import axiosAdmin from "../axios/axiosAdmin";
 import type { Role, RoleRequest } from "@repo/types";
 
 export const roleApi = {
-  async getRoles(): Promise<Role[]> {
-    return axiosAdmin.get("/role");
+  async getRoles() {
+    return axiosAdmin.get<Role[], Role[]>("/roles");
   },
 
-  async createRole(payload: RoleRequest): Promise<Role> {
-    return axiosAdmin.post("/role", payload);
+  async createRole(payload: RoleRequest) {
+    return axiosAdmin.post<Role, RoleRequest>("/roles", payload);
   },
 
   async deleteRole(roleName: string): Promise<void> {

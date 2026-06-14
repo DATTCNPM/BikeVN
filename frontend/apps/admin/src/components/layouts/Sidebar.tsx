@@ -32,6 +32,11 @@ const menuItems = [
     href: "/admin",
   },
   {
+    title: "Nhân viên",
+    icon: Users,
+    href: "/admin/employees",
+  },
+  {
     title: "Khách hàng",
     icon: Users,
     href: "/admin/users",
@@ -75,6 +80,16 @@ const menuItems = [
     title: "Tin nhắn",
     icon: MessageSquare,
     href: "/admin/chats",
+  },
+  {
+    title: "Quyền",
+    icon: Users,
+    href: "/admin/permissions",
+  },
+  {
+    title: "Vai trò",
+    icon: Users,
+    href: "/admin/roles",
   },
 ];
 

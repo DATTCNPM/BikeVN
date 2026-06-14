@@ -1,21 +1,63 @@
 import axiosAdmin from "../axios/axiosAdmin";
 import type {
   User,
+  Employee,
+  AdminEmployeeCreationPayload,
   UserCreationRequest,
   UpdateProfilePayload,
+  PaginationResponse,
+  AdminUserCreationPayload,
 } from "@repo/types";
 
 export const userApi = {
-  async getUsers({ page, size }: { page: number; size: number }) {
-    return axiosAdmin.get<User[], User[]>("/user", { params: { page, size } });
+  async getUsers({
+    page,
+    size,
+  }: {
+    page: number;
+    size: number;
+  }): Promise<PaginationResponse<User>> {
+    return axiosAdmin.get<PaginationResponse<User>, PaginationResponse<User>>(
+      "/users/customers",
+      {
+        params: { page, size },
+      },
+    );
   },
 
   async getUserById(id: string) {
-    return axiosAdmin.get<User>(`/user/${id}`);
+    return axiosAdmin.get<User>(`/users/${id}`);
+  },
+
+  async getEmployees({
+    page,
+    size,
+  }: {
+    page: number;
+    size: number;
+  }): Promise<PaginationResponse<Employee>> {
+    return axiosAdmin.get<
+      PaginationResponse<Employee>,
+      PaginationResponse<Employee>
+    >("/users/employees", {
+      params: { page, size },
+    });
+  },
+  async createEmployee(
+    payload: Omit<AdminEmployeeCreationPayload, "passwordHash"> & {
+      passwordHash?: string;
+    },
+  ) {
+    const { passwordHash, ...rest } = payload;
+    const requestPayload = {
+      ...rest,
+      passwordHash: passwordHash || "defaultEmployee123",
+    };
+    return axiosAdmin.post<Employee>("/users/employee", requestPayload);
   },
 
   async createUser(
-    payload: Omit<UserCreationRequest, "passwordHash"> & {
+    payload: Omit<AdminUserCreationPayload, "passwordHash"> & {
       passwordHash?: string;
       cccdNumber?: string;
     },
@@ -26,22 +68,7 @@ export const userApi = {
       cccdNumber: cccdNumber || undefined,
       passwordHash: passwordHash || "defaultPassword123",
     };
-    return axiosAdmin.post<User>("/user", requestPayload);
-  },
-
-  async createEmployee(
-    payload: Omit<UserCreationRequest, "passwordHash"> & {
-      passwordHash?: string;
-      cccdNumber?: string;
-    },
-  ) {
-    const { cccdNumber, passwordHash, ...rest } = payload;
-    const requestPayload = {
-      ...rest,
-      cccdNumber: cccdNumber || "",
-      passwordHash: passwordHash || "defaultEmployee123",
-    };
-    return axiosAdmin.post<User>("/user/employee", requestPayload);
+    return axiosAdmin.post<User>("/users", requestPayload);
   },
 
   async updateUser(
@@ -53,10 +80,10 @@ export const userApi = {
       ...rest,
       cccdNumber: cccdNumber || "",
     };
-    return axiosAdmin.put<User>(`/user/${id}`, requestPayload);
+    return axiosAdmin.put<User>(`/users/${id}`, requestPayload);
   },
 
   async deleteUser(id: string) {
-    return axiosAdmin.delete(`/user/${id}`);
+    return axiosAdmin.delete(`/users/${id}`);
   },
 };

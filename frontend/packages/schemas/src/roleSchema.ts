@@ -9,5 +9,5 @@ export const roleCreationSchema = z.object({
 });
 
 export const roleSchema = roleCreationSchema.extend({
-  id: z.string().optional(),
+  id: z.string(),
 });

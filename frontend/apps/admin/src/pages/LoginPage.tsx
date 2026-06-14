@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff, Home, ShieldCheck } from "lucide-react";
 
 // Schemas & Stores
@@ -31,8 +31,7 @@ import {
 import { useLoginAdmin } from "@/features/auth/useLoginAdmin";
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { mutate: loginAdmin, isPending } = useLoginAdmin();
+  const { mutateAsync: loginAdmin, isPending } = useLoginAdmin();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -48,10 +47,7 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginPayload) => {
-    const success = await loginAdmin(data);
-    if (success) {
-      navigate("/admin");
-    }
+    await loginAdmin(data);
   };
 
   return (
