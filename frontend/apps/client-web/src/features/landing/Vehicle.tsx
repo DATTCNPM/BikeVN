@@ -14,7 +14,7 @@ export default function Vehicle() {
         Dòng xe nổi bật
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {vehicles?.map((vehicle) => (
+        {vehicles?.data?.map((vehicle) => (
           <CardProduct
             key={vehicle.id}
             id={vehicle.id}

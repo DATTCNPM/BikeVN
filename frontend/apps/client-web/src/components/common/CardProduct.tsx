@@ -85,7 +85,10 @@ export default function CardProduct({
 
         {/* Actions */}
         <div className="flex gap-3">
-          <Button className="flex-1 gap-2 font-semibold uppercase tracking-wide shadow-sm">
+          <Button
+            className="flex-1 gap-2 font-semibold uppercase tracking-wide shadow-sm"
+            onClick={() => handleViewDetails({ id })}
+          >
             Book Now
             <ArrowRight className="size-4" />
           </Button>

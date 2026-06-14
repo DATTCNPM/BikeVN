@@ -26,6 +26,10 @@ export default function Login() {
   const { mutateAsync: login, error, isPending } = useLogin();
   const { setIsLogin } = useAuthStore();
 
+  const pendingBooking = localStorage.getItem("pending-booking");
+
+  const booking = pendingBooking ? JSON.parse(pendingBooking) : null;
+
   const [showPassword, setShowPassword] = useState(false);
   const methods = useForm<LoginPayload>({
     resolver: zodResolver(loginSchema),
@@ -41,6 +45,10 @@ export default function Login() {
   } = methods;
   const onSubmit = async (data: LoginPayload) => {
     const success = await login(data);
+    if (success && booking) {
+      navigate(`/vehicles/${booking.vehicleId}`);
+      return;
+    }
     if (success) {
       setIsLogin(true);
       navigate("/home");

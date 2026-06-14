@@ -49,7 +49,9 @@ import type { Branch, Vehicle } from "@repo/types";
 import { bookingFormSchema } from "@repo/schemas";
 import type { BookingFormValues } from "@repo/types";
 
+import { useAuthStore } from "@/features/auth/authStore";
 import { useProfile } from "@/features/profile/useProfile";
+import { useEffect } from "react";
 
 type Props = {
   vehicle: Vehicle;
@@ -58,6 +60,8 @@ type Props = {
 
 export default function BookingCard({ vehicle, branches }: Props) {
   const navigate = useNavigate();
+
+  const { isLogin } = useAuthStore();
 
   const { data: profile } = useProfile();
 
@@ -91,14 +95,35 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
   const totalPrice = totalDays * (vehicle.pricePerDay ?? 0);
 
-  if (profile?.id === undefined) {
-    return null;
-  }
+  useEffect(() => {
+    const pendingBooking = localStorage.getItem("pending-booking");
+
+    if (!pendingBooking) return;
+
+    const booking = JSON.parse(pendingBooking);
+
+    if (booking.vehicleId !== vehicle.id) return;
+
+    form.reset(booking.formData);
+  }, [vehicle.id]);
 
   const onSubmit = (values: BookingFormValues) => {
+    if (!isLogin) {
+      localStorage.setItem(
+        "pending-booking",
+        JSON.stringify({
+          vehicleId: vehicle.id,
+          formData: values,
+        }),
+      );
+
+      navigate("/login");
+
+      return;
+    }
     createBooking(
       {
-        userId: profile.id, // TODO: lấy từ auth
+        userId: profile?.id || "", // TODO: lấy từ auth
 
         vehicleId: vehicle.id,
 

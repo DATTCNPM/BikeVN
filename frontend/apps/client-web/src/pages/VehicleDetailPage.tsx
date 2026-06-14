@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 
 import VehicleInfo from "@/features/vehicle/VehicleInfo";
-import CardBooking from "@/features/bookings/components/BookingCard";
+import BookingCard from "@/features/bookings/components/BookingCard";
 
 import {
   useBranches,
@@ -22,9 +22,9 @@ export default function VehicleDetail() {
 
   const { data: branches = [], isLoading: branchLoading } = useBranches();
 
-  const { data: brands = [], isLoading: brandsLoading } = useVehicleBrands();
+  const { data: brands, isLoading: brandsLoading } = useVehicleBrands();
 
-  const { data: models = [], isLoading: modelsLoading } = useVehicleModels();
+  const { data: models, isLoading: modelsLoading } = useVehicleModels();
 
   const isLoading =
     vehicleLoading || branchLoading || brandsLoading || modelsLoading;
@@ -51,13 +51,13 @@ export default function VehicleDetail() {
         <VehicleInfo
           vehicle={vehicle}
           branches={branches}
-          brands={brands}
-          models={models}
+          brands={brands?.data || []}
+          models={models?.data || []}
         />
       </div>
 
       <div className="col-span-4">
-        <CardBooking vehicle={vehicle} branches={branches} />
+        <BookingCard vehicle={vehicle} branches={branches} />
       </div>
     </div>
   );
