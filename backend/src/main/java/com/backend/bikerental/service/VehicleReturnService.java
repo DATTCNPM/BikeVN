@@ -2,6 +2,7 @@ package com.backend.bikerental.service;
 
 import com.backend.bikerental.component.PricingCalculator;
 import com.backend.bikerental.dto.request.VehicleReturnRequest;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
 import com.backend.bikerental.dto.response.VehicleReturnResponse;
 import com.backend.bikerental.entity.Booking;
@@ -17,7 +18,12 @@ import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -113,6 +119,53 @@ public class VehicleReturnService {
         vehicleRepository.save(vehicle);
     }
 
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('admin')")
+    public PageResponse<VehicleReturnResponse> getAllReturns(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<VehicleReturn> pageData = vehicleReturnRepository.findAll(pageable);
+
+        var returnResponses = pageData.getContent().stream()
+                .map(vehicleReturnMapper::toVehicleReturnResponse)
+                .toList();
+
+        return PageResponse.<VehicleReturnResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(returnResponses)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('employee')")
+    public PageResponse<VehicleReturnResponse> getAllReturnsPerBranch(int page, int size) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth instanceof JwtAuthenticationToken jwtToken)) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        String tokenBranchId = (String) jwtToken.getTokenAttributes().get("branchId");
+        if (tokenBranchId == null) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<VehicleReturn> pageData = vehicleReturnRepository.findByReturnBranchId(tokenBranchId, pageable);
+
+        var returnResponses = pageData.getContent().stream()
+                .map(vehicleReturnMapper::toVehicleReturnResponse)
+                .toList();
+
+        return PageResponse.<VehicleReturnResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(returnResponses)
+                .build();
+    }
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('admin', 'employee') or returnObject.booking.userId == authentication.name")

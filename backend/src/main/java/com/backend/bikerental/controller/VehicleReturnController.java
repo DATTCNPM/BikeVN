@@ -2,6 +2,7 @@ package com.backend.bikerental.controller;
 
 import com.backend.bikerental.dto.request.VehicleReturnRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
+import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleReturnResponse;
 import com.backend.bikerental.service.VehicleReturnService;
 import lombok.AccessLevel;
@@ -31,6 +32,26 @@ public class VehicleReturnController {
     {
         return ApiResponse.<VehicleReturnResponse>builder()
                 .result(vehicleReturnService.getReturnByBookingId(bookingId))
+                .build();
+    }
+
+    @GetMapping("/all")
+    public ApiResponse<PageResponse<VehicleReturnResponse>> getAllReturns(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<VehicleReturnResponse>>builder()
+                .result(vehicleReturnService.getAllReturns(page, size))
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<PageResponse<VehicleReturnResponse>> getAllReturnsPerBranch(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<VehicleReturnResponse>>builder()
+                .result(vehicleReturnService.getAllReturnsPerBranch(page, size))
                 .build();
     }
 }
