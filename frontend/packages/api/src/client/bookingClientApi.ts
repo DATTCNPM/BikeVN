@@ -7,6 +7,7 @@ import { createBookingCommonApi } from "../common/createBookingCommonApi";
 export const bookingClientApi = {
   ...createBookingCommonApi(axiosClient),
   async createBooking(payload: BookingCreationPayload) {
+    console.log("Creating booking with payload:", payload);
     const idempotencyKey = crypto.randomUUID();
 
     return axiosClient.post<Booking, Booking, BookingCreationPayload>(

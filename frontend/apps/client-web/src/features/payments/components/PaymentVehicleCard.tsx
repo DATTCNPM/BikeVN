@@ -4,6 +4,7 @@ import type { Vehicle } from "@repo/types";
 import { useBranches } from "@repo/hooks";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { filterImagePrimary } from "@repo/utils";
+import imageMock from "@/assets/images/motorbike1.png";
 
 export default function PaymentVehicleCard({
   vehicle,
@@ -27,10 +28,7 @@ export default function PaymentVehicleCard({
     <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm">
       <div className="grid lg:grid-cols-[280px_1fr]">
         <img
-          src={
-            filterImagePrimary(vehicle?.images || []) ||
-            "/placeholder-vehicle.png"
-          }
+          src={filterImagePrimary(vehicle?.images || []) || imageMock}
           alt={vehicle?.name}
           className="h-full min-h-[240px] w-full object-cover"
         />

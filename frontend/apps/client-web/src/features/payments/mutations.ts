@@ -8,6 +8,14 @@ export function useCreatePayment() {
   });
 }
 
+export function useConfirmPayment() {
+  return useMutation({
+    mutationFn: async ({ id, transactionCode }: { id: string; transactionCode: string }) => {
+      return paymentClientApi.confirmPayment(id, transactionCode);
+    },
+  });
+}
+
 export function useCancelPayment(id: string) {
   return useMutation({
     mutationFn: () => paymentClientApi.cancelPayment(id),

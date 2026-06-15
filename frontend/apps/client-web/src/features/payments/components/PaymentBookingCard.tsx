@@ -4,6 +4,8 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import type { Booking } from "@repo/types";
 import { useBranches } from "@repo/hooks";
 
+import { formatDateTime } from "@repo/utils";
+
 type Props = {
   booking: Booking | null;
 };
@@ -43,9 +45,13 @@ export default function PaymentBookingCard({ booking }: Props) {
           </div>
 
           <div className="mt-4 space-y-2">
-            <p className="font-semibold">Start: {booking?.startTime}</p>
+            <p className="font-semibold">
+              Start: {formatDateTime(booking?.startTime || "")}
+            </p>
 
-            <p className="font-semibold">End: {booking?.endTime}</p>
+            <p className="font-semibold">
+              End: {formatDateTime(booking?.endTime || "")}
+            </p>
 
             <p className="text-muted-foreground">
               Total Days:{" "}

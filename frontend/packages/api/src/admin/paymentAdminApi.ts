@@ -14,13 +14,6 @@ export const paymentAdminApi = {
       params,
     });
   },
-  async confirmPayment(id: string, transactionCode: string): Promise<void> {
-    await axiosAdmin.post(`/payments/${id}/confirm`, null, {
-      params: {
-        transactionCode,
-      },
-    });
-  },
   async approvePaymentManually(
     id: string,
     adminId: string,

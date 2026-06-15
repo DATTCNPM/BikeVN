@@ -41,7 +41,6 @@ export const bookingSchema = bookingCreationSchema.extend({
 
 // Tạo kiểu TypeScript từ schema
 export const bookingFormSchema = z.object({
-  pickupBranchId: z.string().min(1),
   returnBranchId: z.string().min(1),
 
   dateRange: z

@@ -6,16 +6,8 @@ import {
   CardDescription,
   CardAction,
 } from "@repo/ui/components/ui/card";
-import { Badge } from "@repo/ui/components/ui/badge";
-import {
-  User,
-  Mail,
-  Phone,
-  CreditCard,
-  Shield,
-  Calendar,
-  Edit2,
-} from "lucide-react";
+
+import { User, Mail, Phone, CreditCard, Edit2 } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
 import UpdateProfile from "./UpdateProfile";
 import { useProfile } from "@/features/profile/useProfile";
@@ -51,31 +43,6 @@ export default function InfoSection() {
       icon: <CreditCard className="text-muted-foreground" />,
       label: "Số CCCD",
       value: user?.cccdNumber || "Chưa cập nhật",
-    },
-    {
-      icon: <Shield className="text-muted-foreground" />,
-      label: "Vai trò hệ thống",
-      value: (
-        <Badge
-          variant={
-            user?.role === "admin"
-              ? "default"
-              : user?.role === "employee"
-                ? "secondary"
-                : "outline"
-          }
-          className="capitalize"
-        >
-          {user?.role || "Chưa cập nhật"}
-        </Badge>
-      ),
-    },
-    {
-      icon: <Calendar className="text-muted-foreground" />,
-      label: "Ngày tham gia",
-      value: user?.createdAt
-        ? new Date(user.createdAt).toLocaleDateString("vi-VN")
-        : "Chưa cập nhật",
     },
   ];
 

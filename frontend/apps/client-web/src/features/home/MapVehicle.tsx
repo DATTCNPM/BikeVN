@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import CardProduct from "@/components/common/CardProduct";
 import Map from "@/components/map/Map";
 
 import type { Branch } from "@repo/types";
+import { useGeolocation } from "@repo/hooks";
+import { findNearestBranch } from "@repo/utils";
 
 interface VehicleCardData {
   id: string;
@@ -25,11 +27,39 @@ export default function MapVehicle({ vehicles, branches }: MapVehicleProps) {
     undefined,
   );
 
+  const { getCurrentLocation } = useGeolocation();
+
   const selectedBranchData = branches.find((b) => b.id === selectedBranch);
 
   const filteredVehicles = selectedBranch
     ? vehicles.filter((v) => v.location === selectedBranchData?.name)
-    : [];
+    : vehicles;
+
+  useEffect(() => {
+    console.log("branches", branches);
+
+    getCurrentLocation()
+      .then((position) => {
+        console.log("position", position);
+
+        const nearest = findNearestBranch(
+          position.coords.latitude,
+          position.coords.longitude,
+          branches,
+        );
+
+        console.log("nearest", nearest);
+
+        if (nearest) {
+          setSelectedBranch(nearest.branch.id);
+        }
+      })
+      .catch((error) => {
+        console.error("location error", error);
+      });
+  }, [branches, getCurrentLocation]);
+
+  console.log(branches);
 
   return (
     <div className="w-full grid grid-cols-12 h-[500px]">
@@ -82,7 +112,9 @@ export default function MapVehicle({ vehicles, branches }: MapVehicleProps) {
         <Map
           locations={branches}
           selectedBranchId={selectedBranch}
-          onSelectBranch={(branch) => setSelectedBranch(branch.id)}
+          onSelectBranch={(branch) => {
+            setSelectedBranch(branch.id);
+          }}
         />
       </div>
     </div>

@@ -67,7 +67,7 @@ export default function HomePage() {
   }, [vehicleData, branches]);
 
   const pagination = {
-    page: vehicles?.page ?? 1,
+    page: vehicles?.pageCurrent ?? 1,
     pageSize: vehicles?.pageSize ?? pageSize,
     totalElements: vehicles?.totalElements ?? 0,
     totalPages: vehicles?.totalPages ?? 1,

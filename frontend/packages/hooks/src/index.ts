@@ -7,3 +7,4 @@ export * from "./use-mobile";
 export * from "./queries/queriesVehicleBrand";
 export * from "./queries/queriesVehicleModel";
 export * from "./queries/queriesVehicleImage";
+export * from "./useGeolocation";

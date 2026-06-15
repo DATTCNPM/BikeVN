@@ -71,8 +71,6 @@ export default function BookingCard({ vehicle, branches }: Props) {
     resolver: zodResolver(bookingFormSchema),
 
     defaultValues: {
-      pickupBranchId: "",
-
       returnBranchId: "",
 
       dateRange: {
@@ -95,6 +93,12 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
   const totalPrice = totalDays * (vehicle.pricePerDay ?? 0);
 
+  const branchOptions = branches.map((branch) => ({
+    label: branch.name,
+
+    value: branch.id,
+  }));
+
   useEffect(() => {
     const pendingBooking = localStorage.getItem("pending-booking");
 
@@ -104,7 +108,14 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
     if (booking.vehicleId !== vehicle.id) return;
 
-    form.reset(booking.formData);
+    form.reset({
+      returnBranchId: booking.formData.returnBranchId,
+      dateRange: {
+        from: new Date(booking.formData.dateRange.from),
+        to: new Date(booking.formData.dateRange.to),
+      },
+    });
+    localStorage.removeItem("pending-booking");
   }, [vehicle.id]);
 
   const onSubmit = (values: BookingFormValues) => {
@@ -121,33 +132,21 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
       return;
     }
-    createBooking(
-      {
-        userId: profile?.id || "", // TODO: lấy từ auth
-
-        vehicleId: vehicle.id,
-
-        pickupBranchId: values.pickupBranchId,
-
-        returnBranchId: values.returnBranchId,
-
-        startTime: format(values.dateRange.from, "yyyy-MM-dd'T'HH:mm:ss"),
-
-        endTime: format(values.dateRange.to, "yyyy-MM-dd'T'HH:mm:ss"),
+    console.log("Form values on submit:", values);
+    const payload = {
+      userId: profile?.id || "", // TODO: lấy từ auth
+      vehicleId: vehicle.id,
+      pickupBranchId: vehicle.currentBranchId,
+      returnBranchId: values.returnBranchId,
+      startTime: format(values.dateRange.from, "yyyy-MM-dd'T'HH:mm:ss"),
+      endTime: format(values.dateRange.to, "yyyy-MM-dd'T'HH:mm:ss"),
+    };
+    createBooking(payload, {
+      onSuccess: (booking) => {
+        navigate(`/payment/${booking.id}`);
       },
-      {
-        onSuccess: (booking) => {
-          navigate(`/payment/${booking.id}`);
-        },
-      },
-    );
+    });
   };
-
-  const branchOptions = branches.map((branch) => ({
-    label: branch.name,
-
-    value: branch.id,
-  }));
 
   return (
     <Card className="sticky top-24 w-full rounded-3xl">
@@ -232,37 +231,17 @@ export default function BookingCard({ vehicle, branches }: Props) {
             </div>
           </div>
 
-          <Controller
-            control={form.control}
-            name="pickupBranchId"
-            render={({ field, fieldState }) => (
-              <Field>
-                <FieldGroup>
-                  <FieldLabel>Nơi nhận xe</FieldLabel>
-
-                  <FieldContent>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-12 rounded-2xl">
-                        <SelectValue placeholder="Chọn nơi nhận xe" />
-                      </SelectTrigger>
-
-                      <SelectContent>
-                        {branchOptions.map((branch) => (
-                          <SelectItem key={branch.value} value={branch.value}>
-                            {branch.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FieldContent>
-
-                  {fieldState.error && (
-                    <FieldError>{fieldState.error.message}</FieldError>
-                  )}
-                </FieldGroup>
-              </Field>
-            )}
-          />
+          <Field className="pt-0">
+            <FieldGroup>
+              <FieldLabel>Nơi nhận xe</FieldLabel>
+              <FieldContent>
+                <p>
+                  {branches.find((b) => b.id === vehicle.currentBranchId)
+                    ?.name || "--"}
+                </p>
+              </FieldContent>
+            </FieldGroup>
+          </Field>
 
           <Controller
             control={form.control}

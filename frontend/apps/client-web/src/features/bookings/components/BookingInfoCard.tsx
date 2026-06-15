@@ -3,6 +3,8 @@
 import { Card } from "@repo/ui/components/ui/card";
 import type { Booking } from "@repo/types";
 
+import { formatDateTime } from "@repo/utils";
+
 type Props = {
   booking: Booking | null;
 };
@@ -25,7 +27,10 @@ export default function BookingInfoCard({ booking }: Props) {
 
         <InfoItem label="Status" value={booking?.status || "N/A"} />
 
-        <InfoItem label="Created At" value={booking?.createdAt || "N/A"} />
+        <InfoItem
+          label="Created At"
+          value={formatDateTime(booking?.createdAt || "")}
+        />
 
         <InfoItem
           label="Total Price"

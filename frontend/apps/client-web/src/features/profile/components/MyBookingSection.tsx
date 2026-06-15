@@ -8,6 +8,10 @@ import {
   Bike,
 } from "lucide-react";
 
+import imageMock from "@/assets/images/motorbike1.png";
+
+import { formatDateTime } from "@repo/utils";
+
 import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
 import type { Booking } from "@repo/types";
@@ -64,6 +68,7 @@ export default function MyBookingSection() {
       </div>
     );
   }
+
   const vehicleData = vehicles?.data || [];
 
   const bookingData = bookings?.map((b) => {
@@ -71,9 +76,7 @@ export default function MyBookingSection() {
     return {
       ...b,
       vehicleName: vehicle ? vehicle.name : "Unknown Vehicle",
-      vehicleImage: "",
-      // ? vehicle.image_url[0]
-      // : "https://via.placeholder.com/300x200?text=No+Image",
+      vehicleImage: vehicle?.images?.[0] ? vehicle.images[0] : imageMock,
     };
   });
 
@@ -138,7 +141,8 @@ export default function MyBookingSection() {
                         <CalendarDays className="size-5 text-primary" />
 
                         <p className="font-medium">
-                          {booking.startTime} → {booking.endTime}
+                          {formatDateTime(booking.startTime)} →{" "}
+                          {formatDateTime(booking.endTime)}
                         </p>
                       </div>
                     </div>

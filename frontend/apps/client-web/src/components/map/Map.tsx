@@ -1,16 +1,24 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+
 import type { Branch } from "@repo/types";
+
 import FlyToLocation from "./FlyToLocation";
+
 type MapProps = {
   locations: Branch[];
   selectedBranchId?: string;
   onSelectBranch?: (branch: Branch) => void;
 };
+
 export default function Map({
   locations,
   selectedBranchId,
   onSelectBranch,
 }: MapProps) {
+  const selectedBranch = locations.find(
+    (branch) => branch.id === selectedBranchId,
+  );
+
   return (
     <MapContainer
       center={[10.045, 105.746]}
@@ -22,26 +30,20 @@ export default function Map({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {locations.map((item) => (
+      {locations.map((branch) => (
         <Marker
-          key={item.id}
-          position={[item.lat, item.lng]}
+          key={branch.id}
+          position={[branch.lat, branch.lng]}
           eventHandlers={{
-            click: () => {
-              if (onSelectBranch) {
-                onSelectBranch(item);
-              }
-            },
+            click: () => onSelectBranch?.(branch),
           }}
         >
-          <Popup>{item.name}</Popup>
+          <Popup>{branch.name}</Popup>
         </Marker>
       ))}
-      {selectedBranchId && (
-        <FlyToLocation
-          lat={locations.find((l) => l.id === selectedBranchId)?.lat || 0}
-          lng={locations.find((l) => l.id === selectedBranchId)?.lng || 0}
-        />
+
+      {selectedBranch && (
+        <FlyToLocation lat={selectedBranch.lat} lng={selectedBranch.lng} />
       )}
     </MapContainer>
   );

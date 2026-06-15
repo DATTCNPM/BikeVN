@@ -15,4 +15,12 @@ export const createPaymentCommonApi = (axiosInstance: AxiosInstance) => ({
       },
     });
   },
+
+  async confirmPayment(id: string, transactionCode: string): Promise<void> {
+    await axiosInstance.post(`/payments/${id}/confirm`, null, {
+      params: {
+        transactionCode,
+      },
+    });
+  },
 });
