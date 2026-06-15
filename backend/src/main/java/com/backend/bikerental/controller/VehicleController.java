@@ -7,6 +7,7 @@ import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleImageResponse;
 import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.enums.StatusVehicleEnum;
+import com.backend.bikerental.enums.VehicleType;
 import com.backend.bikerental.service.VehicleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -111,6 +113,24 @@ public class VehicleController {
         vehicleService.deleteVehicleImage(vehicleId, imageId);
         return ApiResponse.<Void>builder()
                 .message("Vehicle image deleted")
+                .build();
+    }
+
+    @GetMapping("/filter")
+    public ApiResponse<PageResponse<VehicleResponse>> filterVehicles
+            (@RequestParam(required = false) String brandId,
+             @RequestParam(required = false) String modelId,
+             @RequestParam(required = false) StatusVehicleEnum status,
+             @RequestParam(required = false) VehicleType vehicleType,
+             @RequestParam(required = false) String currentBranchId,
+             @RequestParam(required = false) BigDecimal minPrice,
+             @RequestParam(required = false) BigDecimal maxPrice,
+             @RequestParam(defaultValue = "1") int page,
+             @RequestParam(defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<VehicleResponse>>builder()
+                .result(vehicleService.filterVehicle(brandId, modelId, status, vehicleType,
+                        currentBranchId, minPrice, maxPrice, page, size))
                 .build();
     }
 

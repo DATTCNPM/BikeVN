@@ -8,11 +8,14 @@ import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.entity.VehicleImage;
 import com.backend.bikerental.enums.StatusVehicleEnum;
+import com.backend.bikerental.enums.VehicleConditionStatus;
+import com.backend.bikerental.enums.VehicleType;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.VehicleImageMapper;
 import com.backend.bikerental.mapper.VehicleMapper;
 import com.backend.bikerental.repository.*;
+import com.backend.bikerental.specification.VehicleSpecification;
 import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +23,13 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -235,5 +240,35 @@ public class VehicleService {
 
         fileStorageService.delete(image.getImageUrl());
         vehicleImageRepository.delete(image);
+    }
+
+    //FILTER
+    @Transactional(readOnly = true)
+    public PageResponse<VehicleResponse> filterVehicle(String brandId, String modelId,
+                                                       StatusVehicleEnum status,
+                                                       VehicleType vehicleType, String currentBranchId,
+                                                       BigDecimal minPrice, BigDecimal maxPrice,
+                                                       int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<Vehicle> specification = VehicleSpecification.filterVehicles(
+                brandId, modelId, status, vehicleType, currentBranchId, minPrice, maxPrice
+        );
+
+        Page<Vehicle> pageData = vehicleRepository.findAll(specification, pageable);
+
+        var vehicleResponses = pageData.getContent().stream()
+                .map(vehicleMapper::toVehicleResponse)
+                .toList();
+
+        return PageResponse.<VehicleResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(vehicleResponses)
+                .build();
+
     }
 }
