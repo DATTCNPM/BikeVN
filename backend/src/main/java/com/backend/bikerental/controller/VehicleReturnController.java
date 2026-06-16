@@ -4,11 +4,16 @@ import com.backend.bikerental.dto.request.VehicleReturnRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleReturnResponse;
+import com.backend.bikerental.enums.VehicleConditionStatus;
 import com.backend.bikerental.service.VehicleReturnService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
@@ -52,6 +57,24 @@ public class VehicleReturnController {
     ) {
         return ApiResponse.<PageResponse<VehicleReturnResponse>>builder()
                 .result(vehicleReturnService.getAllReturnsPerBranch(page, size))
+                .build();
+    }
+
+    @GetMapping("/filter")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public ApiResponse<PageResponse<VehicleReturnResponse>> filterReturns(
+            @RequestParam(required = false) String bookingId,
+            @RequestParam(required = false) String returnBranchId,
+            @RequestParam(required = false) VehicleConditionStatus conditionStatus,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        return ApiResponse.<PageResponse<VehicleReturnResponse>>builder()
+                .result(vehicleReturnService.filterReturns(bookingId, returnBranchId,
+                        conditionStatus, fromDate, toDate, page, size))
                 .build();
     }
 }

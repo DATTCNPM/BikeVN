@@ -5,15 +5,14 @@ import com.backend.bikerental.dto.request.VehicleReturnRequest;
 import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
 import com.backend.bikerental.dto.response.VehicleReturnResponse;
-import com.backend.bikerental.entity.Booking;
-import com.backend.bikerental.entity.Branch;
-import com.backend.bikerental.entity.Vehicle;
-import com.backend.bikerental.entity.VehicleReturn;
+import com.backend.bikerental.entity.*;
 import com.backend.bikerental.enums.StatusVehicleEnum;
+import com.backend.bikerental.enums.VehicleConditionStatus;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.VehicleReturnMapper;
 import com.backend.bikerental.repository.*;
+import com.backend.bikerental.specification.VehicleReturnSpecification;
 import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -174,5 +175,43 @@ public class VehicleReturnService {
         VehicleReturn vehicleReturn = vehicleReturnRepository.findByBookingId(bookingId)
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
         return vehicleReturnMapper.toVehicleReturnResponse(vehicleReturn);
+    }
+
+    //FILTER
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public PageResponse<VehicleReturnResponse> filterReturns(
+            String bookingId, String returnBranchId, VehicleConditionStatus conditionStatus,
+            LocalDate fromDate, LocalDate toDate, int page, int size) {
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+
+        if (!isAdmin) {
+            if (auth instanceof JwtAuthenticationToken jwtToken) {
+                returnBranchId = (String) jwtToken.getTokenAttributes().get("branchId");
+            }
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<VehicleReturn> spec = VehicleReturnSpecification.filterVehicleReturn(
+                bookingId, returnBranchId, conditionStatus, fromDate, toDate
+        );
+
+        Page<VehicleReturn> pageData = vehicleReturnRepository.findAll(spec, pageable);
+
+        var returnResponses = pageData.getContent().stream()
+                .map(vehicleReturnMapper::toVehicleReturnResponse)
+                .toList();
+
+        return PageResponse.<VehicleReturnResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(returnResponses)
+                .build();
     }
 }
