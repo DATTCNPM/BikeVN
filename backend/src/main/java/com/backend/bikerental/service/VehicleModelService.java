@@ -10,12 +10,14 @@ import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.VehicleModelMapper;
 import com.backend.bikerental.repository.VehicleBrandRepository;
 import com.backend.bikerental.repository.VehicleModelRepository;
+import com.backend.bikerental.specification.VehicleModelSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,5 +115,37 @@ public class VehicleModelService {
             throw new AppException(ErrorCode.MODEL_NOT_EXISTED);
         }
         vehicleModelRepository.deleteById(id);
+    }
+
+    //FILTER
+    @Transactional(readOnly = true)
+    public PageResponse<VehicleModelResponse> filterVehicleModels(
+            Integer brandId,
+            String name,
+            Integer minEngineCapacity,
+            Integer maxEngineCapacity,
+            Integer productionYear,
+            int page, int size
+    )
+    {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<VehicleModel> specification = VehicleModelSpecification.filterVehicleModels(
+                brandId, name, minEngineCapacity, maxEngineCapacity, productionYear
+        );
+
+        Page<VehicleModel> pageData = vehicleModelRepository.findAll(specification, pageable);
+
+        var vehicleResponses = pageData.getContent().stream()
+                .map(vehicleModelMapper::toVehicleModelResponse)
+                .toList();
+
+        return PageResponse.<VehicleModelResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(vehicleResponses)
+                .build();
     }
 }

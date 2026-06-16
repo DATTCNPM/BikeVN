@@ -69,4 +69,22 @@ public class VehicleModelController {
                 .message("Model deleted")
                 .build();
     }
+
+    @GetMapping("/filter")
+    public ApiResponse<PageResponse<VehicleModelResponse>> filterVehicleModels
+            (@RequestParam(required = false) Integer brandId,
+             @RequestParam(required = false) String name,
+             @RequestParam(required = false) Integer minEngineCapacity,
+             @RequestParam(required = false) Integer maxEngineCapacity,
+             @RequestParam(required = false) Integer productionYear,
+             @RequestParam(defaultValue = "1") int page,
+             @RequestParam(defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<VehicleModelResponse>>builder()
+                .result(vehicleModelService.filterVehicleModels(
+                        brandId, name, minEngineCapacity, maxEngineCapacity, productionYear,
+                        page, size
+                ))
+                .build();
+    }
 }
