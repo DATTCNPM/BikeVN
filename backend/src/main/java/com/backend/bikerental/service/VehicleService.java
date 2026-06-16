@@ -244,7 +244,7 @@ public class VehicleService {
 
     //FILTER
     @Transactional(readOnly = true)
-    public PageResponse<VehicleResponse> filterVehicle(String brandId, String modelId,
+    public PageResponse<VehicleResponse> filterVehicles(Integer brandId, Integer modelId,
                                                        StatusVehicleEnum status,
                                                        VehicleType vehicleType, String currentBranchId,
                                                        BigDecimal minPrice, BigDecimal maxPrice,

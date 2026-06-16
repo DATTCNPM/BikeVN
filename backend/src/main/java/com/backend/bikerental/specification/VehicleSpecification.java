@@ -13,8 +13,8 @@ import java.util.List;
 
 public class VehicleSpecification {
     public static Specification<Vehicle> filterVehicles(
-            String brandId,
-            String modelId,
+            Integer brandId,
+            Integer modelId,
             StatusVehicleEnum status,
             VehicleType vehicleType,
             String currentBranchId,
@@ -25,11 +25,11 @@ public class VehicleSpecification {
         return((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (brandId != null && !brandId.isBlank()) {
+            if (brandId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("brand").get("id"), brandId));
             }
 
-            if (modelId != null && !modelId.isBlank())
+            if (modelId != null)
             {
                 predicates.add(criteriaBuilder.equal(root.get("model").get("id"), modelId));
             }

@@ -118,8 +118,8 @@ public class VehicleController {
 
     @GetMapping("/filter")
     public ApiResponse<PageResponse<VehicleResponse>> filterVehicles
-            (@RequestParam(required = false) String brandId,
-             @RequestParam(required = false) String modelId,
+            (@RequestParam(required = false) Integer brandId,
+             @RequestParam(required = false) Integer modelId,
              @RequestParam(required = false) StatusVehicleEnum status,
              @RequestParam(required = false) VehicleType vehicleType,
              @RequestParam(required = false) String currentBranchId,
