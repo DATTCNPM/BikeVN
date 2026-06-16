@@ -129,7 +129,7 @@ public class VehicleController {
              @RequestParam(defaultValue = "10") int size)
     {
         return ApiResponse.<PageResponse<VehicleResponse>>builder()
-                .result(vehicleService.filterVehicle(brandId, modelId, status, vehicleType,
+                .result(vehicleService.filterVehicles(brandId, modelId, status, vehicleType,
                         currentBranchId, minPrice, maxPrice, page, size))
                 .build();
     }
