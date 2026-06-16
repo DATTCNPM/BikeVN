@@ -4,7 +4,6 @@ import com.backend.bikerental.entity.VehicleReturn;
 import com.backend.bikerental.enums.VehicleConditionStatus;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VehicleReturnSpecification {
-    public static Specification<VehicleReturn> filterVehicleReturn(
+    public static Specification<VehicleReturn> filterVehicleReturns(
             String bookingId,
             String returnBranchId,
             VehicleConditionStatus conditionStatus,

@@ -196,7 +196,7 @@ public class VehicleReturnService {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Specification<VehicleReturn> spec = VehicleReturnSpecification.filterVehicleReturn(
+        Specification<VehicleReturn> spec = VehicleReturnSpecification.filterVehicleReturns(
                 bookingId, returnBranchId, conditionStatus, fromDate, toDate
         );
 
