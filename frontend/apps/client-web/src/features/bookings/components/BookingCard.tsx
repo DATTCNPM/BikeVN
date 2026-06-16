@@ -149,7 +149,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
   };
 
   return (
-    <Card className="sticky top-24 w-full rounded-3xl">
+    <Card className=" w-full rounded-3xl">
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>

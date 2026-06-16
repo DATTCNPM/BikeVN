@@ -7,20 +7,33 @@ import {
   ComboboxList,
 } from "@repo/ui/components/ui/combobox";
 
-type ComboboxBasicProps = {
-  title: string;
-  content: string[];
+type Option = {
+  label: string;
+  value: string;
 };
-export default function Filter({ title, content }: ComboboxBasicProps) {
+
+type FilterProps = {
+  title: string;
+  options: Option[];
+  value?: string;
+  onChange: (value: string) => void;
+};
+export default function Filter({
+  title,
+  options,
+  value,
+  onChange,
+}: FilterProps) {
   return (
-    <Combobox items={content}>
+    <Combobox items={options} value={value} onValueChange={onChange}>
       <ComboboxInput placeholder={title} />
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
+
         <ComboboxList>
           {(item) => (
-            <ComboboxItem key={item} value={item}>
-              {item}
+            <ComboboxItem key={item.value} value={item.value}>
+              {item.label}
             </ComboboxItem>
           )}
         </ComboboxList>

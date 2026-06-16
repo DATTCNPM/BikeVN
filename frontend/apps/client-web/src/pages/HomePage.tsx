@@ -19,9 +19,10 @@ import {
 
 import { List, MapPin } from "lucide-react";
 
-import { useVehicles, useBranches } from "@repo/hooks";
+import { useVehicles, useBranches, useVehicleFilters } from "@repo/hooks";
 import { filterImagePrimary } from "@repo/utils";
 import type { VehicleType } from "@repo/types";
+import { vehicleTypeSchema } from "@repo/schemas";
 export default function HomePage() {
   const [search, setSearch] = useState("");
 
@@ -33,11 +34,21 @@ export default function HomePage() {
 
   const [maxPrice, setMaxPrice] = useState<number | undefined>();
 
+  const [priceRange, setPriceRange] = useState<string>();
+
   const [page, setPage] = useState(1);
 
-  const pageSize = 12;
+  const pageSize = 10
 
-  const { data: vehicles, isLoading } = useVehicles({
+  const { data: vehicles, isLoading } = useVehicles(page, pageSize);
+
+  const hasFilter =
+    search ||
+    branchId ||
+    vehicleType ||
+    minPrice !== undefined ||
+    maxPrice !== undefined;
+  const filters = {
     search,
     branchId,
     vehicleType,
@@ -45,11 +56,18 @@ export default function HomePage() {
     maxPrice,
     page,
     pageSize,
+  };
+
+  const { data: filteredVehicles } = useVehicleFilters(filters, {
+    enabled: hasFilter,
   });
 
   const { data: branches = [], isLoading: branchLoading } = useBranches();
 
-  const vehicleData = vehicles?.data || [];
+  const vehicleData = hasFilter
+    ? (filteredVehicles?.data ?? [])
+    : (vehicles?.data ?? []);
+
   const vehicleListData = useMemo(() => {
     return vehicleData
       ? vehicleData.map((vehicle) => ({
@@ -90,12 +108,43 @@ export default function HomePage() {
     );
   }
 
-  const locations = branches.map((b) => b.name);
+  const locationOptions = branches.map((branch) => ({
+    label: branch.name,
+    value: branch.id,
+  }));
 
-  const vehicleTypes = ["Xe số", "Xe ga", "Xe côn"];
+  const priceRanges = [
+    {
+      label: "Dưới 100k",
+      value: "under-100",
+      min: 0,
+      max: 100000,
+    },
+    {
+      label: "100k - 200k",
+      value: "100-200",
+      min: 100000,
+      max: 200000,
+    },
+    {
+      label: "Trên 200k",
+      value: "over-200",
+      min: 200000,
+      max: undefined,
+    },
+  ];
 
-  const priceRanges = ["Dưới 100k", "100k - 200k", "Trên 200k"];
-  console.log("vehicles", vehicles);
+  const vehicleTypes = [
+    {
+      label: "Điện",
+      value: vehicleTypeSchema.enum.electric,
+    },
+    {
+      label: "Xăng",
+      value: vehicleTypeSchema.enum.fuel,
+    },
+  ];
+
   return (
     <div>
       <Tabs defaultValue="list" className="w-full space-y-4">
@@ -109,11 +158,48 @@ export default function HomePage() {
             results={pagination.totalElements}
           />
 
-          <Filter title="Filter by location" content={locations} />
+          <Filter
+            title="Filter by location"
+            options={locationOptions}
+            value={branchId}
+            onChange={(value) => {
+              const branch = branches.find((b) => b.id === value);
 
-          <Filter title="Filter by vehicle type" content={vehicleTypes} />
+              setBranchId(branch?.id);
+              setPage(1);
+            }}
+          />
 
-          <Filter title="Filter by price range" content={priceRanges} />
+          <Filter
+            title="Filter by vehicle type"
+            options={vehicleTypes}
+            value={vehicleType}
+            onChange={(value) => {
+              setVehicleType(value as VehicleType);
+              setPage(1);
+            }}
+          />
+
+          <Filter
+  title="Filter by price range"
+  options={priceRanges.map((p) => ({
+    label: p.label,
+    value: p.value,
+  }))}
+  value={priceRange}
+  onChange={(value) => {
+    setPriceRange(value);
+
+    const selected = priceRanges.find(
+      (range) => range.value === value,
+    );
+
+    setMinPrice(selected?.min);
+    setMaxPrice(selected?.max);
+
+    setPage(1);
+  }}
+/>
 
           <Button variant="outline" onClick={resetFilter}>
             Làm mới
@@ -130,10 +216,6 @@ export default function HomePage() {
               Map
             </TabsTrigger>
           </TabsList>
-
-          <p className="text-sm text-muted-foreground">
-            Hiển thị {pagination.totalElements} xe
-          </p>
         </div>
 
         <Separator />

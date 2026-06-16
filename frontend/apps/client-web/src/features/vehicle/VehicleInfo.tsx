@@ -66,7 +66,7 @@ export default function VehicleInfo({
   console.log("Vehicle Data:", vehicleData);
 
   return (
-    <>
+    <div className="h-full overflow-y-auto">
       <VehicleGallery images={vehicleData.images || []} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -229,6 +229,6 @@ export default function VehicleInfo({
       <div className="mt-8">
         <ReviewSection vehicleId={vehicleData.id || "1"} />
       </div>
-    </>
+    </div>
   );
 }

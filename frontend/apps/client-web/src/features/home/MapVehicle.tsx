@@ -108,7 +108,7 @@ export default function MapVehicle({ vehicles, branches }: MapVehicleProps) {
         </div>
       </div>
 
-      <div className="col-span-8 bg-muted">
+      <div className="col-span-8 bg-muted sticky top-0">
         <Map
           locations={branches}
           selectedBranchId={selectedBranch}

@@ -6,12 +6,15 @@ import type {
 } from "@repo/types";
 
 export const vehiclePublicApi = {
-  async getVehicles(params?: VehicleQueryParams) {
+  async getVehicles(page: number, pageSize: number) {
     const data = await axiosPublic.get<
       PaginationResponse<Vehicle>,
       PaginationResponse<Vehicle>
     >("/vehicles", {
-      params,
+      params: {
+        page,
+        pageSize,
+      },
     });
 
     return data;
@@ -19,6 +22,17 @@ export const vehiclePublicApi = {
 
   async getVehicleById(id: string) {
     const data = await axiosPublic.get<Vehicle, Vehicle>(`/vehicles/${id}`);
+    return data;
+  },
+
+  async getVehicleFilters(params?: VehicleQueryParams) {
+    const data = await axiosPublic.get<
+      PaginationResponse<Vehicle>,
+      PaginationResponse<Vehicle>
+    >("/vehicles/filters", {
+      params,
+    });
+
     return data;
   },
 };
