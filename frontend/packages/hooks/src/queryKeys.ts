@@ -15,6 +15,9 @@ export const bookingsKeys = {
 
   lists: () => [...bookingsKeys.all, "list"] as const,
 
+  list: (page: number, size: number) =>
+    [...bookingsKeys.lists(), { page, size }] as const,
+
   byUser: (userId: string) =>
     [...bookingsKeys.lists(), "user", userId] as const,
 
@@ -47,7 +50,8 @@ export const vehicleBrandKeys = {
 
   lists: () => [...vehicleBrandKeys.all, "list"] as const,
 
-  list: () => [...vehicleBrandKeys.lists()] as const,
+  list: (page: number, size: number) =>
+    [...vehicleBrandKeys.lists(), { page, size }] as const,
 
   details: () => [...vehicleBrandKeys.all, "detail"] as const,
 
@@ -57,7 +61,8 @@ export const vehicleBrandKeys = {
 export const vehicleModelKeys = {
   all: ["vehicle-models"] as const,
   lists: () => [...vehicleModelKeys.all, "list"] as const,
-  list: () => [...vehicleModelKeys.lists()] as const,
+  list: (page: number, size: number) =>
+    [...vehicleModelKeys.lists(), { page, size }] as const,
   details: () => [...vehicleModelKeys.all, "detail"] as const,
   detail: (id: number) => [...vehicleModelKeys.details(), id] as const,
 };

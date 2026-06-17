@@ -8,11 +8,11 @@ import { createBookingCommonApi } from "../common/createBookingCommonApi";
 
 export const bookingAdminApi = {
   ...createBookingCommonApi(axiosAdmin),
-  async getAllBooking() {
+  async getAllBooking(page: number, size: number) {
     const data = await axiosAdmin.get<
       PaginationResponse<Booking>,
       PaginationResponse<Booking>
-    >("/bookings");
+    >(`/bookings?page=${page}&size=${size}`);
     return data;
   },
   async approveBooking(id: string) {

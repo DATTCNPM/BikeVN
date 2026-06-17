@@ -6,14 +6,14 @@ import type {
 } from "@repo/types";
 
 export const vehiclePublicApi = {
-  async getVehicles(page: number, pageSize: number) {
+  async getVehicles(page: number, size: number) {
     const data = await axiosPublic.get<
       PaginationResponse<Vehicle>,
       PaginationResponse<Vehicle>
     >("/vehicles", {
       params: {
         page,
-        pageSize,
+        size,
       },
     });
 
@@ -29,7 +29,7 @@ export const vehiclePublicApi = {
     const data = await axiosPublic.get<
       PaginationResponse<Vehicle>,
       PaginationResponse<Vehicle>
-    >("/vehicles/filters", {
+    >("/vehicles/filter", {
       params,
     });
 

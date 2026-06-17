@@ -54,7 +54,7 @@ export const vehicleSchema = vehicleCreationSchema.extend({
 export const vehicleQuerySchema = z.object({
   search: z.string().optional(),
 
-  branchId: z.string().optional(),
+  currentBranchId: z.string().optional(),
 
   vehicleType: vehicleTypeSchema.optional(),
 

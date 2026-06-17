@@ -3,17 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { bookingAdminApi } from "@repo/api";
 import { bookingsKeys } from "@repo/hooks";
 
-export function useBookings() {
+export function useBookings(page: number, size: number) {
   return useQuery({
-    queryKey: bookingsKeys.all,
-    queryFn: () => bookingAdminApi.getAllBooking(),
+    queryKey: bookingsKeys.list(page, size),
+    queryFn: async () => bookingAdminApi.getAllBooking(page, size),
   });
 }
 
 export function useBooking(id: string) {
   return useQuery({
     queryKey: bookingsKeys.detail(id),
-    queryFn: () => bookingAdminApi.getBooking(id),
+    queryFn: async () => bookingAdminApi.getBooking(id),
     enabled: !!id,
   });
 }

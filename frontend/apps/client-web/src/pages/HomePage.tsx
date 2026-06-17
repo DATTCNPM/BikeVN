@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import SearchComponent from "@/components/common/Search";
-import Filter from "@/components/common/Filter";
+import Filter from "@repo/ui/components/wrapper/Filter";
 
 import ListVehicle from "../features/home/ListVehicle";
 import MapVehicle from "../features/home/MapVehicle";
@@ -20,130 +20,172 @@ import {
 import { List, MapPin } from "lucide-react";
 
 import { useVehicles, useBranches, useVehicleFilters } from "@repo/hooks";
+
 import { filterImagePrimary } from "@repo/utils";
-import type { VehicleType } from "@repo/types";
+
+import type { VehicleType, VehicleQueryParams } from "@repo/types";
+
 import { vehicleTypeSchema } from "@repo/schemas";
+
+import type { FilterOption } from "@repo/ui/components/wrapper/Filter";
+
 export default function HomePage() {
   const [search, setSearch] = useState("");
 
-  const [branchId, setBranchId] = useState<string | undefined>();
+  const [selectedBranch, setSelectedBranch] = useState<FilterOption>();
 
-  const [vehicleType, setVehicleType] = useState<VehicleType | undefined>();
+  const [selectedVehicleType, setSelectedVehicleType] =
+    useState<FilterOption<VehicleType>>();
 
-  const [minPrice, setMinPrice] = useState<number | undefined>();
+  const [minPrice, setMinPrice] = useState<number>();
 
-  const [maxPrice, setMaxPrice] = useState<number | undefined>();
+  const [maxPrice, setMaxPrice] = useState<number>();
 
-  const [priceRange, setPriceRange] = useState<string>();
+  const [selectedPriceRange, setSelectedPriceRange] = useState<FilterOption>();
 
   const [page, setPage] = useState(1);
 
-  const pageSize = 10
-
-  const { data: vehicles, isLoading } = useVehicles(page, pageSize);
-
-  const hasFilter =
-    search ||
-    branchId ||
-    vehicleType ||
-    minPrice !== undefined ||
-    maxPrice !== undefined;
-  const filters = {
-    search,
-    branchId,
-    vehicleType,
-    minPrice,
-    maxPrice,
-    page,
-    pageSize,
-  };
-
-  const { data: filteredVehicles } = useVehicleFilters(filters, {
-    enabled: hasFilter,
-  });
+  const pageSize = 10;
 
   const { data: branches = [], isLoading: branchLoading } = useBranches();
 
-  const vehicleData = hasFilter
-    ? (filteredVehicles?.data ?? [])
-    : (vehicles?.data ?? []);
+  const hasFilter = Boolean(
+    search.trim() ||
+    selectedBranch ||
+    selectedVehicleType ||
+    minPrice !== undefined ||
+    maxPrice !== undefined,
+  );
 
-  const vehicleListData = useMemo(() => {
-    return vehicleData
-      ? vehicleData.map((vehicle) => ({
-          id: vehicle.id,
-          name: vehicle.name,
-          vehicle_type: vehicle.vehicleType,
-          price: vehicle.pricePerDay,
-          image: filterImagePrimary(vehicle?.images || []),
-          location:
-            branches.find((branch) => branch.id === vehicle.currentBranchId)
-              ?.name || "Unknown",
-          status: vehicle.status,
-        }))
-      : [];
-  }, [vehicleData, branches]);
+  const filters = useMemo<VehicleQueryParams>(
+    () => ({
+      search: search.trim() || undefined,
+
+      currentBranchId: selectedBranch?.value,
+
+      vehicleType: selectedVehicleType?.value,
+
+      minPrice,
+
+      maxPrice,
+
+      page,
+
+      pageSize,
+    }),
+    [
+      search,
+      selectedBranch,
+      selectedVehicleType,
+      minPrice,
+      maxPrice,
+      page,
+      pageSize,
+    ],
+  );
+
+  const { data: vehicles, isLoading: vehicleLoading } = useVehicles(
+    page,
+    pageSize,
+  );
+
+  const { data: filteredVehicles } = useVehicleFilters(filters, hasFilter);
+
+  const currentData = hasFilter ? filteredVehicles : vehicles;
+
+  const vehicleData = currentData?.data ?? [];
 
   const pagination = {
-    page: vehicles?.pageCurrent ?? 1,
-    pageSize: vehicles?.pageSize ?? pageSize,
-    totalElements: vehicles?.totalElements ?? 0,
-    totalPages: vehicles?.totalPages ?? 1,
+    page: currentData?.currentPage ?? 1,
+    pageSize: currentData?.pageSize ?? pageSize,
+    totalElements: currentData?.totalElements ?? 0,
+    totalPages: currentData?.totalPages ?? 1,
   };
+
+  const vehicleListData = useMemo(() => {
+    return vehicleData.map((vehicle) => ({
+      id: vehicle.id,
+      name: vehicle.name,
+      vehicle_type: vehicle.vehicleType,
+      price: vehicle.pricePerDay,
+      image: filterImagePrimary(vehicle.images || []),
+      location:
+        branches.find((branch) => branch.id === vehicle.currentBranchId)
+          ?.name ?? "Unknown",
+      status: vehicle.status,
+    }));
+  }, [vehicleData, branches]);
+
+  const locationOptions = useMemo(
+    () =>
+      branches.map((branch) => ({
+        label: branch.name,
+        value: branch.id,
+      })),
+    [branches],
+  );
+
+  const vehicleTypes = useMemo(
+    () => [
+      {
+        label: "Điện",
+        value: vehicleTypeSchema.enum.electric,
+      },
+      {
+        label: "Xăng",
+        value: vehicleTypeSchema.enum.fuel,
+      },
+    ],
+    [],
+  );
+
+  const priceRanges = useMemo(
+    () => [
+      {
+        label: "Dưới 100k",
+        value: "under-100",
+        min: 0,
+        max: 100000,
+      },
+      {
+        label: "100k - 200k",
+        value: "100-200",
+        min: 100000,
+        max: 200000,
+      },
+      {
+        label: "Trên 200k",
+        value: "over-200",
+        min: 200000,
+        max: undefined,
+      },
+    ],
+    [],
+  );
 
   const resetFilter = () => {
     setSearch("");
-    setBranchId(undefined);
-    setVehicleType(undefined);
+
+    setSelectedBranch(undefined);
+
+    setSelectedVehicleType(undefined);
+
+    setSelectedPriceRange(undefined);
+
     setMinPrice(undefined);
+
     setMaxPrice(undefined);
+
     setPage(1);
   };
 
-  if (isLoading || branchLoading) {
+  if (vehicleLoading || branchLoading) {
     return (
       <div className="flex h-[300px] items-center justify-center">
         <Spinner />
       </div>
     );
   }
-
-  const locationOptions = branches.map((branch) => ({
-    label: branch.name,
-    value: branch.id,
-  }));
-
-  const priceRanges = [
-    {
-      label: "Dưới 100k",
-      value: "under-100",
-      min: 0,
-      max: 100000,
-    },
-    {
-      label: "100k - 200k",
-      value: "100-200",
-      min: 100000,
-      max: 200000,
-    },
-    {
-      label: "Trên 200k",
-      value: "over-200",
-      min: 200000,
-      max: undefined,
-    },
-  ];
-
-  const vehicleTypes = [
-    {
-      label: "Điện",
-      value: vehicleTypeSchema.enum.electric,
-    },
-    {
-      label: "Xăng",
-      value: vehicleTypeSchema.enum.fuel,
-    },
-  ];
 
   return (
     <div>
@@ -161,45 +203,43 @@ export default function HomePage() {
           <Filter
             title="Filter by location"
             options={locationOptions}
-            value={branchId}
+            value={selectedBranch}
             onChange={(value) => {
-              const branch = branches.find((b) => b.id === value);
-
-              setBranchId(branch?.id);
+              setSelectedBranch(value);
               setPage(1);
             }}
           />
 
-          <Filter
+          <Filter<VehicleType>
             title="Filter by vehicle type"
             options={vehicleTypes}
-            value={vehicleType}
+            value={selectedVehicleType}
             onChange={(value) => {
-              setVehicleType(value as VehicleType);
+              setSelectedVehicleType(value);
               setPage(1);
             }}
           />
 
           <Filter
-  title="Filter by price range"
-  options={priceRanges.map((p) => ({
-    label: p.label,
-    value: p.value,
-  }))}
-  value={priceRange}
-  onChange={(value) => {
-    setPriceRange(value);
+            title="Filter by price range"
+            options={priceRanges.map((price) => ({
+              label: price.label,
+              value: price.value,
+            }))}
+            value={selectedPriceRange}
+            onChange={(value) => {
+              setSelectedPriceRange(value);
 
-    const selected = priceRanges.find(
-      (range) => range.value === value,
-    );
+              const selected = priceRanges.find(
+                (price) => price.value === value?.value,
+              );
 
-    setMinPrice(selected?.min);
-    setMaxPrice(selected?.max);
+              setMinPrice(selected?.min);
+              setMaxPrice(selected?.max);
 
-    setPage(1);
-  }}
-/>
+              setPage(1);
+            }}
+          />
 
           <Button variant="outline" onClick={resetFilter}>
             Làm mới
@@ -207,12 +247,12 @@ export default function HomePage() {
 
           <TabsList>
             <TabsTrigger value="list">
-              <List className="w-4 h-4" />
+              <List className="h-4 w-4" />
               List
             </TabsTrigger>
 
             <TabsTrigger value="map">
-              <MapPin className="w-4 h-4" />
+              <MapPin className="h-4 w-4" />
               Map
             </TabsTrigger>
           </TabsList>

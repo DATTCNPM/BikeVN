@@ -15,7 +15,7 @@ export interface IntrospectResponse {
 
 export interface PaginationResponse<T> {
   data: T[];
-  pageCurrent: number;
+  currentPage: number;
   pageSize: number;
   totalPages: number;
   totalElements: number;

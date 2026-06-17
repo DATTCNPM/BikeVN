@@ -18,8 +18,6 @@ import { useVehicleBrands } from "@repo/hooks";
 import type { VehicleBrand } from "@repo/types";
 
 export default function BrandManagementPage() {
-  const { data: brands, isLoading } = useVehicleBrands();
-
   const [search, setSearch] = useState("");
 
   const [selectedBrand, setSelectedBrand] = useState<VehicleBrand | null>(null);
@@ -31,6 +29,8 @@ export default function BrandManagementPage() {
   const [openDelete, setOpenDelete] = useState(false);
 
   const [page, setPage] = useState(1);
+
+  const { data: brands, isLoading } = useVehicleBrands(page, 10);
 
   const columns = useMemo<ColumnDef<VehicleBrand>[]>(
     () => [
@@ -96,7 +96,7 @@ export default function BrandManagementPage() {
       <DataTable columns={columns} data={brands?.data || []} />
 
       <TablePagination
-        page={page}
+        page={brands?.currentPage || 1}
         totalPages={brands?.totalPages || 1}
         totalElements={brands?.totalElements || 0}
         pageSize={brands?.pageSize || 10}

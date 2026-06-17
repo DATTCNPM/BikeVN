@@ -9,11 +9,11 @@ import type {
   PaginationResponse,
 } from "@repo/types";
 
-export function useVehicles(page: number, pageSize: number) {
+export function useVehicles(page: number, size: number) {
   return useQuery<PaginationResponse<Vehicle>>({
-    queryKey: vehiclesKeys.list(page, pageSize),
+    queryKey: vehiclesKeys.list(page, size),
     queryFn: async () => {
-      const res = await vehiclePublicApi.getVehicles(page, pageSize);
+      const res = await vehiclePublicApi.getVehicles(page, size);
       return res;
     },
   });
@@ -30,12 +30,13 @@ export function useVehicle(id: string) {
   });
 }
 
-export function useVehicleFilters(params?: VehicleQueryParams) {
+export function useVehicleFilters(params?: VehicleQueryParams, enabled = true) {
   return useQuery<PaginationResponse<Vehicle>>({
     queryKey: vehiclesKeys.filter(params),
     queryFn: async () => {
       const res = await vehiclePublicApi.getVehicleFilters(params);
       return res;
     },
+    enabled: !!params && enabled,
   });
 }

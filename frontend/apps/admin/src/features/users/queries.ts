@@ -6,7 +6,7 @@ import { employeeKeys } from "./employeeKeys";
 
 export function useUsers(page: number = 1, size: number = 10) {
   return useQuery<PaginationResponse<User>>({
-    queryKey: usersKeys.all,
+    queryKey: usersKeys.list(page, size),
     queryFn: async () => {
       const response = await userApi.getUsers({ page, size });
       return response;
@@ -16,7 +16,7 @@ export function useUsers(page: number = 1, size: number = 10) {
 
 export function useEmployees(page: number = 1, size: number = 10) {
   return useQuery<PaginationResponse<Employee>>({
-    queryKey: employeeKeys.all,
+    queryKey: employeeKeys.list(page, size),
     queryFn: async () => {
       const response = await userApi.getEmployees({ page, size });
       return response;
