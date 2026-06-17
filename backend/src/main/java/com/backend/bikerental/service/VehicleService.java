@@ -8,7 +8,6 @@ import com.backend.bikerental.dto.response.VehicleResponse;
 import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.entity.VehicleImage;
 import com.backend.bikerental.enums.StatusVehicleEnum;
-import com.backend.bikerental.enums.VehicleConditionStatus;
 import com.backend.bikerental.enums.VehicleType;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
@@ -244,16 +243,16 @@ public class VehicleService {
 
     //FILTER
     @Transactional(readOnly = true)
-    public PageResponse<VehicleResponse> filterVehicles(String name, Integer brandId,
-                                                        Integer modelId, StatusVehicleEnum status,
-                                                        VehicleType vehicleType, String currentBranchId,
-                                                        BigDecimal minPrice, BigDecimal maxPrice,
+    public PageResponse<VehicleResponse> filterVehicles(String name, StatusVehicleEnum status,
+                                                        VehicleType vehicleType, BigDecimal minPrice,
+                                                        BigDecimal maxPrice, String brandName,
+                                                        String modelName, String currentBranchName,
                                                         int page, int size)
     {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Specification<Vehicle> specification = VehicleSpecification.filterVehicles(
-                name, brandId, modelId, status, vehicleType, currentBranchId, minPrice, maxPrice
+                name, status, vehicleType, minPrice, maxPrice, brandName, modelName, currentBranchName
         );
 
         Page<Vehicle> pageData = vehicleRepository.findAll(specification, pageable);

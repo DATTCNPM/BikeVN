@@ -26,6 +26,9 @@ public interface VehicleMapper {
     @Mapping(source = "model.id", target = "modelId")
     @Mapping(source = "currentBranch.id", target = "currentBranchId")
     @Mapping(source = "images", target = "images")
+    @Mapping(source = "brand.name", target = "brandName")
+    @Mapping(source = "model.name", target = "modelName")
+    @Mapping(source = "currentBranch.name", target = "currentBranchName")
     VehicleResponse toVehicleResponse(Vehicle vehicle);
 
     default List<VehicleResponse> toListVehicleResponse(List<Vehicle> vehicles) {
