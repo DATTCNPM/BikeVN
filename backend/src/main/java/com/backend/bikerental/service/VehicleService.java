@@ -244,16 +244,16 @@ public class VehicleService {
 
     //FILTER
     @Transactional(readOnly = true)
-    public PageResponse<VehicleResponse> filterVehicles(Integer brandId, Integer modelId,
-                                                       StatusVehicleEnum status,
-                                                       VehicleType vehicleType, String currentBranchId,
-                                                       BigDecimal minPrice, BigDecimal maxPrice,
-                                                       int page, int size)
+    public PageResponse<VehicleResponse> filterVehicles(String name, Integer brandId,
+                                                        Integer modelId, StatusVehicleEnum status,
+                                                        VehicleType vehicleType, String currentBranchId,
+                                                        BigDecimal minPrice, BigDecimal maxPrice,
+                                                        int page, int size)
     {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Specification<Vehicle> specification = VehicleSpecification.filterVehicles(
-                brandId, modelId, status, vehicleType, currentBranchId, minPrice, maxPrice
+                name, brandId, modelId, status, vehicleType, currentBranchId, minPrice, maxPrice
         );
 
         Page<Vehicle> pageData = vehicleRepository.findAll(specification, pageable);
