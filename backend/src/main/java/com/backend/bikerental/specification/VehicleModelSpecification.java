@@ -28,7 +28,7 @@ public class VehicleModelSpecification {
             if(name != null && !name.isBlank())
             {
                 String searchPattern = "%" + name.toLowerCase() + "%";
-                predicates.add(criteriaBuilder.equal(root.get("name"), searchPattern));
+                predicates.add(criteriaBuilder.like(root.get("name"), searchPattern));
             }
 
             if (minEngineCapacity != null) {
