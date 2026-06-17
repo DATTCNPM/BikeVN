@@ -118,7 +118,8 @@ public class VehicleController {
 
     @GetMapping("/filter")
     public ApiResponse<PageResponse<VehicleResponse>> filterVehicles
-            (@RequestParam(required = false) Integer brandId,
+            (@RequestParam(required = false) String name,
+             @RequestParam(required = false) Integer brandId,
              @RequestParam(required = false) Integer modelId,
              @RequestParam(required = false) StatusVehicleEnum status,
              @RequestParam(required = false) VehicleType vehicleType,
@@ -129,7 +130,7 @@ public class VehicleController {
              @RequestParam(defaultValue = "10") int size)
     {
         return ApiResponse.<PageResponse<VehicleResponse>>builder()
-                .result(vehicleService.filterVehicles(brandId, modelId, status, vehicleType,
+                .result(vehicleService.filterVehicles(name,brandId, modelId, status, vehicleType,
                         currentBranchId, minPrice, maxPrice, page, size))
                 .build();
     }

@@ -12,54 +12,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VehicleSpecification {
-    public static Specification<Vehicle> filterVehicles(
-            Integer brandId,
-            Integer modelId,
-            StatusVehicleEnum status,
-            VehicleType vehicleType,
-            String currentBranchId,
-            BigDecimal minPrice,
-            BigDecimal maxPrice
-    )
-    {
-        return((root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        public static Specification<Vehicle> filterVehicles(
+                String name,
+                Integer brandId,
+                Integer modelId,
+                StatusVehicleEnum status,
+                VehicleType vehicleType,
+                String currentBranchId,
+                BigDecimal minPrice,
+                BigDecimal maxPrice
+        )
+        {
+            return((root, query, criteriaBuilder) -> {
+                List<Predicate> predicates = new ArrayList<>();
 
-            if (brandId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("brand").get("id"), brandId));
-            }
+                if(name != null && !name.isBlank())
+                {
+                    String searchPattern = "%" + name.toLowerCase() + "%";
+                    predicates.add(criteriaBuilder.like(root.get("name"), searchPattern));
+                }
 
-            if (modelId != null)
-            {
-                predicates.add(criteriaBuilder.equal(root.get("model").get("id"), modelId));
-            }
+                if (brandId != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("brand").get("id"), brandId));
+                }
 
-            if(status != null)
-            {
-                predicates.add(criteriaBuilder.equal(root.get("status"), status));
-            }
+                if (modelId != null)
+                {
+                    predicates.add(criteriaBuilder.equal(root.get("model").get("id"), modelId));
+                }
 
-            if(vehicleType != null)
-            {
-                predicates.add(criteriaBuilder.equal(root.get("vehicleType"), vehicleType));
-            }
+                if(status != null)
+                {
+                    predicates.add(criteriaBuilder.equal(root.get("status"), status));
+                }
 
-            if(currentBranchId != null && !currentBranchId.isBlank())
-            {
-                predicates.add(criteriaBuilder.equal(root.get("currentBranch").get("id"), currentBranchId));
-            }
+                if(vehicleType != null)
+                {
+                    predicates.add(criteriaBuilder.equal(root.get("vehicleType"), vehicleType));
+                }
 
-            if(minPrice != null)
-            {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("pricePerDay"), minPrice));
-            }
+                if(currentBranchId != null && !currentBranchId.isBlank())
+                {
+                    predicates.add(criteriaBuilder.equal(root.get("currentBranch").get("id"), currentBranchId));
+                }
 
-            if(maxPrice != null)
-            {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pricePerDay"), maxPrice));
-            }
+                if(minPrice != null)
+                {
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("pricePerDay"), minPrice));
+                }
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        });
-    }
+                if(maxPrice != null)
+                {
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pricePerDay"), maxPrice));
+                }
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            });
+        }
 }
