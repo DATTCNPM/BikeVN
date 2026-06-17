@@ -1,6 +1,6 @@
 export const TOKEN_KEYS = {
-  CLIENT: "token",
-  ADMIN: "admin_token",
+  CLIENT: "client_token",
+  PORTAL: "portal_token",
 } as const;
 
 export const ROLES = {

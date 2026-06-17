@@ -171,7 +171,7 @@ export default function VehicleManagementPage() {
   }, [vehicles, vehicleFilters, hasFilter]);
 
   const pagination = {
-    page: vehicles?.pageCurrent,
+    page: vehicles?.currentPage,
     pageSize: vehicles?.pageSize,
     totalPages: vehicles?.totalPages,
     totalElements: vehicles?.totalElements,
@@ -268,7 +268,7 @@ export default function VehicleManagementPage() {
           <TableActionDropdown
             onManageImage={() => {
               setSelectedVehicle(row.original);
-              navigate(`/admin/vehicles/${row.original.id}/images`);
+              void navigate(`/admin/vehicles/${row.original.id}/images`);
             }}
             onEdit={() => {
               setSelectedVehicle(row.original);

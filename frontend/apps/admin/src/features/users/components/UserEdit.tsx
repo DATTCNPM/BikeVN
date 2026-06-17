@@ -49,7 +49,6 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
       email: user.email,
       phone: user.phone || "",
       cccdNumber: user.cccdNumber || "",
-      role: user.role,
     });
   }, [user, reset]);
 
@@ -100,26 +99,6 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
             {errors.cccdNumber && (
               <FieldError>{errors.cccdNumber.message}</FieldError>
             )}
-          </Field>
-
-          <Field>
-            <FieldLabel>Vai trò</FieldLabel>
-            <Controller
-              control={control}
-              name="role"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">Người dùng</SelectItem>
-                    <SelectItem value="admin">Quản trị viên</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.role && <FieldError>{errors.role.message}</FieldError>}
           </Field>
         </FieldGroup>
       </div>

@@ -1,23 +1,23 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@repo/api";
-import { usersKeys } from "./usersKeys";
+import { employeeKeys } from "./employeeKeys";
 import type {
   UpdateProfilePayload,
-  AdminUserCreationPayload,
+  AdminEmployeeCreationPayload,
 } from "@repo/types";
 
-export function useCreateUser() {
+export function useCreateEmployee() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: AdminUserCreationPayload) =>
-      userApi.createUser(payload),
+    mutationFn: (payload: Omit<AdminEmployeeCreationPayload, "passwordHash">) =>
+      userApi.createEmployee(payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: usersKeys.all });
+      await queryClient.invalidateQueries({ queryKey: employeeKeys.all });
     },
   });
 }
 
-export function useUpdateUser() {
+export function useUpdateEmployee() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -28,20 +28,20 @@ export function useUpdateUser() {
       payload: Partial<UpdateProfilePayload>;
     }) => userApi.updateUser(id, payload),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ queryKey: usersKeys.all });
+      await queryClient.invalidateQueries({ queryKey: employeeKeys.all });
       await queryClient.invalidateQueries({
-        queryKey: usersKeys.detail(variables.id),
+        queryKey: employeeKeys.detail(variables.id),
       });
     },
   });
 }
 
-export function useDeleteUser() {
+export function useDeleteEmployee() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => userApi.deleteUser(id),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: usersKeys.all });
+      await queryClient.invalidateQueries({ queryKey: employeeKeys.all });
     },
   });
 }

@@ -12,7 +12,6 @@ const userBaseSchema = z.object({
 
 export const userSchema = userBaseSchema.extend({
   id: z.string(),
-  role: userRoleSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -26,14 +25,9 @@ export const employeeSchema = userSchema.extend({
 });
 
 export const adminEmployeeCreationSchema = userCreationSchema.extend({
-  role: z.literal("employee"),
   branchId: z.string().min(1, "Chi nhánh không được để trống"),
 });
-export const adminUserCreationSchema = userCreationSchema.extend({
-  role: userRoleSchema,
-});
-export const updateUserSchema = userBaseSchema.extend({
-  role: userRoleSchema,
-});
+export const adminUserCreationSchema = userCreationSchema.extend({});
+export const updateUserSchema = userBaseSchema.extend({});
 
 export const updateProfileSchema = userBaseSchema;

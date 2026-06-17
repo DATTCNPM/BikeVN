@@ -19,26 +19,26 @@ import { Input } from "@repo/ui/components/ui/input";
 import { Separator } from "@repo/ui/components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 
-import { useAdminAuth } from "@/features/auth/useAdminAuth";
-import { useAdminProfile } from "@/features/auth/useAdminProfile";
+import { usePortalAuth } from "@/features/auth/usePortalAuth";
+import { usePortalProfile } from "@/features/auth/usePortalProfile";
 
 export default function AppHeader() {
   const navigate = useNavigate();
 
-  const logoutAdmin = useAdminAuth((state) => state.logoutAdmin);
+  const logoutPortal = usePortalAuth((state) => state.logoutPortal);
 
-  const { data: adminProfile } = useAdminProfile();
+  const { data: portalProfile } = usePortalProfile();
 
-  const handleLogout = async () => {
-    const success = await logoutAdmin();
+  const handleLogout = () => {
+    const success = logoutPortal();
 
     if (success) {
-      navigate("/admin/login");
+      void navigate("/login");
     }
   };
 
   const initials =
-    adminProfile?.name
+    portalProfile?.name
       ?.split(" ")
       .map((word) => word[0])
       .join("")
@@ -95,17 +95,17 @@ export default function AppHeader() {
                 className="h-14 rounded-2xl px-2 hover:bg-muted"
               >
                 <Avatar className="size-11 border">
-                  <AvatarImage src={adminProfile?.avatarUrl} />
+                  <AvatarImage src={portalProfile?.avatarUrl} />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
 
                 <div className="hidden text-left md:block">
                   <p className="text-sm font-semibold">
-                    {adminProfile?.name ?? "Admin"}
+                    {portalProfile?.name ?? "Admin"}
                   </p>
 
                   <p className="text-xs text-muted-foreground">
-                    {adminProfile?.email ?? ""}
+                    {portalProfile?.email ?? ""}
                   </p>
                 </div>
 

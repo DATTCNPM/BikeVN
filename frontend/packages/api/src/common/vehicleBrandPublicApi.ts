@@ -3,6 +3,7 @@ import type { VehicleBrand, PaginationResponse } from "@repo/types";
 
 export const vehicleBrandPublicApi = {
   async getBrands(page: number, size: number) {
+    console.log("GET BRANDS CALLED", page, size);
     const data = await axiosPublic.get<
       PaginationResponse<VehicleBrand>,
       PaginationResponse<VehicleBrand>

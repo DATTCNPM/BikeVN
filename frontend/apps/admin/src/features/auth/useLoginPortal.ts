@@ -6,7 +6,7 @@ import { ROLES } from "@repo/constants";
 import { authStorageService, tokenService } from "@repo/services";
 import type { LoginPayload } from "@repo/types";
 
-import { useAdminAuth } from "./useAdminAuth";
+import { usePortalAuth } from "./usePortalAuth";
 
 const hasAdminAccess = (token: string) => {
   const roles = tokenService.getRoles(token);
@@ -14,9 +14,9 @@ const hasAdminAccess = (token: string) => {
   return roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
 };
 
-export function useLoginAdmin() {
+export function useLoginPortal() {
   const navigate = useNavigate();
-  const setAdminLogin = useAdminAuth((state) => state.setAdminLogin);
+  const setPortalLogin = usePortalAuth((state) => state.setPortalLogin);
 
   return useMutation({
     mutationFn: async (payload: LoginPayload) => authApi.login(payload),
@@ -28,10 +28,21 @@ export function useLoginAdmin() {
         throw new Error("Bạn không có quyền truy cập hệ thống quản trị");
       }
 
-      authStorageService.setAdminToken(token);
+      authStorageService.setPortalToken(token);
 
-      setAdminLogin(true);
-      void navigate("/admin");
+      setPortalLogin(true);
+
+      const roles = tokenService.getRoles(token);
+
+      if (roles.includes(ROLES.ADMIN)) {
+        void navigate("/admin");
+        return;
+      }
+
+      if (roles.includes(ROLES.EMPLOYEE)) {
+        void navigate("/employee");
+        return;
+      }
     },
   });
 }

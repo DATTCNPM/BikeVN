@@ -6,17 +6,17 @@ import { Card, CardContent } from "@repo/ui/components/ui/card";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 
-import { useAdminProfile } from "@/features/auth/useAdminProfile";
+import { usePortalProfile } from "@/features/auth/usePortalProfile";
 
 export default function InfoPage() {
-  const { data: adminProfile, isLoading } = useAdminProfile();
+  const { data: portalProfile, isLoading } = usePortalProfile();
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   const initials =
-    adminProfile?.name
+    portalProfile?.name
       ?.split(" ")
       .map((word) => word[0])
       .join("")
@@ -41,9 +41,9 @@ export default function InfoPage() {
             </Avatar>
 
             <div>
-              <h2 className="text-xl font-bold">{adminProfile?.name}</h2>
+              <h2 className="text-xl font-bold">{portalProfile?.name}</h2>
 
-              <p className="text-muted-foreground">{adminProfile?.email}</p>
+              <p className="text-muted-foreground">{portalProfile?.email}</p>
             </div>
           </div>
 
@@ -54,7 +54,7 @@ export default function InfoPage() {
               <div className="relative">
                 <User className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  value={adminProfile?.name ?? ""}
+                  value={portalProfile?.name ?? ""}
                   readOnly
                   className="h-11 rounded-2xl pl-11"
                 />
@@ -68,7 +68,7 @@ export default function InfoPage() {
                 <Mail className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
 
                 <Input
-                  value={adminProfile?.email ?? ""}
+                  value={portalProfile?.email ?? ""}
                   readOnly
                   className="h-11 rounded-2xl pl-11"
                 />
@@ -82,7 +82,7 @@ export default function InfoPage() {
                 <Phone className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
 
                 <Input
-                  value={adminProfile?.phone ?? ""}
+                  value={portalProfile?.phone ?? ""}
                   readOnly
                   className="h-11 rounded-2xl pl-11"
                 />

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
@@ -18,25 +19,18 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateUser } from "@/features/users/mutations";
-import { adminUserCreationSchema } from "@repo/schemas";
-import type { AdminUserCreationPayload } from "@repo/types";
+import { useUpdateEmployee } from "@/features/employees/mutationEmployee";
+import { updateUserSchema } from "@repo/schemas";
+import type { UpdateUserPayload, User } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  user: User | null;
 };
 
-const defaultValues: AdminUserCreationPayload = {
-  name: "",
-  email: "",
-  passwordHash: "",
-  phone: "",
-  cccdNumber: "",
-};
-
-export default function UserCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateUser();
+export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
+  const { mutateAsync, isPending } = useUpdateEmployee();
 
   const {
     register,
@@ -44,19 +38,28 @@ export default function UserCreate({ open, onOpenChange }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<AdminUserCreationPayload>({
-    resolver: zodResolver(adminUserCreationSchema),
-    defaultValues,
+  } = useForm<UpdateUserPayload>({
+    resolver: zodResolver(updateUserSchema),
   });
 
-  const onSubmit = async (values: AdminUserCreationPayload) => {
+  useEffect(() => {
+    if (!user) return;
+    reset({
+      name: user.name,
+      email: user.email,
+      phone: user.phone || "",
+      cccdNumber: user.cccdNumber || "",
+    });
+  }, [user, reset]);
+
+  const onSubmit = async (values: UpdateUserPayload) => {
+    if (!user) return;
     try {
-      await mutateAsync(values);
-      toast.success("Tạo người dùng thành công");
-      reset(defaultValues);
+      await mutateAsync({ id: user.id, payload: values });
+      toast.success("Cập nhật người dùng thành công");
       onOpenChange(false);
     } catch {
-      toast.error("Tạo người dùng thất bại");
+      toast.error("Cập nhật người dùng thất bại");
     }
   };
 
@@ -64,51 +67,35 @@ export default function UserCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm người dùng"
-      description="Tạo người dùng mới trong hệ thống"
+      title="Chỉnh sửa người dùng"
+      description="Cập nhật thông tin người dùng"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Lưu thay đổi"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
             <FieldLabel>Họ tên</FieldLabel>
-            <Input {...register("name")} placeholder="Nguyễn Văn A" />
+            <Input {...register("name")} />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
           <Field>
             <FieldLabel>Email</FieldLabel>
-            <Input
-              {...register("email")}
-              type="email"
-              placeholder="email@example.com"
-            />
+            <Input {...register("email")} type="email" />
             {errors.email && <FieldError>{errors.email.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Mật khẩu</FieldLabel>
-            <Input
-              {...register("passwordHash")}
-              type="password"
-              placeholder="********"
-            />
-            {errors.passwordHash && (
-              <FieldError>{errors.passwordHash.message}</FieldError>
-            )}
-          </Field>
-
-          <Field>
             <FieldLabel>Số điện thoại</FieldLabel>
-            <Input {...register("phone")} placeholder="0901234567" />
+            <Input {...register("phone")} />
             {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
           </Field>
 
           <Field>
             <FieldLabel>CCCD</FieldLabel>
-            <Input {...register("cccdNumber")} placeholder="079203000123" />
+            <Input {...register("cccdNumber")} />
             {errors.cccdNumber && (
               <FieldError>{errors.cccdNumber.message}</FieldError>
             )}

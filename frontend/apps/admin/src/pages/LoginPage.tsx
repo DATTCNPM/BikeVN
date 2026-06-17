@@ -28,10 +28,10 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 
-import { useLoginAdmin } from "@/features/auth/useLoginAdmin";
+import { useLoginPortal } from "@/features/auth/useLoginPortal";
 
 export default function Login() {
-  const { mutateAsync: loginAdmin, isPending } = useLoginAdmin();
+  const { mutateAsync: loginPortal, isPending } = useLoginPortal();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -47,7 +47,7 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginPayload) => {
-    await loginAdmin(data);
+    await loginPortal(data);
   };
 
   return (

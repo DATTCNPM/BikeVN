@@ -5,10 +5,10 @@ import { ROLES } from "@repo/constants";
 import { authStorageService, tokenService } from "@repo/services";
 
 interface AdminAuthState {
-  isAdminLogin: boolean;
+  isPortalLogin: boolean;
 
-  setAdminLogin: (value: boolean) => void;
-  logoutAdmin: () => void;
+  setPortalLogin: (value: boolean) => void;
+  logoutPortal: () => void;
   initializeAuth: () => void;
 }
 
@@ -18,53 +18,53 @@ const hasAdminAccess = (token: string) => {
   return roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE);
 };
 
-export const useAdminAuth = create<AdminAuthState>()(
+export const usePortalAuth = create<AdminAuthState>()(
   devtools(
     (set) => ({
-      isAdminLogin: !!authStorageService.getAdminToken(),
+      isPortalLogin: !!authStorageService.getPortalToken(),
 
-      setAdminLogin: (value) => {
+      setPortalLogin: (value) => {
         set({
-          isAdminLogin: value,
+          isPortalLogin: value,
         });
       },
 
-      logoutAdmin: () => {
-        authStorageService.clearAdminToken();
+      logoutPortal: () => {
+        authStorageService.clearPortalToken();
 
         set({
-          isAdminLogin: false,
+          isPortalLogin: false,
         });
       },
 
       initializeAuth: () => {
-        const token = authStorageService.getAdminToken();
+        const token = authStorageService.getPortalToken();
 
         if (!token) {
           set({
-            isAdminLogin: false,
+            isPortalLogin: false,
           });
 
           return;
         }
 
         if (tokenService.isExpired(token) || !hasAdminAccess(token)) {
-          authStorageService.clearAdminToken();
+          authStorageService.clearPortalToken();
 
           set({
-            isAdminLogin: false,
+            isPortalLogin: false,
           });
 
           return;
         }
 
         set({
-          isAdminLogin: true,
+          isPortalLogin: true,
         });
       },
     }),
     {
-      name: "admin-auth-store",
+      name: "portal-auth-store",
     },
   ),
 );
