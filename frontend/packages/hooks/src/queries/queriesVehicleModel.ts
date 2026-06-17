@@ -4,7 +4,7 @@ import { vehicleModelKeys } from "../queryKeys";
 
 import type { VehicleModel, PaginationResponse } from "@repo/types";
 
-export const useVehicleModels = (page: number, size: number) => {
+export const useVehicleModels = (page: number = 1, size: number = 10) => {
   return useQuery<PaginationResponse<VehicleModel>>({
     queryKey: vehicleModelKeys.list(page, size),
     queryFn: async () => {

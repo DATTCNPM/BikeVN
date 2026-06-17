@@ -1,18 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useAdminAuth } from "./useAdminAuth";
+import { usePortalAuth } from "./usePortalAuth";
 
 export function useLogoutAdmin() {
   const queryClient = useQueryClient();
 
-  const logoutAdmin = useAdminAuth((state) => state.logoutAdmin);
+  const logoutPortal = usePortalAuth((state) => state.logoutPortal);
 
   return useMutation({
-    mutationFn: () => logoutAdmin(),
+    mutationFn: () => logoutPortal(),
 
     onSuccess: () => {
       queryClient.removeQueries({
-        queryKey: ["admin-profile"],
+        queryKey: ["portal-profile"],
       });
     },
   });

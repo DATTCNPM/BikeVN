@@ -23,78 +23,106 @@ import {
   SidebarMenuItem,
 } from "@repo/ui/components/ui/sidebar";
 
+import { ROLES } from "@repo/constants";
+import { authStorageService, tokenService } from "@repo/services";
+
 import Logo from "@/assets/icons/Logo_yellow.svg";
 
 const menuItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    href: "/admin",
+    path: "",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Nhân viên",
     icon: Users,
-    href: "/admin/employees",
+    path: "employees",
+    roles: [ROLES.ADMIN],
   },
   {
     title: "Khách hàng",
     icon: Users,
-    href: "/admin/users",
+    path: "users",
+    roles: [ROLES.ADMIN],
   },
   {
     title: "Quản lý xe",
     icon: Bike,
-    href: "/admin/vehicles",
+    path: "vehicles",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Quản lý hãng xe",
     icon: Bike,
-    href: "/admin/brands",
+    path: "brands",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Quản lý chi nhánh",
     icon: Store,
-    href: "/admin/branches",
+    path: "branches",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Quản lý model",
     icon: Bike,
-    href: "/admin/models",
+    path: "models",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Đơn thuê",
     icon: ClipboardList,
-    href: "/admin/bookings",
+    path: "bookings",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Đánh giá",
     icon: Star,
-    href: "/admin/reviews",
+    path: "reviews",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Thanh toán",
     icon: CircleDollarSign,
-    href: "/admin/payments",
+    path: "payments",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Tin nhắn",
     icon: MessageSquare,
-    href: "/admin/chats",
+    path: "chats",
+    roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
     title: "Quyền",
     icon: Users,
-    href: "/admin/permissions",
+    path: "permissions",
+    roles: [ROLES.ADMIN],
   },
   {
     title: "Vai trò",
     icon: Users,
-    href: "/admin/roles",
+    path: "roles",
+    roles: [ROLES.ADMIN],
   },
 ];
 
 export default function AppSidebar() {
   const location = useLocation();
+
+  const token = authStorageService.getPortalToken();
+
+  const roles = token ? tokenService.getRoles(token) : [];
+
+  const isAdmin = roles.includes(ROLES.ADMIN);
+
+  const basePath = isAdmin ? "/admin" : "/employee";
+
+  const visibleMenus = menuItems.filter((menu) =>
+    menu.roles.some((role) => roles.includes(role)),
+  );
 
   return (
     <Sidebar className="border-none">
@@ -105,7 +133,9 @@ export default function AppSidebar() {
           </div>
 
           <div>
-            <h2 className="text-lg font-bold tracking-tight">MotoRent Admin</h2>
+            <h2 className="text-lg font-bold tracking-tight">
+              MotoRent Portal
+            </h2>
 
             <p className="text-sm text-muted-foreground">Motorcycle Rental</p>
           </div>
@@ -115,21 +145,23 @@ export default function AppSidebar() {
       <SidebarContent className="px-4 py-5">
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Quản trị hệ thống
+            Quản lý hệ thống
           </SidebarGroupLabel>
 
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1.5">
-              {menuItems.map((item) => {
+              {visibleMenus.map((item) => {
+                const href = item.path ? `${basePath}/${item.path}` : basePath;
+
                 const isActive =
-                  location.pathname === item.href ||
-                  location.pathname.startsWith(`${item.href}/`);
+                  location.pathname === href ||
+                  location.pathname.startsWith(`${href}/`);
 
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive}>
                       <Link
-                        to={item.href}
+                        to={href}
                         className="group flex h-12 items-center gap-3 rounded-2xl px-4 text-sm font-medium transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
                       >
                         <item.icon className="size-5 transition-transform duration-200 group-hover:scale-110" />

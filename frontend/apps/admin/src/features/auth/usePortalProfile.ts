@@ -2,13 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 
 import { authAdminApi } from "@repo/api";
 import { authStorageService } from "@repo/services";
-import { adminAuthKeys } from "./adminAuthKeys";
+import { portalAuthKeys } from "./portalAuthKeys";
 
-export function useAdminProfile() {
-  const token = authStorageService.getAdminToken();
+export function usePortalProfile() {
+  const token = authStorageService.getPortalToken();
 
   return useQuery({
-    queryKey: adminAuthKeys.profile(),
+    queryKey: portalAuthKeys.profile(),
     queryFn: () => authAdminApi.getProfile(),
 
     enabled: !!token,

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-import { useAdminAuth } from "./useAdminAuth";
+import { usePortalAuth } from "./usePortalAuth";
 
 export function AuthInitializer() {
-  const initializeAuth = useAdminAuth((state) => state.initializeAuth);
+  const initializeAuth = usePortalAuth((state) => state.initializeAuth);
 
   useEffect(() => {
     initializeAuth();

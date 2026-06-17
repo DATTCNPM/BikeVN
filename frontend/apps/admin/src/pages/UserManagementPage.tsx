@@ -82,6 +82,7 @@ export default function UserManagementPage() {
     );
   }
 
+  console.log(filteredUsers);
   return (
     <div>
       <DataTableToolbar

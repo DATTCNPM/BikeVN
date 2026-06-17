@@ -4,9 +4,9 @@ import { vehicleBrandKeys } from "../queryKeys";
 
 import type { VehicleBrand, PaginationResponse } from "@repo/types";
 
-export const useVehicleBrands = (page: number, size: number) => {
+export const useVehicleBrands = (page: number = 1, size: number = 10) => {
   return useQuery<PaginationResponse<VehicleBrand>>({
-    queryKey: vehicleBrandKeys.list(),
+    queryKey: vehicleBrandKeys.list(page, size),
     queryFn: async () => {
       const res = await vehicleBrandPublicApi.getBrands(page, size);
 

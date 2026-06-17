@@ -8,11 +8,11 @@ import TablePagination from "@/components/common/TablePagination";
 
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-import UserCreate from "@/features/users/components/UserCreate";
-import UserEdit from "@/features/users/components/UserEdit";
-import UserDelete from "@/features/users/components/UserDelete";
+import EmployeeCreate from "@/features/employees/components/EmployeeCreate";
+import EmployeeEdit from "@/features/employees/components/EmployeeEdit";
+import EmployeeDelete from "@/features/employees/components/EmployeeDelete";
 
-import { useEmployees } from "@/features/users/queries";
+import { useEmployees } from "@/features/employees/queriesEmployee";
 import { useBranches } from "@repo/hooks";
 
 import type { User } from "@repo/types";
@@ -91,6 +91,8 @@ export default function UserManagementPage() {
     );
   }
 
+  console.log(filterEmployee);
+
   return (
     <div>
       <DataTableToolbar
@@ -109,15 +111,18 @@ export default function UserManagementPage() {
         onPageChange={setPage}
       />
 
-      <UserCreate open={openCreateDialog} onOpenChange={setOpenCreateDialog} />
+      <EmployeeCreate
+        open={openCreateDialog}
+        onOpenChange={setOpenCreateDialog}
+      />
 
-      <UserEdit
+      <EmployeeEdit
         open={openEditDialog}
         onOpenChange={setOpenEditDialog}
         user={selectedUser}
       />
 
-      <UserDelete
+      <EmployeeDelete
         open={openDeleteDialog}
         onOpenChange={setOpenDeleteDialog}
         user={selectedUser}

@@ -18,7 +18,7 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateEmployee } from "@/features/users/mutations";
+import { useCreateEmployee } from "@/features/employees/mutationEmployee";
 import { adminEmployeeCreationSchema } from "@repo/schemas";
 import type { AdminEmployeeCreationPayload } from "@repo/types";
 import { useBranches } from "@repo/hooks";
@@ -34,7 +34,6 @@ const defaultValues: AdminEmployeeCreationPayload = {
   passwordHash: "",
   phone: "",
   cccdNumber: "",
-  role: "employee",
   branchId: "",
 };
 
@@ -118,25 +117,6 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
             )}
           </Field>
 
-          <Field>
-            <FieldLabel>Vai trò</FieldLabel>
-            <Controller
-              control={control}
-              name="role"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="employee">Nhân viên</SelectItem>
-                    <SelectItem value="admin">Quản trị viên</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.role && <FieldError>{errors.role.message}</FieldError>}
-          </Field>
           <Controller
             control={control}
             name="branchId"

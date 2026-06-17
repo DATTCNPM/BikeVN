@@ -11,13 +11,13 @@ export const authStorageService = {
     localStorage.removeItem(TOKEN_KEYS.CLIENT);
   },
 
-  getAdminToken(): string | null {
-    return localStorage.getItem(TOKEN_KEYS.ADMIN);
+  getPortalToken(): string | null {
+    return localStorage.getItem(TOKEN_KEYS.PORTAL);
   },
-  setAdminToken(token: string): void {
-    localStorage.setItem(TOKEN_KEYS.ADMIN, token);
+  setPortalToken(token: string): void {
+    localStorage.setItem(TOKEN_KEYS.PORTAL, token);
   },
-  clearAdminToken(): void {
-    localStorage.removeItem(TOKEN_KEYS.ADMIN);
+  clearPortalToken(): void {
+    localStorage.removeItem(TOKEN_KEYS.PORTAL);
   },
 };
