@@ -2,7 +2,10 @@ import { PaymentParams, VehicleQueryParams } from "@repo/types";
 export const vehiclesKeys = {
   all: ["vehicles"] as const,
 
-  list: (params?: VehicleQueryParams) => ["vehicles", params] as const,
+  list: (page: number, pageSize: number) =>
+    ["vehicles", { page, pageSize }] as const,
+
+  filter: (params?: VehicleQueryParams) => ["vehicles", params] as const,
 
   detail: (id: string) => ["vehicle", id] as const,
 };
@@ -11,6 +14,9 @@ export const bookingsKeys = {
   all: ["bookings"] as const,
 
   lists: () => [...bookingsKeys.all, "list"] as const,
+
+  list: (page: number, size: number) =>
+    [...bookingsKeys.lists(), { page, size }] as const,
 
   byUser: (userId: string) =>
     [...bookingsKeys.lists(), "user", userId] as const,
@@ -44,7 +50,8 @@ export const vehicleBrandKeys = {
 
   lists: () => [...vehicleBrandKeys.all, "list"] as const,
 
-  list: () => [...vehicleBrandKeys.lists()] as const,
+  list: (page: number, size: number) =>
+    [...vehicleBrandKeys.lists(), { page, size }] as const,
 
   details: () => [...vehicleBrandKeys.all, "detail"] as const,
 
@@ -54,7 +61,8 @@ export const vehicleBrandKeys = {
 export const vehicleModelKeys = {
   all: ["vehicle-models"] as const,
   lists: () => [...vehicleModelKeys.all, "list"] as const,
-  list: () => [...vehicleModelKeys.lists()] as const,
+  list: (page: number, size: number) =>
+    [...vehicleModelKeys.lists(), { page, size }] as const,
   details: () => [...vehicleModelKeys.all, "detail"] as const,
   detail: (id: number) => [...vehicleModelKeys.details(), id] as const,
 };

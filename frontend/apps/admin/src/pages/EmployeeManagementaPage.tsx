@@ -102,7 +102,7 @@ export default function UserManagementPage() {
       <DataTable columns={columns} data={filterEmployee ?? []} />
 
       <TablePagination
-        page={usersResponse?.pageCurrent || 1}
+        page={usersResponse?.currentPage || 1}
         totalPages={usersResponse?.totalPages || 1}
         totalElements={usersResponse?.totalElements || 0}
         pageSize={usersResponse?.pageSize || 10}

@@ -46,8 +46,8 @@ export default function VehicleDetail() {
   }
 
   return (
-    <div className="grid w-full grid-cols-12 gap-8 py-8">
-      <div className="col-span-8 flex flex-col gap-8">
+    <div className="grid w-full grid-cols-12 gap-8 p-8">
+      <div className="col-span-8 flex flex-col gap-8 sticky top-24 h-[calc(100vh-6rem)]">
         <VehicleInfo
           vehicle={vehicle}
           branches={branches}

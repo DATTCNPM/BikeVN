@@ -35,7 +35,6 @@ const bookingStatusLabel = {
 
 export default function BookingManagementPage() {
   const navigate = useNavigate();
-  const { data: bookings, isLoading } = useBookings();
 
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
@@ -46,6 +45,8 @@ export default function BookingManagementPage() {
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
+
+  const { data: bookings, isLoading } = useBookings(page, 10);
 
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
@@ -153,7 +154,7 @@ export default function BookingManagementPage() {
       <DataTable columns={columns} data={bookings?.data || []} />
 
       <TablePagination
-        page={bookings?.pageCurrent || 1}
+        page={bookings?.currentPage || 1}
         totalPages={bookings?.totalPages || 1}
         totalElements={bookings?.totalElements || 0}
         pageSize={bookings?.pageSize || 10}

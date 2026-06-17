@@ -18,8 +18,6 @@ import { useVehicleBrands, useVehicleModels } from "@repo/hooks";
 import type { VehicleBrand, VehicleModel } from "@repo/types";
 
 export default function ModelManagementPage() {
-  const { data: models, isLoading } = useVehicleModels();
-
   const { data: brands, isLoading: isBrandsLoading } = useVehicleBrands();
 
   const [search, setSearch] = useState("");
@@ -33,6 +31,8 @@ export default function ModelManagementPage() {
   const [openDelete, setOpenDelete] = useState(false);
 
   const [page, setPage] = useState(1);
+
+  const { data: models, isLoading } = useVehicleModels(page, 10);
 
   const columns = useMemo<ColumnDef<VehicleModel>[]>(
     () => [
