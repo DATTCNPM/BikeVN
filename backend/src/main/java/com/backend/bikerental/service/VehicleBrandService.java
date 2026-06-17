@@ -4,21 +4,29 @@ import com.backend.bikerental.dto.request.VehicleBrandCreationRequest;
 import com.backend.bikerental.dto.request.VehicleBrandUpdateRequest;
 import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleBrandResponse;
+import com.backend.bikerental.dto.response.VehicleResponse;
+import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.entity.VehicleBrand;
+import com.backend.bikerental.enums.StatusVehicleEnum;
+import com.backend.bikerental.enums.VehicleType;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.VehicleBrandMapper;
 import com.backend.bikerental.repository.VehicleBrandRepository;
+import com.backend.bikerental.specification.VehicleBrandSpecification;
+import com.backend.bikerental.specification.VehicleSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -101,5 +109,29 @@ public class VehicleBrandService {
         }
 
         vehicleBrandRepository.deleteById(id);
+    }
+
+    //FILTER
+    @Transactional(readOnly = true)
+    public PageResponse<VehicleBrandResponse> filterVehicleBrands(String name, String country, int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<VehicleBrand> specification = VehicleBrandSpecification.filterVehicleBrands(name, country);
+
+        Page<VehicleBrand> pageData = vehicleBrandRepository.findAll(specification, pageable);
+
+        var vehicleBrandResponses = pageData.getContent().stream()
+                .map(vehicleBrandMapper::toVehicleBrandResponse)
+                .toList();
+
+        return PageResponse.<VehicleBrandResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(vehicleBrandResponses)
+                .build();
+
     }
 }

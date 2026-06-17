@@ -5,12 +5,16 @@ import com.backend.bikerental.dto.request.VehicleBrandUpdateRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.VehicleBrandResponse;
+import com.backend.bikerental.dto.response.VehicleResponse;
+import com.backend.bikerental.enums.StatusVehicleEnum;
+import com.backend.bikerental.enums.VehicleType;
 import com.backend.bikerental.service.VehicleBrandService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -70,4 +74,17 @@ public class VehicleBrandController {
                 .message("Brand deleted")
                 .build();
     }
+
+    @GetMapping("/filter")
+    public ApiResponse<PageResponse<VehicleBrandResponse>> filterVehicleBrands
+            (@RequestParam(required = false) String name,
+             @RequestParam(required = false) String country,
+             @RequestParam(defaultValue = "1") int page,
+             @RequestParam(defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<VehicleBrandResponse>>builder()
+                .result(vehicleBrandService.filterVehicleBrands(name, country, page, size))
+                .build();
+    }
+
 }
