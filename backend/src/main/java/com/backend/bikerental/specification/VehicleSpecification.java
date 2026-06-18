@@ -19,7 +19,8 @@ public class VehicleSpecification {
                 BigDecimal maxPrice,
                 String brandName,
                 String modelName,
-                String currentBranchName
+                String currentBranchName,
+                String country
         )
         {
             return((root, query, criteriaBuilder) -> {
@@ -59,6 +60,13 @@ public class VehicleSpecification {
                     String searchPattern = "%" + currentBranchName.toLowerCase() + "%";
                     predicates.add(criteriaBuilder.like(criteriaBuilder
                             .lower(root.get("currentBranch").get("name")), searchPattern));
+                }
+
+                if(country != null && !country.isBlank())
+                {
+                    String searchPattern = "%" + country.toLowerCase() + "%";
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("brand").get("country")), searchPattern));
                 }
 
                 if(minPrice != null)

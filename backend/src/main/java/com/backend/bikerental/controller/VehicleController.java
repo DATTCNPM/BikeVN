@@ -126,12 +126,13 @@ public class VehicleController {
              @RequestParam(required = false) String brandName,
              @RequestParam(required = false) String modelName,
              @RequestParam(required = false) String currentBranchName,
+             @RequestParam(required = false) String country,
              @RequestParam(defaultValue = "1") int page,
              @RequestParam(defaultValue = "10") int size)
     {
         return ApiResponse.<PageResponse<VehicleResponse>>builder()
                 .result(vehicleService.filterVehicles(name, status, vehicleType, minPrice, maxPrice,
-                        brandName, modelName, currentBranchName, page, size))
+                        brandName, modelName, currentBranchName, country, page, size))
                 .build();
     }
 

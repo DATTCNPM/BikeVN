@@ -247,12 +247,12 @@ public class VehicleService {
                                                         VehicleType vehicleType, BigDecimal minPrice,
                                                         BigDecimal maxPrice, String brandName,
                                                         String modelName, String currentBranchName,
-                                                        int page, int size)
+                                                        String country, int page, int size)
     {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Specification<Vehicle> specification = VehicleSpecification.filterVehicles(
-                name, status, vehicleType, minPrice, maxPrice, brandName, modelName, currentBranchName
+                name, status, vehicleType, minPrice, maxPrice, brandName, modelName, currentBranchName, country
         );
 
         Page<Vehicle> pageData = vehicleRepository.findAll(specification, pageable);

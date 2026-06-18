@@ -33,4 +33,5 @@ public class VehicleResponse {
     String brandName;
     String modelName;
     String currentBranchName;
+    String country;
 }
