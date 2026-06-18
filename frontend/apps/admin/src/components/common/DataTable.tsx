@@ -69,7 +69,7 @@ export default function DataTable<TData>({ columns, data }: Props<TData>) {
                 colSpan={columns.length}
                 className="h-40 text-center text-muted-foreground"
               >
-                Không có dữ liệu
+                No data.
               </TableCell>
             </TableRow>
           )}

@@ -26,11 +26,11 @@ const bookingStatusMap = {
 };
 
 const bookingStatusLabel = {
-  pending: "Chờ duyệt",
-  approved: "Đã duyệt",
-  rejected: "Từ chối",
-  completed: "Hoàn thành",
-  cancelled: "Đã hủy",
+  pending: "Pending",
+  approved: "Approved",
+  rejected: "Rejected",
+  completed: "Completed",
+  cancelled: "Cancelled",
 };
 
 export default function BookingManagementPage() {
@@ -52,7 +52,7 @@ export default function BookingManagementPage() {
     () => [
       {
         accessorKey: "user_id",
-        header: "Khách hàng",
+        header: "Customer",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
             User #{row.original.userId.substring(0, 4)}
@@ -61,7 +61,7 @@ export default function BookingManagementPage() {
       },
       {
         accessorKey: "vehicle_id",
-        header: "Xe",
+        header: "Vehicle",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
             Xe #{row.original.vehicleId.substring(0, 4)}
@@ -70,7 +70,7 @@ export default function BookingManagementPage() {
       },
       {
         accessorKey: "pickup_branch_id",
-        header: "Chi nhánh nhận",
+        header: "Pickup Branch",
         cell: ({ row }) => (
           <span className="text-sm">
             CN #{row.original.pickupBranchId.substring(0, 4)}
@@ -79,7 +79,7 @@ export default function BookingManagementPage() {
       },
       {
         accessorKey: "return_branch_id",
-        header: "Chi nhánh trả",
+        header: "Return Branch",
         cell: ({ row }) => (
           <span className="text-sm">
             CN #{row.original.returnBranchId.substring(0, 4)}
@@ -93,12 +93,12 @@ export default function BookingManagementPage() {
       },
       {
         accessorKey: "total_price",
-        header: "Tổng tiền",
+        header: "Total Price",
         cell: ({ row }) => `${row.original.totalPrice?.toLocaleString()}đ`,
       },
       {
         accessorKey: "status",
-        header: "Trạng thái",
+        header: "Status",
         cell: ({ row }) => (
           <Badge className={bookingStatusMap[row.original.status]}>
             {bookingStatusLabel[row.original.status]}
@@ -140,8 +140,6 @@ export default function BookingManagementPage() {
       </div>
     );
   }
-
-  console.log("Bookings:", bookings);
 
   return (
     <div>

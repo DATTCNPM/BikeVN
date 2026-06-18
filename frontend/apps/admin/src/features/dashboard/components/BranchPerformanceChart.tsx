@@ -29,7 +29,7 @@ type Props = {
 
 const chartConfig = {
   bookings: {
-    label: "Số lượt đặt",
+    label: "Number of Bookings",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
@@ -38,7 +38,7 @@ export default function BranchPerformanceChart({ data }: Props) {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <CardTitle>Hiệu suất chi nhánh</CardTitle>
+        <CardTitle>Branch Performance</CardTitle>
       </CardHeader>
 
       <CardContent>

@@ -30,15 +30,15 @@ type Props = {
 
 const chartConfig = {
   completed: {
-    label: "Đã hoàn thành",
+    label: "Completed",
     color: "var(--chart-1)",
   },
   cancelled: {
-    label: "Đã hủy",
+    label: "Cancelled",
     color: "var(--chart-2)",
   },
   pending: {
-    label: "Đang chờ",
+    label: "Pending",
     color: "var(--chart-3)",
   },
 } satisfies ChartConfig;
@@ -47,7 +47,7 @@ export default function BookingStatusChart({ data }: Props) {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <CardTitle>Trạng thái đơn thuê</CardTitle>
+        <CardTitle>Booking Status</CardTitle>
       </CardHeader>
 
       <CardContent>

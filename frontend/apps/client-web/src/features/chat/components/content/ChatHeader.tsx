@@ -30,7 +30,7 @@ export default function ChatHeader({ conversation }: Props) {
           <h2 className="font-semibold">{conversation?.branchName}</h2>
 
           <p className="text-sm text-muted-foreground">
-            {conversation?.online ? "Đang hoạt động" : "Ngoại tuyến"}
+            {conversation?.online ? "Online" : "Offline"}
           </p>
         </div>
       </div>
@@ -52,12 +52,12 @@ export default function ChatHeader({ conversation }: Props) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Xem thông tin</DropdownMenuItem>
+            <DropdownMenuItem>View Information</DropdownMenuItem>
 
-            <DropdownMenuItem>Đánh dấu đã đọc</DropdownMenuItem>
+            <DropdownMenuItem>Mark as Read</DropdownMenuItem>
 
             <DropdownMenuItem className="text-destructive">
-              Xóa cuộc trò chuyện
+              Delete Conversation
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

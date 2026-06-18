@@ -25,11 +25,11 @@ export default function PermissionDelete({
     try {
       await deletePermission(permission.id || "");
 
-      toast.success("Xóa quyền thành công");
+      toast.success("Delete permission successfully");
 
       onOpenChange(false);
     } catch {
-      toast.error("Xóa quyền thất bại");
+      toast.error("Failed to delete permission");
     }
   };
 
@@ -37,12 +37,12 @@ export default function PermissionDelete({
     <ConfirmAlertDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xóa quyền"
-      description={`Bạn có chắc chắn muốn xóa quyền "${permission?.name}" không? Hành động này không thể hoàn tác.`}
+      title="Delete Permission"
+      description={`Are you sure you want to delete the permission "${permission?.name}"? This action cannot be undone.`}
       onConfirm={handleDelete}
       loading={isPending}
-      confirmText="Xóa"
-      cancelText="Hủy"
+      confirmText="Delete"
+      cancelText="Cancel"
     />
   );
 }

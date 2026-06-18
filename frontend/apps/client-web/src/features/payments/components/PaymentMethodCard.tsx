@@ -13,14 +13,14 @@ const methods: {
   {
     id: "vnpay",
     name: "VNPay",
-    description: "Thanh toán qua VNPay Gateway",
+    description: "Pay via VNPay Gateway",
     icon: Landmark,
   },
 
   {
     id: "momo",
     name: "MoMo",
-    description: "Ví điện tử MoMo",
+    description: "MoMo Digital Wallet",
     icon: Wallet,
   },
 
@@ -48,7 +48,7 @@ export default function PaymentMethodCard({
           Payment Method
         </p>
 
-        <h2 className="mt-2 text-2xl font-bold">Chọn phương thức thanh toán</h2>
+        <h2 className="mt-2 text-2xl font-bold">Select Payment Method</h2>
       </div>
 
       <div className="mt-8 grid gap-4">

@@ -21,7 +21,11 @@ export const userCreationSchema = userBaseSchema.extend({
 });
 
 export const employeeSchema = userSchema.extend({
-  branchId: z.string(),
+  branchId: z.string().optional(),
+});
+
+export const updateEmployeeSchema = userBaseSchema.extend({
+  branchId: z.string().optional(),
 });
 
 export const adminEmployeeCreationSchema = userCreationSchema.extend({

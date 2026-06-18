@@ -36,17 +36,17 @@ export default function BrandManagementPage() {
     () => [
       {
         accessorKey: "name",
-        header: "Hãng xe",
+        header: "Brand Name",
       },
 
       {
         accessorKey: "country",
-        header: "Quốc gia",
+        header: "Country",
       },
 
       {
         accessorKey: "createdAt",
-        header: "Ngày tạo",
+        header: "Created Date",
 
         cell: ({ row }) =>
           new Date(row.original.createdAt).toLocaleDateString("vi-VN"),

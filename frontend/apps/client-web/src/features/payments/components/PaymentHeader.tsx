@@ -11,13 +11,10 @@ export default function PaymentHeader() {
             Checkout
           </p>
 
-          <h1 className="mt-2 text-4xl font-black tracking-tight">
-            Thanh toán booking
-          </h1>
+          <h1 className="mt-2 text-4xl font-black tracking-tight">Payment</h1>
 
           <p className="mt-3 max-w-2xl text-muted-foreground">
-            Hoàn tất thanh toán để xác nhận đặt xe và bắt đầu hành trình của
-            bạn.
+            Complete the payment to confirm your booking and start your journey.
           </p>
         </div>
 

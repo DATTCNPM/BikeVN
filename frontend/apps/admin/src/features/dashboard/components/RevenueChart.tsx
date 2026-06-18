@@ -22,8 +22,8 @@ type Props = {
 
 const chartConfig = {
   revenue: {
-    label: "Doanh thu",
-    color: "var(--chart-1)"
+    label: "Revenue",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
@@ -31,7 +31,7 @@ export default function RevenueChart({ data }: Props) {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <CardTitle>Doanh thu</CardTitle>
+        <CardTitle>Revenue</CardTitle>
       </CardHeader>
 
       <CardContent>

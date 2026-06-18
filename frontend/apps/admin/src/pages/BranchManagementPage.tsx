@@ -5,7 +5,6 @@ import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import StatusBadge from "@/components/common/StatusBadge";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
-// import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import BranchCreate from "@/features/branches/components/BranchCreate";
@@ -29,11 +28,11 @@ export default function BranchManagementPage() {
     () => [
       {
         accessorKey: "name",
-        header: "Tên chi nhánh",
+        header: "Branch Name",
       },
       {
         accessorKey: "address",
-        header: "Địa chỉ",
+        header: "Address",
       },
       {
         accessorKey: "lat",
@@ -45,7 +44,7 @@ export default function BranchManagementPage() {
       },
       {
         accessorKey: "status",
-        header: "Trạng thái",
+        header: "Status",
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
@@ -85,12 +84,6 @@ export default function BranchManagementPage() {
       />
 
       <DataTable columns={columns} data={branches} />
-
-      {/* <TablePagination
-        page={1}
-        totalPages={Math.ceil(branches.length / 10) || 1}
-        onPageChange={(page) => console.log(page)}
-      /> */}
 
       <BranchCreate
         open={openCreateDialog}

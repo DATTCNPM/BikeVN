@@ -45,7 +45,7 @@ export default function SettingsSection() {
     formState: { errors },
   } = methods;
   const onSubmit = (_data: UpdatePasswordPayload) => {
-    toast.error("Tính năng đổi mật khẩu hiện chưa được triển khai.");
+    toast.error("Feature not implemented yet");
   };
 
   const handleDeleteAccount = () => {
@@ -56,10 +56,10 @@ export default function SettingsSection() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold font-heading tracking-tight">
-          Cài đặt
+          Settings
         </h1>
         <p className="text-muted-foreground mt-2">
-          Tùy chỉnh giao diện và bảo mật tài khoản.
+          Customize the interface and secure your account.
         </p>
       </div>
 
@@ -72,13 +72,13 @@ export default function SettingsSection() {
             ) : (
               <Sun size={20} className="text-primary" />
             )}{" "}
-            Chế độ hiển thị
+            Display Mode
           </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label>
-              Chế độ{" "}
+              Mode{" "}
               {theme === "dark" ? (
                 <Moon size={20} className="text-blue-500" />
               ) : (
@@ -86,7 +86,7 @@ export default function SettingsSection() {
               )}
             </Label>
             <p className="text-sm text-muted-foreground">
-              Chuyển đổi giữa giao diện sáng và tối.
+              Switch between light and dark mode.
             </p>
           </div>
           <Switch
@@ -100,17 +100,18 @@ export default function SettingsSection() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Lock size={20} className="text-primary" /> Đổi mật khẩu
+            <Lock size={20} className="text-primary" /> Update Password
           </CardTitle>
           <CardDescription>
-            Mật khẩu nên có ít nhất 8 ký tự bao gồm chữ và số.
+            Your password should be at least 8 characters long and include both
+            letters and numbers.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="currentPassword">
-                Mật khẩu hiện tại
+                Current Password
               </FieldLabel>
               <FieldContent>
                 <Input
@@ -138,7 +139,7 @@ export default function SettingsSection() {
             </Field>
             <Field>
               <FieldLabel htmlFor="confirmNewPassword">
-                Xác nhận mật khẩu mới
+                Confirm New Password
               </FieldLabel>
               <FieldContent>
                 <Input

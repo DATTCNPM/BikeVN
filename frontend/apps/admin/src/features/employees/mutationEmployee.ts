@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userApi } from "@repo/api";
 import { employeeKeys } from "./employeeKeys";
 import type {
-  UpdateProfilePayload,
+  UpdateEmployeePayload,
   AdminEmployeeCreationPayload,
 } from "@repo/types";
 
@@ -25,8 +25,8 @@ export function useUpdateEmployee() {
       payload,
     }: {
       id: string;
-      payload: Partial<UpdateProfilePayload>;
-    }) => userApi.updateUser(id, payload),
+      payload: Partial<UpdateEmployeePayload>;
+    }) => userApi.updateEmployee(id, payload),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: employeeKeys.all });
       await queryClient.invalidateQueries({

@@ -8,23 +8,23 @@ import {
 export default function Feature() {
   const features = [
     {
-      title: "Đặt xe nhanh chóng",
-      desc: "Tìm kiếm và đặt xe chỉ trong vài phút với giao diện tối ưu và trực quan.",
+      title: "Fast Booking",
+      desc: "Find and book a bike in just a few minutes with our optimized and intuitive interface.",
       icon: <Zap className="w-10 h-10 text-white" />,
     },
     {
-      title: "Giá cả minh bạch",
-      desc: "Hiển thị đầy đủ chi phí, không phát sinh phụ phí bất ngờ.",
+      title: "Transparent Pricing",
+      desc: "Full disclosure of costs with no hidden fees.",
       icon: <BanknoteArrowDown className="w-10 h-10 text-white" />,
     },
     {
-      title: "Nhiều dòng xe cao cấp",
-      desc: "Đa dạng lựa chọn từ xe phổ thông đến xe sang phù hợp mọi nhu cầu.",
+      title: "Diverse Bike Selection",
+      desc: "Wide range of options from standard to premium bikes to suit every need.",
       icon: <Motorbike className="w-10 h-10 text-white" />,
     },
     {
-      title: "Hỗ trợ 24/7",
-      desc: "Đội ngũ hỗ trợ luôn sẵn sàng giúp bạn trong suốt quá trình thuê xe.",
+      title: "24/7 Customer Support",
+      desc: "Our support team is always ready to assist you throughout your bike rental experience.",
       icon: <MessageCircleQuestionMark className="w-10 h-10 text-white" />,
     },
   ];
@@ -34,14 +34,12 @@ export default function Feature() {
         <p className="uppercase tracking-[0.3em] mb-4 text-sm">Why Choose Us</p>
 
         <h2 className="text-4xl md:text-5xl font-bold text-primary leading-tight">
-          Trải nghiệm thuê xe hiện đại,
-          <br />
-          nhanh chóng và đáng tin cậy
+          fast, transparent, and modern
         </h2>
 
         <p className="mt-6 text-lg">
-          Chúng tôi mang đến nền tảng thuê xe tiện lợi, minh bạch và tối ưu trải
-          nghiệm người dùng từ tìm kiếm đến đặt xe.
+          We provide a convenient, transparent, and optimized bike rental
+          platform from search to booking.
         </p>
       </div>
 

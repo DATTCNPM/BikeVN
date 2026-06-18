@@ -21,11 +21,11 @@ export default function BrandDelete({ open, onOpenChange, brand }: Props) {
     try {
       await mutateAsync(brand.id);
 
-      toast.success("Xóa hãng xe thành công");
+      toast.success("Delete vehicle brand successfully");
 
       onOpenChange(false);
     } catch {
-      toast.error("Xóa hãng xe thất bại");
+      toast.error("Failed to delete vehicle brand");
     }
   };
 
@@ -33,11 +33,12 @@ export default function BrandDelete({ open, onOpenChange, brand }: Props) {
     <ConfirmAlertDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xóa hãng xe"
-      description={`Bạn có chắc muốn xóa ${brand?.name}?`}
+      title="Delete Vehicle Brand"
+      description={`Are you sure you want to delete ${brand?.name}?`}
       onConfirm={handleDelete}
       loading={isPending}
-      confirmText="Xóa"
+      confirmText="Delete"
+      cancelText="Cancel"
     />
   );
 }

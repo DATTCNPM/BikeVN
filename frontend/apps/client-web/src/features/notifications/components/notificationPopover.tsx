@@ -37,11 +37,9 @@ export function NotificationPopover() {
 
       <PopoverContent align="end" className="w-[380px] p-0">
         <div className="p-4">
-          <h4 className="font-semibold">Thông báo gần đây</h4>
+          <h4 className="font-semibold">Notifications</h4>
 
-          <p className="text-sm text-muted-foreground">
-            Các thông báo chưa đọc
-          </p>
+          <p className="text-sm text-muted-foreground">Unread notifications</p>
         </div>
 
         <Separator />
@@ -50,7 +48,7 @@ export function NotificationPopover() {
           <div className="flex flex-col">
             {isLoading && (
               <div className="p-4 text-sm text-muted-foreground">
-                Đang tải...
+                Loading...
               </div>
             )}
 
@@ -78,7 +76,7 @@ export function NotificationPopover() {
 
         <div className="p-3">
           <Button asChild className="w-full" variant="outline">
-            <Link to="/notifications">Xem tất cả thông báo</Link>
+            <Link to="/notifications">View all notifications</Link>
           </Button>
         </div>
       </PopoverContent>

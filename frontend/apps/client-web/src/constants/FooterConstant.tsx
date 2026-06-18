@@ -1,20 +1,16 @@
 import { Mail, MapPin, Phone } from "lucide-react";
-const support = [
-  "Trung tâm trợ giúp",
-  "Hướng dẫn đặt xe",
-  "Chính sách hoàn tiền",
-];
+const support = ["Help Center", "Booking Guide", "Refund Policy"];
 const navigation = [
   {
-    name: "Trang chủ",
+    name: "Home",
     href: "/",
   },
   {
-    name: "Dịch vụ",
+    name: "Services",
     href: "#features",
   },
   {
-    name: "Hướng dẫn",
+    name: "Guides",
     href: "#how-it-works",
   },
 ];
@@ -31,7 +27,7 @@ const contact = [
     icon: <Phone className="size-4" />,
   },
   {
-    type: "Địa chỉ",
+    type: "Address",
     value: "123 Đường ABC, Quận 1, TP.HCM",
     icon: <MapPin className="size-4" />,
   },

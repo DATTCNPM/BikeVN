@@ -6,15 +6,15 @@ export default function AppFooter() {
 
         <div className="flex items-center gap-5">
           <button className="transition-colors hover:text-foreground">
-            Chính sách
+            Terms of Service
           </button>
 
           <button className="transition-colors hover:text-foreground">
-            Hỗ trợ
+            Support
           </button>
 
           <button className="transition-colors hover:text-foreground">
-            Liên hệ
+            Contact
           </button>
         </div>
       </div>

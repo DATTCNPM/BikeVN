@@ -3,18 +3,18 @@ export default function HowItWorks() {
   const howItWorks = [
     {
       step: "01",
-      title: "Tìm kiếm xe",
-      desc: "Lọc và tìm dòng xe phù hợp với nhu cầu của bạn.",
+      title: "Find a Bike",
+      desc: "Filter and find the bike that suits your needs.",
     },
     {
       step: "02",
-      title: "Đặt xe",
-      desc: "Chọn thời gian thuê, xác nhận thông tin và thanh toán.",
+      title: "Book Your Bike",
+      desc: "Select your rental period, confirm your information, and complete the payment.",
     },
     {
       step: "03",
-      title: "Nhận xe",
-      desc: "Nhận xe nhanh chóng và bắt đầu hành trình của bạn.",
+      title: "Pick Up Your Bike",
+      desc: "Receive your bike quickly and start your journey.",
     },
   ];
   return (
@@ -23,12 +23,11 @@ export default function HowItWorks() {
         <p className=" uppercase tracking-[0.3em] mb-4 text-sm">How It Works</p>
 
         <h2 className="text-4xl md:text-5xl font-bold text-primary leading-tight">
-          Thuê xe chỉ với vài bước đơn giản
+          Rent a bike in just a few simple steps
         </h2>
 
         <p className="mt-6 text-lg">
-          Quy trình nhanh chóng, tối ưu trải nghiệm giúp bạn tiết kiệm thời
-          gian.
+          A fast, optimized process helps you save time.
         </p>
       </div>
 

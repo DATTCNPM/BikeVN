@@ -18,7 +18,7 @@ export default function BookingInfoCard({ booking }: Props) {
             Booking Information
           </p>
 
-          <h2 className="mt-2 text-2xl font-bold">Thông tin booking</h2>
+          <h2 className="mt-2 text-2xl font-bold">Booking Information</h2>
         </div>
       </div>
 

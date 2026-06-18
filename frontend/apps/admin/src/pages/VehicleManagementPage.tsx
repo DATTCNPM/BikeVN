@@ -42,9 +42,9 @@ const vehicleStatusMap = {
 };
 
 const vehicleStatusLabel = {
-  available: "Sẵn sàng",
-  unavailable: "Không khả dụng",
-  maintenance: "Bảo trì",
+  available: "Available",
+  unavailable: "Unavailable",
+  maintenance: "Under Maintenance",
 };
 
 export default function VehicleManagementPage() {
@@ -103,26 +103,26 @@ export default function VehicleManagementPage() {
 
   const statusOptions = [
     {
-      label: "Sẵn sàng",
+      label: "Available",
       value: "available",
     },
     {
-      label: "Không khả dụng",
+      label: "Unavailable",
       value: "unavailable",
     },
     {
-      label: "Bảo trì",
+      label: "Under Maintenance",
       value: "maintenance",
     },
   ];
 
   const vehicleTypeOptions = [
     {
-      label: "Xe điện",
+      label: "Electric Bike",
       value: "electric",
     },
     {
-      label: "Xe xăng",
+      label: "Fuel Bike",
       value: "fuel",
     },
   ];
@@ -181,7 +181,7 @@ export default function VehicleManagementPage() {
     () => [
       {
         accessorKey: "name",
-        header: "Xe",
+        header: "Vehicle",
 
         cell: ({ row }) => {
           const vehicle = row.original;
@@ -208,7 +208,7 @@ export default function VehicleManagementPage() {
 
       {
         accessorKey: "brand",
-        header: "Hãng",
+        header: "Brand",
 
         cell: ({ row }) => {
           const brand = brands?.data.find((b) => b.id === row.original.brandId);
@@ -226,14 +226,14 @@ export default function VehicleManagementPage() {
 
       {
         accessorKey: "price",
-        header: "Giá thuê",
+        header: "Rental Price",
 
         cell: ({ row }) => `${row.original.pricePerDay.toLocaleString()}đ`,
       },
 
       {
         accessorKey: "currentBranchId",
-        header: "Chi nhánh",
+        header: "Branch",
 
         cell: ({ row }) => (
           <span>
@@ -245,7 +245,7 @@ export default function VehicleManagementPage() {
 
       {
         accessorKey: "status",
-        header: "Trạng thái",
+        header: "Status",
 
         cell: ({ row }) => (
           <Badge className={vehicleStatusMap[row.original.status]}>
@@ -282,7 +282,7 @@ export default function VehicleManagementPage() {
         ),
       },
     ],
-    [brands, models, navigate],
+    [brands, models, navigate, branches],
   );
 
   if (isLoading) {
@@ -302,7 +302,7 @@ export default function VehicleManagementPage() {
       />
       <div className="mb-4 flex flex-wrap gap-2">
         <Filter
-          title="Hãng xe"
+          title="Brand"
           options={brandOptions}
           value={selectedBrand}
           onChange={(value) => {
@@ -312,7 +312,7 @@ export default function VehicleManagementPage() {
         />
 
         <Filter
-          title="Dòng xe"
+          title="Model"
           options={modelOptions}
           value={selectedModel}
           onChange={(value) => {
@@ -322,7 +322,7 @@ export default function VehicleManagementPage() {
         />
 
         <Filter
-          title="Chi nhánh"
+          title="Branch"
           options={branchOptions}
           value={selectedBranch}
           onChange={(value) => {
@@ -332,7 +332,7 @@ export default function VehicleManagementPage() {
         />
 
         <Filter
-          title="Trạng thái"
+          title="Status"
           options={statusOptions}
           value={selectedStatus}
           onChange={(value) => {
@@ -342,7 +342,7 @@ export default function VehicleManagementPage() {
         />
 
         <Filter<VehicleType>
-          title="Loại xe"
+          title="Vehicle Type"
           options={vehicleTypeOptions}
           value={selectedVehicleType}
           onChange={(value) => {
@@ -361,7 +361,7 @@ export default function VehicleManagementPage() {
             setPage(1);
           }}
         >
-          Làm mới
+          Clear Filters
         </Button>
       </div>
 

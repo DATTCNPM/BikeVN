@@ -41,7 +41,7 @@ export default function DataTableToolbar({
         className="h-12 rounded-2xl px-5 font-semibold"
       >
         <Plus className="mr-2 size-5" />
-        Thêm mới
+        Create
       </Button>
     </div>
   );

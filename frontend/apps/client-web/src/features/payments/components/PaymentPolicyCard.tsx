@@ -3,10 +3,10 @@ import { ShieldCheck } from "lucide-react";
 
 export default function PaymentPolicyCard() {
   const data = [
-    "Thanh toán đặt cọc giúp giữ xe trong thời gian đã chọn.",
-    "Tiền thuê sẽ được xác nhận khi nhận xe.",
-    "Hoàn tiền tùy thuộc vào thời điểm hủy booking.",
-    "Giao dịch được mã hóa và bảo mật an toàn.",
+    "Deposit payment helps secure the bike for the selected period.",
+    "Rental fees will be confirmed upon bike pickup.",
+    "Refunds are subject to the timing of the booking cancellation.",
+    "Transactions are encrypted and securely processed.",
   ];
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
@@ -16,7 +16,7 @@ export default function PaymentPolicyCard() {
         </div>
 
         <div>
-          <h3 className="text-xl font-bold">Chính sách thanh toán</h3>
+          <h3 className="text-xl font-bold">Payment Policy</h3>
 
           <div className="mt-4 space-y-3 text-muted-foreground">
             {data.map((item, index) => (

@@ -49,11 +49,11 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
     console.log("Submitting branch creation with values:", values);
     try {
       await mutateAsync(values);
-      toast.success("Tạo chi nhánh thành công");
+      toast.success("Branch created successfully");
       reset(defaultValues);
       onOpenChange(false);
     } catch {
-      toast.error("Tạo chi nhánh thất bại");
+      toast.error("Failed to create branch");
     }
   };
 
@@ -61,22 +61,22 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm chi nhánh"
-      description="Tạo chi nhánh mới trong hệ thống"
+      title="Create New Branch"
+      description="Create a new branch in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Create Branch"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
-            <FieldLabel>Tên chi nhánh</FieldLabel>
-            <Input {...register("name")} placeholder="Chi nhánh 1" />
+            <FieldLabel>Name</FieldLabel>
+            <Input {...register("name")} placeholder="Branch 1" />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Địa chỉ</FieldLabel>
+            <FieldLabel>Address</FieldLabel>
             <Input
               {...register("address")}
               placeholder="123 Đường ABC, Quận XYZ"
@@ -99,7 +99,7 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Trạng thái</FieldLabel>
+            <FieldLabel>Status</FieldLabel>
             <Input {...register("status")} placeholder="active" />
             {errors.status && <FieldError>{errors.status.message}</FieldError>}
           </Field>

@@ -44,26 +44,26 @@ export default function Landing() {
         <nav>
           <ul className="flex items-center space-x-6 text-white/80">
             <Button variant="link" size="lg" asChild>
-              <a href="/">Trang chủ</a>
+              <a href="/">Home</a>
             </Button>
             <li>
               <a href="#features" className="hover:underline">
-                Dịch vụ
+                Services
               </a>
             </li>
             <li>
               <a href="#how-it-works" className="hover:underline">
-                Hướng dẫn
+                How It Works
               </a>
             </li>
           </ul>
         </nav>
         <div className="flex items-center gap-4">
           <Button variant="outline" size="lg" asChild>
-            <Link to="/login">Đăng nhập</Link>
+            <Link to="/login">Login</Link>
           </Button>
           <Button size="lg" asChild>
-            <Link to="/register">Đăng ký</Link>
+            <Link to="/register">Register</Link>
           </Button>
         </div>
       </header>
@@ -92,8 +92,10 @@ export default function Landing() {
             </div>
 
             <p className="mt-6 text-muted-foreground leading-relaxed max-w-md">
-              Nền tảng thuê xe hiện đại giúp bạn dễ dàng tìm kiếm, đặt xe và
-              trải nghiệm hành trình một cách nhanh chóng, an toàn và tiện lợi.
+              BikeVN is a leading bike rental service, offering a wide range of
+              bikes for all your riding needs. Whether you're looking for a
+              leisurely ride around the city or an adventurous mountain biking
+              experience, we've got you covered.
             </p>
 
             {/* Social */}
@@ -111,7 +113,7 @@ export default function Landing() {
 
           {/* Navigation */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Điều hướng</h3>
+            <h3 className="text-sm font-semibold">Navigation</h3>
 
             <ul className="space-y-4">
               {navigation.map((item) => (
@@ -133,7 +135,7 @@ export default function Landing() {
 
           {/* Support */}
           <div className="space-y-4">
-            <h3 className="text-sm  font-semibold">Hỗ trợ</h3>
+            <h3 className="text-sm  font-semibold">Support</h3>
 
             <ul className="space-y-4">
               {support.map((item) => (
@@ -155,7 +157,7 @@ export default function Landing() {
 
           {/* Contact */}
           <div className="space-y-4">
-            <h3 className="text-secondary font-semibold">Liên hệ</h3>
+            <h3 className="text-secondary font-semibold">Contact</h3>
 
             <div className="space-y-5 text-white/80">
               {contact.map((item) => (

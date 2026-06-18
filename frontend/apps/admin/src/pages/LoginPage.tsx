@@ -66,10 +66,10 @@ export default function Login() {
           </div>
 
           <CardTitle className="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
-            Đăng nhập hệ thống
+            Login
           </CardTitle>
           <CardDescription className="text-sm text-zinc-500 dark:text-zinc-400">
-            Hệ thống quản lý và đặt lịch thuê xe cao cấp.
+            Admin Portal Login
           </CardDescription>
         </CardHeader>
 
@@ -82,7 +82,7 @@ export default function Login() {
                   htmlFor="email"
                   className="text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400"
                 >
-                  Địa chỉ Email
+                  Email
                 </FieldLabel>
                 <FieldContent>
                   <Input
@@ -106,7 +106,7 @@ export default function Login() {
                   htmlFor="password"
                   className="text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400"
                 >
-                  Mật khẩu
+                  Password
                 </FieldLabel>
                 <FieldContent className="relative flex items-center">
                   <Input
@@ -148,10 +148,10 @@ export default function Login() {
                 {isPending ? (
                   <span className="flex items-center justify-center gap-2">
                     <Spinner className="h-4 w-4 animate-spin text-current" />
-                    Xác thực hệ thống...
+                    Logging in...
                   </span>
                 ) : (
-                  "Đăng nhập hệ thống"
+                  "Login"
                 )}
               </Button>
             </FieldGroup>
@@ -164,7 +164,7 @@ export default function Login() {
             className="flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-amber-500 dark:text-zinc-400 dark:hover:text-amber-400 transition-colors"
           >
             <Home className="h-3.5 w-3.5" />
-            Quay lại cổng thông tin Client
+            Return to Client Portal
           </Link>
         </CardFooter>
       </Card>

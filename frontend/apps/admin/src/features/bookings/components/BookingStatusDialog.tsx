@@ -40,11 +40,11 @@ export default function BookingStatusDialog({
       if (mode === "approve") {
         await approveMutation.mutateAsync(booking.id);
 
-        toast.success("Duyệt đơn thành công");
+        toast.success("Booking approved successfully");
       } else {
         await rejectMutation.mutateAsync(booking.id);
 
-        toast.success("Từ chối đơn thành công");
+        toast.success("Booking rejected successfully");
       }
 
       await queryClient.invalidateQueries({
@@ -54,7 +54,9 @@ export default function BookingStatusDialog({
       onOpenChange(false);
     } catch {
       toast.error(
-        mode === "approve" ? "Duyệt đơn thất bại" : "Từ chối đơn thất bại",
+        mode === "approve"
+          ? "Failed to approve booking"
+          : "Failed to reject booking",
       );
     }
   };
@@ -65,13 +67,13 @@ export default function BookingStatusDialog({
       onOpenChange={onOpenChange}
       loading={loading}
       onConfirm={handleConfirm}
-      title={mode === "approve" ? "Duyệt đơn đặt xe" : "Từ chối đơn đặt xe"}
+      title={mode === "approve" ? "Confirm Booking" : "Reject Booking"}
       description={
         mode === "approve"
-          ? "Bạn có chắc muốn duyệt đơn đặt xe này không?"
-          : "Bạn có chắc muốn từ chối đơn đặt xe này không?"
+          ? "Are you sure you want to confirm this booking?"
+          : "Are you sure you want to reject this booking?"
       }
-      confirmText={mode === "approve" ? "Duyệt đơn" : "Từ chối đơn"}
+      confirmText={mode === "approve" ? "Confirm Booking" : "Reject Booking"}
     />
   );
 }

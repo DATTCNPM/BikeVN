@@ -33,12 +33,12 @@ type Props = {
 export default function ConfirmAlertDialog({
   open,
   onOpenChange,
-  title = "Bạn có chắc chắn?",
-  description = "Hành động này không thể hoàn tác.",
+  title = "Are you sure?",
+  description = "This action cannot be undone.",
   onConfirm,
   loading,
-  confirmText = "Xác nhận",
-  cancelText = "Hủy",
+  confirmText = "Confirm",
+  cancelText = "Cancel",
 }: Props) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

@@ -16,10 +16,10 @@ export default function ReviewDelete({ open, onOpenChange, review }: Props) {
     if (!review) return;
     try {
       await mutateAsync(review.id);
-      toast.success("Xóa đánh giá thành công");
+      toast.success("Delete review successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Xóa đánh giá thất bại");
+      toast.error("Failed to delete review");
     }
   };
 
@@ -27,12 +27,12 @@ export default function ReviewDelete({ open, onOpenChange, review }: Props) {
     <ConfirmAlertDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xóa đánh giá"
-      description={`Bạn có chắc chắn muốn xóa đánh giá của user #${review?.user_id.substring(0, 6)} không? Hành động này không thể hoàn tác.`}
+      title="Delete Review"
+      description={`Are you sure you want to delete the review of user #${review?.user_id.substring(0, 6)}? This action cannot be undone.`}
       onConfirm={handleDelete}
       loading={isPending}
-      confirmText="Xóa"
-      cancelText="Hủy"
+      confirmText="Delete"
+      cancelText="Cancel"
     />
   );
 }

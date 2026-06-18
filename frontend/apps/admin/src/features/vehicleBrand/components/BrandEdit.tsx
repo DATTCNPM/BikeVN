@@ -60,11 +60,11 @@ export default function BrandEdit({ open, onOpenChange, brand }: Props) {
         data: values,
       });
 
-      toast.success("Cập nhật hãng xe thành công");
+      toast.success("Update vehicle brand successfully");
 
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật hãng xe thất bại");
+      toast.error("Failed to update vehicle brand");
     }
   };
 
@@ -72,15 +72,15 @@ export default function BrandEdit({ open, onOpenChange, brand }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa hãng xe"
-      description="Cập nhật thông tin hãng xe"
+      title="Update Vehicle Brand"
+      description="Update vehicle brand information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Tên hãng xe</FieldLabel>
+          <FieldLabel>Brand Name</FieldLabel>
 
           <Input {...register("name")} />
 
@@ -88,7 +88,7 @@ export default function BrandEdit({ open, onOpenChange, brand }: Props) {
         </Field>
 
         <Field>
-          <FieldLabel>Quốc gia</FieldLabel>
+          <FieldLabel>Country</FieldLabel>
 
           <Input {...register("country")} />
 

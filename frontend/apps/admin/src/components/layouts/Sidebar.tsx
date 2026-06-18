@@ -36,73 +36,73 @@ const menuItems = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Nhân viên",
+    title: "Employees",
     icon: Users,
     path: "employees",
     roles: [ROLES.ADMIN],
   },
   {
-    title: "Khách hàng",
+    title: "Customers",
     icon: Users,
     path: "users",
     roles: [ROLES.ADMIN],
   },
   {
-    title: "Quản lý xe",
+    title: "Vehicles",
     icon: Bike,
     path: "vehicles",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Quản lý hãng xe",
+    title: "Brands",
     icon: Bike,
     path: "brands",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Quản lý chi nhánh",
+    title: "Branches",
     icon: Store,
     path: "branches",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Quản lý model",
+    title: "Models",
     icon: Bike,
     path: "models",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Đơn thuê",
+    title: "Bookings",
     icon: ClipboardList,
     path: "bookings",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Đánh giá",
+    title: "Reviews",
     icon: Star,
     path: "reviews",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Thanh toán",
+    title: "Payments",
     icon: CircleDollarSign,
     path: "payments",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Tin nhắn",
+    title: "Chats",
     icon: MessageSquare,
     path: "chats",
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
-    title: "Quyền",
+    title: "Permissions",
     icon: Users,
     path: "permissions",
     roles: [ROLES.ADMIN],
   },
   {
-    title: "Vai trò",
+    title: "Roles",
     icon: Users,
     path: "roles",
     roles: [ROLES.ADMIN],
@@ -145,7 +145,7 @@ export default function AppSidebar() {
       <SidebarContent className="px-4 py-5">
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Quản lý hệ thống
+            Main Menu
           </SidebarGroupLabel>
 
           <SidebarGroupContent>
@@ -182,7 +182,7 @@ export default function AppSidebar() {
           <p className="text-sm font-semibold">MotoRent System</p>
 
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            Quản lý xe, đơn thuê và doanh thu trong một giao diện tập trung.
+            Manage vehicles, bookings, and revenue in a centralized interface.
           </p>
         </div>
       </SidebarFooter>

@@ -32,11 +32,11 @@ export default function VehicleImageDelete({
         imageId: image.id,
       });
 
-      toast.success("Xóa ảnh thành công");
+      toast.success("Delete image successfully");
 
       onOpenChange(false);
     } catch {
-      toast.error("Xóa ảnh thất bại");
+      toast.error("Failed to delete image");
     }
   };
 
@@ -44,11 +44,12 @@ export default function VehicleImageDelete({
     <ConfirmAlertDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xóa ảnh xe"
-      description="Bạn có chắc muốn xóa ảnh này không?"
+      title="Delete Vehicle Image"
+      description="Are you sure you want to delete this image?"
       onConfirm={handleDelete}
       loading={isPending}
-      confirmText="Xóa"
+      confirmText="Delete"
+      cancelText="Cancel"
     />
   );
 }

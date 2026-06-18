@@ -20,8 +20,9 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateEmployee } from "@/features/employees/mutationEmployee";
-import { updateUserSchema } from "@repo/schemas";
-import type { UpdateUserPayload, User } from "@repo/types";
+import { useBranches } from "@repo/hooks";
+import { updateEmployeeSchema } from "@repo/schemas";
+import type { UpdateEmployeePayload, User } from "@repo/types";
 
 type Props = {
   open: boolean;
@@ -31,6 +32,7 @@ type Props = {
 
 export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
   const { mutateAsync, isPending } = useUpdateEmployee();
+  const { data: branches } = useBranches();
 
   const {
     register,
@@ -38,8 +40,8 @@ export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UpdateUserPayload>({
-    resolver: zodResolver(updateUserSchema),
+  } = useForm<UpdateEmployeePayload>({
+    resolver: zodResolver(updateEmployeeSchema),
   });
 
   useEffect(() => {
@@ -49,17 +51,18 @@ export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
       email: user.email,
       phone: user.phone || "",
       cccdNumber: user.cccdNumber || "",
+      branchId: user.branchId || "",
     });
   }, [user, reset]);
 
-  const onSubmit = async (values: UpdateUserPayload) => {
+  const onSubmit = async (values: UpdateEmployeePayload) => {
     if (!user) return;
     try {
       await mutateAsync({ id: user.id, payload: values });
-      toast.success("Cập nhật người dùng thành công");
+      toast.success("Update employee successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật người dùng thất bại");
+      toast.error("Failed to update employee");
     }
   };
 
@@ -67,16 +70,16 @@ export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa người dùng"
-      description="Cập nhật thông tin người dùng"
+      title="Edit Employee"
+      description="Update employee information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
-            <FieldLabel>Họ tên</FieldLabel>
+            <FieldLabel>Name</FieldLabel>
             <Input {...register("name")} />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
@@ -88,7 +91,7 @@ export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Số điện thoại</FieldLabel>
+            <FieldLabel>Phone Number</FieldLabel>
             <Input {...register("phone")} />
             {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
           </Field>
@@ -98,6 +101,30 @@ export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
             <Input {...register("cccdNumber")} />
             {errors.cccdNumber && (
               <FieldError>{errors.cccdNumber.message}</FieldError>
+            )}
+          </Field>
+          <Field>
+            <FieldLabel>Branch</FieldLabel>
+            <Controller
+              control={control}
+              name="branchId"
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Branch" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {branches?.map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.branchId && (
+              <FieldError>{errors.branchId.message}</FieldError>
             )}
           </Field>
         </FieldGroup>

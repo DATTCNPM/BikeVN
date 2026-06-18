@@ -25,7 +25,7 @@ export default function BookingTimeline({ status }: Props) {
           Timeline
         </p>
 
-        <h2 className="mt-2 text-2xl font-bold">Trạng thái booking</h2>
+        <h2 className="mt-2 text-2xl font-bold">Booking Status</h2>
       </div>
 
       <div className="mt-8 space-y-6">
@@ -62,7 +62,7 @@ export default function BookingTimeline({ status }: Props) {
                 <p className="font-semibold">{step}</p>
 
                 <p className="text-sm text-muted-foreground">
-                  {active ? "Đã hoàn thành" : "Đang chờ"}
+                  {active ? "Completed" : "Pending"}
                 </p>
               </div>
             </div>

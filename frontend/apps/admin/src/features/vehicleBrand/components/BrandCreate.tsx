@@ -46,13 +46,13 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
     try {
       await mutateAsync(values);
 
-      toast.success("Tạo hãng xe thành công");
+      toast.success("Create vehicle brand successfully");
 
       reset(defaultValues);
 
       onOpenChange(false);
     } catch {
-      toast.error("Tạo hãng xe thất bại");
+      toast.error("Failed to create vehicle brand");
     }
   };
 
@@ -60,15 +60,15 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm hãng xe"
-      description="Tạo hãng xe mới"
+      title="Create Vehicle Brand"
+      description="Create a new vehicle brand"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Create Brand"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Tên hãng xe</FieldLabel>
+          <FieldLabel>Brand Name</FieldLabel>
 
           <Input {...register("name")} placeholder="Honda" />
 
@@ -76,7 +76,7 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
         </Field>
 
         <Field>
-          <FieldLabel>Quốc gia</FieldLabel>
+          <FieldLabel>Country</FieldLabel>
 
           <Input {...register("country")} placeholder="Japan" />
 

@@ -34,7 +34,7 @@ export default function PaymentBookingCard({ booking }: Props) {
           Booking
         </p>
 
-        <h2 className="mt-2 text-2xl font-bold">Thông tin đặt xe</h2>
+        <h2 className="mt-2 text-2xl font-bold">Booking Information</h2>
       </div>
 
       <div className="mt-8 grid gap-5 md:grid-cols-2">

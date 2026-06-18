@@ -63,8 +63,6 @@ export default function VehicleInfo({
     },
   };
 
-  console.log("Vehicle Data:", vehicleData);
-
   return (
     <div className="h-full overflow-y-auto">
       <VehicleGallery images={vehicleData.images || []} />

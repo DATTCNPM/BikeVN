@@ -50,10 +50,10 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
     if (!branch) return;
     try {
       await mutateAsync({ id: branch.id, payload: values });
-      toast.success("Cập nhật chi nhánh thành công");
+      toast.success("Branch updated successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật chi nhánh thất bại");
+      toast.error("Failed to update branch");
     }
   };
 
@@ -61,22 +61,22 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa chi nhánh"
-      description="Cập nhật thông tin chi nhánh"
+      title="Edit Branch"
+      description="Update branch information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
-            <FieldLabel>Tên chi nhánh</FieldLabel>
+            <FieldLabel>Name</FieldLabel>
             <Input {...register("name")} />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Địa chỉ</FieldLabel>
+            <FieldLabel>Address</FieldLabel>
             <Input {...register("address")} />
             {errors.address && (
               <FieldError>{errors.address.message}</FieldError>
@@ -96,7 +96,7 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Trạng thái</FieldLabel>
+            <FieldLabel>Status</FieldLabel>
             <Input {...register("status")} />
             {errors.status && <FieldError>{errors.status.message}</FieldError>}
           </Field>

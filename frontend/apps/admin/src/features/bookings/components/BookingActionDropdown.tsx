@@ -35,7 +35,7 @@ export default function BookingActionDropdown({
             }}
           >
             <Check className="mr-2 size-4" />
-            Duyệt đơn
+            Confirm Booking
           </DropdownMenuItem>
         )}
 
@@ -47,7 +47,7 @@ export default function BookingActionDropdown({
             className="text-destructive focus:text-destructive"
           >
             <X className="mr-2 size-4" />
-            Từ chối đơn
+            Reject Booking
           </DropdownMenuItem>
         )}
 
@@ -57,7 +57,7 @@ export default function BookingActionDropdown({
               void onManagerVehicleReturn();
             }}
           >
-            <span className="mr-2">Quản lý trả xe</span>
+            <span className="mr-2">Manage Vehicle Return</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

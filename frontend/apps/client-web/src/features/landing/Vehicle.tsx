@@ -2,7 +2,7 @@ import CardProduct from "@/components/common/CardProduct";
 import { useVehicles, useBranches } from "@repo/hooks";
 import { filterImagePrimary } from "@repo/utils";
 export default function Vehicle() {
-  const { data: vehicles, isLoading } = useVehicles();
+  const { data: vehicles, isLoading } = useVehicles(1, 10);
   const { data: branches } = useBranches();
   if (isLoading) {
     return <div>Loading...</div>;

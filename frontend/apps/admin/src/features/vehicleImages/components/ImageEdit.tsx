@@ -101,11 +101,11 @@ export default function ImageEdit({
         },
       });
 
-      toast.success("Cập nhật ảnh thành công");
+      toast.success("Update image successfully");
 
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật ảnh thất bại");
+      toast.error("Failed to update image");
     }
   };
 
@@ -113,15 +113,15 @@ export default function ImageEdit({
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa ảnh"
-      description="Cập nhật thông tin ảnh xe"
+      title="Edit Image"
+      description="Update image information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Đổi ảnh</FieldLabel>
+          <FieldLabel>Change Image</FieldLabel>
 
           <Input type="file" accept="image/*" onChange={handleFileChange} />
 
@@ -130,7 +130,7 @@ export default function ImageEdit({
 
         {preview && (
           <Field>
-            <FieldLabel>Xem trước</FieldLabel>
+            <FieldLabel>Preview</FieldLabel>
 
             <img
               src={`http://localhost:8080${preview}`}
@@ -141,18 +141,18 @@ export default function ImageEdit({
         )}
 
         <Field>
-          <FieldLabel>Mô tả ảnh</FieldLabel>
+          <FieldLabel>Image Description</FieldLabel>
 
           <Input
             {...register("altText")}
-            placeholder="Ví dụ: Góc nhìn bên trái"
+            placeholder="Example: Left side view"
           />
 
           {errors.altText && <FieldError>{errors.altText.message}</FieldError>}
         </Field>
 
         <Field>
-          <FieldLabel>Thứ tự hiển thị</FieldLabel>
+          <FieldLabel>Display Order</FieldLabel>
 
           <Input
             type="number"
@@ -167,7 +167,7 @@ export default function ImageEdit({
         </Field>
 
         <Field>
-          <FieldLabel>Ảnh chính</FieldLabel>
+          <FieldLabel>Primary Image</FieldLabel>
           <div>
             <Controller
               control={control}

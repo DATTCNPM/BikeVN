@@ -47,12 +47,12 @@ export default function RoleCreate({ open, onOpenChange }: Props) {
     try {
       await mutateAsync(values);
 
-      toast.success("Tạo vai trò thành công");
+      toast.success("Role created successfully");
 
       reset(defaultValues);
       onOpenChange(false);
     } catch {
-      toast.error("Tạo vai trò thất bại");
+      toast.error("Failed to create role");
     }
   };
 
@@ -60,22 +60,25 @@ export default function RoleCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm vai trò"
-      description="Tạo vai trò mới trong hệ thống"
+      title="Create Role"
+      description="Create a new role in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Create Role"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Tên vai trò</FieldLabel>
+          <FieldLabel>Role Name</FieldLabel>
           <Input {...register("name")} placeholder="manager" />
           {errors.name && <FieldError>{errors.name.message}</FieldError>}
         </Field>
 
         <Field>
-          <FieldLabel>Mô tả</FieldLabel>
-          <Input {...register("description")} placeholder="Quản lý hệ thống" />
+          <FieldLabel>Description</FieldLabel>
+          <Input
+            {...register("description")}
+            placeholder="System administrator"
+          />
           {errors.description && (
             <FieldError>{errors.description.message}</FieldError>
           )}

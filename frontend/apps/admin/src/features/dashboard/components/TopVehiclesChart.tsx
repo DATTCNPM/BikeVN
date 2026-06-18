@@ -29,7 +29,7 @@ type Props = {
 
 const chartConfig = {
   total: {
-    label: "Số lượt thuê",
+    label: "Number of Rentals",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
@@ -38,7 +38,7 @@ export default function TopVehiclesChart({ data }: Props) {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <CardTitle>Xe được thuê nhiều nhất</CardTitle>
+        <CardTitle>Top Vehicles</CardTitle>
       </CardHeader>
 
       <CardContent>

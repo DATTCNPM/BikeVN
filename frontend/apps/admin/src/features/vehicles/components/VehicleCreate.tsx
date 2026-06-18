@@ -77,11 +77,11 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     console.log("Submitting vehicle:", values);
     try {
       await mutateAsync(values);
-      toast.success("Tạo xe thành công");
+      toast.success("Create vehicle successfully");
       reset(defaultValues);
       onOpenChange(false);
     } catch {
-      toast.error("Tạo xe thất bại");
+      toast.error("Failed to create vehicle");
     }
   };
 
@@ -89,22 +89,22 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm xe"
-      description="Tạo xe mới trong hệ thống"
+      title="Create Vehicle"
+      description="Create a new vehicle in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo xe"
+      submitText="Create Vehicle"
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Tên xe</FieldLabel>
+            <FieldLabel>Vehicle Name</FieldLabel>
             <Input {...register("name")} placeholder="Toyota Vios" />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Hãng xe</FieldLabel>
+            <FieldLabel>Brand</FieldLabel>
             <Controller
               control={control}
               name="brandId"
@@ -116,7 +116,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn hãng xe" />
+                    <SelectValue placeholder="Select Brand" />
                   </SelectTrigger>
                   <SelectContent>
                     {brands?.data?.map((b) => (
@@ -134,7 +134,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Dòng xe</FieldLabel>
+            <FieldLabel>Model</FieldLabel>
             <Controller
               control={control}
               name="modelId"
@@ -145,7 +145,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                   disabled={!selectedBrandId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn dòng xe" />
+                    <SelectValue placeholder="Select Model" />
                   </SelectTrigger>
                   <SelectContent>
                     {filteredModels?.map((m) => (
@@ -163,7 +163,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Biển số</FieldLabel>
+            <FieldLabel>License Plate</FieldLabel>
             <Input {...register("licensePlate")} placeholder="51A-12345" />
             {errors.licensePlate && (
               <FieldError>{errors.licensePlate.message}</FieldError>
@@ -173,13 +173,13 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Màu sắc</FieldLabel>
+            <FieldLabel>Color</FieldLabel>
             <Input {...register("color")} placeholder="Trắng" />
             {errors.color && <FieldError>{errors.color.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Năm sản xuất</FieldLabel>
+            <FieldLabel>Year of Manufacture</FieldLabel>
             <Input
               type="number"
               {...register("year", { valueAsNumber: true })}
@@ -188,7 +188,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Giá thuê/ngày</FieldLabel>
+            <FieldLabel>Price per Day</FieldLabel>
             <Input
               type="number"
               {...register("pricePerDay", { valueAsNumber: true })}
@@ -199,7 +199,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Số km đã đi</FieldLabel>
+            <FieldLabel>Mileage</FieldLabel>
             <Input
               type="number"
               {...register("mileage", { valueAsNumber: true })}
@@ -212,7 +212,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Chi nhánh</FieldLabel>
+            <FieldLabel>Branch</FieldLabel>
             <Controller
               control={control}
               name="currentBranchId"
@@ -222,7 +222,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                   onValueChange={(val) => field.onChange(val)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn chi nhánh" />
+                    <SelectValue placeholder="Select Branch" />
                   </SelectTrigger>
                   <SelectContent>
                     {branches.map((b) => (
@@ -237,7 +237,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Trạng thái</FieldLabel>
+            <FieldLabel>Status</FieldLabel>
             <Controller
               control={control}
               name="status"
@@ -247,9 +247,9 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available">Sẵn sàng</SelectItem>
-                    <SelectItem value="unavailable">Không khả dụng</SelectItem>
-                    <SelectItem value="maintenance">Bảo trì</SelectItem>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="unavailable">Unavailable</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -257,7 +257,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Loại năng lượng</FieldLabel>
+            <FieldLabel>Energy Type</FieldLabel>
             <Controller
               control={control}
               name="vehicleType"
@@ -267,8 +267,8 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fuel">Xăng/Dầu</SelectItem>
-                    <SelectItem value="electric">Điện</SelectItem>
+                    <SelectItem value="fuel">Fuel</SelectItem>
+                    <SelectItem value="electric">Electric</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -280,8 +280,11 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
         </div>
 
         <Field>
-          <FieldLabel>Mô tả</FieldLabel>
-          <Textarea {...register("description")} placeholder="Mô tả xe..." />
+          <FieldLabel>Description</FieldLabel>
+          <Textarea
+            {...register("description")}
+            placeholder="Vehicle description..."
+          />
           {errors.description && (
             <FieldError>{errors.description.message}</FieldError>
           )}

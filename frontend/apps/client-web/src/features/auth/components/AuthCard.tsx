@@ -38,11 +38,11 @@ export default function AuthCard({
         <CardAction>
           {action === "login" ? (
             <Button variant="link" asChild>
-              <Link to="/register">Đăng ký</Link>
+              <Link to="/register">Don't have an account? Sign up</Link>
             </Button>
           ) : (
             <Button variant="link" asChild>
-              <Link to="/login">Đăng nhập</Link>
+              <Link to="/login">Already have an account? Log in</Link>
             </Button>
           )}
         </CardAction>
@@ -57,7 +57,7 @@ export default function AuthCard({
       <CardFooter className="flex items-center justify-center">
         <Link to="/" className="flex items-center gap-2 text-primary">
           <Home className="w-4 h-4" />
-          Quay lại trang chủ
+          Back to Home
         </Link>
       </CardFooter>
     </Card>

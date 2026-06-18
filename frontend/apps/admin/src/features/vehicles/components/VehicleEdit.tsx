@@ -84,10 +84,10 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
         id: vehicle.id,
         payload: values,
       });
-      toast.success("Cập nhật xe thành công");
+      toast.success("Update vehicle successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật xe thất bại");
+      toast.error("Failed to update vehicle");
     }
   };
 
@@ -95,22 +95,22 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa xe"
-      description="Cập nhật thông tin xe"
+      title="Edit Vehicle"
+      description="Update vehicle information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Tên xe</FieldLabel>
+            <FieldLabel>Vehicle Name</FieldLabel>
             <Input {...register("name")} />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Hãng xe</FieldLabel>
+            <FieldLabel>Brand</FieldLabel>
             <Controller
               control={control}
               name="brandId"
@@ -120,7 +120,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                   onValueChange={(val) => field.onChange(Number(val))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn hãng xe" />
+                    <SelectValue placeholder="Select Brand" />
                   </SelectTrigger>
                   <SelectContent>
                     {brands?.data?.map((b) => (
@@ -138,7 +138,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Dòng xe</FieldLabel>
+            <FieldLabel>Model</FieldLabel>
             <Controller
               control={control}
               name="modelId"
@@ -149,7 +149,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                   disabled={!selectedBrandId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn dòng xe" />
+                    <SelectValue placeholder="Select Model" />
                   </SelectTrigger>
                   <SelectContent>
                     {filteredModels?.map((m) => (
@@ -167,7 +167,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Biển số</FieldLabel>
+            <FieldLabel>License Plate</FieldLabel>
             <Input {...register("licensePlate")} />
             {errors.licensePlate && (
               <FieldError>{errors.licensePlate.message}</FieldError>
@@ -177,13 +177,13 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Màu sắc</FieldLabel>
+            <FieldLabel>Color</FieldLabel>
             <Input {...register("color")} />
             {errors.color && <FieldError>{errors.color.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Năm sản xuất</FieldLabel>
+            <FieldLabel>Year</FieldLabel>
             <Input
               type="number"
               {...register("year", { valueAsNumber: true })}
@@ -192,7 +192,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Giá thuê/ngày</FieldLabel>
+            <FieldLabel>Price Per Day</FieldLabel>
             <Input
               type="number"
               {...register("pricePerDay", { valueAsNumber: true })}
@@ -203,7 +203,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Số km đã đi</FieldLabel>
+            <FieldLabel>Mileage</FieldLabel>
             <Input
               type="number"
               {...register("mileage", { valueAsNumber: true })}
@@ -216,7 +216,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Chi nhánh</FieldLabel>
+            <FieldLabel>Branch</FieldLabel>
             <Controller
               control={control}
               name="currentBranchId"
@@ -238,7 +238,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Trạng thái</FieldLabel>
+            <FieldLabel>Status</FieldLabel>
             <Controller
               control={control}
               name="status"
@@ -248,9 +248,9 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available">Sẵn sàng</SelectItem>
-                    <SelectItem value="unavailable">Không khả dụng</SelectItem>
-                    <SelectItem value="maintenance">Bảo trì</SelectItem>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="unavailable">Unavailable</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -258,7 +258,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Loại nhiên liệu</FieldLabel>
+            <FieldLabel>Energy Type</FieldLabel>
             <Controller
               control={control}
               name="vehicleType"
@@ -268,8 +268,8 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fuel">Xăng/Dầu</SelectItem>
-                    <SelectItem value="electric">Điện</SelectItem>
+                    <SelectItem value="fuel">Fuel</SelectItem>
+                    <SelectItem value="electric">Electric</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -281,7 +281,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
         </div>
 
         <Field>
-          <FieldLabel>Mô tả</FieldLabel>
+          <FieldLabel>Description</FieldLabel>
           <Textarea {...register("description")} />
           {errors.description && (
             <FieldError>{errors.description.message}</FieldError>

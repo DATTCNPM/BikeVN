@@ -47,12 +47,12 @@ export default function PermissionCreate({ open, onOpenChange }: Props) {
     try {
       await mutateAsync(values);
 
-      toast.success("Tạo quyền thành công");
+      toast.success("Create permission successfully");
 
       reset(defaultValues);
       onOpenChange(false);
     } catch {
-      toast.error("Tạo quyền thất bại");
+      toast.error("Failed to create permission");
     }
   };
 
@@ -60,24 +60,24 @@ export default function PermissionCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm quyền"
-      description="Tạo quyền mới trong hệ thống"
+      title="Create Permission"
+      description="Create a new permission in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Create"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Tên quyền</FieldLabel>
+          <FieldLabel>Permission Name</FieldLabel>
           <Input {...register("name")} placeholder="user.create" />
           {errors.name && <FieldError>{errors.name.message}</FieldError>}
         </Field>
 
         <Field>
-          <FieldLabel>Mô tả</FieldLabel>
+          <FieldLabel>Description</FieldLabel>
           <Input
             {...register("description")}
-            placeholder="Cho phép tạo người dùng"
+            placeholder="Description of the permission"
           />
           {errors.description && (
             <FieldError>{errors.description.message}</FieldError>

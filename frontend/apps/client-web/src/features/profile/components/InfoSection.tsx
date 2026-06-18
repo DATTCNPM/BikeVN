@@ -26,22 +26,22 @@ export default function InfoSection() {
   const infoItems = [
     {
       icon: <User className="text-muted-foreground" />,
-      label: "Họ và tên",
+      label: "Full Name",
       value: user?.name || "Chưa cập nhật",
     },
     {
       icon: <Mail className="text-muted-foreground" />,
-      label: "Email liên hệ",
+      label: "Email",
       value: user?.email || "Chưa cập nhật",
     },
     {
       icon: <Phone className="text-muted-foreground" />,
-      label: "Số điện thoại",
+      label: "Phone Number",
       value: user?.phone || "Chưa cập nhật",
     },
     {
       icon: <CreditCard className="text-muted-foreground" />,
-      label: "Số CCCD",
+      label: "ID Number",
       value: user?.cccdNumber || "Chưa cập nhật",
     },
   ];
@@ -50,18 +50,18 @@ export default function InfoSection() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold font-heading tracking-tight">
-          Hồ sơ cá nhân
+          Personal Information
         </h1>
         <p className="text-muted-foreground mt-2">
-          Quản lý thông tin định danh và liên lạc của bạn.
+          Manage your identity and contact information.
         </p>
       </div>
 
       <Card className="border-border shadow-sm">
         <CardHeader>
-          <CardTitle>Chi tiết tài khoản</CardTitle>
+          <CardTitle>Personal Information</CardTitle>
           <CardDescription>
-            Các thông tin này được sử dụng cho việc xác thực và bảo mật.
+            This information is used for authentication and security purposes.
           </CardDescription>
           <CardAction>
             <UpdateProfile
@@ -72,7 +72,7 @@ export default function InfoSection() {
                       id: "",
                       name: "",
                       email: "",
-                      role: "user",
+
                       phone: "",
                       cccdNumber: "",
                       createdAt: "",
@@ -82,7 +82,7 @@ export default function InfoSection() {
               trigger={
                 <Button variant="outline">
                   <Edit2 className="w-4 h-4" />
-                  <span className="ml-2">Chỉnh sửa</span>
+                  <span className="ml-2">Edit Profile</span>
                 </Button>
               }
             />

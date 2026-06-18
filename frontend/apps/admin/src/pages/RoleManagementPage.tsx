@@ -32,16 +32,16 @@ export default function RoleManagementPage() {
     () => [
       {
         accessorKey: "name",
-        header: "Tên vai trò",
+        header: "Name",
       },
       {
         accessorKey: "description",
-        header: "Mô tả",
+        header: "Description",
         cell: ({ row }) => row.original.description || "-",
       },
       {
         accessorKey: "permissions",
-        header: "Quyền",
+        header: "Permissions",
         cell: ({ row }) => row.original.permissions.join(", "),
       },
       {

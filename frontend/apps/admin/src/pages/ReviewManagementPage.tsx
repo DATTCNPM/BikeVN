@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { MessageSquare, Star } from "lucide-react";
@@ -8,7 +8,6 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { toast } from "@repo/ui/components/ui/sonner";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 
@@ -19,7 +18,7 @@ import { useAllReviews } from "@repo/hooks";
 import type { Review } from "@repo/types";
 
 export default function ReviewManagementPage() {
-  const { data: reviews = [], isLoading, error } = useAllReviews();
+  const { data: reviews = [], isLoading } = useAllReviews();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -27,17 +26,11 @@ export default function ReviewManagementPage() {
 
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    if (error) {
-      toast.error("Không thể tải danh sách đánh giá");
-    }
-  }, [error]);
-
   const columns = useMemo<ColumnDef<Review>[]>(
     () => [
       {
         accessorKey: "booking_id",
-        header: "Mã đơn",
+        header: "Booking ID",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
             #{row.original.booking_id.substring(0, 6)}
@@ -46,7 +39,7 @@ export default function ReviewManagementPage() {
       },
       {
         accessorKey: "user_id",
-        header: "Mã người dùng",
+        header: "User ID",
         cell: ({ row }) => (
           <span className="text-sm">
             User #{row.original.user_id.substring(0, 6)}
@@ -55,7 +48,7 @@ export default function ReviewManagementPage() {
       },
       {
         accessorKey: "vehicle_id",
-        header: "Mã xe",
+        header: "Vehicle ID",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
             Xe #{row.original.vehicle_id.substring(0, 6)}
@@ -64,7 +57,7 @@ export default function ReviewManagementPage() {
       },
       {
         accessorKey: "rating",
-        header: "Đánh giá",
+        header: "Rating",
         cell: ({ row }) => (
           <div className="flex items-center gap-1">
             {Array.from({ length: row.original.rating }).map((_, index) => (
@@ -78,7 +71,7 @@ export default function ReviewManagementPage() {
       },
       {
         accessorKey: "comment",
-        header: "Bình luận",
+        header: "Comment",
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <MessageSquare className="size-4 text-muted-foreground" />
@@ -90,16 +83,16 @@ export default function ReviewManagementPage() {
       },
       {
         accessorKey: "created_at",
-        header: "Ngày đánh giá",
+        header: "Created At",
         cell: ({ row }) =>
           new Date(row.original.created_at).toLocaleString("vi-VN"),
       },
       {
         id: "status",
-        header: "Trạng thái",
+        header: "Status",
         cell: () => (
           <Badge className="bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300">
-            Hiển thị
+            Visible
           </Badge>
         ),
       },
@@ -139,6 +132,8 @@ export default function ReviewManagementPage() {
 
       <TablePagination
         page={1}
+        pageSize={10}
+        totalElements={reviews.length}
         totalPages={Math.ceil(reviews.length / 10) || 1}
         onPageChange={(page) => console.log(page)}
       />
