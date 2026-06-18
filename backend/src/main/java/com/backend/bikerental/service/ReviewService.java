@@ -13,14 +13,17 @@ import com.backend.bikerental.mapper.ReviewMapper;
 import com.backend.bikerental.repository.BookingRepository;
 import com.backend.bikerental.repository.ReviewRepository;
 import com.backend.bikerental.repository.UserRepository;
+import com.backend.bikerental.specification.ReviewSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,5 +112,31 @@ public class ReviewService {
             }
         }
         reviewRepository.delete(review);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<ReviewResponse> filterReviews( String bookingId, String vehicleId,
+                                                       String userId, Integer rating,
+                                                       int page, int size)
+    {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<Review> specification = ReviewSpecification.filterReviews(bookingId, vehicleId, userId, rating);
+
+        Page<Review> pageData = reviewRepository.findAll(specification, pageable);
+
+        var reviewResponses = pageData.getContent().stream()
+                .map(reviewMapper::toReviewResponse)
+                .toList();
+
+        return PageResponse.<ReviewResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(reviewResponses)
+                .build();
+
     }
 }

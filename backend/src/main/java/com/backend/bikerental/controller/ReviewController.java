@@ -56,4 +56,18 @@ public class ReviewController {
                 .message("Review deleted successfully")
                 .build();
     }
+
+    @GetMapping("/filter")
+    public ApiResponse<PageResponse<ReviewResponse>> filterReviews
+            (@RequestParam(required = false) String bookingId,
+             @RequestParam(required = false) String vehicleId,
+             @RequestParam(required = false) String userId,
+             @RequestParam(required = false) Integer rating,
+             @RequestParam(defaultValue = "1") int page,
+             @RequestParam(defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<ReviewResponse>>builder()
+                .result(reviewService.filterReviews(bookingId, vehicleId, userId, rating, page, size))
+                .build();
+    }
 }
