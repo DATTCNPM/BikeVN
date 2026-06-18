@@ -33,14 +33,14 @@ export default function TableActionDropdown({
         {onManageImage && (
           <DropdownMenuItem onClick={() => void onManageImage?.()}>
             <Image className="mr-2 size-4" />
-            Quản lý hình ảnh
+            Manage Images
           </DropdownMenuItem>
         )}
 
         {onEdit && (
           <DropdownMenuItem onClick={() => void onEdit?.()}>
             <Pencil className="mr-2 size-4" />
-            Chỉnh sửa
+            Edit
           </DropdownMenuItem>
         )}
 
@@ -50,14 +50,14 @@ export default function TableActionDropdown({
             className="text-destructive focus:text-destructive"
           >
             <Trash2 className="mr-2 size-4" />
-            Xóa
+            Delete
           </DropdownMenuItem>
         )}
 
         {onCreateEmployee && (
           <DropdownMenuItem onClick={() => void onCreateEmployee?.()}>
             <Image className="mr-2 size-4" />
-            Tạo nhân viên
+            Create Employee
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

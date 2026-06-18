@@ -16,10 +16,10 @@ export default function BranchDelete({ open, onOpenChange, branch }: Props) {
     if (!branch) return;
     try {
       await mutateAsync(branch.id);
-      toast.success("Xóa chi nhánh thành công");
+      toast.success("Branch deleted successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Xóa chi nhánh thất bại");
+      toast.error("Failed to delete branch");
     }
   };
 
@@ -27,12 +27,12 @@ export default function BranchDelete({ open, onOpenChange, branch }: Props) {
     <ConfirmAlertDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xóa chi nhánh"
-      description={`Bạn có chắc chắn muốn xóa chi nhánh ${branch?.name} không? Hành động này không thể hoàn tác.`}
+      title="Delete Branch"
+      description={`Are you sure you want to delete the branch ${branch?.name}? This action cannot be undone.`}
       onConfirm={handleDelete}
       loading={isPending}
-      confirmText="Xóa"
-      cancelText="Hủy"
+      confirmText="Delete"
+      cancelText="Cancel"
     />
   );
 }

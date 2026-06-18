@@ -2,15 +2,15 @@ export default function CTA() {
   const stats = [
     {
       value: "10K+",
-      label: "Khách hàng tin tưởng",
+      label: "Trusted Customers",
     },
     {
       value: "500+",
-      label: "Dòng xe đa dạng",
+      label: "Diverse Bike Selection",
     },
     {
       value: "24/7",
-      label: "Hỗ trợ khách hàng",
+      label: "Customer Support",
     },
   ];
   return (
@@ -26,15 +26,13 @@ export default function CTA() {
             </p>
 
             <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">
-              Sẵn sàng cho hành trình
-              <br />
-              tiếp theo của bạn?
+              Ready for your next adventure?
             </h2>
           </div>
 
           <p className="text-lg text-white/60 max-w-2xl mx-auto leading-relaxed">
-            Khám phá hàng trăm dòng xe chất lượng cao với quy trình thuê xe
-            nhanh chóng, minh bạch và hiện đại.
+            Discover hundreds of high-quality bikes with a fast, transparent,
+            and modern rental process.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -49,7 +47,7 @@ export default function CTA() {
               transition-all duration-300
             "
             >
-              Thuê xe ngay
+              Rent Now
             </button>
 
             <button
@@ -65,7 +63,7 @@ export default function CTA() {
               transition-all duration-300
             "
             >
-              Khám phá thêm
+              Discover More
             </button>
           </div>
 

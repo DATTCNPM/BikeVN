@@ -33,16 +33,16 @@ export default function PermissionManagementPage() {
     () => [
       {
         accessorKey: "name",
-        header: "Tên quyền",
+        header: "Permission Name",
       },
       {
         accessorKey: "description",
-        header: "Mô tả",
+        header: "Description",
         cell: ({ row }) => row.original.description || "-",
       },
       {
         id: "actions",
-        header: "",
+        header: "Actions",
         cell: ({ row }) => (
           <TableActionDropdown
             onDelete={() => {
@@ -63,8 +63,6 @@ export default function PermissionManagementPage() {
       </div>
     );
   }
-
-  console.log("Permissions data:", permissions);
 
   return (
     <div>

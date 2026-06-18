@@ -39,7 +39,7 @@ export default function UserManagementPage() {
     () => [
       {
         accessorKey: "name",
-        header: "Họ tên",
+        header: "Name",
       },
       {
         accessorKey: "email",
@@ -47,7 +47,7 @@ export default function UserManagementPage() {
       },
       {
         accessorKey: "phone",
-        header: "Số điện thoại",
+        header: "Phone",
       },
       {
         accessorKey: "cccdNumber",
@@ -82,7 +82,6 @@ export default function UserManagementPage() {
     );
   }
 
-  console.log(filteredUsers);
   return (
     <div>
       <DataTableToolbar

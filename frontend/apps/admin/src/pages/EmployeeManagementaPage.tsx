@@ -45,7 +45,7 @@ export default function UserManagementPage() {
     () => [
       {
         accessorKey: "name",
-        header: "Họ tên",
+        header: "Name",
       },
       {
         accessorKey: "email",
@@ -53,15 +53,15 @@ export default function UserManagementPage() {
       },
       {
         accessorKey: "phone",
-        header: "Số điện thoại",
+        header: "Phone",
       },
       {
         accessorKey: "cccdNumber",
         header: "CCCD",
       },
       {
-        accessorKey: "branchId",
-        header: "Chi nhánh",
+        accessorKey: "branchName",
+        header: "Branch",
       },
       {
         id: "actions",
@@ -90,8 +90,6 @@ export default function UserManagementPage() {
       </div>
     );
   }
-
-  console.log(filterEmployee);
 
   return (
     <div>

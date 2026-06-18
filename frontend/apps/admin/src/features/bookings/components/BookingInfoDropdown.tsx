@@ -25,9 +25,9 @@ export default function BookingInfoDropdown({ booking }: Props) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>Ngày thuê: {booking.startTime}</DropdownMenuItem>
+        <DropdownMenuItem>Rental Date: {booking.startTime}</DropdownMenuItem>
 
-        <DropdownMenuItem>Ngày trả: {booking.endTime}</DropdownMenuItem>
+        <DropdownMenuItem>Return Date: {booking.endTime}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

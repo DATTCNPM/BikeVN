@@ -76,11 +76,11 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
         data: values,
       });
 
-      toast.success("Cập nhật model xe thành công");
+      toast.success("Update vehicle model successfully");
 
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật model xe thất bại");
+      toast.error("Failed to update vehicle model");
     }
   };
 
@@ -88,16 +88,16 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa model xe"
-      description="Cập nhật thông tin model xe"
+      title="Edit Vehicle Model"
+      description="Update vehicle model information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Tên model xe</FieldLabel>
+            <FieldLabel>Model Name</FieldLabel>
 
             <Input {...register("name")} />
 
@@ -105,7 +105,7 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Hãng xe</FieldLabel>
+            <FieldLabel>Brand</FieldLabel>
 
             <Controller
               control={control}
@@ -138,7 +138,7 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Field>
-            <FieldLabel>Dung tích động cơ</FieldLabel>
+            <FieldLabel>Engine Capacity (cc)</FieldLabel>
 
             <Input
               type="number"
@@ -153,7 +153,7 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Năm bắt đầu</FieldLabel>
+            <FieldLabel>Year From</FieldLabel>
 
             <Input
               type="number"
@@ -161,10 +161,13 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
                 valueAsNumber: true,
               })}
             />
+            {errors.yearFrom && (
+              <FieldError>{errors.yearFrom.message}</FieldError>
+            )}
           </Field>
 
           <Field>
-            <FieldLabel>Năm kết thúc</FieldLabel>
+            <FieldLabel>Year To</FieldLabel>
 
             <Input
               type="number"

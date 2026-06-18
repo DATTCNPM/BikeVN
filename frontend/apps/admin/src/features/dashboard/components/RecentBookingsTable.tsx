@@ -24,18 +24,18 @@ export default function RecentBookingsTable({ data }: Props) {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <CardTitle>Đơn thuê gần đây</CardTitle>
+        <CardTitle>Recent Bookings</CardTitle>
       </CardHeader>
 
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Mã đơn</TableHead>
-              <TableHead>Người dùng</TableHead>
-              <TableHead>Xe</TableHead>
-              <TableHead>Tổng tiền</TableHead>
-              <TableHead>Trạng thái</TableHead>
+              <TableHead>Booking ID</TableHead>
+              <TableHead>User</TableHead>
+              <TableHead>Vehicle</TableHead>
+              <TableHead>Total Amount</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
 

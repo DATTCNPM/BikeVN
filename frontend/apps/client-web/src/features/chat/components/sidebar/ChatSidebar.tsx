@@ -24,10 +24,10 @@ export default function ChatSidebar({
         {" "}
         <div>
           {" "}
-          <h2 className="text-lg font-semibold">Tin nhắn</h2>{" "}
+          <h2 className="text-lg font-semibold">Conversations</h2>{" "}
           <p className="text-sm text-muted-foreground">
             {" "}
-            Danh sách chi nhánh hỗ trợ{" "}
+            List of conversations
           </p>{" "}
         </div>{" "}
         <Button size="icon" variant="ghost">
@@ -40,10 +40,7 @@ export default function ChatSidebar({
         <div className="relative">
           {" "}
           <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />{" "}
-          <Input
-            placeholder="Tìm kiếm cuộc trò chuyện..."
-            className="pl-9"
-          />{" "}
+          <Input placeholder="Search conversations..." className="pl-9" />{" "}
         </div>{" "}
       </div>{" "}
       <ScrollArea className="h-[calc(100vh-14rem)]">
@@ -53,7 +50,7 @@ export default function ChatSidebar({
           {loading ? (
             <div className="flex items-center justify-center p-4">
               <Spinner />
-              <p className="ml-2">Đang tải...</p>
+              <p className="ml-2">Loading...</p>
             </div>
           ) : (
             conversations.map((conversation) => (

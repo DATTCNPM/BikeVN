@@ -18,7 +18,8 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUploadVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
 
-import { vehicleImageSchema, type VehicleImageFormData } from "@repo/schemas";
+import { vehicleImageCreationSchema } from "@repo/schemas";
+import type { VehicleImageCreatePayload } from "@repo/types";
 
 type Props = {
   open: boolean;
@@ -26,7 +27,7 @@ type Props = {
   vehicleId: string;
 };
 
-const defaultValues: VehicleImageFormData = {
+const defaultValues: VehicleImageCreatePayload = {
   file: undefined as unknown as File,
   altText: "",
   displayOrder: 0,
@@ -45,8 +46,8 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<VehicleImageFormData>({
-    resolver: zodResolver(vehicleImageSchema),
+  } = useForm<VehicleImageCreatePayload>({
+    resolver: zodResolver(vehicleImageCreationSchema),
     defaultValues,
   });
 
@@ -62,7 +63,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     setPreview(url);
   };
 
-  const onSubmit = async (values: VehicleImageFormData) => {
+  const onSubmit = async (values: VehicleImageCreatePayload) => {
     try {
       await mutateAsync({
         vehicleId,
@@ -75,7 +76,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
         },
       });
 
-      toast.success("Tải ảnh lên thành công");
+      toast.success("Upload image successfully");
 
       reset(defaultValues);
 
@@ -83,7 +84,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
 
       onOpenChange(false);
     } catch {
-      toast.error("Tải ảnh lên thất bại");
+      toast.error("Failed to upload image");
     }
   };
 
@@ -91,15 +92,15 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm ảnh xe"
-      description="Tải ảnh mới cho xe"
+      title="Upload Vehicle Image"
+      description="Upload a new image for the vehicle"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tải lên"
+      submitText="Upload"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Chọn ảnh</FieldLabel>
+          <FieldLabel>Choose Image</FieldLabel>
 
           <Input type="file" accept="image/*" onChange={handleFileChange} />
 
@@ -108,7 +109,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
 
         {preview && (
           <Field>
-            <FieldLabel>Xem trước</FieldLabel>
+            <FieldLabel>Preview</FieldLabel>
 
             <img
               src={preview}
@@ -119,18 +120,15 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
         )}
 
         <Field>
-          <FieldLabel>Mô tả ảnh</FieldLabel>
+          <FieldLabel>Image Description</FieldLabel>
 
-          <Input
-            {...register("altText")}
-            placeholder="Ví dụ: Góc nhìn phía trước"
-          />
+          <Input {...register("altText")} placeholder="Example: Front view" />
 
           {errors.altText && <FieldError>{errors.altText.message}</FieldError>}
         </Field>
 
         <Field>
-          <FieldLabel>Thứ tự hiển thị</FieldLabel>
+          <FieldLabel>Display Order</FieldLabel>
 
           <Input
             type="number"
@@ -145,7 +143,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
         </Field>
 
         <Field>
-          <FieldLabel>Đặt làm ảnh chính</FieldLabel>
+          <FieldLabel>Set as Primary Image</FieldLabel>
           <div>
             <Controller
               control={control}

@@ -16,10 +16,10 @@ export default function UserDelete({ open, onOpenChange, user }: Props) {
     if (!user) return;
     try {
       await mutateAsync(user.id);
-      toast.success("Xóa người dùng thành công");
+      toast.success("User deleted successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Xóa người dùng thất bại");
+      toast.error("Failed to delete user");
     }
   };
 
@@ -27,12 +27,12 @@ export default function UserDelete({ open, onOpenChange, user }: Props) {
     <ConfirmAlertDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xóa người dùng"
-      description={`Bạn có chắc chắn muốn xóa người dùng ${user?.name} không? Hành động này không thể hoàn tác.`}
+      title="Delete User"
+      description={`Are you sure you want to delete the user "${user?.name}"? This action cannot be undone.`}
       onConfirm={handleDelete}
       loading={isPending}
-      confirmText="Xóa"
-      cancelText="Hủy"
+      confirmText="Delete"
+      cancelText="Cancel"
     />
   );
 }

@@ -139,10 +139,10 @@ export default function ServerErrorPage() {
             className="mt-10 w-full max-w-xs"
           >
             <div className="mb-2 flex justify-between text-xs text-muted-foreground">
-              <span>Đang chờ hệ thống khôi phục...</span>
+              <span>Waiting for system recovery...</span>
 
               <span className="font-mono font-bold text-destructive">
-                {timeLeft} Giây
+                {timeLeft} Seconds
               </span>
             </div>
 
@@ -177,7 +177,7 @@ export default function ServerErrorPage() {
             onClick={() => navigate("/")}
           >
             <Home className="mr-2 size-4" />
-            Về Trang Chủ
+            Back to Home
           </Button>
         </motion.div>
       }

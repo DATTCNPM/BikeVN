@@ -60,27 +60,27 @@ export function ProfileSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Tài khoản</SidebarGroupLabel>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Thông tin">
+                <SidebarMenuButton asChild tooltip="Personal Information">
                   <a href="/profile/info">
-                    <User /> <span>Thông tin cá nhân</span>
+                    <User /> <span>Personal Information</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Cài đặt">
+                <SidebarMenuButton asChild tooltip="Settings">
                   <a href="/profile/settings">
-                    <Settings /> <span>Cài đặt hệ thống</span>
+                    <Settings /> <span>System Settings</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Đặt xe của tôi">
+                <SidebarMenuButton asChild tooltip="My Bookings">
                   <a href="/profile/bookings">
-                    <Settings /> <span>Quản lý đặt xe</span>
+                    <Settings /> <span>Manage Bookings</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -100,7 +100,7 @@ export function ProfileSidebar() {
                 >
                   <LogOut className="text-destructive" />
                   <span className="group-data-[collapsible=icon]:hidden">
-                    Đăng xuất
+                    Logout
                   </span>
                   <ChevronUp className="ml-auto group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
@@ -110,7 +110,7 @@ export function ProfileSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
-                  <span onClick={() => logout()}>Xác nhận đăng xuất</span>
+                  <span onClick={() => logout()}>Confirm Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

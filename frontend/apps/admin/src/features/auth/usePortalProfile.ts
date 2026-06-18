@@ -4,10 +4,12 @@ import { authAdminApi } from "@repo/api";
 import { authStorageService } from "@repo/services";
 import { portalAuthKeys } from "./portalAuthKeys";
 
+import type { Employee } from "@repo/types";
+
 export function usePortalProfile() {
   const token = authStorageService.getPortalToken();
 
-  return useQuery({
+  return useQuery<Employee>({
     queryKey: portalAuthKeys.profile(),
     queryFn: () => authAdminApi.getProfile(),
 

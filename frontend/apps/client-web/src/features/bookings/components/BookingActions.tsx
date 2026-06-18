@@ -13,7 +13,7 @@ export default function BookingActions() {
         Actions
       </p>
 
-      <h2 className="mt-2 text-2xl font-bold">Tiếp theo</h2>
+      <h2 className="mt-2 text-2xl font-bold">What's Next?</h2>
 
       <div className="mt-6 flex flex-col gap-4">
         <Button
@@ -48,8 +48,8 @@ export default function BookingActions() {
 
       <div className="mt-8 rounded-2xl bg-primary/10 p-4">
         <p className="text-sm leading-6 text-muted-foreground">
-          Thông tin booking đã được gửi đến email của bạn. Vui lòng kiểm tra
-          email để theo dõi cập nhật mới nhất.
+          Need help with your booking? Our support team is here to assist you
+          with any questions or issues you may have.
         </p>
       </div>
     </aside>

@@ -52,8 +52,8 @@ export default function Register() {
 
   return (
     <AuthCard
-      title="Đăng ký"
-      description="Đăng ký tài khoản của bạn"
+      title="Register"
+      description="Create your account"
       action="register"
       error={error}
       onSubmit={handleSubmit(onSubmit)}
@@ -133,10 +133,10 @@ export default function Register() {
           {loading ? (
             <span className="flex items-center gap-2">
               <Spinner className="w-5 h-5" />
-              Đang đăng ký...
+              Registering...
             </span>
           ) : (
-            "Đăng ký"
+            "Register"
           )}
         </Button>
       </FieldGroup>

@@ -61,7 +61,7 @@ export default function AppHeader() {
             <h1 className="text-xl font-bold tracking-tight">Dashboard</h1>
 
             <p className="text-sm text-muted-foreground">
-              Quản lý hệ thống cho thuê xe máy.
+              Welcome back, {portalProfile?.name?.split(" ")[0] ?? "Admin"}!
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function AppHeader() {
             <Search className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
 
             <Input
-              placeholder="Tìm kiếm xe, đơn thuê..."
+              placeholder="Search..."
               className="h-11 rounded-2xl border-border/60 bg-muted/40 pl-11 shadow-none"
             />
           </div>
@@ -118,22 +118,22 @@ export default function AppHeader() {
                 <p className="font-semibold">Admin System</p>
 
                 <p className="text-xs font-normal text-muted-foreground">
-                  Quản trị viên hệ thống
+                  {portalProfile?.email ?? "admin@example.com"}
                 </p>
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
 
               <DropdownMenuItem>
-                <Link to="/admin/info">Hồ sơ cá nhân</Link>
+                <Link to="/admin/info">Profile</Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem>
-                <Link to="/admin/settings">Cài đặt</Link>
+                <Link to="/admin/settings">Settings</Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem>
-                <Link to="/admin/security">Bảo mật</Link>
+                <Link to="/admin/security">Security</Link>
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
@@ -142,7 +142,7 @@ export default function AppHeader() {
                 className="text-destructive focus:text-destructive"
                 onClick={handleLogout}
               >
-                Đăng xuất
+                Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

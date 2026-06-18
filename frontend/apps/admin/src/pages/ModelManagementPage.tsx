@@ -47,7 +47,7 @@ export default function ModelManagementPage() {
       {
         id: "brand",
 
-        header: "Hãng xe",
+        header: "Brand",
 
         cell: ({ row }) => {
           const brand = brands?.data.find(
@@ -61,7 +61,7 @@ export default function ModelManagementPage() {
       {
         accessorKey: "engineCapacity",
 
-        header: "Dung tích",
+        header: "Engine Capacity",
 
         cell: ({ row }) => `${row.original.engineCapacity}cc`,
       },
@@ -69,18 +69,18 @@ export default function ModelManagementPage() {
       {
         id: "yearRange",
 
-        header: "Đời xe",
+        header: "Year Range",
 
         cell: ({ row }) =>
           `${row.original.yearFrom ?? "-"} - ${
-            row.original.yearTo ?? "Hiện tại"
+            row.original.yearTo ?? "Current"
           }`,
       },
 
       {
         accessorKey: "createdAt",
 
-        header: "Ngày tạo",
+        header: "Created At",
 
         cell: ({ row }) =>
           new Date(row.original.createdAt).toLocaleDateString("vi-VN"),

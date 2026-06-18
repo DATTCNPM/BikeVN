@@ -7,6 +7,7 @@ import {
   adminUserCreationSchema,
   userCreationSchema,
   updateUserSchema,
+  updateEmployeeSchema,
   adminEmployeeCreationSchema,
   employeeSchema,
 } from "@repo/schemas";
@@ -20,6 +21,8 @@ export type UserCreationRequest = z.infer<typeof userCreationSchema>;
 export type AdminUserCreationPayload = z.infer<typeof adminUserCreationSchema>;
 
 export type UpdateUserPayload = z.infer<typeof updateUserSchema>;
+
+export type UpdateEmployeePayload = z.infer<typeof updateEmployeeSchema>;
 
 export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
 

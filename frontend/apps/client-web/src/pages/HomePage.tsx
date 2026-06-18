@@ -128,11 +128,11 @@ export default function HomePage() {
   const vehicleTypes = useMemo(
     () => [
       {
-        label: "Điện",
+        label: "Electric",
         value: vehicleTypeSchema.enum.electric,
       },
       {
-        label: "Xăng",
+        label: "Fuel",
         value: vehicleTypeSchema.enum.fuel,
       },
     ],
@@ -142,7 +142,7 @@ export default function HomePage() {
   const priceRanges = useMemo(
     () => [
       {
-        label: "Dưới 100k",
+        label: "Below 100k",
         value: "under-100",
         min: 0,
         max: 100000,
@@ -154,7 +154,7 @@ export default function HomePage() {
         max: 200000,
       },
       {
-        label: "Trên 200k",
+        label: "Above 200k",
         value: "over-200",
         min: 200000,
         max: undefined,
@@ -242,7 +242,7 @@ export default function HomePage() {
           />
 
           <Button variant="outline" onClick={resetFilter}>
-            Làm mới
+            Reset Filters
           </Button>
 
           <TabsList>

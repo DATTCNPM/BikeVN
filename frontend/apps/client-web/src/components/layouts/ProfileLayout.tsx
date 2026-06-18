@@ -24,8 +24,8 @@ export default function ProfileLayout() {
   const location = useLocation();
   console.log(location.pathname);
   const breadcrumbMap: Record<string, string> = {
-    "/profile/info": "Thông tin cá nhân",
-    "/profile/settings": "Cài đặt",
+    "/profile/info": "Information",
+    "/profile/settings": "Settings",
   };
   return (
     <SidebarProvider>

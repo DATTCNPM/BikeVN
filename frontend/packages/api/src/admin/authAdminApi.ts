@@ -1,9 +1,9 @@
 import axiosAdmin from "../axios/axiosAdmin";
-import type { User } from "@repo/types";
+import type { Employee } from "@repo/types";
 
 export const authAdminApi = {
   async getProfile() {
-    return axiosAdmin.get<User, User>("/users/myInfo");
+    return axiosAdmin.get<Employee, Employee>("/users/myInfo");
   },
 
   async logout(token: string) {

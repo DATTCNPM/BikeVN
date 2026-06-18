@@ -35,8 +35,6 @@ export default function PaymentConfirmDialog({
 
   const { data: payment } = usePayment(bookingId);
 
-  console.log("payment", payment);
-
   const handleConfirm = () => {
     confirmPayment(
       {
@@ -56,16 +54,16 @@ export default function PaymentConfirmDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Xác nhận thanh toán</AlertDialogTitle>
+          <AlertDialogTitle>Confirm Payment</AlertDialogTitle>
 
           <AlertDialogDescription>
-            Vui lòng xác nhận rằng bạn đã hoàn tất thanh toán. Hệ thống sẽ ghi
-            nhận giao dịch và chuyển sang bước tiếp theo.
+            Please confirm that you have completed the payment. The system will
+            record the transaction and proceed to the next step.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Hủy</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
 
           <AlertDialogAction
             onClick={(e) => {
@@ -77,10 +75,10 @@ export default function PaymentConfirmDialog({
             {isPending ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Đang xác nhận...
+                Confirming...
               </>
             ) : (
-              "Tôi đã thanh toán"
+              "I have paid"
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

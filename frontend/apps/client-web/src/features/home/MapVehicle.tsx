@@ -67,7 +67,7 @@ export default function MapVehicle({ vehicles, branches }: MapVehicleProps) {
         {selectedBranchData ? (
           <div className="space-y-2 mb-6">
             <p className="text-muted-foreground">
-              Xe hiện đang có của chi nhánh tại
+              Showing vehicles available at the selected branch
             </p>
 
             <h2 className="text-2xl text-primary font-bold">
@@ -77,12 +77,10 @@ export default function MapVehicle({ vehicles, branches }: MapVehicleProps) {
         ) : (
           <div className="space-y-2 mb-6">
             <p className="text-muted-foreground">
-              Bạn hãy chọn một chi nhánh từ bản đồ bên cạnh
+              Please select a branch from the map
             </p>
 
-            <h2 className="text-2xl text-primary font-bold">
-              Tất cả chi nhánh
-            </h2>
+            <h2 className="text-2xl text-primary font-bold">All Branches</h2>
 
             {branches.map((b) => (
               <p key={b.id} className="text-sm text-muted-foreground">

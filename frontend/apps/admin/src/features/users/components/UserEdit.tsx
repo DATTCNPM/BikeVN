@@ -1,16 +1,9 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import EntityFormDialog from "@/components/common/EntityFormDialog";
 import { Input } from "@repo/ui/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui/components/ui/select";
 import {
   Field,
   FieldError,
@@ -34,7 +27,7 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
 
   const {
     register,
-    control,
+
     handleSubmit,
     reset,
     formState: { errors },
@@ -67,16 +60,16 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa người dùng"
-      description="Cập nhật thông tin người dùng"
+      title="Edit User"
+      description="Update user information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
-            <FieldLabel>Họ tên</FieldLabel>
+            <FieldLabel>Name</FieldLabel>
             <Input {...register("name")} />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
@@ -88,7 +81,7 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Số điện thoại</FieldLabel>
+            <FieldLabel>Phone</FieldLabel>
             <Input {...register("phone")} />
             {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
           </Field>

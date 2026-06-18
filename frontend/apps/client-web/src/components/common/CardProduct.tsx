@@ -29,8 +29,6 @@ export default function CardProduct({
   const handleViewDetails = ({ id }: { id: string }) => {
     navigate(`/vehicles/${id}`);
   };
-
-  console.log("CardProduct received image:", image);
   return (
     <Card className="group pt-0 overflow-hidden border-border bg-card text-card-foreground shadow-sm transition-all duration-300 hover:shadow-xl dark:bg-card dark:border-border">
       {/* Thumbnail */}

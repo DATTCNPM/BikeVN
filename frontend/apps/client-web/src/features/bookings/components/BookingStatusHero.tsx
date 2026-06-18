@@ -8,36 +8,37 @@ type Props = {
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {
-    title: "Đặt xe thành công",
-    description: "Booking của bạn đang chờ xác nhận từ cửa hàng.",
+    title: "Booking Successful",
+    description: "Your booking is pending confirmation from the store.",
     icon: Clock3,
     iconClass: "bg-yellow-500/15 text-yellow-500 border-yellow-500/20",
   },
 
   approved: {
-    title: "Booking đã được xác nhận",
-    description: "Xe đã sẵn sàng cho chuyến đi của bạn.",
+    title: "Booking Approved",
+    description:
+      "Your booking has been approved and the bike is ready for pickup.",
     icon: CheckCircle2,
     iconClass: "bg-green-500/15 text-green-500 border-green-500/20",
   },
 
   completed: {
-    title: "Chuyến đi đã hoàn thành",
-    description: "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.",
+    title: "Trip Completed",
+    description: "Thank you for using our service.",
     icon: CheckCircle2,
     iconClass: "bg-primary/15 text-primary border-primary/20",
   },
 
   rejected: {
-    title: "Booking bị từ chối",
-    description: "Vui lòng thử lại với thời gian khác.",
+    title: "Booking Rejected",
+    description: "Please try again with a different time.",
     icon: CircleX,
     iconClass: "bg-red-500/15 text-red-500 border-red-500/20",
   },
 
   cancelled: {
-    title: "Booking đã bị hủy",
-    description: "Booking của bạn hiện không còn hiệu lực.",
+    title: "Booking Cancelled",
+    description: "Your booking is no longer valid.",
     icon: Ban,
     iconClass: "bg-muted text-muted-foreground border-border",
   },

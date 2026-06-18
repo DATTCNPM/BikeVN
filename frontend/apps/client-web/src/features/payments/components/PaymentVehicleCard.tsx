@@ -43,18 +43,6 @@ export default function PaymentVehicleCard({
           </h2>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {/* <VehicleInfo
-              icon={<Settings2 className="size-5" />}
-              label="Transmission"
-              value={vehicle.transmission}
-            />
-
-            <VehicleInfo
-              icon={<Fuel className="size-5" />}
-              label="Fuel"
-              value={vehicle.fuel}
-            /> */}
-
             <VehicleInfo
               icon={<MapPin className="size-5" />}
               label="Branch"

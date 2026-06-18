@@ -49,7 +49,7 @@ export default function ChatManagementPage() {
       {
         accessorKey: "conversation_id",
 
-        header: "Cuộc trò chuyện",
+        header: "Conversation",
 
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
@@ -69,7 +69,7 @@ export default function ChatManagementPage() {
       {
         accessorKey: "sender_name",
 
-        header: "Người gửi",
+        header: "Sender",
 
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ export default function ChatManagementPage() {
       {
         accessorKey: "content",
 
-        header: "Tin nhắn",
+        header: "Message",
 
         cell: ({ row }) => (
           <div className="flex max-w-[350px] items-start gap-2">
@@ -105,17 +105,17 @@ export default function ChatManagementPage() {
       {
         accessorKey: "is_read",
 
-        header: "Trạng thái",
+        header: "Status",
 
         cell: ({ row }) =>
           row.original.is_read ? (
             <Badge className="bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300">
               <CheckCheck className="mr-1 size-3.5" />
-              Đã đọc
+              Read
             </Badge>
           ) : (
             <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300">
-              Chưa đọc
+              Unread
             </Badge>
           ),
       },
@@ -123,7 +123,7 @@ export default function ChatManagementPage() {
       {
         accessorKey: "created_at",
 
-        header: "Thời gian",
+        header: "Time",
       },
 
       {
@@ -147,19 +147,19 @@ export default function ChatManagementPage() {
       <div className="mb-5">
         <div className="mb-5 flex flex-col gap-4 rounded-3xl border bg-card p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-xl font-bold">Quản lý tin nhắn</h2>
+            <h2 className="text-xl font-bold">Manage Messages</h2>
 
             <p className="mt-1 text-sm text-muted-foreground">
-              Theo dõi cuộc trò chuyện giữa khách hàng và hệ thống.
+              Track conversations between customers and the system.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="secondary" className="rounded-xl px-3 py-1">
-              Tổng: 128 tin nhắn
+              Total: 128 messages
             </Badge>
 
-            <Badge className="rounded-xl px-3 py-1">12 chưa đọc</Badge>
+            <Badge className="rounded-xl px-3 py-1">12 unread</Badge>
           </div>
         </div>
 
@@ -175,6 +175,8 @@ export default function ChatManagementPage() {
       <TablePagination
         page={1}
         totalPages={12}
+        totalElements={128}
+        pageSize={10}
         onPageChange={(page) => console.log(page)}
       />
     </div>

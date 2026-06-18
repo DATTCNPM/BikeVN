@@ -62,13 +62,13 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
     try {
       await mutateAsync(values);
 
-      toast.success("Tạo model xe thành công");
+      toast.success("Create vehicle model successfully");
 
       reset(defaultValues);
 
       onOpenChange(false);
     } catch {
-      toast.error("Tạo model xe thất bại");
+      toast.error("Failed to create vehicle model");
     }
   };
 
@@ -76,16 +76,16 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm model xe"
-      description="Tạo model xe mới"
+      title="Create Vehicle Model"
+      description="Create a new vehicle model"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Create Model"
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>Tên model xe</FieldLabel>
+            <FieldLabel>Model Name</FieldLabel>
 
             <Input {...register("name")} placeholder="Wave Alpha" />
 
@@ -93,7 +93,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Hãng xe</FieldLabel>
+            <FieldLabel>Brand</FieldLabel>
 
             <Controller
               control={control}
@@ -104,7 +104,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
                   onValueChange={(value) => field.onChange(Number(value))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn hãng xe" />
+                    <SelectValue placeholder="Select Brand" />
                   </SelectTrigger>
 
                   <SelectContent>
@@ -126,7 +126,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Field>
-            <FieldLabel>Dung tích động cơ (cc)</FieldLabel>
+            <FieldLabel>Engine Capacity (cc)</FieldLabel>
 
             <Input
               type="number"
@@ -141,7 +141,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Năm bắt đầu</FieldLabel>
+            <FieldLabel>Year From</FieldLabel>
 
             <Input
               type="number"
@@ -157,7 +157,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Năm kết thúc</FieldLabel>
+            <FieldLabel>Year To</FieldLabel>
 
             <Input
               type="number"

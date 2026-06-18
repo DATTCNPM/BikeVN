@@ -21,11 +21,11 @@ export default function VehicleDelete({ open, onOpenChange, vehicle }: Props) {
     try {
       await mutateAsync(vehicle.id);
 
-      toast.success("Xóa xe thành công");
+      toast.success("Delete vehicle successfully");
 
       onOpenChange(false);
     } catch {
-      toast.error("Xóa xe thất bại");
+      toast.error("Failed to delete vehicle");
     }
   };
 
@@ -33,11 +33,12 @@ export default function VehicleDelete({ open, onOpenChange, vehicle }: Props) {
     <ConfirmAlertDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Xóa xe"
-      description={`Bạn có chắc muốn xóa xe ${vehicle?.name}?`}
+      title="Delete Vehicle"
+      description={`Are you sure you want to delete the vehicle ${vehicle?.name}?`}
       onConfirm={handleDelete}
       loading={isPending}
-      confirmText="Xóa"
+      confirmText="Delete"
+      cancelText="Cancel"
     />
   );
 }

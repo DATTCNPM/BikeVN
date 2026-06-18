@@ -13,7 +13,10 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateReview } from "@/features/reviews/mutations";
-import { reviewAdminSchema, type ReviewAdminFormValues } from "@/features/reviews/schemas";
+import {
+  reviewAdminSchema,
+  type ReviewAdminFormValues,
+} from "@/features/reviews/schemas";
 import type { Review } from "@repo/types";
 
 type Props = {
@@ -55,10 +58,10 @@ export default function ReviewEdit({ open, onOpenChange, review }: Props) {
           comment: values.comment || undefined,
         },
       });
-      toast.success("Cập nhật đánh giá thành công");
+      toast.success("Update review successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật đánh giá thất bại");
+      toast.error("Failed to update review");
     }
   };
 
@@ -66,24 +69,31 @@ export default function ReviewEdit({ open, onOpenChange, review }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Chỉnh sửa đánh giá"
-      description="Cập nhật nội dung đánh giá"
+      title="Edit Review"
+      description="Update review content"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Lưu thay đổi"
+      submitText="Save Changes"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
-            <FieldLabel>Số sao (Rating)</FieldLabel>
-            <Input type="number" min={1} max={5} {...register("rating", { valueAsNumber: true })} />
+            <FieldLabel>Rating</FieldLabel>
+            <Input
+              type="number"
+              min={1}
+              max={5}
+              {...register("rating", { valueAsNumber: true })}
+            />
             {errors.rating && <FieldError>{errors.rating.message}</FieldError>}
           </Field>
 
           <Field>
-            <FieldLabel>Nội dung bình luận</FieldLabel>
+            <FieldLabel>Comment</FieldLabel>
             <Input {...register("comment")} />
-            {errors.comment && <FieldError>{errors.comment.message}</FieldError>}
+            {errors.comment && (
+              <FieldError>{errors.comment.message}</FieldError>
+            )}
           </Field>
         </FieldGroup>
       </div>

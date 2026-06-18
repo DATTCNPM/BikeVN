@@ -56,16 +56,12 @@ export default function UpdateProfile({
     }
   }, [userProfile, reset]);
   const onSubmit = (data: UpdateProfilePayload) => {
-    console.log("Submitting update profile with data:", data);
     updateProfile(
       { userId: userProfile?.id || "", payload: data },
       {
         onSuccess: () => {
-          toast.success("Cập nhật thông tin thành công");
+          toast.success("Profile updated successfully");
           setOpen(false);
-        },
-        onError: () => {
-          toast.error("Cập nhật thông tin thất bại. Vui lòng thử lại.");
         },
       },
     );
@@ -76,39 +72,39 @@ export default function UpdateProfile({
       trigger={trigger}
       open={open}
       onOpen={setOpen}
-      title="Cập nhật thông tin cá nhân"
-      description="Cập nhật thông tin định danh và liên lạc của bạn"
+      title="Update Profile"
+      description="Update your personal information and contact details"
       onSubmit={handleSubmit(onSubmit)}
       loading={isUpdating}
       error={null}
     >
       <FieldGroup>
         <Field>
-          <FieldLabel htmlFor="name">Họ và tên</FieldLabel>
+          <FieldLabel htmlFor="name">Full Name</FieldLabel>
           <FieldContent>
             <Input
               type="text"
               id="name"
-              placeholder={`${userProfile?.name || "Nguyễn Văn A"}`}
+              placeholder={`${userProfile?.name || "John Doe"}`}
               {...register("name")}
             />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </FieldContent>
         </Field>
         <Field>
-          <FieldLabel htmlFor="email">Email liên hệ</FieldLabel>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
           <FieldContent>
             <Input
               type="email"
               id="email"
-              placeholder={`${userProfile?.email || "nguyenvana@example.com"}`}
+              placeholder={`${userProfile?.email || "john.doe@example.com"}`}
               {...register("email")}
             />
             {errors.email && <FieldError>{errors.email.message}</FieldError>}
           </FieldContent>
         </Field>
         <Field>
-          <FieldLabel htmlFor="phone">Số điện thoại</FieldLabel>
+          <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
           <FieldContent>
             <Input
               type="text"
@@ -120,7 +116,7 @@ export default function UpdateProfile({
           </FieldContent>
         </Field>
         <Field>
-          <FieldLabel htmlFor="cccdNumber">Số CCCD</FieldLabel>
+          <FieldLabel htmlFor="cccdNumber">CCCD Number</FieldLabel>
           <FieldContent>
             <Input
               type="text"

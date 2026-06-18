@@ -21,8 +21,9 @@ export default function ReviewSummary({ averageRating, totalReviews }: Props) {
           </h2>
 
           <p className="mt-2 max-w-xl text-muted-foreground">
-            Trải nghiệm thực tế từ những khách hàng đã thuê xe. Độ hài lòng cao
-            giúp bạn yên tâm hơn trước khi đặt xe.
+            Look at what our customers are saying about their rental experience.
+            We value your feedback and strive to provide the best service
+            possible.
           </p>
         </div>
 
@@ -41,7 +42,7 @@ export default function ReviewSummary({ averageRating, totalReviews }: Props) {
             </div>
 
             <p className="text-sm text-muted-foreground">
-              {totalReviews} đánh giá
+              {totalReviews} reviews
             </p>
           </div>
         </div>

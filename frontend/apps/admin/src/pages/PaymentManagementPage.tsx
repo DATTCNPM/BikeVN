@@ -25,14 +25,14 @@ const paymentStatusMap: Record<PaymentStatus, string> = {
 };
 
 const paymentStatusLabel: Record<PaymentStatus, string> = {
-  pending: "Chờ xử lý",
-  completed: "Hoàn thành",
-  failed: "Thất bại",
+  pending: "Pending",
+  completed: "Completed",
+  failed: "Failed",
 };
 
 const paymentTypeLabel: Record<PaymentType, string> = {
-  rental: "Thanh toán thuê xe",
-  extra_fee: "Phí phát sinh",
+  rental: "Rental Payment",
+  extra_fee: "Extra Fee",
 };
 
 export default function PaymentManagementPage() {
@@ -54,7 +54,7 @@ export default function PaymentManagementPage() {
 
   const paymentData = payments?.data || [];
   const pagination = {
-    page: payments?.pageCurrent || 1,
+    page: payments?.currentPage || 1,
     pageSize: payments?.pageSize || 10,
     totalPages: payments?.totalPages || 1,
     totalElements: payments?.totalElements || 0,
@@ -63,7 +63,7 @@ export default function PaymentManagementPage() {
     () => [
       {
         accessorKey: "bookingId",
-        header: "Mã đơn",
+        header: "Booking ID",
         cell: ({ row }) => (
           <span className="font-medium">
             #{row.original.bookingId.slice(0, 8)}
@@ -73,13 +73,13 @@ export default function PaymentManagementPage() {
 
       {
         accessorKey: "amount",
-        header: "Số tiền",
+        header: "Amount",
         cell: ({ row }) => `${row.original.amount.toLocaleString("vi-VN")} đ`,
       },
 
       {
         accessorKey: "type",
-        header: "Loại",
+        header: "Type",
         cell: ({ row }) => (
           <Badge variant="secondary">
             {paymentTypeLabel[row.original.type as PaymentType] ??
@@ -90,12 +90,12 @@ export default function PaymentManagementPage() {
 
       {
         accessorKey: "paymentMethod",
-        header: "Phương thức",
+        header: "Payment Method",
       },
 
       {
         accessorKey: "status",
-        header: "Trạng thái",
+        header: "Status",
         cell: ({ row }) => (
           <Badge
             className={paymentStatusMap[row.original.status as PaymentStatus]}
@@ -108,7 +108,7 @@ export default function PaymentManagementPage() {
 
       {
         accessorKey: "createdAt",
-        header: "Ngày tạo",
+        header: "Created At",
         cell: ({ row }) =>
           new Date(row.original.createdAt).toLocaleString("vi-VN"),
       },
@@ -153,8 +153,6 @@ export default function PaymentManagementPage() {
       </div>
     );
   }
-
-  console.log("Payments:", payments);
 
   return (
     <div className="space-y-4">

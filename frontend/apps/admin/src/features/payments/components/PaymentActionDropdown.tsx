@@ -31,14 +31,14 @@ export default function PaymentActionDropdown({
         {onConfirm && (
           <DropdownMenuItem onClick={onConfirm}>
             <Check className="mr-2 size-4" />
-            Xác nhận thanh toán
+            Confirm Payment
           </DropdownMenuItem>
         )}
 
         {onApproveManually && (
           <DropdownMenuItem onClick={onApproveManually}>
             <CreditCard className="mr-2 size-4" />
-            Duyệt thủ công
+            Approve Manually
           </DropdownMenuItem>
         )}
 
@@ -48,7 +48,7 @@ export default function PaymentActionDropdown({
             className="text-destructive focus:text-destructive"
           >
             <X className="mr-2 size-4" />
-            Hủy thanh toán
+            Cancel Payment
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

@@ -36,8 +36,8 @@ export default function Hero() {
           </h1>
 
           <p className="text-lg text-white/80 leading-relaxed">
-            Trải nghiệm dịch vụ thuê xe cao cấp với phong cách hiện đại, sang
-            trọng và tiện lợi.
+            Experience premium vehicle rental with a modern, luxurious, and
+            convenient style.
           </p>
 
           <div className="flex gap-4 mt-8">
@@ -56,7 +56,7 @@ export default function Hero() {
             "
               onClick={() => navigate("/home")}
             >
-              Thuê xe ngay
+              Rent Now
             </button>
             <button
               className="
@@ -73,7 +73,7 @@ export default function Hero() {
             "
               onClick={() => navigate("/home")}
             >
-              Khám phá thêm
+              Discover More
             </button>
           </div>
         </div>

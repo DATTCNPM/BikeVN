@@ -52,7 +52,7 @@ export default function PaymentStatusDialog({
             transactionCode: payment.transactionCode ?? "",
           });
 
-          toast.success("Xác nhận thanh toán thành công");
+          toast.success("Confirm payment successfully");
           break;
 
         case "approve-manually":
@@ -62,7 +62,7 @@ export default function PaymentStatusDialog({
             actualPaymentMethod: "cash",
           });
 
-          toast.success("Duyệt thanh toán thành công");
+          toast.success("Approve payment manually successfully");
           break;
 
         case "cancel":
@@ -70,7 +70,7 @@ export default function PaymentStatusDialog({
             id: payment.id,
           });
 
-          toast.success("Hủy thanh toán thành công");
+          toast.success("Cancel payment successfully");
           break;
       }
 
@@ -81,21 +81,24 @@ export default function PaymentStatusDialog({
       onOpenChange(false);
     } catch {
       toast.error(
-        mode === "cancel" ? "Hủy thanh toán thất bại" : "Thao tác thất bại",
+        mode === "cancel"
+          ? "Failed to cancel payment"
+          : "Failed to perform action",
       );
     }
   };
 
   const titleMap = {
-    confirm: "Xác nhận thanh toán",
-    "approve-manually": "Duyệt thanh toán thủ công",
-    cancel: "Hủy thanh toán",
+    confirm: "Confirm Payment",
+    "approve-manually": "Approve Payment Manually",
+    cancel: "Cancel Payment",
   };
 
   const descriptionMap = {
-    confirm: "Bạn có chắc muốn xác nhận giao dịch này không?",
-    "approve-manually": "Bạn có chắc muốn duyệt thanh toán thủ công không?",
-    cancel: "Bạn có chắc muốn hủy giao dịch này không?",
+    confirm: "Are you sure you want to confirm this transaction?",
+    "approve-manually":
+      "Are you sure you want to approve this payment manually?",
+    cancel: "Are you sure you want to cancel this transaction?",
   };
 
   return (

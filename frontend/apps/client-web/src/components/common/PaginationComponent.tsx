@@ -24,7 +24,7 @@ export default function PaginationComponent({
   return (
     <div className="mt-8 space-y-2">
       <p className="text-center text-sm text-muted-foreground">
-        Tổng cộng {totalElements} xe
+        Total: {totalElements} vehicles
       </p>
 
       <Pagination>
@@ -45,7 +45,7 @@ export default function PaginationComponent({
 
           <PaginationItem>
             <Label>
-              Trang {page} / {totalPages}
+              Page {page} of {totalPages}
             </Label>
           </PaginationItem>
 

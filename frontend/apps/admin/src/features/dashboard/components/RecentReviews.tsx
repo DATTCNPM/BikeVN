@@ -17,7 +17,7 @@ export default function RecentReviews({ data }: Props) {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <CardTitle>Đánh giá gần đây</CardTitle>
+        <CardTitle>Recent Reviews</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">

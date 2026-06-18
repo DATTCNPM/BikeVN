@@ -14,8 +14,9 @@ export default function Footer() {
           </div>
 
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Nền tảng thuê xe hiện đại giúp bạn dễ dàng tìm kiếm, đặt xe và trải
-            nghiệm hành trình một cách nhanh chóng, an toàn và tiện lợi.
+            BikeVN is your trusted companion for buying and selling motorcycles
+            in Vietnam. We provide a seamless platform for motorcycle
+            enthusiasts to connect, explore, and find their perfect ride.
           </p>
           {/* Social */}
           <div className="flex items-center gap-4 mt-8">

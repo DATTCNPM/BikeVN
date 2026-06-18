@@ -24,7 +24,7 @@ export default function HomePage() {
   if (isLoading || !data) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
-        <p className="text-muted-foreground">Đang tải dashboard...</p>
+        <p className="text-muted-foreground">Loading dashboard...</p>
       </div>
     );
   }
@@ -37,50 +37,50 @@ export default function HomePage() {
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
 
         <p className="text-muted-foreground">
-          Tổng quan hệ thống quản lý thuê xe.
+          Overview of the vehicle rental management system.
         </p>
       </div>
 
       <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         <DashboardCard
-          title="Doanh thu"
+          title="Revenue"
           value={`$${overview.totalRevenue}`}
-          description="Tổng doanh thu hệ thống"
+          description="Total revenue of the system"
           icon={<DollarSign className="size-5" />}
         />
 
         <DashboardCard
-          title="Đơn thuê"
+          title="Bookings"
           value={overview.totalBookings}
-          description="Tổng số booking"
+          description="Total number of bookings"
           icon={<CalendarDays className="size-5" />}
         />
 
         <DashboardCard
-          title="Người dùng"
+          title="Users"
           value={overview.totalUsers}
-          description="Tổng khách hàng"
+          description="Total number of users"
           icon={<Users className="size-5" />}
         />
 
         <DashboardCard
-          title="Xe"
+          title="Vehicles"
           value={overview.totalVehicles}
-          description="Tổng số xe"
+          description="Total number of vehicles"
           icon={<Car className="size-5" />}
         />
 
         <DashboardCard
-          title="Xe khả dụng"
+          title="Available Vehicles"
           value={overview.availableVehicles}
-          description="Sẵn sàng cho thuê"
+          description="Ready for rental"
           icon={<CircleCheckBig className="size-5" />}
         />
 
         <DashboardCard
-          title="Đánh giá"
+          title="Ratings"
           value={`${overview.averageRating}/5`}
-          description="Trung bình đánh giá"
+          description="Average rating"
           icon={<Star className="size-5" />}
         />
       </section>

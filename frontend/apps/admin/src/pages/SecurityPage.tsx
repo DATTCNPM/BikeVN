@@ -10,10 +10,10 @@ export default function SecurityPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Bảo mật</h1>
+        <h1 className="text-2xl font-bold">Security</h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Quản lý mật khẩu và bảo mật tài khoản.
+          Manage passwords and account security.
         </p>
       </div>
 
@@ -25,17 +25,17 @@ export default function SecurityPage() {
             </div>
 
             <div>
-              <h2 className="font-semibold">Đổi mật khẩu</h2>
+              <h2 className="font-semibold">Change Password</h2>
 
               <p className="text-sm text-muted-foreground">
-                Cập nhật mật khẩu mới cho tài khoản.
+                Update your account password.
               </p>
             </div>
           </div>
 
           <div className="grid gap-5">
             <div className="space-y-2">
-              <Label>Mật khẩu hiện tại</Label>
+              <Label>Current Password</Label>
 
               <Input
                 type="password"
@@ -45,7 +45,7 @@ export default function SecurityPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Mật khẩu mới</Label>
+              <Label>New Password</Label>
 
               <Input
                 type="password"
@@ -55,7 +55,7 @@ export default function SecurityPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Xác nhận mật khẩu</Label>
+              <Label>Confirm New Password</Label>
 
               <Input
                 type="password"
@@ -65,7 +65,7 @@ export default function SecurityPage() {
             </div>
           </div>
 
-          <Button className="h-11 rounded-2xl">Cập nhật mật khẩu</Button>
+          <Button className="h-11 rounded-2xl">Update Password</Button>
         </CardContent>
       </Card>
 
@@ -77,10 +77,10 @@ export default function SecurityPage() {
             </div>
 
             <div>
-              <h2 className="font-semibold">Bảo mật nâng cao</h2>
+              <h2 className="font-semibold">Advanced Security</h2>
 
               <p className="text-sm text-muted-foreground">
-                Kích hoạt các lớp bảo vệ tài khoản.
+                Activate additional account protection layers.
               </p>
             </div>
           </div>
@@ -90,10 +90,10 @@ export default function SecurityPage() {
               <Smartphone className="size-5 text-muted-foreground" />
 
               <div>
-                <p className="font-medium">Xác thực 2 bước</p>
+                <p className="font-medium">Two-Factor Authentication</p>
 
                 <p className="text-sm text-muted-foreground">
-                  Bảo vệ tài khoản bằng OTP.
+                  Protect your account with OTP.
                 </p>
               </div>
             </div>

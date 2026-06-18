@@ -24,18 +24,18 @@ export default function DeleteConfirmDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="rounded-3xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Xác nhận xóa?</AlertDialogTitle>
+          <AlertDialogTitle>Confirm Delete?</AlertDialogTitle>
 
           <AlertDialogDescription>
-            Dữ liệu sau khi xóa sẽ không thể khôi phục.
+            The data will not be recoverable after deletion.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="rounded-xl">Hủy</AlertDialogCancel>
+          <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
 
           <AlertDialogAction onClick={onConfirm} className="rounded-xl">
-            Xóa
+            Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

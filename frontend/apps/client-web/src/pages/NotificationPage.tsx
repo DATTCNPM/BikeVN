@@ -20,23 +20,21 @@ export default function NotificationsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Tất cả thông báo</h1>
+        <h1 className="text-3xl font-bold">Notifications</h1>
 
-        <p className="text-muted-foreground">
-          Quản lý toàn bộ thông báo của bạn
-        </p>
+        <p className="text-muted-foreground">Manage all your notifications</p>
       </div>
 
       <div className="flex gap-2">
-        <Badge>{notifications.length} thông báo</Badge>
+        <Badge>{notifications.length} notifications</Badge>
 
-        <Badge variant="secondary">{unreadCount} chưa đọc</Badge>
+        <Badge variant="secondary">{unreadCount} unread</Badge>
       </div>
 
       <Card>
         <CardContent className="p-0">
           {isLoading && (
-            <div className="p-5 text-sm text-muted-foreground">Đang tải...</div>
+            <div className="p-5 text-sm text-muted-foreground">Loading...</div>
           )}
 
           {!isLoading &&

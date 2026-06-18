@@ -7,6 +7,7 @@ import type {
   UpdateProfilePayload,
   PaginationResponse,
   AdminUserCreationPayload,
+  UpdateEmployeePayload,
 } from "@repo/types";
 
 export const userApi = {
@@ -69,6 +70,18 @@ export const userApi = {
       passwordHash: passwordHash || "defaultPassword123",
     };
     return axiosAdmin.post<User>("/users", requestPayload);
+  },
+
+  async updateEmployee(
+    id: string,
+    payload: Partial<UpdateEmployeePayload> & { cccdNumber?: string },
+  ) {
+    const { cccdNumber, ...rest } = payload;
+    const requestPayload = {
+      ...rest,
+      cccdNumber: cccdNumber || "",
+    };
+    return axiosAdmin.put<Employee>(`/users/${id}`, requestPayload);
   },
 
   async updateUser(

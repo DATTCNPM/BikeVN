@@ -40,7 +40,7 @@ export default function VehicleImageManagementPage() {
       {
         accessorKey: "imageUrl",
 
-        header: "Ảnh",
+        header: "Image",
 
         cell: ({ row }) => (
           <img
@@ -54,7 +54,7 @@ export default function VehicleImageManagementPage() {
       {
         accessorKey: "altText",
 
-        header: "Mô tả",
+        header: "Description",
 
         cell: ({ row }) => row.original.altText || "-",
       },
@@ -62,26 +62,26 @@ export default function VehicleImageManagementPage() {
       {
         accessorKey: "displayOrder",
 
-        header: "Thứ tự",
+        header: "Order",
       },
 
       {
         accessorKey: "isPrimary",
 
-        header: "Loại",
+        header: "Type",
 
         cell: ({ row }) =>
           row.original.isPrimary ? (
-            <Badge>Ảnh chính</Badge>
+            <Badge>Primary Image</Badge>
           ) : (
-            <Badge variant="secondary">Ảnh phụ</Badge>
+            <Badge variant="secondary">Secondary Image</Badge>
           ),
       },
 
       {
         accessorKey: "createdAt",
 
-        header: "Ngày tạo",
+        header: "Creation Date",
 
         cell: ({ row }) =>
           new Date(row.original.createdAt).toLocaleDateString("vi-VN"),

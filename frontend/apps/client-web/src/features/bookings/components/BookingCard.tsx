@@ -153,12 +153,12 @@ export default function BookingCard({ vehicle, branches }: Props) {
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-muted-foreground">Giá thuê</p>
+            <p className="text-sm text-muted-foreground">Price</p>
 
             <CardTitle className="text-3xl font-bold">
               {vehicle.pricePerDay.toLocaleString("vi-VN")}đ
               <span className="ml-1 text-base font-normal text-muted-foreground">
-                / ngày
+                / day
               </span>
             </CardTitle>
           </div>
@@ -175,7 +175,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
             render={({ field, fieldState }) => (
               <Field>
                 <FieldGroup>
-                  <FieldLabel>Thời gian thuê</FieldLabel>
+                  <FieldLabel> Rental Period </FieldLabel>
 
                   <FieldContent>
                     <div className="overflow-hidden rounded-2xl border">
@@ -207,7 +207,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
           <div className="grid grid-cols-2 gap-4 rounded-2xl border p-4">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Ngày nhận xe</p>
+              <p className="text-sm text-muted-foreground">Pick-up Date</p>
 
               <p className="font-medium">
                 {startDate
@@ -219,7 +219,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
             </div>
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Ngày trả xe</p>
+              <p className="text-sm text-muted-foreground">Return Date</p>
 
               <p className="font-medium">
                 {endDate
@@ -233,7 +233,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
           <Field className="pt-0">
             <FieldGroup>
-              <FieldLabel>Nơi nhận xe</FieldLabel>
+              <FieldLabel>Pick-up Location</FieldLabel>
               <FieldContent>
                 <p>
                   {branches.find((b) => b.id === vehicle.currentBranchId)
@@ -249,12 +249,12 @@ export default function BookingCard({ vehicle, branches }: Props) {
             render={({ field, fieldState }) => (
               <Field>
                 <FieldGroup>
-                  <FieldLabel>Nơi trả xe</FieldLabel>
+                  <FieldLabel>Return Location</FieldLabel>
 
                   <FieldContent>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="h-12 rounded-2xl">
-                        <SelectValue placeholder="Chọn nơi trả xe" />
+                        <SelectValue placeholder="Select return location" />
                       </SelectTrigger>
 
                       <SelectContent>
@@ -279,13 +279,13 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Số ngày thuê</span>
+              <span className="text-muted-foreground">Rental Days</span>
 
-              <span>{totalDays} ngày</span>
+              <span>{totalDays} days</span>
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Giá mỗi ngày</span>
+              <span className="text-muted-foreground">Price per Day</span>
 
               <span>{vehicle.pricePerDay.toLocaleString("vi-VN")}đ</span>
             </div>
@@ -293,7 +293,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
             <Separator />
 
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold">Tổng tiền</span>
+              <span className="text-base font-semibold">Total Price</span>
 
               <span className="text-2xl font-bold">
                 {totalPrice.toLocaleString("vi-VN")}đ
@@ -308,7 +308,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
             disabled={isPending}
             className="h-12 w-full rounded-2xl text-base font-semibold"
           >
-            {isPending ? "Đang xử lý..." : "Đặt xe ngay"}
+            {isPending ? "Processing..." : "Book Now"}
           </Button>
         </CardFooter>
       </form>

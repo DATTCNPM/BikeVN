@@ -16,10 +16,10 @@ export default function SettingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Cài đặt hệ thống</h1>
+        <h1 className="text-2xl font-bold">System Settings</h1>
 
         <p className="mt-1 text-sm text-muted-foreground">
-          Quản lý giao diện và tùy chọn hệ thống.
+          Manage the interface and system options.
         </p>
       </div>
 
@@ -28,7 +28,7 @@ export default function SettingPage() {
           <div className="flex items-center gap-3">
             <Palette className="size-5 text-primary" />
 
-            <h2 className="font-semibold">Giao diện</h2>
+            <h2 className="font-semibold">Interface</h2>
           </div>
 
           <div className="space-y-2">
@@ -36,7 +36,7 @@ export default function SettingPage() {
 
             <Select>
               <SelectTrigger className="h-11 rounded-2xl">
-                <SelectValue placeholder="Chọn theme" />
+                <SelectValue placeholder="Select theme" />
               </SelectTrigger>
 
               <SelectContent className="rounded-2xl">
@@ -57,7 +57,7 @@ export default function SettingPage() {
                 <p className="font-medium">Dark mode</p>
 
                 <p className="text-sm text-muted-foreground">
-                  Bật giao diện tối.
+                  Enable dark mode.
                 </p>
               </div>
             </div>
@@ -72,7 +72,7 @@ export default function SettingPage() {
           <div className="flex items-center gap-3">
             <Bell className="size-5 text-primary" />
 
-            <h2 className="font-semibold">Thông báo</h2>
+            <h2 className="font-semibold">Notifications</h2>
           </div>
 
           <div className="flex items-center justify-between rounded-2xl border p-4">
@@ -80,7 +80,7 @@ export default function SettingPage() {
               <p className="font-medium">Email notification</p>
 
               <p className="text-sm text-muted-foreground">
-                Nhận thông báo qua email.
+                Receive notifications via email.
               </p>
             </div>
 
@@ -92,7 +92,7 @@ export default function SettingPage() {
               <p className="font-medium">Push notification</p>
 
               <p className="text-sm text-muted-foreground">
-                Nhận thông báo hệ thống.
+                Receive system notifications.
               </p>
             </div>
 
@@ -106,12 +106,12 @@ export default function SettingPage() {
           <div className="flex items-center gap-3">
             <Globe className="size-5 text-primary" />
 
-            <h2 className="font-semibold">Ngôn ngữ</h2>
+            <h2 className="font-semibold">Language</h2>
           </div>
 
           <Select>
             <SelectTrigger className="h-11 rounded-2xl">
-              <SelectValue placeholder="Chọn ngôn ngữ" />
+              <SelectValue placeholder="Select language" />
             </SelectTrigger>
 
             <SelectContent className="rounded-2xl">
@@ -121,7 +121,7 @@ export default function SettingPage() {
             </SelectContent>
           </Select>
 
-          <Button className="h-11 rounded-2xl">Lưu thay đổi</Button>
+          <Button className="h-11 rounded-2xl">Save Changes</Button>
         </CardContent>
       </Card>
     </div>

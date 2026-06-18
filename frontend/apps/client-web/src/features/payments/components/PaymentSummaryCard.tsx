@@ -60,7 +60,7 @@ export default function PaymentSummaryCard({ booking, selectedMethod }: Props) {
               Payment Summary
             </p>
 
-            <h2 className="text-2xl font-bold">Chi tiết thanh toán</h2>
+            <h2 className="text-2xl font-bold">Payment Details</h2>
           </div>
         </div>
 
@@ -97,8 +97,7 @@ export default function PaymentSummaryCard({ booking, selectedMethod }: Props) {
         </Button>
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          Bằng việc tiếp tục, bạn đồng ý với điều khoản và chính sách của hệ
-          thống.
+          By continuing, you agree to the terms and conditions of the system.
         </p>
       </Card>
 

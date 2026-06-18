@@ -7,9 +7,12 @@ import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 
 import { usePortalProfile } from "@/features/auth/usePortalProfile";
+import { useBranches } from "@repo/hooks";
 
 export default function InfoPage() {
   const { data: portalProfile, isLoading } = usePortalProfile();
+
+  const { data: branches } = useBranches();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -49,7 +52,7 @@ export default function InfoPage() {
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Họ tên</Label>
+              <Label>Name</Label>
 
               <div className="relative">
                 <User className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -76,7 +79,7 @@ export default function InfoPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Số điện thoại</Label>
+              <Label>Phone</Label>
 
               <div className="relative">
                 <Phone className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -88,10 +91,35 @@ export default function InfoPage() {
                 />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label>CCCD</Label>
+              <div className="relative">
+                <User className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={portalProfile?.cccdNumber ?? ""}
+                  readOnly
+                  className="h-11 rounded-2xl pl-11"
+                />
+              </div>
+            </div>
+            {portalProfile && (
+              <div className="space-y-2">
+                <Label>Branch</Label>
+                <Input
+                  value={
+                    branches?.find((b) => b.id === portalProfile.branchId)
+                      ?.name ?? "N/A"
+                  }
+                  readOnly
+                  className="h-11 rounded-2xl"
+                />
+              </div>
+            )}
           </div>
 
           <Button disabled className="mt-6 h-11 rounded-2xl">
-            Chỉnh sửa hồ sơ
+            Edit Profile
           </Button>
         </CardContent>
       </Card>

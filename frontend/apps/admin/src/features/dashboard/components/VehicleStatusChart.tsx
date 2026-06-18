@@ -1,4 +1,4 @@
-import { Cell, Pie, PieChart, ResponsiveContainer} from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 import {
   Card,
@@ -16,11 +16,7 @@ import {
 
 import type { DashboardOverview } from "@repo/types";
 
-const COLORS = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-];
+const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)"];
 
 type Props = {
   data: DashboardOverview["charts"]["vehicleStatus"];
@@ -28,15 +24,15 @@ type Props = {
 
 const chartConfig = {
   available: {
-    label: "Có sẵn",
+    label: "Available",
     color: "var(--chart-1)",
   },
   rented: {
-    label: "Đang thuê",
+    label: "Rented",
     color: "var(--chart-2)",
   },
   maintenance: {
-    label: "Bảo trì",
+    label: "Maintenance",
     color: "var(--chart-3)",
   },
 } satisfies ChartConfig;
@@ -45,7 +41,7 @@ export default function VehicleStatusChart({ data }: Props) {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <CardTitle>Trạng thái xe</CardTitle>
+        <CardTitle>Vehicle Status</CardTitle>
       </CardHeader>
 
       <CardContent>

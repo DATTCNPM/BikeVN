@@ -59,8 +59,8 @@ export default function Login() {
 
   return (
     <AuthCard
-      title="Đăng nhập"
-      description="Đăng nhập vào tài khoản của bạn"
+      title="Login"
+      description="Login to your account"
       action="login"
       error={error}
       onSubmit={handleSubmit(onSubmit)}
@@ -105,10 +105,10 @@ export default function Login() {
           {isPending ? (
             <span className="flex items-center gap-2">
               <Spinner className="w-5 h-5" />
-              Đang đăng nhập...
+              Logging in...
             </span>
           ) : (
-            "Đăng nhập"
+            "Login"
           )}
         </Button>
       </FieldGroup>

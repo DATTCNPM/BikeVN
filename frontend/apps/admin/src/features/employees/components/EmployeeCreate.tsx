@@ -55,11 +55,11 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
   const onSubmit = async (values: AdminEmployeeCreationPayload) => {
     try {
       await mutateAsync(values);
-      toast.success("Tạo nhân viên thành công");
+      toast.success("Create employee successfully");
       reset(defaultValues);
       onOpenChange(false);
     } catch {
-      toast.error("Tạo nhân viên thất bại");
+      toast.error("Failed to create employee");
     }
   };
 
@@ -67,17 +67,17 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm nhân viên"
-      description="Tạo nhân viên mới trong hệ thống"
+      title="Create Employee"
+      description="Create a new employee in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Create Employee"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
-            <FieldLabel>Họ tên</FieldLabel>
-            <Input {...register("name")} placeholder="Nguyễn Văn A" />
+            <FieldLabel>Name</FieldLabel>
+            <Input {...register("name")} placeholder="John Doe" />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
@@ -92,7 +92,7 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Mật khẩu</FieldLabel>
+            <FieldLabel>Password</FieldLabel>
             <Input
               {...register("passwordHash")}
               type="password"
@@ -104,7 +104,7 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Số điện thoại</FieldLabel>
+            <FieldLabel>Phone Number</FieldLabel>
             <Input {...register("phone")} placeholder="0901234567" />
             {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
           </Field>
@@ -122,7 +122,7 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
             name="branchId"
             render={({ field }) => (
               <Field>
-                <FieldLabel>Chi nhánh</FieldLabel>
+                <FieldLabel>Branch</FieldLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue />

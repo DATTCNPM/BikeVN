@@ -1,15 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import EntityFormDialog from "@/components/common/EntityFormDialog";
 import { Input } from "@repo/ui/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui/components/ui/select";
 import {
   Field,
   FieldError,
@@ -40,7 +33,7 @@ export default function UserCreate({ open, onOpenChange }: Props) {
 
   const {
     register,
-    control,
+
     handleSubmit,
     reset,
     formState: { errors },
@@ -52,11 +45,11 @@ export default function UserCreate({ open, onOpenChange }: Props) {
   const onSubmit = async (values: AdminUserCreationPayload) => {
     try {
       await mutateAsync(values);
-      toast.success("Tạo người dùng thành công");
+      toast.success("User created successfully");
       reset(defaultValues);
       onOpenChange(false);
     } catch {
-      toast.error("Tạo người dùng thất bại");
+      toast.error("Failed to create user");
     }
   };
 
@@ -64,17 +57,17 @@ export default function UserCreate({ open, onOpenChange }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Thêm người dùng"
-      description="Tạo người dùng mới trong hệ thống"
+      title="Create User"
+      description="Create a new user in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Tạo"
+      submitText="Create User"
     >
       <div className="grid gap-5">
         <FieldGroup>
           <Field>
-            <FieldLabel>Họ tên</FieldLabel>
-            <Input {...register("name")} placeholder="Nguyễn Văn A" />
+            <FieldLabel>Name</FieldLabel>
+            <Input {...register("name")} placeholder="John Doe" />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
@@ -89,7 +82,7 @@ export default function UserCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Mật khẩu</FieldLabel>
+            <FieldLabel>Password</FieldLabel>
             <Input
               {...register("passwordHash")}
               type="password"
@@ -101,7 +94,7 @@ export default function UserCreate({ open, onOpenChange }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel>Số điện thoại</FieldLabel>
+            <FieldLabel>Phone</FieldLabel>
             <Input {...register("phone")} placeholder="0901234567" />
             {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
           </Field>

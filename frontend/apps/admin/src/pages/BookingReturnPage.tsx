@@ -28,14 +28,14 @@ export default function BookingReturnPage() {
     return (
       <>
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Thông tin trả xe</h2>
+          <h2 className="text-xl font-semibold">Vehicle Return Information</h2>
 
           <p className="text-muted-foreground">
-            Booking này chưa có phiếu trả xe.
+            This booking does not have a return receipt yet.
           </p>
 
           <Button onClick={() => setOpenCreateDialog(true)}>
-            Tạo phiếu trả xe
+            Create Return Receipt
           </Button>
         </div>
 
@@ -50,7 +50,7 @@ export default function BookingReturnPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Thông tin trả xe</h2>
+      <h2 className="text-xl font-semibold">Vehicle Return Information</h2>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
@@ -60,43 +60,45 @@ export default function BookingReturnPage() {
         </div>
 
         <div>
-          <p className="text-muted-foreground text-sm">Chi nhánh trả</p>
+          <p className="text-muted-foreground text-sm">Return Branch</p>
 
           <p>{vehicleReturn.returnBranchId}</p>
         </div>
 
         <div>
-          <p className="text-muted-foreground text-sm">Tình trạng</p>
+          <p className="text-muted-foreground text-sm">Condition Status</p>
 
           <Badge>{vehicleReturn.conditionStatus}</Badge>
         </div>
 
         <div>
-          <p className="text-muted-foreground text-sm">Phí phát sinh</p>
+          <p className="text-muted-foreground text-sm">Extra Fee</p>
 
           <p>{(vehicleReturn.extraFee ?? 0).toLocaleString()}đ</p>
         </div>
 
         <div className="md:col-span-2">
-          <p className="text-muted-foreground text-sm">Mô tả hư hỏng</p>
+          <p className="text-muted-foreground text-sm">Damage Description</p>
 
           <p>{vehicleReturn.damageDescription || "--"}</p>
         </div>
 
         <div>
-          <p className="text-muted-foreground text-sm">Công tơ mét</p>
+          <p className="text-muted-foreground text-sm">
+            Return Odometer Reading
+          </p>
 
           <p>{vehicleReturn.returnOdometerReading}</p>
         </div>
 
         <div>
-          <p className="text-muted-foreground text-sm">Nhân viên</p>
+          <p className="text-muted-foreground text-sm">Employee</p>
 
           <p>{vehicleReturn.employeeId}</p>
         </div>
 
         <div>
-          <p className="text-muted-foreground text-sm">Ngày tạo</p>
+          <p className="text-muted-foreground text-sm">Created Date</p>
 
           <p>{new Date(vehicleReturn.createdAt).toLocaleString("vi-VN")}</p>
         </div>
@@ -104,7 +106,7 @@ export default function BookingReturnPage() {
 
       {vehicleReturn.images?.length > 0 && (
         <div>
-          <h3 className="mb-3 font-medium">Hình ảnh</h3>
+          <h3 className="mb-3 font-medium">Images</h3>
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {vehicleReturn.images.map((image) => (

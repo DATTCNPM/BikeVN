@@ -15,12 +15,10 @@ export default function ReviewSection({ vehicleId }: Props) {
       ? reviews.reduce((total, review) => total + review.rating, 0) /
         reviews.length
       : 0;
-  console.log("vehicle ID:", vehicleId);
-  console.log("reviews", reviews);
   if (isLoading) {
     return (
       <section className="flex items-center justify-center py-10">
-        <p className="text-muted-foreground">Đang tải đánh giá...</p>
+        <p className="text-muted-foreground"> Loading reviews...</p>
       </section>
     );
   }
@@ -34,7 +32,7 @@ export default function ReviewSection({ vehicleId }: Props) {
 
       {reviews.length === 0 ? (
         <div className="rounded-xl border p-6 text-center">
-          <p className="text-muted-foreground">Chưa có đánh giá nào</p>
+          <p className="text-muted-foreground">No reviews yet</p>
         </div>
       ) : (
         <div className="grid gap-5">

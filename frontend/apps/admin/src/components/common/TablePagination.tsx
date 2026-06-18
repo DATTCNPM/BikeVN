@@ -24,7 +24,7 @@ export default function TablePagination({
   return (
     <div className="mt-5 flex items-center justify-between rounded-2xl border bg-card px-4 py-3">
       <p className="text-sm text-muted-foreground">
-        Hiển thị {startItem}-{endItem} trên {totalElements} bản ghi
+        {startItem}-{endItem} of {totalElements} records
       </p>
 
       <div className="flex items-center gap-2">
