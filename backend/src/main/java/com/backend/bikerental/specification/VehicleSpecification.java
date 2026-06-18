@@ -2,7 +2,6 @@ package com.backend.bikerental.specification;
 
 import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.enums.StatusVehicleEnum;
-import com.backend.bikerental.enums.VehicleConditionStatus;
 import com.backend.bikerental.enums.VehicleType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,13 +13,14 @@ import java.util.List;
 public class VehicleSpecification {
         public static Specification<Vehicle> filterVehicles(
                 String name,
-                Integer brandId,
-                Integer modelId,
                 StatusVehicleEnum status,
                 VehicleType vehicleType,
-                String currentBranchId,
                 BigDecimal minPrice,
-                BigDecimal maxPrice
+                BigDecimal maxPrice,
+                String brandName,
+                String modelName,
+                String currentBranchName,
+                String country
         )
         {
             return((root, query, criteriaBuilder) -> {
@@ -29,16 +29,20 @@ public class VehicleSpecification {
                 if(name != null && !name.isBlank())
                 {
                     String searchPattern = "%" + name.toLowerCase() + "%";
-                    predicates.add(criteriaBuilder.like(root.get("name"), searchPattern));
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchPattern));
                 }
 
-                if (brandId != null) {
-                    predicates.add(criteriaBuilder.equal(root.get("brand").get("id"), brandId));
+                if (brandName != null && !brandName.isBlank()) {
+                    String searchPattern = "%" + brandName.toLowerCase() + "%";
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("brand").get("name")), searchPattern));
                 }
 
-                if (modelId != null)
+                if (modelName != null && !modelName.isBlank())
                 {
-                    predicates.add(criteriaBuilder.equal(root.get("model").get("id"), modelId));
+                    String searchPattern = "%" + modelName.toLowerCase() + "%";
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("model").get("name")), searchPattern));
                 }
 
                 if(status != null)
@@ -51,9 +55,18 @@ public class VehicleSpecification {
                     predicates.add(criteriaBuilder.equal(root.get("vehicleType"), vehicleType));
                 }
 
-                if(currentBranchId != null && !currentBranchId.isBlank())
+                if(currentBranchName != null && !currentBranchName.isBlank())
                 {
-                    predicates.add(criteriaBuilder.equal(root.get("currentBranch").get("id"), currentBranchId));
+                    String searchPattern = "%" + currentBranchName.toLowerCase() + "%";
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("currentBranch").get("name")), searchPattern));
+                }
+
+                if(country != null && !country.isBlank())
+                {
+                    String searchPattern = "%" + country.toLowerCase() + "%";
+                    predicates.add(criteriaBuilder.like(criteriaBuilder
+                            .lower(root.get("brand").get("country")), searchPattern));
                 }
 
                 if(minPrice != null)

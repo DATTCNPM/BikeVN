@@ -29,4 +29,9 @@ public class VehicleResponse {
     List<VehicleImageResponse> images;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+    //
+    String brandName;
+    String modelName;
+    String currentBranchName;
+    String country;
 }
