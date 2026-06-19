@@ -14,6 +14,7 @@ import com.backend.bikerental.repository.RoleRepository;
 import com.backend.bikerental.repository.UserRepository;
 import com.backend.bikerental.entity.Branch;
 import com.backend.bikerental.repository.BranchRepository;
+import com.backend.bikerental.specification.UserSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -249,4 +251,26 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    //FILTER
+    @Transactional(readOnly = true)
+    public PageResponse<UserResponse> filterUsers(String keyword, Boolean isActive, String branchId,
+                                                  String roleName, int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Specification<User> specification = UserSpecification.filterUsers(keyword, isActive, branchId, roleName);
+
+        Page<User> pageData = userRepository.findAll(specification, pageable);
+
+        var userResponses = pageData.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+
+        return  PageResponse.<UserResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(userResponses)
+                .build();
+    }
 }
