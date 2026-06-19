@@ -2,6 +2,7 @@ package com.backend.bikerental.service;
 
 import com.backend.bikerental.dto.request.ReviewRequest;
 import com.backend.bikerental.dto.response.PageResponse;
+import com.backend.bikerental.dto.response.PublicReviewResponse;
 import com.backend.bikerental.dto.response.ReviewResponse;
 import com.backend.bikerental.entity.Booking;
 import com.backend.bikerental.entity.Review;
@@ -139,4 +140,30 @@ public class ReviewService {
                 .build();
 
     }
+
+    @Transactional(readOnly = true)
+    public PageResponse<PublicReviewResponse> filterPublicReviews(String vehicleId, Integer rating, int page, int size)
+    {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<Review> specification = ReviewSpecification
+                .filterReviews(null, vehicleId, null, rating);
+
+        Page<Review> pageData = reviewRepository.findAll(specification, pageable);
+
+        var reviewResponses = pageData.getContent().stream()
+                .map(reviewMapper::toPublicReviewResponse)
+                .toList();
+
+        return PageResponse.<PublicReviewResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(reviewResponses)
+                .build();
+
+    }
+
 }

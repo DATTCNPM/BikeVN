@@ -3,6 +3,7 @@ package com.backend.bikerental.controller;
 import com.backend.bikerental.dto.request.ReviewRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.PageResponse;
+import com.backend.bikerental.dto.response.PublicReviewResponse;
 import com.backend.bikerental.dto.response.ReviewResponse;
 import com.backend.bikerental.service.ReviewService;
 import jakarta.validation.Valid;
@@ -57,7 +58,20 @@ public class ReviewController {
                 .build();
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/public/filter")
+    public ApiResponse<PageResponse<PublicReviewResponse>> filterPublicReviews(
+            @RequestParam(required = false) String vehicleId,
+            @RequestParam(required = false) Integer rating,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<PublicReviewResponse>>builder()
+                .result(reviewService.filterPublicReviews(vehicleId, rating, page, size))
+                .build();
+    }
+
+    @GetMapping("/admin/filter")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public ApiResponse<PageResponse<ReviewResponse>> filterReviews
             (@RequestParam(required = false) String bookingId,
              @RequestParam(required = false) String vehicleId,
