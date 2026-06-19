@@ -14,19 +14,21 @@ import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.BookingMapper;
 import com.backend.bikerental.repository.*;
+import com.backend.bikerental.specification.BookingSpecification;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,7 +44,7 @@ public class BookingService {
     BookingLockService bookingLockService;
     PaymentRepository paymentRepository;
     PricingCalculator pricingCalculator;
-    private static final int EXPIRE_MINUTES = 10;
+    private static final int EXPIRE_MINUTES = 20;
 
     @Transactional
     @PreAuthorize("isAuthenticated()")
@@ -279,6 +281,38 @@ public class BookingService {
         booking.setCreatedAt(now);
         booking.setUpdatedAt(now);
         booking.setExpiresAt(now.plusMinutes(EXPIRE_MINUTES));// set time expire
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<BookingResponse> filterBookings(
+            String userId,
+            String vehicleId,
+            String branchId,
+            BookingStatus status,
+            LocalDate fromDate,
+            LocalDate toDate,
+            int page,
+            int size)
+    {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<Booking> spec = BookingSpecification.filterBookings(
+                userId, vehicleId, branchId, status, fromDate, toDate
+        );
+
+        Page<Booking> pageData = bookingRepository.findAll(spec, pageable);
+
+        var bookingResponses = pageData.getContent().stream()
+                .map(bookingMapper::toBookingResponse)
+                .toList();
+
+        return PageResponse.<BookingResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(bookingResponses)
+                .build();
     }
 
 }

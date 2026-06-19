@@ -4,12 +4,18 @@ import com.backend.bikerental.dto.request.BookingCreationRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.BookingResponse;
 import com.backend.bikerental.dto.response.PageResponse;
+import com.backend.bikerental.enums.BookingStatus;
 import com.backend.bikerental.service.BookingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -78,6 +84,52 @@ public class BookingController {
         bookingService.rejectBooking(id);
         return ApiResponse.<Void>builder()
                 .message("Booking rejected successfully")
+                .build();
+    }
+
+    @GetMapping("/my-bookings")
+    @PreAuthorize("hasRole('user')")
+    public ApiResponse<PageResponse<BookingResponse>> getMyBookings(
+            @RequestParam(required = false) BookingStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        String currentUserId = null;
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof JwtAuthenticationToken jwtToken) {
+            currentUserId = (String) jwtToken.getTokenAttributes().get("userId");
+        }
+
+        return ApiResponse.<PageResponse<BookingResponse>>builder()
+                .result(bookingService.filterBookings(currentUserId, null, null, status, fromDate, toDate, page, size))
+                .build();
+    }
+
+    @GetMapping("/admin/filter")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public ApiResponse<PageResponse<BookingResponse>> filterBookingsForAdmin(
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String vehicleId,
+            @RequestParam(required = false) BookingStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        String branchId = null;
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+
+        if (!isAdmin && auth instanceof JwtAuthenticationToken jwtToken) {
+            branchId = (String) jwtToken.getTokenAttributes().get("branchId");
+        }
+
+        return ApiResponse.<PageResponse<BookingResponse>>builder()
+                .result(bookingService.filterBookings(userId, vehicleId, branchId, status, fromDate, toDate, page, size))
                 .build();
     }
 }
