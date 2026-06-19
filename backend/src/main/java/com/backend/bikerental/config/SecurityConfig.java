@@ -35,7 +35,9 @@ public class SecurityConfig {
             "/vehicle-models", "/vehicle-models/**",
             "/vehicle-brands", "/vehicle-brands/**",
             "/vehicles", "/vehicles/**",
-            "/uploads", "/uploads/**"
+            "/uploads", "/uploads/**",
+            "/payments/vnpay-return",
+            "/reviews", "/reviews/**"
     };
 
     @Autowired
