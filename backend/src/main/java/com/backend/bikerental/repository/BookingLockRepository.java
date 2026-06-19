@@ -12,11 +12,13 @@ import java.util.Optional;
 public interface BookingLockRepository extends JpaRepository<BookingLock, String> {
     @Query("SELECT COUNT(l) > 0 FROM BookingLock l " +
             "WHERE l.vehicleId = :vehicleId " +
+            "AND l.userId != :currentUserId " +
             "AND l.status = 'active' " +
             "AND l.lockExpiresAt > CURRENT_TIMESTAMP " +
             "AND (l.startTime < :endTime " +
             "AND l.endTime > :startTime)")
-    boolean existsActiveLock(@Param("vehicleId") String vehicleId,
+    boolean existsActiveLockByOthers(@Param("vehicleId") String vehicleId,
+                             @Param("userId") String userId,
                              @Param("startTime") LocalDateTime startTime,
                              @Param("endTime")LocalDateTime endTime);
 
