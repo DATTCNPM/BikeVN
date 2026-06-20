@@ -32,12 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-#### Vehicle files (not in this commit) ###
-#src/main/java/com/backend/bikerental/entity/Vehicle.java
-#src/main/java/com/backend/bikerental/enums/StatusVehicleEnum.java
-#src/main/java/com/backend/bikerental/controller/VehicleController.java
-#src/main/java/com/backend/bikerental/service/VehicleService.java
-#src/main/java/com/backend/bikerental/repository/VehicleRepository.java
-#src/main/java/com/backend/bikerental/dto/request/Vehicle*Request.java
-#src/main/java/com/backend/bikerental/dto/response/Vehicle*Response.java
-#src/main/java/com/backend/bikerental/mapper/VehicleMapper.java
+# Environment variables
+.env
+.env.*
