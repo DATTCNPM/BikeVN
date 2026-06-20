@@ -1,14 +1,15 @@
 import ReviewCard from "./ReviewCard";
 import ReviewSummary from "./ReviewSummary";
 
-import { useVehicleReviews } from "@repo/hooks";
+import { useVehicleReviews } from "../queries/useVehicleReviews";
 
 type Props = {
   vehicleId: string;
 };
 
 export default function ReviewSection({ vehicleId }: Props) {
-  const { data: reviews = [], isLoading } = useVehicleReviews(vehicleId);
+  const { data, isLoading } = useVehicleReviews(vehicleId, 1, 10);
+  const reviews = data?.data ?? [];
 
   const averageRating =
     reviews.length > 0

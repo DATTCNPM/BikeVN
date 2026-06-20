@@ -1,6 +1,9 @@
 import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
-import { useDeleteReview } from "@/features/reviews/mutations";
+
+import { useDeleteReview } from "@repo/hooks";
+
 import { toast } from "@repo/ui/components/ui/sonner";
+
 import type { Review } from "@repo/types";
 
 type Props = {
@@ -14,9 +17,12 @@ export default function ReviewDelete({ open, onOpenChange, review }: Props) {
 
   const handleDelete = async () => {
     if (!review) return;
+
     try {
       await mutateAsync(review.id);
+
       toast.success("Delete review successfully");
+
       onOpenChange(false);
     } catch {
       toast.error("Failed to delete review");
@@ -28,7 +34,7 @@ export default function ReviewDelete({ open, onOpenChange, review }: Props) {
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Review"
-      description={`Are you sure you want to delete the review of user #${review?.user_id.substring(0, 6)}? This action cannot be undone.`}
+      description={`Are you sure you want to delete the review of user #${review?.userId.slice(0, 6)}? This action cannot be undone.`}
       onConfirm={handleDelete}
       loading={isPending}
       confirmText="Delete"
