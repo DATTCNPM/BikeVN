@@ -27,7 +27,7 @@ public class BookingLockService {
         vehicleRepository.findByIdForUpdate(vehicleId)
                 .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
 
-        if(bookingLockRepository.existsActiveLock(vehicleId, start, end))
+        if(bookingLockRepository.existsActiveLockByOthers(vehicleId, userId, start, end))
         {
             throw new AppException(ErrorCode.VEHICLE_ALREADY_LOCKED);
         }

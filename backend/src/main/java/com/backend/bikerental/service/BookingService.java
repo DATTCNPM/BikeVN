@@ -45,27 +45,26 @@ public class BookingService {
     PaymentRepository paymentRepository;
     PricingCalculator pricingCalculator;
     private static final int EXPIRE_MINUTES = 20;
+    private final BookingLockRepository bookingLockRepository;
 
     @Transactional
     @PreAuthorize("isAuthenticated()")
     public BookingResponse createBooking(BookingCreationRequest request) {
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        validateRequest(request);
+        validateExistence(request);
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!isAdmin && !user.getEmail().equals(auth.getName())) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        validateRequest(request);
-        if (!branchRepository.existsById(request.getPickupBranchId()) || !branchRepository.existsById(request.getReturnBranchId())) {
-            throw new AppException(ErrorCode.BRANCH_NOT_EXISTED);
-        }
-
-        Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
+        Vehicle vehicle = vehicleRepository.findByIdForUpdate(request.getVehicleId())
                 .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
 
         if(!vehicle.getStatus().equals(StatusVehicleEnum.available))
@@ -73,10 +72,16 @@ public class BookingService {
             throw new AppException(ErrorCode.VEHICLE_NOT_AVAILABLE);
         }
 
-        if (bookingRepository.existsApprovedBooking(request.getVehicleId(),
-                request.getStartTime(),
-                request.getEndTime()))
+        boolean isLockedByOther = bookingLockRepository.existsActiveLockByOthers(
+                request.getVehicleId(), request.getUserId(), request.getStartTime(), request.getEndTime());
+
+        if (isLockedByOther)
         {
+            throw new AppException(ErrorCode.VEHICLE_ALREADY_LOCKED);
+        }
+
+        if (bookingRepository.existsApprovedBooking(
+                request.getVehicleId(), request.getStartTime(), request.getEndTime())) {
             throw new AppException(ErrorCode.VEHICLE_ALREADY_LOCKED);
         }
 
@@ -257,10 +262,6 @@ public class BookingService {
     }
 
     private void validateExistence(BookingCreationRequest request) {
-
-        if (!userRepository.existsById(request.getUserId())) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
 
         if (!branchRepository.existsById(request.getPickupBranchId())
                 || !branchRepository.existsById(request.getReturnBranchId())) {

@@ -9,6 +9,9 @@ import com.backend.bikerental.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -97,5 +100,28 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/filter")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public ApiResponse<PageResponse<UserResponse>> filterUsers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) String branchId,
+            @RequestParam(required = false) String roleName,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+
+        if (!isAdmin && auth instanceof JwtAuthenticationToken jwtToken) {
+            branchId = (String) jwtToken.getTokenAttributes().get("branchId");
+        }
+
+        return ApiResponse.<PageResponse<UserResponse>>builder()
+                .result(userService.filterUsers(keyword, isActive, branchId, roleName, page, size))
+                .build();
+    }
 }
 
