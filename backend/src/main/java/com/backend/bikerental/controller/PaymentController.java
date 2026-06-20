@@ -4,6 +4,8 @@ import com.backend.bikerental.dto.request.PaymentCreationRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
+import com.backend.bikerental.exception.AppException;
+import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.service.PaymentServiceP;
 import com.backend.bikerental.service.VNPayService;
 import com.backend.bikerental.util.VNPayUtil;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -61,13 +64,9 @@ public class PaymentController {
                     .build();
         }
 
-        String paymentId = queryParams.get("vnp_TxnRef");
         String responseCode = queryParams.get("vnp_ResponseCode");
-        String transactionCode = queryParams.get("vnp_TransactionNo");
-
         // The response code "00" represents a completely successful transaction.
         if ("00".equals(responseCode)) {
-            paymentService.confirmPayment(paymentId, transactionCode);
             return ApiResponse.<String>builder()
                     .message("Order payment via VNPay successful")
                     .result("SUCCESS")
@@ -80,6 +79,57 @@ public class PaymentController {
                     .build();
         }
     }
+
+    @GetMapping("/vnpay-ipn")
+    public Map<String, String> vnpayIpnCallback(@RequestParam Map<String, String> queryParams) {
+        Map<String, String> result = new HashMap<>();
+
+        try {
+            // 1. Kiểm tra chữ ký bảo mật
+            if (!vnPayService.verifyCallback(queryParams)) {
+                result.put("RspCode", "97");
+                result.put("Message", "Invalid Checksum");
+                return result;
+            }
+
+            String paymentId = queryParams.get("vnp_TxnRef");
+            String responseCode = queryParams.get("vnp_ResponseCode");
+            String transactionCode = queryParams.get("vnp_TransactionNo");
+
+            // Ép kiểu số tiền VNPay trả về (VNPay nhân 100 lần, nên ta phải chia 100 để so sánh)
+            long vnpAmount = Long.parseLong(queryParams.get("vnp_Amount")) / 100;
+
+            // 2. GỌI XUỐNG SERVICE ĐỂ KIỂM TRA LẠI DỮ LIỆU VÀ CẬP NHẬT (Xem bước 3 bên dưới)
+            // Lệnh này sẽ throw Exception nếu paymentId sai, số tiền sai, hoặc đã update rồi
+            paymentService.processIpnPayment(paymentId, vnpAmount, responseCode, transactionCode);
+
+            // Báo cho VNPay biết: Tao nhận tiền và update DB xong rồi, đừng gọi lại nữa!
+            result.put("RspCode", "00");
+            result.put("Message", "Confirm Success");
+
+        } catch (AppException e) {
+            // Xử lý các lỗi nghiệp vụ từ Service ném lên theo chuẩn IPN VNPay
+            if (e.getErrorCode() == ErrorCode.PAYMENT_NOT_FOUND) {
+                result.put("RspCode", "01");
+                result.put("Message", "Order not found");
+            } else if (e.getErrorCode() == ErrorCode.PAYMENT_ALREADY_COMPLETED) { // Cần tạo thêm mã lỗi này
+                result.put("RspCode", "02");
+                result.put("Message", "Order already confirmed");
+            } else if (e.getErrorCode() == ErrorCode.INVALID_AMOUNT) { // Cần tạo thêm mã lỗi này
+                result.put("RspCode", "04");
+                result.put("Message", "Invalid amount");
+            } else {
+                result.put("RspCode", "99");
+                result.put("Message", "Unknown error");
+            }
+        } catch (Exception e) {
+            result.put("RspCode", "99");
+            result.put("Message", "Unknown error");
+        }
+
+        return result;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     @GetMapping
     public ApiResponse<PageResponse<PaymentResponse>> getAllPayments(

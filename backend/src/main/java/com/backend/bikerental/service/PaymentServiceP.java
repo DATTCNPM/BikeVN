@@ -54,7 +54,7 @@ public class PaymentServiceP {
     static final String BANK_NAME = "MB BANK";
     static final String BANK_ACCOUNT = "1223445";
     static final String ACCOUNT_NAME = "Tran Hoang Phuong";
-    static final int EXPIRE_MINUTES = 10;
+    static final int EXPIRE_MINUTES = 20;
     @Transactional
     public PaymentResponse createPayment(PaymentCreationRequest request) {
 
@@ -207,6 +207,34 @@ public class PaymentServiceP {
 
         bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(),booking.getUserId());
     }
+
+    @Transactional
+    public void processIpnPayment(String paymentId, long vnpAmount, String responseCode, String transactionCode) {
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        long dbAmount = payment.getAmount().longValue();
+        if (dbAmount != vnpAmount) {
+            throw new AppException(ErrorCode.INVALID_AMOUNT);
+        }
+
+        if (payment.getStatus() == PaymentStatus.completed) {
+            throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+
+        if ("00".equals(responseCode)) {
+            confirmPayment(paymentId, transactionCode);
+        } else {
+            payment.setStatus(PaymentStatus.failed);
+            payment.setUpdatedAt(LocalDateTime.now());
+            paymentRepository.save(payment);
+
+            Booking booking = bookingRepository.findById(payment.getBookingId()).get();
+            bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
+        }
+    }
+
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void expirePayments() {
