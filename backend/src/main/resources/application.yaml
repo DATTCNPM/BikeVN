@@ -19,3 +19,9 @@ app:
 
 jwt:
   signerKey: ${JWT_SECRET:bW9yZV9zZWN1cmVfYW5kX3JhbmRvbV9rZXlfZm9yX2p3dF9zaWduaW5nX3dpdGhfaHM1MTJfYWxnb3JpdGhtXzEyMzQ1Njc4OTA=}
+
+vnpay:
+  tmn-code: ${VNPAY_TMN_CODE}
+  hash-secret: ${VNPAY_HASH_SECRET}
+  pay-url: ${VNPAY_PAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+  return-url: ${VNPAY_RETURN_URL}
