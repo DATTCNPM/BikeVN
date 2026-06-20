@@ -6,6 +6,7 @@ import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
 import com.backend.bikerental.entity.Booking;
 import com.backend.bikerental.entity.Payment;
+import com.backend.bikerental.entity.User;
 import com.backend.bikerental.entity.Vehicle;
 import com.backend.bikerental.enums.BookingStatus;
 import com.backend.bikerental.enums.PaymentStatus;
@@ -16,6 +17,7 @@ import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.mapper.PaymentMapper;
 import com.backend.bikerental.repository.BookingRepository;
 import com.backend.bikerental.repository.PaymentRepository;
+import com.backend.bikerental.repository.UserRepository;
 import com.backend.bikerental.repository.VehicleRepository;
 import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
@@ -48,6 +50,7 @@ public class PaymentServiceP {
     PaymentMapper paymentMapper;
     VehicleRepository vehicleRepository;
     BranchSecurityUtil branchSecurityUtil;
+    UserRepository userRepository;
     static final String BANK_NAME = "MB BANK";
     static final String BANK_ACCOUNT = "1223445";
     static final String ACCOUNT_NAME = "Tran Hoang Phuong";
@@ -161,29 +164,28 @@ public class PaymentServiceP {
         }
 
         // check expire
-        if (isExpired(payment)) {
-            payment.setStatus(PaymentStatus.failed);
-            paymentRepository.save(payment);
-            throw new AppException(ErrorCode.PAYMENT_EXPIRED);
-        }
-
+//        if (isExpired(payment)) {
+//            payment.setStatus(PaymentStatus.failed);
+//            paymentRepository.save(payment);
+//            throw new AppException(ErrorCode.PAYMENT_EXPIRED);
+//        }
+//
         Booking booking = bookingRepository.findById(payment.getBookingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
-
-        // FAILED: overtime locking seat
-        if(booking.getExpiresAt() != null && booking.getExpiresAt().isBefore(LocalDateTime.now()))
-        {
-            payment.setStatus(PaymentStatus.failed);
-            paymentRepository.save(payment);
-            throw new AppException(ErrorCode.BOOKING_EXPIRED);
-        }
+//
+//        // FAILED: overtime locking seat
+//        if(booking.getExpiresAt() != null && booking.getExpiresAt().isBefore(LocalDateTime.now()))
+//        {
+//            payment.setStatus(PaymentStatus.failed);
+//            paymentRepository.save(payment);
+//            throw new AppException(ErrorCode.BOOKING_EXPIRED);
+//        }
 
         // SUCCESS
         payment.setStatus(PaymentStatus.completed);
         payment.setTransactionCode(transactionCode);
         payment.setPaidAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
-
         if(PaymentType.rental.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.approved);
@@ -275,13 +277,27 @@ public class PaymentServiceP {
    }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('admin', 'employee') or returnObject.email == authentication.name")
+    @PreAuthorize("isAuthenticated()")
     public PaymentResponse getPayment(String id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
 
         Booking booking = bookingRepository.findById(payment.getBookingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdminOrEmployee = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin") || a.getAuthority().equals("ROLE_employee"));
+
+        if (!isAdminOrEmployee) {
+            User user = userRepository.findById(booking.getUserId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            // So sánh Email trong DB với Email trong Token
+            if (!user.getEmail().equals(auth.getName())) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
 
         return buildResponse(payment, booking);
     }
