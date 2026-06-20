@@ -30,7 +30,7 @@ const getRandomAvatar = (id: string) => {
 };
 
 export default function ReviewCard({ review }: Props) {
-  const avatar = getRandomAvatar(review.user_id);
+  const avatar = getRandomAvatar(review.userId);
 
   return (
     <Card className="rounded-3xl border-border/60 bg-card/70 p-5 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
@@ -40,17 +40,17 @@ export default function ReviewCard({ review }: Props) {
             <AvatarImage src={avatar} />
 
             <AvatarFallback>
-              {review.user_id.slice(0, 1).toUpperCase()}
+              {review.userId.slice(0, 1).toUpperCase()}
             </AvatarFallback>
           </Avatar>
 
           <div>
             <h4 className="font-semibold text-foreground">
-              {review.user?.name || review.user_id}
+              {review.user?.name || review.userId}
             </h4>
 
             <p className="text-sm text-muted-foreground">
-              {new Date(review.created_at).toLocaleDateString("vi-VN")}
+              {new Date(review.createdAt).toLocaleDateString("vi-VN")}
             </p>
           </div>
         </div>

@@ -7,51 +7,61 @@ import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import TablePagination from "@/components/common/TablePagination";
-import { Spinner } from "@repo/ui/components/ui/spinner";
 
+import { Spinner } from "@repo/ui/components/ui/spinner";
 import { Badge } from "@repo/ui/components/ui/badge";
 
-import ReviewEdit from "@/features/reviews/components/ReviewEdit";
 import ReviewDelete from "@/features/reviews/components/ReviewDelete";
+import ReviewCreate from "@/features/reviews/components/ReviewCreate";
 
-import { useAllReviews } from "@repo/hooks";
+import { useAdminReviews } from "@/features/reviews/queries/useAdminReviews";
+
 import type { Review } from "@repo/types";
 
 export default function ReviewManagementPage() {
-  const { data: reviews = [], isLoading } = useAllReviews();
-
-  const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
 
   const [search, setSearch] = useState("");
+
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+
+  const { data, isLoading } = useAdminReviews({
+    page,
+    size: pageSize,
+  });
+
+  const reviews = data?.data ?? [];
 
   const columns = useMemo<ColumnDef<Review>[]>(
     () => [
       {
-        accessorKey: "booking_id",
+        accessorKey: "bookingId",
         header: "Booking ID",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
-            #{row.original.booking_id.substring(0, 6)}
+            #{row.original.bookingId.slice(0, 6)}
           </span>
         ),
       },
       {
-        accessorKey: "user_id",
+        accessorKey: "userId",
         header: "User ID",
         cell: ({ row }) => (
           <span className="text-sm">
-            User #{row.original.user_id.substring(0, 6)}
+            User #{row.original.userId.slice(0, 6)}
           </span>
         ),
       },
       {
-        accessorKey: "vehicle_id",
+        accessorKey: "vehicleId",
         header: "Vehicle ID",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
-            Xe #{row.original.vehicle_id.substring(0, 6)}
+            Xe #{row.original.vehicleId.slice(0, 6)}
           </span>
         ),
       },
@@ -60,7 +70,9 @@ export default function ReviewManagementPage() {
         header: "Rating",
         cell: ({ row }) => (
           <div className="flex items-center gap-1">
-            {Array.from({ length: row.original.rating }).map((_, index) => (
+            {Array.from({
+              length: row.original.rating,
+            }).map((_, index) => (
               <Star
                 key={index}
                 className="size-4 fill-yellow-400 text-yellow-400"
@@ -75,6 +87,7 @@ export default function ReviewManagementPage() {
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <MessageSquare className="size-4 text-muted-foreground" />
+
             <span className="max-w-[300px] truncate">
               {row.original.comment || "--"}
             </span>
@@ -82,10 +95,10 @@ export default function ReviewManagementPage() {
         ),
       },
       {
-        accessorKey: "created_at",
+        accessorKey: "createdAt",
         header: "Created At",
         cell: ({ row }) =>
-          new Date(row.original.created_at).toLocaleString("vi-VN"),
+          new Date(row.original.createdAt).toLocaleString("vi-VN"),
       },
       {
         id: "status",
@@ -101,10 +114,6 @@ export default function ReviewManagementPage() {
         header: "",
         cell: ({ row }) => (
           <TableActionDropdown
-            onEdit={() => {
-              setSelectedReview(row.original);
-              setOpenEditDialog(true);
-            }}
             onDelete={() => {
               setSelectedReview(row.original);
               setOpenDeleteDialog(true);
@@ -126,27 +135,32 @@ export default function ReviewManagementPage() {
 
   return (
     <div>
-      <DataTableToolbar search={search} onSearchChange={setSearch} />
+      <DataTableToolbar
+        search={search}
+        onSearchChange={setSearch}
+        onCreate={() => setOpenCreateDialog(true)}
+      />
 
       <DataTable columns={columns} data={reviews} />
 
       <TablePagination
-        page={1}
-        pageSize={10}
-        totalElements={reviews.length}
-        totalPages={Math.ceil(reviews.length / 10) || 1}
-        onPageChange={(page) => console.log(page)}
+        page={data?.currentPage || 1}
+        pageSize={data?.pageSize || 10}
+        totalElements={data?.totalElements || 0}
+        totalPages={data?.totalPages || 1}
+        onPageChange={setPage}
       />
 
-      <ReviewEdit
-        open={openEditDialog}
-        onOpenChange={setOpenEditDialog}
-        review={selectedReview}
-      />
       <ReviewDelete
         open={openDeleteDialog}
         onOpenChange={setOpenDeleteDialog}
         review={selectedReview}
+      />
+
+      <ReviewCreate
+        open={openCreateDialog}
+        onOpenChange={setOpenCreateDialog}
+        review={null}
       />
     </div>
   );

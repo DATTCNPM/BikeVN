@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { vehicleBrandPublicApi } from "@repo/api";
-import { vehicleBrandKeys } from "../queryKeys";
+import { vehicleBrandKeys } from "../queryKeys/vehicleBrandKeys";
 
 import type { VehicleBrand, PaginationResponse } from "@repo/types";
 

@@ -11,3 +11,4 @@ export * from "./paymentSchema";
 export * from "./branchSchema";
 export * from "./userSchema";
 export * from "./vehicleReturnSchema";
+export * from "./reviewSchema";

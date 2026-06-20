@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { vehiclePublicApi } from "@repo/api";
-import { vehiclesKeys } from "../queryKeys";
+import { vehiclesKeys } from "../queryKeys/vehicleKeys";
 
 import type {
   Vehicle,

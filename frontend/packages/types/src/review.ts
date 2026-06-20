@@ -1,22 +1,13 @@
-export type Review = {
-  id: string;
-  booking_id: string;
-  user_id: string;
-  vehicle_id: string;
-  rating: number;
-  comment?: string | null;
-  created_at: string;
-  updated_at: string;
-  user?: {
-    email: string;
-    name: string;
-  };
-};
+import { z } from "zod";
 
-export type ReviewPayload = {
-  booking_id: string;
-  user_id: string;
-  vehicle_id: string;
-  rating: number;
-  comment?: string;
-};
+import {
+  reviewSchema,
+  reviewCreationSchema,
+  publicReviewSchema,
+} from "@repo/schemas";
+
+export type Review = z.infer<typeof reviewSchema>;
+
+export type ReviewCreationPayload = z.infer<typeof reviewCreationSchema>;
+
+export type PublicReview = z.infer<typeof publicReviewSchema>;

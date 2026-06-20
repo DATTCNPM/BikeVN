@@ -12,51 +12,42 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useUpdateReview } from "@/features/reviews/mutations";
-import {
-  reviewAdminSchema,
-  type ReviewAdminFormValues,
-} from "@/features/reviews/schemas";
-import type { Review } from "@repo/types";
+import { useCreateReview } from "@repo/hooks";
+import { reviewCreationSchema } from "@repo/schemas";
+import type { ReviewCreationPayload } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  review: Review | null;
+  bookingId: string;
 };
 
-export default function ReviewEdit({ open, onOpenChange, review }: Props) {
-  const { mutateAsync, isPending } = useUpdateReview();
+export default function ReviewCreate({ open, onOpenChange, bookingId }: Props) {
+  const { mutateAsync: createReview, isPending } = useCreateReview();
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ReviewAdminFormValues>({
-    resolver: zodResolver(reviewAdminSchema),
+  } = useForm<ReviewCreationPayload>({
+    resolver: zodResolver(reviewCreationSchema),
   });
 
   useEffect(() => {
-    if (!review) return;
+    if (!bookingId) return;
     reset({
-      rating: review.rating,
-      comment: review.comment,
+      rating: 5,
+      comment: "",
     });
-  }, [review, reset]);
+  }, [bookingId, reset]);
 
-  const onSubmit = async (values: ReviewAdminFormValues) => {
-    if (!review) return;
+  const onSubmit = async (values: ReviewCreationPayload) => {
+    if (!bookingId) return;
     try {
-      await mutateAsync({
-        id: review.id,
-        payload: {
-          booking_id: review.booking_id,
-          user_id: review.user_id,
-          vehicle_id: review.vehicle_id,
-          rating: values.rating,
-          comment: values.comment || undefined,
-        },
+      await createReview({
+        ...values,
+        bookingId,
       });
       toast.success("Update review successfully");
       onOpenChange(false);
