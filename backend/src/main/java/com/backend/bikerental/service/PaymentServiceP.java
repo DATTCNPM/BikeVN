@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +56,7 @@ public class PaymentServiceP {
     VehicleRepository vehicleRepository;
     BranchSecurityUtil branchSecurityUtil;
     UserRepository userRepository;
+    VNPayService vnPayService;
     static final String BANK_NAME = "MB BANK";
     static final String BANK_ACCOUNT = "1223445";
     static final String ACCOUNT_NAME = "Tran Hoang Phuong";
@@ -483,6 +485,39 @@ public class PaymentServiceP {
                 .totalElements(pageData.getTotalElements())
                 .data(paymentResponses)
                 .build();
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('admin')")
+    public PaymentResponse processRefund(String paymentId, String adminId, String ipAddress) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        if (payment.getStatus() == PaymentStatus.refunded) {
+            throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String paidDate = payment.getPaidAt().format(formatter);
+
+        boolean isRefundSuccess = vnPayService.refundPayment(
+                payment.getId(),
+                payment.getAmount().longValue(),
+                payment.getTransactionCode(),
+                paidDate,
+                ipAddress,
+                adminId
+        );
+
+        if (isRefundSuccess) {
+            payment.setStatus(PaymentStatus.refunded);
+            payment.setUpdatedAt(LocalDateTime.now());
+            paymentRepository.save(payment);
+
+            return buildResponse(payment, bookingRepository.findById(payment.getBookingId()).get());
+        } else {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
     }
 }
 
