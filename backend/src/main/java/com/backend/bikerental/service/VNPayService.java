@@ -4,7 +4,12 @@ import com.backend.bikerental.util.VNPayUtil;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +29,8 @@ public class VNPayService {
     String payUrl;
     @Value("${vnpay.return-url}")
     String returnUrl;
-
+    @Value("${vnpay.api-url}")
+    String vnpApiUrl;
     public String createPaymentUrl(String paymentId, long amountInVnd, String ipAddress) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -133,5 +139,54 @@ public class VNPayService {
 
         String checkSum = VNPayUtil.hmacSHA512(hashSecret, hashData.toString());
         return checkSum.equalsIgnoreCase(vnp_SecureHash);
+    }
+
+    public boolean refundPayment(String paymentId, long amountInVnd, String transactionNo, String paidDate,
+                                 String ipAddress, String adminId) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        String vnp_RequestId = UUID.randomUUID().toString();
+        String vnp_Version = "2.1.0";
+        String vnp_Command = "refund";
+        String vnp_TransactionType = "02";
+        long amount = amountInVnd * 100;
+        String vnp_CreateDate = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+        String hashData = vnp_RequestId + "|" + vnp_Version + "|" + vnp_Command + "|" + tmnCode + "|"
+                + vnp_TransactionType + "|" + paymentId + "|" + amount + "|" + transactionNo + "|"
+                + paidDate + "|" + adminId + "|" + vnp_CreateDate + "|"
+                + ipAddress + "|" + "Hoan tien don " + paymentId;
+
+        String vnp_SecureHash = VNPayUtil.hmacSHA512(hashSecret, hashData);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("vnp_RequestId", vnp_RequestId);
+        payload.put("vnp_Version", vnp_Version);
+        payload.put("vnp_Command", vnp_Command);
+        payload.put("vnp_TmnCode", tmnCode);
+        payload.put("vnp_TransactionType", vnp_TransactionType);
+        payload.put("vnp_TxnRef", paymentId);
+        payload.put("vnp_Amount", amount);
+        payload.put("vnp_TransactionNo", transactionNo);
+        payload.put("vnp_TransactionDate", paidDate);
+        payload.put("vnp_CreateBy", adminId);
+        payload.put("vnp_CreateDate", vnp_CreateDate);
+        payload.put("vnp_IpAddr", ipAddress);
+        payload.put("vnp_OrderInfo", "Hoan tien don " + paymentId);
+        payload.put("vnp_SecureHash", vnp_SecureHash);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(vnpApiUrl, request, Map.class);
+            Map<String, String> responseBody = response.getBody();
+
+            return responseBody != null && "00".equals(responseBody.get("vnp_ResponseCode"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
