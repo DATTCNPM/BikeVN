@@ -19,6 +19,7 @@ import com.backend.bikerental.repository.BookingRepository;
 import com.backend.bikerental.repository.PaymentRepository;
 import com.backend.bikerental.repository.UserRepository;
 import com.backend.bikerental.repository.VehicleRepository;
+import com.backend.bikerental.specification.PaymentSpecification;
 import com.backend.bikerental.util.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -443,6 +447,41 @@ public class PaymentServiceP {
                 .qrContent(qrContent)
 
                 .createdAt(payment.getCreatedAt())
+                .build();
+    }
+
+    //FILTER
+    @Transactional(readOnly = true)
+    public PageResponse<PaymentResponse> filterPayments(
+            String bookingId,
+            String transactionCode,
+            String branchId,
+            PaymentStatus status,
+            PaymentType type,
+            LocalDate fromDate,
+            LocalDate toDate,
+            int page,
+            int size
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Specification<Payment> specification = PaymentSpecification.filterPayments(
+                bookingId, transactionCode, branchId, status, type, fromDate, toDate
+        );
+
+        Page<Payment> pageData = paymentRepository.findAll(specification, pageable);
+
+        var paymentResponses = pageData.getContent().stream()
+                .map(paymentMapper::toPaymentResponse)
+                .toList();
+
+        return PageResponse.<PaymentResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(paymentResponses)
                 .build();
     }
 }

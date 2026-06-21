@@ -6,6 +6,7 @@ import com.backend.bikerental.enums.PaymentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<Payment, String> {
+public interface PaymentRepository extends JpaRepository<Payment, String>, JpaSpecificationExecutor<Payment> {
     List<Payment> findByBookingId(String bookingId);
     List<Payment> findByBookingIdAndStatus(String bookingId, PaymentStatus status);
     List<Payment> findByBookingIdAndTypeAndStatus(
