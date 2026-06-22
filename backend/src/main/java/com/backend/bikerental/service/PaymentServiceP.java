@@ -511,6 +511,7 @@ public class PaymentServiceP {
 
         if (isRefundSuccess) {
             payment.setStatus(PaymentStatus.refunded);
+            payment.setNotes("REFUNDED_SUCCESSFULLY");
             payment.setUpdatedAt(LocalDateTime.now());
             paymentRepository.save(payment);
 
