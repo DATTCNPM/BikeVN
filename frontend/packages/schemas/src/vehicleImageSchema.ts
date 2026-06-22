@@ -1,25 +1,30 @@
 import { z } from "zod";
 
 export const vehicleImageCreationSchema = z.object({
-  file: z.instanceof(File),
+  imageUrl: z
+    .array(z.instanceof(File))
+    .min(1, "Please select at least one image"),
+});
+
+export const vehicleImageUpdateSchema = z.object({
+  imageUrl: z.instanceof(File).optional(),
 
   altText: z.string().optional(),
 
-  displayOrder: z.number().min(0).optional(),
+  displayOrder: z.number().optional(),
 
   isPrimary: z.boolean().optional(),
 });
 
-export const vehicleImageUpdateSchema = vehicleImageCreationSchema.partial();
-
 export const vehicleImageSchema = vehicleImageCreationSchema
   .omit({
-    file: true,
+    imageUrl: true,
   })
   .extend({
     id: z.string(),
     vehicleId: z.string(),
     imageUrl: z.string(),
+    altText: z.string().nullable(),
     displayOrder: z.number(),
     isPrimary: z.boolean(),
     createdAt: z.string().datetime(),

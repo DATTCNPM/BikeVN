@@ -37,22 +37,26 @@ export default function ReviewCreate({ open, onOpenChange, bookingId }: Props) {
   useEffect(() => {
     if (!bookingId) return;
     reset({
+      bookingId,
       rating: 5,
       comment: "",
     });
   }, [bookingId, reset]);
 
   const onSubmit = async (values: ReviewCreationPayload) => {
-    if (!bookingId) return;
+    console.log("Submitting review with values:", values);
+    if (!bookingId) {
+      toast.error("Booking ID is required");
+      return;
+    }
     try {
       await createReview({
         ...values,
-        bookingId,
       });
-      toast.success("Update review successfully");
+      toast.success("Review created successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Failed to update review");
+      toast.error("Failed to create review");
     }
   };
 
@@ -60,14 +64,15 @@ export default function ReviewCreate({ open, onOpenChange, bookingId }: Props) {
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Edit Review"
-      description="Update review content"
+      title="Create Review"
+      description="Create a new review"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Save Changes"
+      submitText="Create Review"
     >
       <div className="grid gap-5">
         <FieldGroup>
+          <input type="hidden" {...register("bookingId")} />
           <Field>
             <FieldLabel>Rating</FieldLabel>
             <Input

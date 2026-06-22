@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
 import EntityFormDialog from "@/components/common/EntityFormDialog";
+import ImageUploadField from "@/components/common/ImageUploadField";
 
 import {
   Field,
@@ -35,6 +36,8 @@ import {
 
 import type { CreateVehicleReturnRequest } from "@repo/types";
 
+import { usePortalProfile } from "@/features/auth/usePortalProfile";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,6 +52,12 @@ export default function VehicleReturnCreate({
   const { mutateAsync, isPending } = useCreateVehicleReturn();
 
   const { data: branches = [] } = useBranches();
+
+  const { data: profile } = usePortalProfile();
+
+  if (!profile) {
+    return toast.error("Vui lòng đăng nhập để tạo phiếu trả xe");
+  }
 
   const defaultValues: CreateVehicleReturnRequest = {
     bookingId,
@@ -66,13 +75,14 @@ export default function VehicleReturnCreate({
 
     notes: "",
 
-    employeeId: "",
+    employeeId: profile.id,
   };
 
   const {
     register,
     control,
     handleSubmit,
+
     reset,
     setValue,
     formState: { errors },
@@ -81,9 +91,19 @@ export default function VehicleReturnCreate({
     defaultValues,
   });
 
+  const images = useWatch({
+    control,
+    name: "images",
+    defaultValue: [],
+  });
+
   const onSubmit = async (values: CreateVehicleReturnRequest) => {
+    console.log("Submitting vehicle return with values:", values);
     try {
-      await mutateAsync(values);
+      await mutateAsync({
+        ...values,
+        employeeId: profile?.id || "",
+      });
 
       toast.success("Tạo phiếu trả xe thành công");
 
@@ -110,7 +130,7 @@ export default function VehicleReturnCreate({
       <FieldGroup>
         <Field>
           <FieldLabel>Mã booking</FieldLabel>
-
+          <input type="hidden" {...register("bookingId")} />
           <Input value={bookingId} disabled />
         </Field>
 
@@ -229,27 +249,21 @@ export default function VehicleReturnCreate({
           <Field>
             <FieldLabel>Nhân viên xác nhận</FieldLabel>
 
-            <Input {...register("employeeId")} placeholder="Nhập employee id" />
-
-            {errors.employeeId && (
-              <FieldError>{errors.employeeId.message}</FieldError>
-            )}
+            <input type="hidden" {...register("employeeId")} />
+            <Input value={profile?.name} disabled />
           </Field>
 
           <Field>
             <FieldLabel>Hình ảnh</FieldLabel>
 
-            <Input
-              type="file"
+            <ImageUploadField
               multiple
-              accept="image/*"
-              onChange={(e) => {
-                const files = Array.from(e.target.files || []);
-
+              value={images}
+              onChange={(files) =>
                 setValue("images", files, {
                   shouldValidate: true,
-                });
-              }}
+                })
+              }
             />
 
             {errors.images && (

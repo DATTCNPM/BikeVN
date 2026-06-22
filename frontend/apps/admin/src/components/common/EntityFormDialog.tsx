@@ -45,6 +45,7 @@ export default function EntityFormDialog({
       <DialogContent className="sm:max-w-lg">
         <form
           onSubmit={(e) => {
+            console.log("Form submitted");
             void onSubmit?.(e);
           }}
         >
