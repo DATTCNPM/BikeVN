@@ -4,6 +4,8 @@ import com.backend.bikerental.dto.request.PaymentCreationRequest;
 import com.backend.bikerental.dto.response.ApiResponse;
 import com.backend.bikerental.dto.response.PageResponse;
 import com.backend.bikerental.dto.response.PaymentResponse;
+import com.backend.bikerental.enums.PaymentStatus;
+import com.backend.bikerental.enums.PaymentType;
 import com.backend.bikerental.exception.AppException;
 import com.backend.bikerental.exception.ErrorCode;
 import com.backend.bikerental.service.PaymentServiceP;
@@ -13,8 +15,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -189,6 +196,35 @@ public class PaymentController {
     ) {
         return ApiResponse.<PaymentResponse>builder()
                 .result(paymentService.cancelPayment(id, reason))
+                .build();
+    }
+
+    @GetMapping("/admin/filter")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public ApiResponse<PageResponse<PaymentResponse>> filterPayments(
+            @RequestParam(required = false) String bookingId,
+            @RequestParam(required = false) String transactionCode,
+            @RequestParam(required = false) String branchId,
+            @RequestParam(required = false) PaymentStatus status,
+            @RequestParam(required = false) PaymentType type,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+
+        if (!isAdmin && auth instanceof JwtAuthenticationToken jwtToken) {
+            branchId = (String) jwtToken.getTokenAttributes().get("branchId");
+        }
+
+        return ApiResponse.<PageResponse<PaymentResponse>>builder()
+                .result(paymentService.filterPayments(
+                        bookingId, transactionCode, branchId, status, type, fromDate, toDate, page, size
+                ))
                 .build();
     }
 }
