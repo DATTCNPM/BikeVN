@@ -1,4 +1,4 @@
-import { Check, MoreHorizontal, X } from "lucide-react";
+import { Check, MoreHorizontal, X, Undo2, CirclePlus } from "lucide-react";
 
 import { Button } from "@repo/ui/components/ui/button";
 import {
@@ -12,12 +12,14 @@ type Props = {
   onApprove?: () => void | Promise<void>;
   onReject?: () => void | Promise<void>;
   onManagerVehicleReturn?: () => void | Promise<void>;
+  onCreateReview?: () => void | Promise<void>;
 };
 
 export default function BookingActionDropdown({
   onApprove,
   onReject,
   onManagerVehicleReturn,
+  onCreateReview,
 }: Props) {
   return (
     <DropdownMenu>
@@ -57,7 +59,18 @@ export default function BookingActionDropdown({
               void onManagerVehicleReturn();
             }}
           >
-            <span className="mr-2">Manage Vehicle Return</span>
+            <Undo2 className="mr-2 size-4" />
+            <span className="mr-2"> Manage Vehicle Return</span>
+          </DropdownMenuItem>
+        )}
+        {onCreateReview && (
+          <DropdownMenuItem
+            onClick={() => {
+              void onCreateReview();
+            }}
+          >
+            <CirclePlus className="mr-2 size-4" />
+            <span className="mr-2">Create Review</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

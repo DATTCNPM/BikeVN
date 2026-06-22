@@ -12,7 +12,6 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { Badge } from "@repo/ui/components/ui/badge";
 
 import ReviewDelete from "@/features/reviews/components/ReviewDelete";
-import ReviewCreate from "@/features/reviews/components/ReviewCreate";
 
 import { useAdminReviews } from "@/features/reviews/queries/useAdminReviews";
 
@@ -25,7 +24,6 @@ export default function ReviewManagementPage() {
   const [search, setSearch] = useState("");
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
@@ -155,12 +153,6 @@ export default function ReviewManagementPage() {
         open={openDeleteDialog}
         onOpenChange={setOpenDeleteDialog}
         review={selectedReview}
-      />
-
-      <ReviewCreate
-        open={openCreateDialog}
-        onOpenChange={setOpenCreateDialog}
-        review={null}
       />
     </div>
   );

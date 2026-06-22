@@ -38,7 +38,7 @@ export const vehicleReturnAdminApi = {
     const data = await axiosAdmin.post<
       VehicleReturn,
       CreateVehicleReturnRequest
-    >("/bookings/return", formData, {
+    >("/bookings/returns", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -52,7 +52,7 @@ export const vehicleReturnAdminApi = {
 
   async getVehicleReturnByBookingId(bookingId: string) {
     return axiosAdmin.get<VehicleReturn, VehicleReturn>(
-      `/bookings/return/booking/${bookingId}`,
+      `/bookings/returns/booking/${bookingId}`,
     );
   },
 };

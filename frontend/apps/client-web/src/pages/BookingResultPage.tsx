@@ -7,6 +7,8 @@ import BookingStatusHero from "@/features/bookings/components/BookingStatusHero"
 import BookingTimeline from "@/features/bookings/components/BookingTimeline";
 import BookingVehicleCard from "@/features/bookings/components/BookingVehicleCard";
 
+import CreateReviewSection from "@/features/reviews/components/CreateReviewSection";
+
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useVehicle, useBranches } from "@repo/hooks";
@@ -50,6 +52,10 @@ export default function BookingResultPage() {
 
             <BookingTimeline status={booking?.status || null} />
           </div>
+
+          {booking?.status === "completed" && (
+            <CreateReviewSection bookingId={booking.id} />
+          )}
 
           <BookingActions />
         </div>

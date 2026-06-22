@@ -18,28 +18,18 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
 
-import type { VehicleImage } from "@repo/types";
+import { vehicleImageUpdateSchema } from "@repo/schemas";
 
-import { z } from "zod";
+import type { VehicleImage, VehicleImageUpdatePayload } from "@repo/types";
 
-const vehicleImageUpdateSchema = z.object({
-  file: z.instanceof(File).optional(),
+import { getImageUrl } from "@repo/utils";
 
-  altText: z.string().optional(),
-
-  displayOrder: z.number().min(0).optional(),
-
-  isPrimary: z.boolean().optional(),
-});
-
-type FormValues = z.infer<typeof vehicleImageUpdateSchema>;
+type FormValues = VehicleImageUpdatePayload;
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-
   vehicleId: string;
-
   image: VehicleImage | null;
 };
 
@@ -51,7 +41,7 @@ export default function ImageEdit({
 }: Props) {
   const { mutateAsync, isPending } = useUpdateVehicleImage();
 
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string>("");
 
   const {
     register,
@@ -73,32 +63,44 @@ export default function ImageEdit({
       isPrimary: image.isPrimary,
     });
 
-    setPreview(image.imageUrl);
+    setPreview(getImageUrl(image.imageUrl));
   }, [image, reset]);
+
+  useEffect(() => {
+    return () => {
+      if (preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     if (!file) return;
 
-    setValue("file", file);
+    setValue("imageUrl", file, {
+      shouldValidate: true,
+    });
 
-    setPreview(URL.createObjectURL(file));
+    setPreview((oldPreview) => {
+      if (oldPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(oldPreview);
+      }
+
+      return URL.createObjectURL(file);
+    });
   };
 
   const onSubmit = async (values: FormValues) => {
+    console.log(values);
     if (!image) return;
 
     try {
       await mutateAsync({
         vehicleId,
         imageId: image.id,
-        payload: {
-          file: values.file,
-          altText: values.altText,
-          displayOrder: values.displayOrder,
-          isPrimary: values.isPrimary,
-        },
+        payload: values,
       });
 
       toast.success("Update image successfully");
@@ -125,7 +127,9 @@ export default function ImageEdit({
 
           <Input type="file" accept="image/*" onChange={handleFileChange} />
 
-          {errors.file && <FieldError>{errors.file.message}</FieldError>}
+          {errors.imageUrl && (
+            <FieldError>{errors.imageUrl.message}</FieldError>
+          )}
         </Field>
 
         {preview && (
@@ -133,7 +137,7 @@ export default function ImageEdit({
             <FieldLabel>Preview</FieldLabel>
 
             <img
-              src={`http://localhost:8080${preview}`}
+              src={preview}
               alt="preview"
               className="h-56 w-full rounded-md border object-cover"
             />
@@ -168,6 +172,7 @@ export default function ImageEdit({
 
         <Field>
           <FieldLabel>Primary Image</FieldLabel>
+
           <div>
             <Controller
               control={control}

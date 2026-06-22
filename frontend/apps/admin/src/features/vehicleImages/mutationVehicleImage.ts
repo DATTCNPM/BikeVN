@@ -44,7 +44,7 @@ export function useUpdateVehicleImage() {
       imageId: string;
 
       payload: VehicleImageUpdatePayload;
-    }) => vehicleImageAdminApi.updateImage(vehicleId, imageId, payload),
+    }) => vehicleImageAdminApi.editImage(vehicleId, imageId, payload),
 
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({

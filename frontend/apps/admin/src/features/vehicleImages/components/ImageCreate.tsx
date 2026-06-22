@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import EntityFormDialog from "@/components/common/EntityFormDialog";
@@ -20,6 +19,7 @@ import { useUploadVehicleImage } from "@/features/vehicleImages/mutationVehicleI
 
 import { vehicleImageCreationSchema } from "@repo/schemas";
 import type { VehicleImageCreatePayload } from "@repo/types";
+import ImageUploadField from "@/components/common/ImageUploadField";
 
 type Props = {
   open: boolean;
@@ -28,19 +28,13 @@ type Props = {
 };
 
 const defaultValues: VehicleImageCreatePayload = {
-  file: undefined as unknown as File,
-  altText: "",
-  displayOrder: 0,
-  isPrimary: false,
+  imageUrl: [],
 };
 
 export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
   const { mutateAsync, isPending } = useUploadVehicleImage();
 
-  const [preview, setPreview] = useState<string | null>(null);
-
   const {
-    register,
     control,
     handleSubmit,
     reset,
@@ -51,17 +45,11 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     defaultValues,
   });
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    setValue("file", file);
-
-    const url = URL.createObjectURL(file);
-
-    setPreview(url);
-  };
+  const files = useWatch({
+    control,
+    name: "imageUrl",
+    defaultValue: [],
+  });
 
   const onSubmit = async (values: VehicleImageCreatePayload) => {
     try {
@@ -69,18 +57,13 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
         vehicleId,
 
         payload: {
-          file: values.file,
-          altText: values.altText,
-          displayOrder: values.displayOrder,
-          isPrimary: values.isPrimary,
+          imageUrl: values.imageUrl,
         },
       });
 
       toast.success("Upload image successfully");
 
       reset(defaultValues);
-
-      setPreview(null);
 
       onOpenChange(false);
     } catch {
@@ -100,64 +83,21 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Choose Image</FieldLabel>
+          <FieldLabel>Choose Images</FieldLabel>
 
-          <Input type="file" accept="image/*" onChange={handleFileChange} />
-
-          {errors.file && <FieldError>{errors.file.message}</FieldError>}
-        </Field>
-
-        {preview && (
-          <Field>
-            <FieldLabel>Preview</FieldLabel>
-
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-48 w-full rounded-md border object-cover"
-            />
-          </Field>
-        )}
-
-        <Field>
-          <FieldLabel>Image Description</FieldLabel>
-
-          <Input {...register("altText")} placeholder="Example: Front view" />
-
-          {errors.altText && <FieldError>{errors.altText.message}</FieldError>}
-        </Field>
-
-        <Field>
-          <FieldLabel>Display Order</FieldLabel>
-
-          <Input
-            type="number"
-            {...register("displayOrder", {
-              valueAsNumber: true,
-            })}
+          <ImageUploadField
+            multiple
+            value={files}
+            onChange={(selectedFiles) =>
+              setValue("imageUrl", selectedFiles, {
+                shouldValidate: true,
+              })
+            }
           />
 
-          {errors.displayOrder && (
-            <FieldError>{errors.displayOrder.message}</FieldError>
+          {errors.imageUrl && (
+            <FieldError>{errors.imageUrl.message}</FieldError>
           )}
-        </Field>
-
-        <Field>
-          <FieldLabel>Set as Primary Image</FieldLabel>
-          <div>
-            <Controller
-              control={control}
-              name="isPrimary"
-              render={({ field }) => (
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={(checked) =>
-                    field.onChange(Boolean(checked))
-                  }
-                />
-              )}
-            />
-          </div>
         </Field>
       </FieldGroup>
     </EntityFormDialog>

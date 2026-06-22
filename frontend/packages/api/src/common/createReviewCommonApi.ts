@@ -4,7 +4,10 @@ import type { Review, ReviewCreationPayload } from "@repo/types";
 
 export const createReviewCommonApi = (axiosInstance: AxiosInstance) => ({
   async createReview(payload: ReviewCreationPayload) {
-    const data = await axiosInstance.post<Review, Review>("/reviews", payload);
+    const data = await axiosInstance.post<Review, ReviewCreationPayload>(
+      "/reviews",
+      payload,
+    );
 
     return data;
   },

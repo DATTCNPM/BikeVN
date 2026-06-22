@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const reviewCreationSchema = z.object({
-  bookingId: z.string().min(1, "Booking không được để trống"),
+  bookingId: z.string(),
   rating: z
     .number()
     .min(1, "Đánh giá tối thiểu 1 sao")

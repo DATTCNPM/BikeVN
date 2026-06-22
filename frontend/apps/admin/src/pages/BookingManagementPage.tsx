@@ -10,9 +10,12 @@ import BookingInfoDropdown from "@/features/bookings/components/BookingInfoDropd
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
+import ReviewCreate from "@/features/reviews/components/ReviewCreate";
+
 import { Badge } from "@repo/ui/components/ui/badge";
 
 import { useBookings } from "@/features/bookings/queries";
+import { useBranches } from "@repo/hooks";
 import type { Booking } from "@repo/types";
 
 const bookingStatusMap = {
@@ -36,17 +39,26 @@ const bookingStatusLabel = {
 export default function BookingManagementPage() {
   const navigate = useNavigate();
 
+  const { data: branches = [] } = useBranches();
+
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const [dialogMode, setDialogMode] = useState<"approve" | "reject" | null>(
     null,
   );
 
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
 
   const { data: bookings, isLoading } = useBookings(page, 10);
+
+  const findNameByBranchId = (branchId: string) => {
+    const branch = branches.find((b) => b.id === branchId);
+    return branch ? branch.name : "Unknown Branch";
+  };
 
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
@@ -73,7 +85,7 @@ export default function BookingManagementPage() {
         header: "Pickup Branch",
         cell: ({ row }) => (
           <span className="text-sm">
-            CN #{row.original.pickupBranchId.substring(0, 4)}
+            {findNameByBranchId(row.original.pickupBranchId)}
           </span>
         ),
       },
@@ -82,7 +94,7 @@ export default function BookingManagementPage() {
         header: "Return Branch",
         cell: ({ row }) => (
           <span className="text-sm">
-            CN #{row.original.returnBranchId.substring(0, 4)}
+            {findNameByBranchId(row.original.returnBranchId)}
           </span>
         ),
       },
@@ -125,6 +137,10 @@ export default function BookingManagementPage() {
               onManagerVehicleReturn={() =>
                 navigate(`/admin/bookings/${booking.id}/return`)
               }
+              onCreateReview={() => {
+                setSelectedBooking(booking);
+                setOpenCreateDialog(true);
+              }}
             />
           );
         },
@@ -169,6 +185,13 @@ export default function BookingManagementPage() {
         }}
         mode={dialogMode ?? "approve"}
       />
+      {openCreateDialog && (
+        <ReviewCreate
+          open={openCreateDialog}
+          onOpenChange={setOpenCreateDialog}
+          bookingId={selectedBooking?.id ?? ""}
+        />
+      )}
     </div>
   );
 }
