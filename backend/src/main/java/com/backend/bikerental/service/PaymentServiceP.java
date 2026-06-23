@@ -169,23 +169,8 @@ public class PaymentServiceP {
             return; // idempotent
         }
 
-        // check expire
-//        if (isExpired(payment)) {
-//            payment.setStatus(PaymentStatus.failed);
-//            paymentRepository.save(payment);
-//            throw new AppException(ErrorCode.PAYMENT_EXPIRED);
-//        }
-//
         Booking booking = bookingRepository.findById(payment.getBookingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
-//
-//        // FAILED: overtime locking seat
-//        if(booking.getExpiresAt() != null && booking.getExpiresAt().isBefore(LocalDateTime.now()))
-//        {
-//            payment.setStatus(PaymentStatus.failed);
-//            paymentRepository.save(payment);
-//            throw new AppException(ErrorCode.BOOKING_EXPIRED);
-//        }
 
         // SUCCESS
         payment.setStatus(PaymentStatus.completed);
@@ -229,14 +214,26 @@ public class PaymentServiceP {
             throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
         }
 
+        Booking booking = bookingRepository.findById(payment.getBookingId()).get();
+
         if ("00".equals(responseCode)) {
+
+            if (booking.getStatus() == BookingStatus.cancelled) {
+                payment.setStatus(PaymentStatus.completed);
+                payment.setTransactionCode(transactionCode);
+                payment.setPaidAt(LocalDateTime.now());
+                payment.setNotes("NEEDS_REFUND");
+                paymentRepository.save(payment);
+
+                return;
+            }
+
             confirmPayment(paymentId, transactionCode);
         } else {
             payment.setStatus(PaymentStatus.failed);
             payment.setUpdatedAt(LocalDateTime.now());
             paymentRepository.save(payment);
 
-            Booking booking = bookingRepository.findById(payment.getBookingId()).get();
             bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
         }
     }
