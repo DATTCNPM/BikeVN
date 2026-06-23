@@ -39,7 +39,7 @@ const bookingStatusLabel = {
 export default function BookingManagementPage() {
   const navigate = useNavigate();
 
-  const { data: branches = [] } = useBranches();
+  const { data: branches = [], isLoading: isBranchesLoading } = useBranches();
 
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
@@ -149,7 +149,7 @@ export default function BookingManagementPage() {
     [navigate],
   );
 
-  if (isLoading) {
+  if (isLoading || isBranchesLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />

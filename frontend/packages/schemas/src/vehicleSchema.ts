@@ -9,6 +9,48 @@ export const vehicleStatusSchema = z.enum([
 
 export const vehicleTypeSchema = z.enum(["fuel", "electric"]);
 
+export const vehicleSchema = z.object({
+  id: z.string(),
+
+  name: z.string(),
+
+  brandId: z.number(),
+
+  modelId: z.number(),
+
+  licensePlate: z.string(),
+
+  color: z.string(),
+
+  year: z.number(),
+
+  pricePerDay: z.coerce.number(),
+
+  vehicleType: vehicleTypeSchema,
+
+  mileage: z.number(),
+
+  description: z.string().nullable().optional(),
+
+  status: vehicleStatusSchema,
+
+  currentBranchId: z.string(),
+
+  images: z.array(vehicleImageSchema).default([]),
+
+  createdAt: z.string(),
+
+  updatedAt: z.string(),
+
+  brandName: z.string(),
+
+  modelName: z.string(),
+
+  currentBranchName: z.string(),
+
+  country: z.string(),
+});
+
 export const vehicleCreationSchema = z.object({
   name: z.string().min(1, "Tên xe không được để trống"),
 
@@ -39,28 +81,39 @@ export const vehicleCreationSchema = z.object({
   currentBranchId: z.string().min(1, "Vui lòng chọn chi nhánh"),
 });
 
-export const vehicleUpdateSchema = vehicleCreationSchema.partial();
-
-export const vehicleSchema = vehicleCreationSchema.extend({
+export const vehicleCardData = z.object({
   id: z.string(),
-
-  createdAt: z.string().datetime(),
-
-  updatedAt: z.string().datetime(),
-
-  images: z.array(vehicleImageSchema).optional(),
+  name: z.string(),
+  pricePerDay: z.number(),
+  image: z.string().nullable(),
+  currentBranchName: z.string(),
+  vehicleType: z.string(),
+  brandName: z.string(),
+  modelName: z.string(),
+  country: z.string(),
+  status: vehicleStatusSchema.optional(),
 });
+
+export const vehicleUpdateSchema = vehicleCreationSchema.partial();
 
 export const vehicleQuerySchema = z.object({
   search: z.string().optional(),
 
-  currentBranchId: z.string().optional(),
+  currentBranchName: z.string().optional(),
 
   vehicleType: vehicleTypeSchema.optional(),
 
   minPrice: z.number().optional(),
 
   maxPrice: z.number().optional(),
+
+  status: vehicleStatusSchema.optional(),
+
+  brandName: z.string().optional(),
+
+  modelName: z.string().optional(),
+
+  country: z.string().optional(),
 
   page: z.number().optional(),
 

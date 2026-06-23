@@ -26,10 +26,9 @@ export default function VehicleDetail() {
 
   const { data: models, isLoading: modelsLoading } = useVehicleModels();
 
-  const isLoading =
-    vehicleLoading || branchLoading || brandsLoading || modelsLoading;
+  const isPageLoading = vehicleLoading || branchLoading;
 
-  if (isLoading) {
+  if (isPageLoading || brandsLoading || modelsLoading) {
     return (
       <div className="flex h-[500px] items-center justify-center">
         <Spinner />
@@ -40,19 +39,19 @@ export default function VehicleDetail() {
   if (!vehicle) {
     return (
       <div className="flex h-[500px] items-center justify-center">
-        Không tìm thấy xe
+        Vehicle not found
       </div>
     );
   }
 
   return (
-    <div className="grid w-full grid-cols-12 gap-8 p-8">
-      <div className="col-span-8 flex flex-col gap-8 sticky top-24 h-[calc(100vh-6rem)]">
+    <div className="grid grid-cols-12 gap-8 min-h-[calc(100vh-120px)] ">
+      <div className="col-span-8 pr-2">
         <VehicleInfo
           vehicle={vehicle}
           branches={branches}
-          brands={brands?.data || []}
-          models={models?.data || []}
+          brands={brands?.data ?? []}
+          models={models?.data ?? []}
         />
       </div>
 

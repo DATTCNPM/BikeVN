@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  vehicleCardData,
   vehicleSchema,
   vehicleCreationSchema,
   vehicleUpdateSchema,
@@ -10,6 +11,7 @@ import {
 } from "@repo/schemas";
 
 export type Vehicle = z.infer<typeof vehicleSchema>;
+export type VehicleCardData = z.infer<typeof vehicleCardData>;
 
 export type VehicleCreationRequest = z.infer<typeof vehicleCreationSchema>;
 

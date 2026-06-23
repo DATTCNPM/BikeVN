@@ -1,0 +1,65 @@
+import {
+  Calendar,
+  Clock3,
+  CreditCard,
+  FileText,
+  Landmark,
+  Receipt,
+  User,
+} from "lucide-react";
+
+import InfoPopover from "@/components/common/InfoPopover";
+
+import type { Payment } from "@repo/types";
+
+type Props = {
+  payment: Payment;
+};
+
+export default function PaymentInfoPopover({ payment }: Props) {
+  return (
+    <InfoPopover
+      title="Payment Information"
+      description="Transaction and bank details"
+      items={[
+        {
+          icon: Receipt,
+          label: "Transaction",
+          value: payment.transactionCode ?? "-",
+        },
+        {
+          icon: Landmark,
+          label: "Bank",
+          value: payment.bankName ?? "-",
+        },
+        {
+          icon: CreditCard,
+          label: "Account",
+          value: payment.bankAccount ?? "-",
+        },
+        {
+          icon: User,
+          label: "Owner",
+          value: payment.accountName ?? "-",
+        },
+        {
+          icon: FileText,
+          label: "Transfer",
+          value: payment.transferContent ?? "-",
+        },
+        {
+          icon: Calendar,
+          label: "Created",
+          value: new Date(payment.createdAt).toLocaleString("vi-VN"),
+        },
+        {
+          icon: Clock3,
+          label: "Updated",
+          value: payment.updatedAt
+            ? new Date(payment.updatedAt).toLocaleString("vi-VN")
+            : "-",
+        },
+      ]}
+    />
+  );
+}

@@ -16,10 +16,17 @@ import { formatDateTime } from "@repo/utils";
 
 import Map from "@/components/map/Map";
 import ReviewSection from "@/features/reviews/components/ReviewSection";
+import VehicleStatusBadge from "@/components/common/VehicleStatusBadge";
 
 import type { Vehicle, Branch, VehicleBrand, VehicleModel } from "@repo/types";
 
 import { useMemo } from "react";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@repo/ui/components/ui/tabs";
 
 type Props = {
   vehicle: Vehicle;
@@ -64,7 +71,7 @@ export default function VehicleInfo({
   };
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full">
       <VehicleGallery images={vehicleData.images || []} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -88,12 +95,7 @@ export default function VehicleInfo({
               {vehicleData.locationName || "Unknown"}
             </Badge>
 
-            <Badge
-              variant={statusMap[vehicleData.status || "available"].variant}
-            >
-              <Smile className="mr-2 h-4 w-4" />
-              {statusMap[vehicleData.status || "available"].label}
-            </Badge>
+            <VehicleStatusBadge status={vehicleData.status || "unavailable"} />
           </div>
         </div>
 
@@ -111,111 +113,134 @@ export default function VehicleInfo({
         </div>
       </div>
 
-      <div className="grid gap-4 mt-8 md:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <CarFront className="h-4 w-4" />
-            Vehicle
+      <Tabs defaultValue="overview" className="mt-8">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+
+          <TabsTrigger value="location">Location</TabsTrigger>
+
+          <TabsTrigger value="reviews">Reviews</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview">
+          <div className="grid gap-4 mt-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CarFront className="h-4 w-4" />
+                Vehicle
+              </div>
+
+              <p className="font-medium">
+                {vehicleData.brandName} {vehicleData.modelName}
+              </p>
+            </div>
+
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                Year
+              </div>
+
+              <p className="font-medium">{vehicleData.year}</p>
+            </div>
+
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Fuel className="h-4 w-4" />
+                Fuel type
+              </div>
+
+              <p className="font-medium">{vehicleData.vehicleType || "N/A"}</p>
+            </div>
+
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Gauge className="h-4 w-4" />
+                Mileage
+              </div>
+
+              <p className="font-medium">
+                {vehicleData.mileage
+                  ? vehicleData.mileage.toLocaleString("vi-VN")
+                  : "N/A"}{" "}
+                km
+              </p>
+            </div>
+
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Palette className="h-4 w-4" />
+                Color
+              </div>
+
+              <p className="font-medium">{vehicleData.color}</p>
+            </div>
+
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Hash className="h-4 w-4" />
+                License plate
+              </div>
+
+              <p className="font-medium">{vehicleData.licensePlate}</p>
+            </div>
+
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Motorbike className="h-4 w-4" />
+                Engine capacity
+              </div>
+
+              <p className="font-medium">{""} cc</p>
+            </div>
+
+            <div className="rounded-xl border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Banknote className="h-4 w-4" />
+                Price per day
+              </div>
+
+              <p className="font-medium">
+                {vehicleData.pricePerDay
+                  ? vehicleData.pricePerDay.toLocaleString("vi-VN")
+                  : "N/A"}
+                đ
+              </p>
+            </div>
           </div>
 
-          <p className="font-medium">
-            {vehicleData.brandName} {vehicleData.modelName}
-          </p>
-        </div>
+          <div className="flex flex-col gap-2 mt-8 text-sm text-muted-foreground">
+            <p>
+              <span className="font-medium mr-2">Created at:</span>
 
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            Year
+              {vehicleData.createdAt
+                ? formatDateTime(vehicleData.createdAt)
+                : "Undefined"}
+            </p>
+
+            <p>
+              <span className="font-medium mr-2">Updated at:</span>
+
+              {vehicleData.updatedAt
+                ? formatDateTime(vehicleData.updatedAt)
+                : "Undefined"}
+            </p>
           </div>
+        </TabsContent>
 
-          <p className="font-medium">{vehicleData.year}</p>
-        </div>
+        <TabsContent value="location">
+          <Map
+            locations={locationVehicle ? [locationVehicle] : []}
+            selectedBranchId={vehicleData.currentBranchId}
+          />
+        </TabsContent>
 
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Fuel className="h-4 w-4" />
-            Fuel type
-          </div>
+        <TabsContent value="reviews">
+          <ReviewSection vehicleId={vehicleData.id || "1"} />
+        </TabsContent>
+      </Tabs>
 
-          <p className="font-medium">{vehicleData.vehicleType || "N/A"}</p>
-        </div>
-
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Gauge className="h-4 w-4" />
-            Mileage
-          </div>
-
-          <p className="font-medium">
-            {vehicleData.mileage
-              ? vehicleData.mileage.toLocaleString("vi-VN")
-              : "N/A"}{" "}
-            km
-          </p>
-        </div>
-
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Palette className="h-4 w-4" />
-            Color
-          </div>
-
-          <p className="font-medium">{vehicleData.color}</p>
-        </div>
-
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Hash className="h-4 w-4" />
-            License plate
-          </div>
-
-          <p className="font-medium">{vehicleData.licensePlate}</p>
-        </div>
-
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Motorbike className="h-4 w-4" />
-            Engine capacity
-          </div>
-
-          <p className="font-medium">{""} cc</p>
-        </div>
-
-        <div className="rounded-xl border p-4 space-y-2">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Banknote className="h-4 w-4" />
-            Price per day
-          </div>
-
-          <p className="font-medium">
-            {vehicleData.pricePerDay
-              ? vehicleData.pricePerDay.toLocaleString("vi-VN")
-              : "N/A"}
-            đ
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2 mt-8 text-sm text-muted-foreground">
-        <p>
-          <span className="font-medium mr-2">Created at:</span>
-
-          {vehicleData.createdAt
-            ? formatDateTime(vehicleData.createdAt)
-            : "Undefined"}
-        </p>
-
-        <p>
-          <span className="font-medium mr-2">Updated at:</span>
-
-          {vehicleData.updatedAt
-            ? formatDateTime(vehicleData.updatedAt)
-            : "Undefined"}
-        </p>
-      </div>
-
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">Vehicle location</h2>
 
         <Map
@@ -226,7 +251,7 @@ export default function VehicleInfo({
 
       <div className="mt-8">
         <ReviewSection vehicleId={vehicleData.id || "1"} />
-      </div>
+      </div> */}
     </div>
   );
 }

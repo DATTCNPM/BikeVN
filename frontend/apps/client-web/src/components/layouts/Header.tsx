@@ -20,7 +20,7 @@ export default function Header() {
   const { data: userProfile } = useProfile();
   const { mutateAsync: logout } = useLogout();
   return (
-    <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-50 px-8">
+    <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-100 px-8">
       <Link to="/home" className="flex items-center gap-2">
         <img src={Logo} alt="Logo" className="w-10" />
         <span className="text-2xl text-primary font-bold">BikeVN</span>

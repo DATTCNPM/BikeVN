@@ -1,34 +1,31 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@repo/ui/components/ui/dropdown-menu";
+import { CalendarDays, Clock3 } from "lucide-react";
 
-import { Button } from "@repo/ui/components/ui/button";
-
-import { Info } from "lucide-react";
+import InfoPopover from "@/components/common/InfoPopover";
 
 import type { Booking } from "@repo/types";
+import { formatDateTime } from "@repo/utils";
 
 type Props = {
   booking: Booking;
 };
 
-export default function BookingInfoDropdown({ booking }: Props) {
+export default function BookingInfoPopover({ booking }: Props) {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="ghost">
-          <Info className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem>Rental Date: {booking.startTime}</DropdownMenuItem>
-
-        <DropdownMenuItem>Return Date: {booking.endTime}</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <InfoPopover
+      title="Booking Information"
+      description="Rental period details"
+      items={[
+        {
+          icon: CalendarDays,
+          label: "Rental Date",
+          value: formatDateTime(booking.startTime),
+        },
+        {
+          icon: Clock3,
+          label: "Return Date",
+          value: formatDateTime(booking.endTime),
+        },
+      ]}
+    />
   );
 }

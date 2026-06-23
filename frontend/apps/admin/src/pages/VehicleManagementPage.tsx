@@ -30,6 +30,7 @@ import { useNavigate } from "react-router-dom";
 import Filter from "@repo/ui/components/wrapper/Filter";
 import type { FilterOption } from "@repo/ui/components/wrapper/Filter";
 import { Button } from "@repo/ui/components/ui/button";
+import type { VehicleQueryParams } from "@repo/types";
 
 const vehicleStatusMap = {
   available:
@@ -71,6 +72,7 @@ export default function VehicleManagementPage() {
     useState<FilterOption<VehicleType>>();
 
   const [selectedBranch, setSelectedBranch] = useState<FilterOption>();
+  const [selectedCountry, setSelectedCountry] = useState<FilterOption>();
 
   const [page, setPage] = useState(1);
 
@@ -127,27 +129,33 @@ export default function VehicleManagementPage() {
     },
   ];
 
-  const filters = useMemo(
+  const filters: VehicleQueryParams = useMemo(
     () => ({
-      brandId: selectedBrand ? Number(selectedBrand.value) : undefined,
+      search: search || undefined,
+      brandName: selectedBrand ? selectedBrand.label : undefined,
 
-      modelId: selectedModel ? Number(selectedModel.value) : undefined,
+      modelName: selectedModel ? selectedModel.label : undefined,
 
       status: selectedStatus?.value,
 
       vehicleType: selectedVehicleType?.value,
 
-      currentBranchId: selectedBranch?.value,
+      currentBranchName: selectedBranch?.label,
 
-      page,
+      country: selectedCountry ? selectedCountry.label : undefined,
+      maxPrice: undefined,
+      minPrice: undefined,
+      page: page,
       size: 10,
     }),
     [
+      search,
       selectedBrand,
       selectedModel,
       selectedStatus,
       selectedVehicleType,
       selectedBranch,
+      selectedCountry,
       page,
     ],
   );
@@ -157,7 +165,9 @@ export default function VehicleManagementPage() {
     selectedModel ||
     selectedStatus ||
     selectedVehicleType ||
-    selectedBranch,
+    selectedBranch ||
+    selectedCountry ||
+    search,
   );
 
   const { data: vehicles, isLoading } = useVehicles(page, 10);

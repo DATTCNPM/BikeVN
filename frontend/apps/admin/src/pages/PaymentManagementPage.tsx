@@ -7,6 +7,8 @@ import PaymentActionDropdown from "@/features/payments/components/PaymentActionD
 import PaymentStatusDialog from "@/features/payments/components/PaymentStatusDialog";
 import TablePagination from "@/components/common/TablePagination";
 
+import PaymentInfoPopover from "@/features/payments/components/PaymentInfoPopover";
+
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
@@ -44,6 +46,7 @@ export default function PaymentManagementPage() {
   const [dialogMode, setDialogMode] = useState<
     "confirm" | "approve-manually" | "cancel" | null
   >(null);
+
   const params = {
     search,
     page,
@@ -107,10 +110,18 @@ export default function PaymentManagementPage() {
       },
 
       {
-        accessorKey: "createdAt",
-        header: "Created At",
+        accessorKey: "paidAt",
+        header: "Paid At",
         cell: ({ row }) =>
-          new Date(row.original.createdAt).toLocaleString("vi-VN"),
+          row.original.paidAt
+            ? new Date(row.original.paidAt).toLocaleString("vi-VN")
+            : "-",
+      },
+
+      {
+        id: "info",
+        header: "",
+        cell: ({ row }) => <PaymentInfoPopover payment={row.original} />,
       },
 
       {
@@ -120,9 +131,9 @@ export default function PaymentManagementPage() {
         cell: ({ row }) => {
           const payment = row.original;
 
-          // if (payment.status !== "failed") {
-          //   return null;
-          // }
+          if (payment.status === "completed") {
+            return null;
+          }
 
           return (
             <PaymentActionDropdown

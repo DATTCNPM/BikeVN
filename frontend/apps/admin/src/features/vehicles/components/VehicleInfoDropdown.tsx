@@ -1,13 +1,6 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@repo/ui/components/ui/dropdown-menu";
+import { Calendar, Fuel, Palette, Route } from "lucide-react";
 
-import { Button } from "@repo/ui/components/ui/button";
-
-import { Info } from "lucide-react";
+import InfoPopover from "@/components/common/InfoPopover";
 
 import type { Vehicle } from "@repo/types";
 
@@ -15,28 +8,33 @@ type Props = {
   vehicle: Vehicle;
 };
 
-export default function VehicleInfoDropdown({ vehicle }: Props) {
+export default function VehicleInfoPopover({ vehicle }: Props) {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="ghost">
-          <Info className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem>Year: {vehicle.year}</DropdownMenuItem>
-
-        <DropdownMenuItem>Color: {vehicle.color}</DropdownMenuItem>
-
-        <DropdownMenuItem>Engine: {vehicle.licensePlate}cc</DropdownMenuItem>
-
-        <DropdownMenuItem>Energy Type: {vehicle.vehicleType}</DropdownMenuItem>
-
-        <DropdownMenuItem>
-          Mileage: {vehicle.mileage.toLocaleString()}km
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <InfoPopover
+      title="Vehicle Information"
+      description="Technical specifications"
+      items={[
+        {
+          icon: Calendar,
+          label: "Year",
+          value: vehicle.year,
+        },
+        {
+          icon: Palette,
+          label: "Color",
+          value: vehicle.color,
+        },
+        {
+          icon: Fuel,
+          label: "Type",
+          value: vehicle.vehicleType,
+        },
+        {
+          icon: Route,
+          label: "Mileage",
+          value: `${vehicle.mileage.toLocaleString()} km`,
+        },
+      ]}
+    />
   );
 }

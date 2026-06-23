@@ -17,7 +17,7 @@ export default function ReviewSummary({ averageRating, totalReviews }: Props) {
           </p>
 
           <h2 className="mt-2 text-3xl font-bold tracking-tight">
-            Đánh giá từ khách hàng
+            What Our Customers Say
           </h2>
 
           <p className="mt-2 max-w-xl text-muted-foreground">

@@ -1,11 +1,10 @@
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@repo/ui/components/ui/combobox";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/components/ui/select";
 
 export type FilterOption<T extends string = string> = {
   label: string;
@@ -26,26 +25,24 @@ export default function Filter<T extends string>({
   onChange,
 }: FilterProps<T>) {
   return (
-    <Combobox
-      items={options}
-      value={value}
-      onValueChange={(selected) =>
-        onChange(selected as FilterOption<T> | undefined)
-      }
+    <Select
+      value={value?.value}
+      onValueChange={(val) => {
+        const selected = options.find((o) => o.value === val);
+        onChange(selected);
+      }}
     >
-      <ComboboxInput placeholder={title} showClear />
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder={title} />
+      </SelectTrigger>
 
-      <ComboboxContent>
-        <ComboboxEmpty>No items found.</ComboboxEmpty>
-
-        <ComboboxList>
-          {(item) => (
-            <ComboboxItem key={item.value} value={item}>
-              {item.label}
-            </ComboboxItem>
-          )}
-        </ComboboxList>
-      </ComboboxContent>
-    </Combobox>
+      <SelectContent className="z-[9999]">
+        {options.map((opt) => (
+          <SelectItem key={opt.value} value={opt.value}>
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

@@ -24,6 +24,7 @@ export default function Map({
       center={[10.045, 105.746]}
       zoom={13}
       style={{ height: "70vh", width: "100%" }}
+      className="z-0"
     >
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"

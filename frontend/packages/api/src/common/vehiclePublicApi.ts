@@ -16,7 +16,7 @@ export const vehiclePublicApi = {
         size,
       },
     });
-
+    console.log("data from api ", data);
     return data;
   },
 
