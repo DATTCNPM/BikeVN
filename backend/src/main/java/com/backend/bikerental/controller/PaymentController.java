@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,17 +62,26 @@ public class PaymentController {
 
     //2. VNPAY will redirect the product review process here after payment is completed.
     @GetMapping("/vnpay-return")
-    public ApiResponse<String> vnpayReturnCallback(@RequestParam Map<String, String> queryParams) {
+    public ApiResponse<String> vnpayReturnCallback(HttpServletRequest request) {
 
+        Map<String, String> fields = new HashMap<>();
+
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+            String fieldName = params.nextElement();
+            String fieldValue = request.getParameter(fieldName);
+            if (fieldValue != null && fieldValue.length() > 0) {
+                fields.put(fieldName, fieldValue);
+            }
+        }
         // Kiểm tra tính hợp lệ của chữ ký bảo mật từ VNPay gửi về
-        if (!vnPayService.verifyCallback(queryParams)) {
+        if (!vnPayService.verifyCallback(fields)) {
             return ApiResponse.<String>builder()
                     .code(9999)
                     .message("Invalid security signature")
                     .build();
         }
 
-        String responseCode = queryParams.get("vnp_ResponseCode");
+        String responseCode = fields.get("vnp_ResponseCode");
         // The response code "00" represents a completely successful transaction.
         if ("00".equals(responseCode)) {
             return ApiResponse.<String>builder()
@@ -88,46 +98,49 @@ public class PaymentController {
     }
 
     @GetMapping("/vnpay-ipn")
-    public Map<String, String> vnpayIpnCallback(@RequestParam Map<String, String> queryParams) {
+    public Map<String, String> vnpayIpnCallback(HttpServletRequest request) { // Dùng HttpServletRequest
         Map<String, String> result = new HashMap<>();
 
         try {
-            // 1. Kiểm tra chữ ký bảo mật
-            if (!vnPayService.verifyCallback(queryParams)) {
+            // Hứng dữ liệu thô chống lỗi khoảng trắng
+            Map<String, String> fields = new HashMap<>();
+            for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+                String fieldName = params.nextElement();
+                String fieldValue = request.getParameter(fieldName);
+                if (fieldValue != null && fieldValue.length() > 0) {
+                    fields.put(fieldName, fieldValue);
+                }
+            }
+
+            System.out.println("\n====== VNPay IPN GOI VE ======");
+            System.out.println("Payment ID: " + fields.get("vnp_TxnRef"));
+            System.out.println("Response Code: " + fields.get("vnp_ResponseCode"));
+
+            if (!vnPayService.verifyCallback(fields)) {
                 result.put("RspCode", "97");
                 result.put("Message", "Invalid Checksum");
                 return result;
             }
 
-            String paymentId = queryParams.get("vnp_TxnRef");
-            String responseCode = queryParams.get("vnp_ResponseCode");
-            String transactionCode = queryParams.get("vnp_TransactionNo");
+            String paymentId = fields.get("vnp_TxnRef");
+            String responseCode = fields.get("vnp_ResponseCode");
+            String transactionCode = fields.get("vnp_TransactionNo");
+            long vnpAmount = Long.parseLong(fields.get("vnp_Amount")) / 100;
 
-            // Ép kiểu số tiền VNPay trả về (VNPay nhân 100 lần, nên ta phải chia 100 để so sánh)
-            long vnpAmount = Long.parseLong(queryParams.get("vnp_Amount")) / 100;
-
-            // 2. GỌI XUỐNG SERVICE ĐỂ KIỂM TRA LẠI DỮ LIỆU VÀ CẬP NHẬT (Xem bước 3 bên dưới)
-            // Lệnh này sẽ throw Exception nếu paymentId sai, số tiền sai, hoặc đã update rồi
             paymentService.processIpnPayment(paymentId, vnpAmount, responseCode, transactionCode);
 
-            // Báo cho VNPay biết: Tao nhận tiền và update DB xong rồi, đừng gọi lại nữa!
             result.put("RspCode", "00");
             result.put("Message", "Confirm Success");
 
         } catch (AppException e) {
-            // Xử lý các lỗi nghiệp vụ từ Service ném lên theo chuẩn IPN VNPay
             if (e.getErrorCode() == ErrorCode.PAYMENT_NOT_FOUND) {
-                result.put("RspCode", "01");
-                result.put("Message", "Order not found");
-            } else if (e.getErrorCode() == ErrorCode.PAYMENT_ALREADY_COMPLETED) { // Cần tạo thêm mã lỗi này
-                result.put("RspCode", "02");
-                result.put("Message", "Order already confirmed");
-            } else if (e.getErrorCode() == ErrorCode.INVALID_AMOUNT) { // Cần tạo thêm mã lỗi này
-                result.put("RspCode", "04");
-                result.put("Message", "Invalid amount");
+                result.put("RspCode", "01"); result.put("Message", "Order not found");
+            } else if (e.getErrorCode() == ErrorCode.PAYMENT_ALREADY_COMPLETED) {
+                result.put("RspCode", "02"); result.put("Message", "Order already confirmed");
+            } else if (e.getErrorCode() == ErrorCode.INVALID_AMOUNT) {
+                result.put("RspCode", "04"); result.put("Message", "Invalid amount");
             } else {
-                result.put("RspCode", "99");
-                result.put("Message", "Unknown error");
+                result.put("RspCode", "99"); result.put("Message", "Unknown error");
             }
         } catch (Exception e) {
             result.put("RspCode", "99");
@@ -136,47 +149,6 @@ public class PaymentController {
 
         return result;
     }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-    @GetMapping
-    public ApiResponse<PageResponse<PaymentResponse>> getAllPayments(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-            )
-    {
-        return ApiResponse.<PageResponse<PaymentResponse>>builder()
-                .result(paymentService.getAllPayments(page,size))
-                .build();
-    }
-
-    @GetMapping("/my-branch")
-    public ApiResponse<PageResponse<PaymentResponse>> getAllPaymentPerBranch(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    )
-    {
-        return ApiResponse.<PageResponse<PaymentResponse>>builder()
-                .result(paymentService.getAllPaymentPerBranch(page, size))
-                .build();
-    }
-
-    @GetMapping("/{id}")
-    public ApiResponse<PaymentResponse> getPayment(@PathVariable String id) {
-        return ApiResponse.<PaymentResponse>builder()
-                .result(paymentService.getPayment(id))
-                .build();
-    }
-    // CONFIRM PAYMENT (giả lập bank)
-//    @PostMapping("/{id}/confirm")
-//    public ApiResponse<Void> confirmPayment(
-//            @PathVariable String id,
-//            @RequestParam String transactionCode
-//    ) {
-//        paymentService.confirmPayment(id, transactionCode);
-//        return ApiResponse.<Void>builder()
-//                .message("Confirm!!!")
-//                .build();
-//    }
 
     @PostMapping("/{id}/approve-manually")
     public ApiResponse<PaymentResponse> approvePaymentManually(
@@ -225,6 +197,22 @@ public class PaymentController {
                 .result(paymentService.filterPayments(
                         bookingId, transactionCode, branchId, status, type, fromDate, toDate, page, size
                 ))
+                .build();
+    }
+
+    @PostMapping("/{id}/refund")
+    @PreAuthorize("hasRole('admin')")
+    public ApiResponse<PaymentResponse> processRefund(
+            @PathVariable String id,
+            @RequestParam String adminId,
+            HttpServletRequest request
+    ) {
+        String ipAddress = VNPayUtil.getIpAddress(request);
+        if (ipAddress.equals("0:0:0:0:0:0:0:1")) {
+            ipAddress = "127.0.0.1";
+        }
+        return ApiResponse.<PaymentResponse>builder()
+                .result(paymentService.processRefund(id, adminId, ipAddress))
                 .build();
     }
 }

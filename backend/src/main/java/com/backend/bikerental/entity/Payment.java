@@ -32,7 +32,7 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    PaymentType type; // deposit | rental
+    PaymentType type;
 
     @Column(nullable = false, length = 50)
     String paymentMethod;
@@ -49,7 +49,11 @@ public class Payment {
 
     @Column(length = 36)
     String branchId;
+
     LocalDateTime paidAt;
+
+    @Column(name = "notes", length = 255)
+    String notes;
 
     @Column(updatable = false)
     LocalDateTime createdAt;

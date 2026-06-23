@@ -75,12 +75,12 @@ public class VNPayService {
                     //Data hash structure
                     hashData.append(fieldName);
                     hashData.append('=');
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
 
                     //query URL structure
-                    query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                    query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
                     query.append('=');
-                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
 
                     if (itr.hasNext()) {
                         query.append('&');
@@ -138,6 +138,12 @@ public class VNPayService {
         }
 
         String checkSum = VNPayUtil.hmacSHA512(hashSecret, hashData.toString());
+        
+        System.out.println("\n--- DEBUG IPN CHECKSUM ---");
+        System.out.println("Backend Hash Data Thô: " + hashData.toString());
+        System.out.println("Backend Tự Băm Ra:     " + checkSum);
+        System.out.println("VNPay Gửi Sang:        " + vnp_SecureHash);
+
         return checkSum.equalsIgnoreCase(vnp_SecureHash);
     }
 
@@ -148,7 +154,7 @@ public class VNPayService {
         String vnp_RequestId = UUID.randomUUID().toString();
         String vnp_Version = "2.1.0";
         String vnp_Command = "refund";
-        String vnp_TransactionType = "02";
+        String vnp_TransactionType = "02"; //02 is all and 03 is one part
         long amount = amountInVnd * 100;
         String vnp_CreateDate = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 

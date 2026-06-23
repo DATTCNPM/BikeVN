@@ -37,6 +37,7 @@ public class SecurityConfig {
             "/vehicles", "/vehicles/**",
             "/uploads", "/uploads/**",
             "/payments/vnpay-return",
+            "/payments/vnpay-ipn",
             "/reviews", "/reviews/**"
     };
 

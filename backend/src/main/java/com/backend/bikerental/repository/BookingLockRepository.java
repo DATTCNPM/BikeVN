@@ -18,7 +18,7 @@ public interface BookingLockRepository extends JpaRepository<BookingLock, String
             "AND (l.startTime < :endTime " +
             "AND l.endTime > :startTime)")
     boolean existsActiveLockByOthers(@Param("vehicleId") String vehicleId,
-                             @Param("userId") String userId,
+                             @Param("currentUserId") String userId,
                              @Param("startTime") LocalDateTime startTime,
                              @Param("endTime")LocalDateTime endTime);
 
