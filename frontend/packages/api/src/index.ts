@@ -2,6 +2,7 @@ export * from "./client/bookingClientApi";
 export * from "./client/authClientApi";
 export * from "./client/paymentClientApi";
 export * from "./client/reviewClientApi";
+export * from "./client/userClientApi";
 
 export * from "./admin/dashboardApi";
 export * from "./admin/userAdminApi";
@@ -17,6 +18,7 @@ export * from "./admin/vehicleImageAdminApi";
 export * from "./admin/paymentAdminApi";
 export * from "./admin/vehicleReturnAdminApi";
 export * from "./admin/reviewAdminApi";
+export * from "./admin/userAdminApi";
 
 export * from "./common/chatApi";
 export * from "./common/notificationApi";

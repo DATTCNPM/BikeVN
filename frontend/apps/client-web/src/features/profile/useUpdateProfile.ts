@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { userApi } from "@repo/api";
+import { userClientApi } from "@repo/api";
 
 import type { UpdateProfilePayload } from "@repo/types";
 
@@ -19,7 +19,7 @@ export const useUpdateProfile = () => {
       userId: string;
       payload: UpdateProfilePayload;
     }) => {
-      const response = await userApi.updateUser(userId, payload);
+      const response = await userClientApi.updateUser(userId, payload);
 
       return response;
     },

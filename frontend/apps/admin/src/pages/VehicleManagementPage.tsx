@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
-
 import mockImageMotor from "@/assets/images/motorbike1.png";
-
 import type { ColumnDef } from "@tanstack/react-table";
+import { useNavigate } from "react-router-dom";
 
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
@@ -12,11 +11,15 @@ import TablePagination from "@/components/common/TablePagination";
 import VehicleCreate from "@/features/vehicles/components/VehicleCreate";
 import VehicleDelete from "@/features/vehicles/components/VehicleDelete";
 import VehicleEdit from "@/features/vehicles/components/VehicleEdit";
+import VehicleInfoDropdown from "@/features/vehicles/components/VehicleInfoDropdown";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
+import UniversalFilterSheet, {
+  type FilterConfigItem,
+} from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
-import { type Vehicle, type VehicleType } from "@repo/types";
+import { type Vehicle, type VehicleQueryParams } from "@repo/types";
 import {
   useVehicles,
   useVehicleBrands,
@@ -24,20 +27,11 @@ import {
   useBranches,
   useVehicleFilters,
 } from "@repo/hooks";
-import VehicleInfoDropdown from "@/features/vehicles/components/VehicleInfoDropdown";
-import { useNavigate } from "react-router-dom";
-
-import Filter from "@repo/ui/components/wrapper/Filter";
-import type { FilterOption } from "@repo/ui/components/wrapper/Filter";
-import { Button } from "@repo/ui/components/ui/button";
-import type { VehicleQueryParams } from "@repo/types";
 
 const vehicleStatusMap = {
   available:
     "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
-
   unavailable: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
-
   maintenance:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
 };
@@ -49,177 +43,129 @@ const vehicleStatusLabel = {
 };
 
 export default function VehicleManagementPage() {
-  const { data: brands } = useVehicleBrands();
-  const { data: models } = useVehicleModels();
-  const { data: branches } = useBranches();
+  const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
+  // Quản lý trạng thái Dialogs
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
-  const navigate = useNavigate();
-
-  const [search, setSearch] = useState("");
-
-  const [selectedBrand, setSelectedBrand] = useState<FilterOption>();
-
-  const [selectedModel, setSelectedModel] = useState<FilterOption>();
-
-  const [selectedStatus, setSelectedStatus] = useState<FilterOption>();
-
-  const [selectedVehicleType, setSelectedVehicleType] =
-    useState<FilterOption<VehicleType>>();
-
-  const [selectedBranch, setSelectedBranch] = useState<FilterOption>();
-  const [selectedCountry, setSelectedCountry] = useState<FilterOption>();
-
-  const [page, setPage] = useState(1);
-
-  const brandOptions = useMemo(
-    () =>
-      brands?.data.map((brand) => ({
-        label: brand.name,
-        value: String(brand.id),
-      })) ?? [],
-    [brands],
+  // Gom toàn bộ mảng state filter đơn lẻ thành 1 Object duy nhất dùng chung
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
+    {},
   );
 
-  const modelOptions = useMemo(
-    () =>
-      models?.data.map((model) => ({
-        label: model.name,
-        value: String(model.id),
-      })) ?? [],
-    [models],
-  );
+  // Kéo dữ liệu cấu hình các bộ lọc từ API hooks
+  const { data: brands } = useVehicleBrands();
+  const { data: models } = useVehicleModels();
+  const { data: branches } = useBranches();
+  const { data: vehicles, isLoading } = useVehicles(page, 10);
 
-  const branchOptions = useMemo(
-    () =>
-      branches?.map((branch) => ({
-        label: branch.name,
-        value: branch.id,
-      })) ?? [],
-    [branches],
-  );
+  // 1. Tạo cấu hình metadata truyền vào UniversalFilterSheet
+  const filterConfigs = useMemo<FilterConfigItem[]>(() => {
+    return [
+      {
+        key: "brand",
+        title: "Brand",
+        options:
+          brands?.data.map((b) => ({ label: b.name, value: String(b.id) })) ??
+          [],
+      },
+      {
+        key: "model",
+        title: "Model",
+        options:
+          models?.data.map((m) => ({ label: m.name, value: String(m.id) })) ??
+          [],
+      },
+      {
+        key: "branch",
+        title: "Branch",
+        options: branches?.map((b) => ({ label: b.name, value: b.id })) ?? [],
+      },
+      {
+        key: "status",
+        title: "Status",
+        options: [
+          { label: "Available", value: "available" },
+          { label: "Unavailable", value: "unavailable" },
+          { label: "Under Maintenance", value: "maintenance" },
+        ],
+      },
+      {
+        key: "type",
+        title: "Vehicle Type",
+        options: [
+          { label: "Electric Bike", value: "electric" },
+          { label: "Fuel Bike", value: "fuel" },
+        ],
+      },
+    ];
+  }, [brands, models, branches]);
 
-  const statusOptions = [
-    {
-      label: "Available",
-      value: "available",
-    },
-    {
-      label: "Unavailable",
-      value: "unavailable",
-    },
-    {
-      label: "Under Maintenance",
-      value: "maintenance",
-    },
-  ];
-
-  const vehicleTypeOptions = [
-    {
-      label: "Electric Bike",
-      value: "electric",
-    },
-    {
-      label: "Fuel Bike",
-      value: "fuel",
-    },
-  ];
-
-  const filters: VehicleQueryParams = useMemo(
+  // 2. Chuyển đổi Object Filter UI thành query params gửi lên Server API
+  const apiFilters: VehicleQueryParams = useMemo(
     () => ({
-      search: search || undefined,
-      brandName: selectedBrand ? selectedBrand.label : undefined,
-
-      modelName: selectedModel ? selectedModel.label : undefined,
-
-      status: selectedStatus?.value,
-
-      vehicleType: selectedVehicleType?.value,
-
-      currentBranchName: selectedBranch?.label,
-
-      country: selectedCountry ? selectedCountry.label : undefined,
-      maxPrice: undefined,
-      minPrice: undefined,
-      page: page,
+      search: search.trim() || undefined,
+      brandName: selectedFilters["brand"]?.label,
+      modelName: selectedFilters["model"]?.label,
+      currentBranchName: selectedFilters["branch"]?.label,
+      status: selectedFilters["status"]?.value,
+      vehicleType: selectedFilters["type"]?.value,
+      page,
       size: 10,
     }),
-    [
-      search,
-      selectedBrand,
-      selectedModel,
-      selectedStatus,
-      selectedVehicleType,
-      selectedBranch,
-      selectedCountry,
-      page,
-    ],
+    [search, selectedFilters, page],
   );
 
   const hasFilter = Boolean(
-    selectedBrand ||
-    selectedModel ||
-    selectedStatus ||
-    selectedVehicleType ||
-    selectedBranch ||
-    selectedCountry ||
-    search,
+    search.trim() || Object.values(selectedFilters).some(Boolean),
   );
 
-  const { data: vehicles, isLoading } = useVehicles(page, 10);
-  const { data: vehicleFilters } = useVehicleFilters(
-    filters,
-    Boolean(hasFilter),
-  );
+  const { data: vehicleFilters } = useVehicleFilters(apiFilters, hasFilter);
 
   const vehicleData = useMemo(() => {
     return (hasFilter ? vehicleFilters?.data : vehicles?.data) ?? [];
   }, [vehicles, vehicleFilters, hasFilter]);
 
-  const pagination = {
-    page: vehicles?.currentPage,
-    pageSize: vehicles?.pageSize,
-    totalPages: vehicles?.totalPages,
-    totalElements: vehicles?.totalElements,
-  };
+  const pagination = useMemo(() => {
+    const currentSource = hasFilter ? vehicleFilters : vehicles;
+    return {
+      page: currentSource?.currentPage ?? 1,
+      pageSize: currentSource?.pageSize ?? 10,
+      totalPages: currentSource?.totalPages ?? 1,
+      totalElements: currentSource?.totalElements ?? 0,
+    };
+  }, [vehicles, vehicleFilters, hasFilter]);
 
+  // Khởi tạo các Columns cho TanStack Table
   const columns = useMemo<ColumnDef<Vehicle>[]>(
     () => [
       {
         accessorKey: "name",
         header: "Vehicle",
-
-        cell: ({ row }) => {
-          const vehicle = row.original;
-
-          return (
-            <div className="flex items-center gap-3">
-              <img
-                src={mockImageMotor}
-                alt={vehicle.name}
-                className="h-14 w-20 rounded-md object-cover"
-              />
-
-              <div className="min-w-0">
-                <p className="truncate font-medium">{vehicle.name}</p>
-
-                <p className="text-muted-foreground text-sm">
-                  {vehicle.licensePlate}
-                </p>
-              </div>
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <img
+              src={mockImageMotor}
+              alt={row.original.name}
+              className="h-14 w-20 rounded-md object-cover"
+            />
+            <div className="min-w-0">
+              <p className="truncate font-medium">{row.original.name}</p>
+              <p className="text-muted-foreground text-sm">
+                {row.original.licensePlate}
+              </p>
             </div>
-          );
-        },
+          </div>
+        ),
       },
-
       {
         accessorKey: "brand",
         header: "Brand",
-
         cell: ({ row }) => {
           const brand = brands?.data.find((b) => b.id === row.original.brandId);
           const model = models?.data.find((m) => m.id === row.original.modelId);
@@ -233,18 +179,14 @@ export default function VehicleManagementPage() {
           );
         },
       },
-
       {
         accessorKey: "price",
         header: "Rental Price",
-
         cell: ({ row }) => `${row.original.pricePerDay.toLocaleString()}đ`,
       },
-
       {
         accessorKey: "currentBranchId",
         header: "Branch",
-
         cell: ({ row }) => (
           <span>
             {branches?.find((b) => b.id === row.original.currentBranchId)
@@ -252,11 +194,9 @@ export default function VehicleManagementPage() {
           </span>
         ),
       },
-
       {
         accessorKey: "status",
         header: "Status",
-
         cell: ({ row }) => (
           <Badge className={vehicleStatusMap[row.original.status]}>
             {vehicleStatusLabel[row.original.status]}
@@ -266,14 +206,11 @@ export default function VehicleManagementPage() {
       {
         id: "info",
         header: "",
-
         cell: ({ row }) => <VehicleInfoDropdown vehicle={row.original} />,
       },
-
       {
         id: "actions",
         header: "",
-
         cell: ({ row }) => (
           <TableActionDropdown
             onManageImage={() => {
@@ -304,87 +241,46 @@ export default function VehicleManagementPage() {
   }
 
   return (
-    <div>
+    <div className="space-y-4">
+      {/* Thanh Toolbar tích hợp Tìm kiếm & Nút mở Bộ lọc đa năng */}
+
       <DataTableToolbar
+        showSearch={true}
+        showCreate={true}
         search={search}
-        onSearchChange={setSearch}
+        onSearchChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
         onCreateOpen={() => setOpenCreateDialog(true)}
-      />
-      <div className="mb-4 flex flex-wrap gap-2">
-        <Filter
-          title="Brand"
-          options={brandOptions}
-          value={selectedBrand}
-          onChange={(value) => {
-            setSelectedBrand(value);
+      >
+        <UniversalFilterSheet
+          title="Filter Vehicles"
+          configs={filterConfigs}
+          value={selectedFilters}
+          onChange={(newFilters) => {
+            setSelectedFilters(newFilters);
+            setPage(1);
+          }}
+          onReset={() => {
+            setSearch("");
+            setSelectedFilters({});
             setPage(1);
           }}
         />
-
-        <Filter
-          title="Model"
-          options={modelOptions}
-          value={selectedModel}
-          onChange={(value) => {
-            setSelectedModel(value);
-            setPage(1);
-          }}
-        />
-
-        <Filter
-          title="Branch"
-          options={branchOptions}
-          value={selectedBranch}
-          onChange={(value) => {
-            setSelectedBranch(value);
-            setPage(1);
-          }}
-        />
-
-        <Filter
-          title="Status"
-          options={statusOptions}
-          value={selectedStatus}
-          onChange={(value) => {
-            setSelectedStatus(value);
-            setPage(1);
-          }}
-        />
-
-        <Filter<VehicleType>
-          title="Vehicle Type"
-          options={vehicleTypeOptions}
-          value={selectedVehicleType}
-          onChange={(value) => {
-            setSelectedVehicleType(value);
-            setPage(1);
-          }}
-        />
-        <Button
-          variant="outline"
-          onClick={() => {
-            setSelectedBrand(undefined);
-            setSelectedModel(undefined);
-            setSelectedStatus(undefined);
-            setSelectedVehicleType(undefined);
-            setSelectedBranch(undefined);
-            setPage(1);
-          }}
-        >
-          Clear Filters
-        </Button>
-      </div>
+      </DataTableToolbar>
 
       <DataTable columns={columns} data={vehicleData} />
 
       <TablePagination
-        page={pagination.page || 1}
-        pageSize={pagination.pageSize || 10}
-        totalPages={pagination.totalPages || 1}
-        totalElements={pagination.totalElements || 0}
-        onPageChange={(page) => console.log(page)}
+        page={pagination.page}
+        pageSize={pagination.pageSize}
+        totalPages={pagination.totalPages}
+        totalElements={pagination.totalElements}
+        onPageChange={setPage}
       />
-      {/* Dialogs */}
+
+      {/* Các Dialogs giữ nguyên */}
       <VehicleCreate
         open={openCreateDialog}
         onOpenChange={setOpenCreateDialog}

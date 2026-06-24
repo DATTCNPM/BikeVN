@@ -41,16 +41,12 @@ export default function PaymentPage() {
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_420px]">
           <div className="space-y-6">
             <PaymentCustomerCard user={userProfile} />
-
             <PaymentVehicleCard vehicle={vehicle || null} />
-
             <PaymentBookingCard booking={booking || null} />
-
             <PaymentMethodCard
               selectedMethod={selectedMethod}
               onMethodSelect={setSelectedMethod}
             />
-
             <PaymentPolicyCard />
           </div>
 
@@ -58,6 +54,7 @@ export default function PaymentPage() {
             <PaymentSummaryCard
               booking={booking || null}
               selectedMethod={selectedMethod}
+              userProfile={userProfile}
             />
           </div>
         </div>

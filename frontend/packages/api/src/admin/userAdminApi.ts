@@ -3,14 +3,14 @@ import type {
   User,
   Employee,
   AdminEmployeeCreationPayload,
-  UserCreationRequest,
-  UpdateProfilePayload,
   PaginationResponse,
   AdminUserCreationPayload,
   UpdateEmployeePayload,
 } from "@repo/types";
+import { createUserCommonApi } from "../common/createUserCommonApi";
 
 export const userApi = {
+  ...createUserCommonApi(axiosAdmin),
   async getUsers({
     page,
     size,
@@ -82,18 +82,6 @@ export const userApi = {
       cccdNumber: cccdNumber || "",
     };
     return axiosAdmin.put<Employee>(`/users/${id}`, requestPayload);
-  },
-
-  async updateUser(
-    id: string,
-    payload: Partial<UpdateProfilePayload> & { cccdNumber?: string },
-  ) {
-    const { cccdNumber, ...rest } = payload;
-    const requestPayload = {
-      ...rest,
-      cccdNumber: cccdNumber || "",
-    };
-    return axiosAdmin.put<User>(`/users/${id}`, requestPayload);
   },
 
   async deleteUser(id: string) {

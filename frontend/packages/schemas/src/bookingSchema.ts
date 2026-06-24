@@ -9,6 +9,14 @@ export const bookingStatusSchema = z.enum([
   "cancelled",
 ]);
 
+export const bookingFilterSchema = z.object({
+  userId: z.string().optional(),
+  vehicleId: z.string().optional(),
+  status: bookingStatusSchema.optional(),
+  fromDate: z.string().datetime().optional(),
+  toDate: z.string().datetime().optional(),
+});
+
 // Định nghĩa schema cho việc tạo booking mới
 export const bookingCreationSchema = z.object({
   userId: z.string().min(1),

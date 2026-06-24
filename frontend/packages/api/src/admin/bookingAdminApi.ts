@@ -2,7 +2,7 @@
 
 import axiosAdmin from "../axios/axiosAdmin";
 
-import type { Booking, PaginationResponse } from "@repo/types";
+import type { Booking, BookingFilter, PaginationResponse } from "@repo/types";
 
 import { createBookingCommonApi } from "../common/createBookingCommonApi";
 
@@ -20,5 +20,16 @@ export const bookingAdminApi = {
   },
   async rejectBooking(id: string) {
     await axiosAdmin.post(`/bookings/${id}/reject`);
+  },
+
+  async getBookingFilters(params?: BookingFilter) {
+    const data = await axiosAdmin.get<
+      PaginationResponse<Booking>,
+      PaginationResponse<Booking>
+    >("/bookings/admin/filter", {
+      params,
+    });
+
+    return data;
   },
 };
