@@ -1,6 +1,5 @@
 import ListVehicle from "../features/home/ListVehicle";
 import MapVehicle from "../features/home/MapVehicle";
-import { Separator } from "@repo/ui/components/ui/separator";
 
 import { List, MapPin } from "lucide-react";
 
@@ -24,14 +23,13 @@ export default function HomePage() {
           Map
         </TabsTrigger>
       </TabsList>
-      
 
       <TabsContent value="list">
         <ListVehicle />
       </TabsContent>
 
       <TabsContent value="map">
-        <MapVehicle  />
+        <MapVehicle />
       </TabsContent>
     </Tabs>
   );

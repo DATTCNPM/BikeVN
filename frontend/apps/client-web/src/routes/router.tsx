@@ -28,7 +28,6 @@ import { useAuthStore } from "@/features/auth/authStore";
 import PaymentResultPage from "@/pages/PaymentResultPage";
 function GlobalRootLayout() {
   const navigate = useNavigate();
-  console.log("GlobalRootLayout mounted");
 
   useInitialServerCheck();
 
@@ -46,8 +45,6 @@ function GlobalRootLayout() {
 function ProtectedRoute() {
   const navigate = useNavigate();
   const isLogin = useAuthStore((state) => state.isLogin);
-
-  console.log("ProtectedRoute - isLogin:", isLogin);
 
   useEffect(() => {
     if (!isLogin) {

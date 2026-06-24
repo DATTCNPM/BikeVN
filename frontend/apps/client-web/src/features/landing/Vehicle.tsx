@@ -1,9 +1,24 @@
 import CardProduct from "@/components/common/CardProduct";
-import { useVehicles, useBranches } from "@repo/hooks";
-import { filterImagePrimary } from "@repo/utils";
+import { useVehicles } from "@repo/hooks";
+import type { VehicleCardData } from "@repo/types";
 export default function Vehicle() {
   const { data: vehicles, isLoading } = useVehicles(1, 10);
-  const { data: branches } = useBranches();
+
+  const vehicleData = vehicles?.data || [];
+
+  const vehicleCardData: VehicleCardData[] = vehicleData.map((vehicle) => ({
+    id: vehicle.id,
+    name: vehicle.name,
+    pricePerDay: vehicle.pricePerDay,
+    image: vehicle.images?.[0]?.imageUrl ?? null,
+    currentBranchName: vehicle.currentBranchName,
+    vehicleType: vehicle.vehicleType,
+    brandName: vehicle.brandName,
+    modelName: vehicle.modelName,
+    country: vehicle.country,
+    status: vehicle.status,
+  }));
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -14,20 +29,8 @@ export default function Vehicle() {
         Dòng xe nổi bật
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {vehicles?.data?.map((vehicle) => (
-          <CardProduct
-            key={vehicle.id}
-            id={vehicle.id}
-            title={vehicle.name}
-            type={vehicle.vehicleType}
-            price={vehicle.pricePerDay}
-            location={
-              branches?.find((branch) => branch.id === vehicle.currentBranchId)
-                ?.name || "Location not found"
-            }
-            status={vehicle.status}
-            image={filterImagePrimary(vehicle.images || [])}
-          />
+        {vehicleCardData.map((vehicle) => (
+          <CardProduct vehicle={vehicle} />
         ))}
       </div>
     </section>

@@ -1,4 +1,8 @@
+// components/booking/BookingCard.tsx
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   addDays,
   differenceInDays,
@@ -7,15 +11,11 @@ import {
   endOfDay,
 } from "date-fns";
 import { vi } from "date-fns/locale";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
-
 import type { DateRange } from "react-day-picker";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Button } from "@repo/ui/components/ui/button";
 import { Calendar } from "@repo/ui/components/ui/calendar";
-
 import {
   Card,
   CardContent,
@@ -23,7 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/ui/card";
-
 import {
   Field,
   FieldContent,
@@ -31,7 +30,6 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@repo/ui/components/ui/field";
-
 import {
   Select,
   SelectContent,
@@ -39,40 +37,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/ui/select";
-
 import { Separator } from "@repo/ui/components/ui/separator";
 
 import { useCreateBooking } from "@/features/bookings/mutations";
-
-import type { Branch, Vehicle } from "@repo/types";
-
-import { bookingFormSchema } from "@repo/schemas";
-import type { BookingFormValues } from "@repo/types";
-
 import { useAuthStore } from "@/features/auth/authStore";
 import { useProfile } from "@/features/profile/useProfile";
-import { useEffect } from "react";
+import { bookingFormSchema } from "@repo/schemas";
+import type { Branch, Vehicle, BookingFormValues } from "@repo/types";
 
 type Props = {
   vehicle: Vehicle;
   branches: Branch[];
 };
 
+const formatVND = (value: number) => `${value.toLocaleString("vi-VN")}đ`;
+const formatDate = (date: Date | undefined) =>
+  date ? format(date, "dd/MM/yyyy", { locale: vi }) : "--";
+
 export default function BookingCard({ vehicle, branches }: Props) {
   const navigate = useNavigate();
-
   const { isLogin } = useAuthStore();
-
   const { data: profile } = useProfile();
-
   const { mutate: createBooking, isPending } = useCreateBooking();
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingFormSchema),
-
     defaultValues: {
       returnBranchId: "",
-
       dateRange: {
         from: startOfDay(addDays(new Date(), 1)),
         to: endOfDay(addDays(new Date(), 3)),
@@ -81,66 +72,61 @@ export default function BookingCard({ vehicle, branches }: Props) {
   });
 
   const dateRange = form.watch("dateRange");
-
   const startDate = dateRange?.from;
-
   const endDate = dateRange?.to;
 
   const totalDays =
     startDate && endDate
       ? Math.max(1, differenceInDays(endDate, startDate))
       : 0;
-
   const totalPrice = totalDays * (vehicle.pricePerDay ?? 0);
 
   const branchOptions = branches.map((branch) => ({
     label: branch.name,
-
     value: branch.id,
   }));
 
+  // Restore pending booking from localStorage
   useEffect(() => {
-    const pendingBooking = localStorage.getItem("pending-booking");
+    const pendingBookingRaw = localStorage.getItem("pending-booking");
+    if (!pendingBookingRaw) return;
 
-    if (!pendingBooking) return;
-
-    const booking = JSON.parse(pendingBooking);
-
-    if (booking.vehicleId !== vehicle.id) return;
-
-    form.reset({
-      returnBranchId: booking.formData.returnBranchId,
-      dateRange: {
-        from: new Date(booking.formData.dateRange.from),
-        to: new Date(booking.formData.dateRange.to),
-      },
-    });
-    localStorage.removeItem("pending-booking");
-  }, [vehicle.id]);
+    try {
+      const booking = JSON.parse(pendingBookingRaw);
+      if (booking.vehicleId === vehicle.id) {
+        form.reset({
+          returnBranchId: booking.formData.returnBranchId,
+          dateRange: {
+            from: new Date(booking.formData.dateRange.from),
+            to: new Date(booking.formData.dateRange.to),
+          },
+        });
+        localStorage.removeItem("pending-booking");
+      }
+    } catch (error) {
+      console.error("Failed to parse pending booking data:", error);
+    }
+  }, [vehicle.id, form]);
 
   const onSubmit = (values: BookingFormValues) => {
     if (!isLogin) {
       localStorage.setItem(
         "pending-booking",
-        JSON.stringify({
-          vehicleId: vehicle.id,
-          formData: values,
-        }),
+        JSON.stringify({ vehicleId: vehicle.id, formData: values }),
       );
-
       navigate("/login");
-
       return;
     }
-    console.log("Form values on submit:", values);
+
     const payload = {
-      userId: profile?.id || "", // TODO: lấy từ auth
+      userId: profile?.id || "",
       vehicleId: vehicle.id,
       pickupBranchId: vehicle.currentBranchId,
       returnBranchId: values.returnBranchId,
       startTime: format(values.dateRange.from, "yyyy-MM-dd'T'HH:mm:ss"),
       endTime: format(values.dateRange.to, "yyyy-MM-dd'T'HH:mm:ss"),
     };
+
     createBooking(payload, {
       onSuccess: (booking) => {
         navigate(`/payment/${booking.id}`);
@@ -149,20 +135,18 @@ export default function BookingCard({ vehicle, branches }: Props) {
   };
 
   return (
-    <Card className=" w-full rounded-3xl">
+    <Card className="w-full rounded-3xl">
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Price</p>
-
             <CardTitle className="text-3xl font-bold">
-              {vehicle.pricePerDay.toLocaleString("vi-VN")}đ
+              {formatVND(vehicle.pricePerDay)}
               <span className="ml-1 text-base font-normal text-muted-foreground">
                 / day
               </span>
             </CardTitle>
           </div>
-
           <Badge className="rounded-full">Available</Badge>
         </div>
       </CardHeader>
@@ -175,19 +159,16 @@ export default function BookingCard({ vehicle, branches }: Props) {
             render={({ field, fieldState }) => (
               <Field>
                 <FieldGroup>
-                  <FieldLabel> Rental Period </FieldLabel>
-
+                  <FieldLabel>Rental Period</FieldLabel>
                   <FieldContent>
                     <div className="overflow-hidden rounded-2xl border">
                       <Calendar
                         mode="range"
                         numberOfMonths={2}
                         selected={field.value as DateRange}
-                        onSelect={(value) => {
-                          if (value?.from && value?.to) {
-                            field.onChange(value);
-                          }
-                        }}
+                        onSelect={(value) =>
+                          value?.from && value?.to && field.onChange(value)
+                        }
                         defaultMonth={field.value?.from}
                         disabled={(date) =>
                           date <= new Date(new Date().setHours(0, 0, 0, 0))
@@ -196,7 +177,6 @@ export default function BookingCard({ vehicle, branches }: Props) {
                       />
                     </div>
                   </FieldContent>
-
                   {fieldState.error && (
                     <FieldError>{fieldState.error.message}</FieldError>
                   )}
@@ -208,26 +188,11 @@ export default function BookingCard({ vehicle, branches }: Props) {
           <div className="grid grid-cols-2 gap-4 rounded-2xl border p-4">
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Pick-up Date</p>
-
-              <p className="font-medium">
-                {startDate
-                  ? format(startDate, "dd/MM/yyyy", {
-                      locale: vi,
-                    })
-                  : "--"}
-              </p>
+              <p className="font-medium">{formatDate(startDate)}</p>
             </div>
-
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Return Date</p>
-
-              <p className="font-medium">
-                {endDate
-                  ? format(endDate, "dd/MM/yyyy", {
-                      locale: vi,
-                    })
-                  : "--"}
-              </p>
+              <p className="font-medium">{formatDate(endDate)}</p>
             </div>
           </div>
 
@@ -250,13 +215,11 @@ export default function BookingCard({ vehicle, branches }: Props) {
               <Field>
                 <FieldGroup>
                   <FieldLabel>Return Location</FieldLabel>
-
                   <FieldContent>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="h-12 rounded-2xl">
                         <SelectValue placeholder="Select return location" />
                       </SelectTrigger>
-
                       <SelectContent>
                         {branchOptions.map((branch) => (
                           <SelectItem key={branch.value} value={branch.value}>
@@ -266,7 +229,6 @@ export default function BookingCard({ vehicle, branches }: Props) {
                       </SelectContent>
                     </Select>
                   </FieldContent>
-
                   {fieldState.error && (
                     <FieldError>{fieldState.error.message}</FieldError>
                   )}
@@ -280,23 +242,17 @@ export default function BookingCard({ vehicle, branches }: Props) {
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Rental Days</span>
-
               <span>{totalDays} days</span>
             </div>
-
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Price per Day</span>
-
-              <span>{vehicle.pricePerDay.toLocaleString("vi-VN")}đ</span>
+              <span>{formatVND(vehicle.pricePerDay)}</span>
             </div>
-
             <Separator />
-
             <div className="flex items-center justify-between">
               <span className="text-base font-semibold">Total Price</span>
-
               <span className="text-2xl font-bold">
-                {totalPrice.toLocaleString("vi-VN")}đ
+                {formatVND(totalPrice)}
               </span>
             </div>
           </div>

@@ -55,8 +55,6 @@ export default function Login() {
     }
   };
 
-  console.log("Login error:", error);
-
   return (
     <AuthCard
       title="Login"

@@ -1,13 +1,14 @@
 // components/booking/BookingInfoCard.tsx
-
 import { Card } from "@repo/ui/components/ui/card";
 import type { Booking } from "@repo/types";
-
 import { formatDateTime } from "@repo/utils";
 
 type Props = {
   booking: Booking | null;
 };
+
+const formatVND = (value: number | undefined) =>
+  value ? `${value.toLocaleString("vi-VN")}đ` : "N/A";
 
 export default function BookingInfoCard({ booking }: Props) {
   return (
@@ -17,28 +18,20 @@ export default function BookingInfoCard({ booking }: Props) {
           <p className="text-sm font-medium uppercase tracking-wider text-primary">
             Booking Information
           </p>
-
-          <h2 className="mt-2 text-2xl font-bold">Booking Information</h2>
+          <h2 className="mt-2 text-2xl font-bold">Details</h2>
         </div>
       </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
         <InfoItem label="Booking ID" value={booking?.id || "N/A"} />
-
         <InfoItem label="Status" value={booking?.status || "N/A"} />
-
         <InfoItem
           label="Created At"
           value={formatDateTime(booking?.createdAt || "")}
         />
-
         <InfoItem
           label="Total Price"
-          value={
-            booking?.totalPrice
-              ? `${booking.totalPrice.toLocaleString("vi-VN")}đ`
-              : "N/A"
-          }
+          value={formatVND(booking?.totalPrice || undefined)}
         />
       </div>
     </Card>
@@ -49,7 +42,6 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-muted/50 p-4">
       <p className="text-sm text-muted-foreground">{label}</p>
-
       <p className="mt-2 font-semibold">{value}</p>
     </div>
   );

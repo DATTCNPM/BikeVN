@@ -1,5 +1,4 @@
 // components/booking/BookingActions.tsx
-
 import { Button } from "@repo/ui/components/ui/button";
 import { ArrowRight, Bike, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +11,6 @@ export default function BookingActions() {
       <p className="text-sm font-medium uppercase tracking-wider text-primary">
         Actions
       </p>
-
       <h2 className="mt-2 text-2xl font-bold">What's Next?</h2>
 
       <div className="mt-6 flex flex-col gap-4">

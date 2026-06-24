@@ -1,17 +1,17 @@
 // packages/providers/src/errorMessages.ts
 
 export const ERROR_MESSAGES: Record<number, string> = {
-  1002: "Email đã tồn tại",
-  1003: "Tài khoản không tồn tại",
-  1004: "Mật khẩu không chính xác",
+  1002: "Email exists",
+  1003: "Account does not exist",
+  1004: "Incorrect password",
 
-  1016: "Đơn này đã được thanh toán",
-  1017: "Xe đã được đặt trong khoảng thời gian này",
-  1018: "Xe đang được giữ chỗ",
-  1020: "Đơn đặt xe đã hết hạn",
+  1016: "This order has already been paid",
+  1017: "Vehicle is already booked for this time period",
+  1018: "Vehicle is already booked",
+  1020: "Booking has expired",
 
-  5050: "Bạn không có quyền thực hiện thao tác này",
-  5555: "Phiên đăng nhập đã hết hạn",
+  5050: "You do not have permission to perform this action",
+  5555: "Login session has expired",
 
-  9999: "Lỗi hệ thống, vui lòng thử lại sau",
+  9999: "System error, please try again later",
 };
