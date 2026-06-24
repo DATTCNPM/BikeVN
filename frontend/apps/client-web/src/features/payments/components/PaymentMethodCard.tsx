@@ -1,7 +1,6 @@
 import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
-
 import type { PaymentMethod } from "@repo/types";
 
 const methods: {
@@ -9,26 +8,28 @@ const methods: {
   name: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
+  isAvailable: boolean; // Thêm flag kiểm soát tính khả dụng của cổng thanh toán
 }[] = [
   {
     id: "vnpay",
     name: "VNPay",
-    description: "Pay via VNPay Gateway",
+    description: "Thanh toán qua cổng VNPay (ATM / QR Code)",
     icon: Landmark,
+    isAvailable: true,
   },
-
   {
     id: "momo",
     name: "MoMo",
-    description: "MoMo Digital Wallet",
+    description: "Ví điện tử MoMo",
     icon: Wallet,
+    isAvailable: false,
   },
-
   {
     id: "card",
     name: "Credit Card",
-    description: "Visa / Mastercard",
+    description: "Visa / Mastercard quốc tế",
     icon: CreditCard,
+    isAvailable: false,
   },
 ];
 
@@ -47,24 +48,25 @@ export default function PaymentMethodCard({
         <p className="text-sm font-medium uppercase tracking-wider text-primary">
           Payment Method
         </p>
-
         <h2 className="mt-2 text-2xl font-bold">Select Payment Method</h2>
       </div>
 
       <div className="mt-8 grid gap-4">
         {methods.map((method) => {
           const active = selectedMethod === method.id;
-
           const Icon = method.icon;
 
           return (
             <button
               key={method.id}
+              disabled={!method.isAvailable}
               onClick={() => onMethodSelect(method.id)}
               className={`flex items-center justify-between rounded-3xl border p-5 text-left transition-all duration-300 ${
                 active
                   ? "border-primary bg-primary/10"
-                  : "border-border hover:border-primary/30"
+                  : method.isAvailable
+                    ? "border-border hover:border-primary/30"
+                    : "border-border opacity-50 cursor-not-allowed bg-muted/20"
               }`}
             >
               <div className="flex items-center gap-4">
@@ -78,15 +80,23 @@ export default function PaymentMethodCard({
 
                 <div>
                   <p className="font-semibold">{method.name}</p>
-
                   <p className="mt-1 text-sm text-muted-foreground">
                     {method.description}
                   </p>
                 </div>
               </div>
 
+              {/* Hiển thị trạng thái phù hợp */}
               {active && (
                 <Badge className="rounded-full px-4 py-1">Selected</Badge>
+              )}
+              {!method.isAvailable && (
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-muted-foreground/30 px-3 py-1 text-muted-foreground"
+                >
+                  Coming Soon
+                </Badge>
               )}
             </button>
           );

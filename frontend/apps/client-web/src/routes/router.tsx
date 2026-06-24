@@ -25,6 +25,7 @@ import ServerErrorPage from "@/pages/ServerErrorPage";
 
 import { Outlet } from "react-router-dom";
 import { useAuthStore } from "@/features/auth/authStore";
+import PaymentResultPage from "@/pages/PaymentResultPage";
 function GlobalRootLayout() {
   const navigate = useNavigate();
   console.log("GlobalRootLayout mounted");
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
               {
                 path: "payment/:id",
                 element: <PaymentPage />,
+              },
+              {
+                path: "payment-result/:paymentId",
+                element: <PaymentResultPage />,
               },
               {
                 path: "notifications",

@@ -4,16 +4,19 @@ import { createPaymentCommonApi } from "../common/createPaymentCommonApi";
 
 export const paymentAdminApi = {
   ...createPaymentCommonApi(axiosAdmin),
+
+  // SỬA: Đổi từ "/payments" thành "/payments/admin/filter" cho đúng với BE
   async getAllPayments(
     params?: PaymentParams,
   ): Promise<PaginationResponse<Payment>> {
     return axiosAdmin.get<
       PaginationResponse<Payment>,
       PaginationResponse<Payment>
-    >("/payments", {
+    >("/payments/admin/filter", {
       params,
     });
   },
+
   async approvePaymentManually(
     id: string,
     adminId: string,
@@ -23,6 +26,15 @@ export const paymentAdminApi = {
       params: {
         adminId,
         actualPaymentMethod,
+      },
+    });
+  },
+
+  // THÊM MỚI: Admin kích hoạt hoàn tiền
+  async processRefund(id: string, adminId: string): Promise<Payment> {
+    return axiosAdmin.post<Payment>(`/payments/${id}/refund`, null, {
+      params: {
+        adminId,
       },
     });
   },

@@ -8,16 +8,20 @@ export function useCreatePayment() {
   });
 }
 
-export function useConfirmPayment() {
-  return useMutation({
-    mutationFn: async ({ id, transactionCode }: { id: string; transactionCode: string }) => {
-      return paymentClientApi.confirmPayment(id, transactionCode);
-    },
-  });
-}
-
 export function useCancelPayment(id: string) {
   return useMutation({
     mutationFn: () => paymentClientApi.cancelPayment(id),
+  });
+}
+
+// THÊM MỚI: Hook lấy link VNPay để redirect người dùng đi thanh toán
+export function useGetVNPayUrl() {
+  return useMutation({
+    mutationFn: (paymentId: string) => paymentClientApi.getVNPayUrl(paymentId),
+    onSuccess: (vnpayUrl) => {
+      if (vnpayUrl) {
+        window.location.href = vnpayUrl; // Chuyển hướng thẳng sang cổng VNPay
+      }
+    },
   });
 }
