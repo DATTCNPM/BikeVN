@@ -38,7 +38,8 @@ public class SecurityConfig {
             "/uploads", "/uploads/**",
             "/payments/vnpay-return",
             "/payments/vnpay-ipn",
-            "/reviews", "/reviews/**"
+            "/reviews", "/reviews/**",
+            "/ws", "/ws/**"
     };
 
     @Autowired
@@ -72,9 +73,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource()
     {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
+        //LOCAL
         corsConfiguration.addAllowedOrigin("http://localhost:5173");//user
         corsConfiguration.addAllowedOrigin("http://localhost:5174");//admin
         corsConfiguration.addAllowedOrigin("http://localhost:5175");//employee
+        //DEPLOY
+        corsConfiguration.addAllowedOrigin("https://bike-vn.vercel.app");//user
+        corsConfiguration.addAllowedOrigin("https://bike-vn-admin.vercel.app");//admin
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.setAllowCredentials(true);
