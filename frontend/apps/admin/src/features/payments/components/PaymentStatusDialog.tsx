@@ -31,7 +31,7 @@ export default function PaymentStatusDialog({
 
   const approveMutation = useApprovePaymentManually();
 
-  const cancelMutation = useCancelPayment();
+  const cancelMutation = useCancelPayment({ id: payment?.id ?? "" });
 
   const loading = approveMutation.isPending || cancelMutation.isPending;
 
@@ -51,9 +51,7 @@ export default function PaymentStatusDialog({
           break;
 
         case "cancel":
-          await cancelMutation.mutateAsync({
-            id: payment.id,
-          });
+          await cancelMutation.mutateAsync();
 
           toast.success("Cancel payment successfully");
           break;

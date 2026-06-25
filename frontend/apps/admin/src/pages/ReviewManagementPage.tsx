@@ -136,7 +136,6 @@ export default function ReviewManagementPage() {
       <DataTableToolbar
         search={search}
         onSearchChange={setSearch}
-        onCreate={() => setOpenCreateDialog(true)}
       />
 
       <DataTable columns={columns} data={reviews} />

@@ -18,7 +18,7 @@ export const vehicleReturnSchema = z.object({
 
   damageDescription: z.string().nullable().optional(),
 
-  extraFee: z.coerce.number().nullable().optional(),
+  extraFee: z.coerce.number().min(0).default(0),
 
   images: z.array(z.string()).default([]),
 
@@ -34,9 +34,7 @@ export const vehicleReturnSchema = z.object({
 });
 
 export const createVehicleReturnSchema = z.object({
-  bookingId: z.string().uuid({
-    message: "Booking không hợp lệ",
-  }),
+  bookingId: z.string(),
 
   returnBranchId: z.string().uuid({
     message: "Chi nhánh trả xe không hợp lệ",
@@ -46,9 +44,9 @@ export const createVehicleReturnSchema = z.object({
 
   damageDescription: z.string().optional(),
 
-  extraFee: z.coerce.number().min(0).optional(),
+  extraFee: z.number().min(0),
 
-  images: z.array(z.instanceof(File)).optional(),
+  images: z.array(z.instanceof(File)),
 
   returnOdometerReading: z
     .number({

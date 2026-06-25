@@ -43,7 +43,7 @@ export default function RoleManagementPage() {
         accessorKey: "permissions",
         header: "Permissions",
         cell: ({ row }) =>
-          row.original.permissions.map((p) => p.name).join(", ") || "-",
+          row.original.permissions.join(", ") || "-",
       },
       {
         id: "actions",

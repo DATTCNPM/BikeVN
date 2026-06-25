@@ -55,10 +55,6 @@ export default function VehicleReturnCreate({
 
   const { data: profile } = usePortalProfile();
 
-  if (!profile) {
-    return toast.error("Vui lòng đăng nhập để tạo phiếu trả xe");
-  }
-
   const defaultValues: CreateVehicleReturnRequest = {
     bookingId,
     returnBranchId: "",
@@ -75,7 +71,7 @@ export default function VehicleReturnCreate({
 
     notes: "",
 
-    employeeId: profile.id,
+    employeeId: profile?.id || "",
   };
 
   const {
