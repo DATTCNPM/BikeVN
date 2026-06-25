@@ -8,7 +8,11 @@ type Props = {
 };
 
 export default function ReviewSection({ vehicleId }: Props) {
-  const { data, isLoading } = useVehicleReviews(vehicleId, 1, 10);
+  const { data, isLoading } = useVehicleReviews({
+    vehicleId: vehicleId,
+    page: 1,
+    size: 5,
+  });
   const reviews = data?.data ?? [];
 
   const averageRating =

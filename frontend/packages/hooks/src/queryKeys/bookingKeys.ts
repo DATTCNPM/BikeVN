@@ -1,4 +1,4 @@
-import { BookingFilter } from "@repo/types";
+import type { BookingFilter } from "@repo/types";
 
 export const bookingsKeys = {
   all: ["bookings"] as const,

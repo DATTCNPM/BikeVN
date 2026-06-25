@@ -1,4 +1,4 @@
-import { Payment, PaginationResponse, PaymentParams } from "@repo/types";
+import type { Payment, PaginationResponse, PaymentParams } from "@repo/types";
 import axiosAdmin from "../axios/axiosAdmin";
 import { createPaymentCommonApi } from "../common/createPaymentCommonApi";
 
@@ -22,17 +22,21 @@ export const paymentAdminApi = {
     adminId: string,
     actualPaymentMethod: string,
   ): Promise<Payment> {
-    return axiosAdmin.post<Payment>(`/payments/${id}/approve-manually`, null, {
-      params: {
-        adminId,
-        actualPaymentMethod,
+    return axiosAdmin.post<Payment, Payment>(
+      `/payments/${id}/approve-manually`,
+      null,
+      {
+        params: {
+          adminId,
+          actualPaymentMethod,
+        },
       },
-    });
+    );
   },
 
   // THÊM MỚI: Admin kích hoạt hoàn tiền
   async processRefund(id: string, adminId: string): Promise<Payment> {
-    return axiosAdmin.post<Payment>(`/payments/${id}/refund`, null, {
+    return axiosAdmin.post<Payment, Payment>(`/payments/${id}/refund`, null, {
       params: {
         adminId,
       },

@@ -12,6 +12,6 @@ export const createUserCommonApi = (axiosInstance: AxiosInstance) => ({
       ...rest,
       cccdNumber: cccdNumber || "",
     };
-    return axiosInstance.put<User>(`/users/${id}`, requestPayload);
+    return axiosInstance.put<User, User>(`/users/${id}`, requestPayload);
   },
 });

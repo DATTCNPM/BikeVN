@@ -3,7 +3,7 @@ import axios from "axios";
 import { ApiError } from "../error/ApiError";
 
 const axiosPublic = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
+  baseURL: import.meta.env.VITE_API_URL || "https://bikevn.onrender.com",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

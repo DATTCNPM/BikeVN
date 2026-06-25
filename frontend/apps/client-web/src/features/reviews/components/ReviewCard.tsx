@@ -46,7 +46,7 @@ export default function ReviewCard({ review }: Props) {
 
           <div>
             <h4 className="font-semibold text-foreground">
-              {review.user?.name || review.userId}
+              {review.userId}
             </h4>
 
             <p className="text-sm text-muted-foreground">
