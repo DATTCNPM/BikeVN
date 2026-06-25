@@ -10,7 +10,7 @@ export function useApprovePaymentManually() {
   });
 }
 
-export function useCancelPayment(id: string) {
+export function useCancelPayment({ id }: { id: string }) {
   return useMutation({
     mutationFn: () => paymentAdminApi.cancelPayment(id),
   });

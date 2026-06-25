@@ -1,7 +1,6 @@
 import axiosAdmin from "../axios/axiosAdmin";
 
 import type {
-  VehicleImage,
   VehicleImageCreatePayload,
   VehicleImageUpdatePayload,
 } from "@repo/types";
@@ -19,7 +18,7 @@ export const vehicleImageAdminApi = {
       formData,
     );
 
-    return response.data;
+    return response;
   },
 
   async editImage(
@@ -33,16 +32,24 @@ export const vehicleImageAdminApi = {
       formData.append("file", payload.imageUrl);
     }
 
-    formData.append("altText", payload.altText ?? "");
-    formData.append("displayOrder", payload.displayOrder.toString());
-    formData.append("isPrimary", payload.isPrimary.toString());
+    if (payload.altText !== undefined) {
+      formData.append("altText", payload.altText);
+    }
+
+    if (payload.displayOrder !== undefined) {
+      formData.append("displayOrder", payload.displayOrder.toString());
+    }
+
+    if (payload.isPrimary !== undefined) {
+      formData.append("isPrimary", payload.isPrimary.toString());
+    }
 
     const response = await axiosAdmin.put(
       `/vehicles/${vehicleId}/images/${imageId}`,
       formData,
     );
 
-    return response.data;
+    return response;
   },
 
   async deleteImage(vehicleId: string, imageId: string) {

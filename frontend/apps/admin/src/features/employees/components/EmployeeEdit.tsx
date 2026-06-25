@@ -22,12 +22,12 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useUpdateEmployee } from "@/features/employees/mutationEmployee";
 import { useBranches } from "@repo/hooks";
 import { updateEmployeeSchema } from "@repo/schemas";
-import type { UpdateEmployeePayload, User } from "@repo/types";
+import type { UpdateEmployeePayload, Employee } from "@repo/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: User | null;
+  user: Employee | null;
 };
 
 export default function EmployeeEdit({ open, onOpenChange, user }: Props) {

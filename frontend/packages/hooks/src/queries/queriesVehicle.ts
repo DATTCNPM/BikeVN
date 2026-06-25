@@ -14,7 +14,6 @@ export function useVehicles(page: number, size: number) {
     queryKey: vehiclesKeys.list(page, size),
     queryFn: async () => {
       const res = await vehiclePublicApi.getVehicles(page, size);
-      console.log("vehicles data ", res);
       return res;
     },
   });

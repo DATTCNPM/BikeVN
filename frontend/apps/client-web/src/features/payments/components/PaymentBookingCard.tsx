@@ -1,9 +1,11 @@
+// components/payment/PaymentBookingCard.tsx
 import { Card } from "@repo/ui/components/ui/card";
 import { CalendarDays, MapPinned } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import type { Booking } from "@repo/types";
 import { useBranches } from "@repo/hooks";
 import { formatDateTime } from "@repo/utils";
+import { differenceInDays } from "date-fns";
+import type { Booking } from "@repo/types";
 
 type Props = {
   booking: Booking | null;
@@ -20,22 +22,19 @@ export default function PaymentBookingCard({ booking }: Props) {
     );
   }
 
-  // 1. Tìm tên chi nhánh
-  const nameBranchesPickup =
-    branches?.find((b) => b.id === booking?.pickupBranchId)?.name ||
-    "Unknown Branch";
-  const nameBranchesReturn =
-    branches?.find((b) => b.id === booking?.returnBranchId)?.name ||
-    "Unknown Branch";
+  const getBranchName = (branchId: string | undefined) =>
+    branches?.find((b) => b.id === branchId)?.name || "Unknown Branch";
 
-  // 2. Trích xuất logic tính tổng số ngày thuê ra ngoài JSX
-  const calculateTotalDays = (): string => {
-    if (!booking?.startTime || !booking?.endTime) return "N/A";
-    const start = new Date(booking.startTime).getTime();
-    const end = new Date(booking.endTime).getTime();
-    const diffTime = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    return `${diffTime} ngày`;
-  };
+  const totalDays =
+    booking?.startTime && booking?.endTime
+      ? Math.max(
+          1,
+          differenceInDays(
+            new Date(booking.endTime),
+            new Date(booking.startTime),
+          ),
+        )
+      : null;
 
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
@@ -62,7 +61,7 @@ export default function PaymentBookingCard({ booking }: Props) {
               End: {formatDateTime(booking?.endTime || "")}
             </p>
             <p className="text-muted-foreground">
-              Total Days: {calculateTotalDays()}
+              Total Days: {totalDays !== null ? `${totalDays} ngày` : "N/A"}
             </p>
           </div>
         </div>
@@ -75,8 +74,12 @@ export default function PaymentBookingCard({ booking }: Props) {
           </div>
 
           <div className="mt-4 space-y-2">
-            <p className="font-semibold">Pickup: {nameBranchesPickup}</p>
-            <p className="font-semibold">Return: {nameBranchesReturn}</p>
+            <p className="font-semibold">
+              Pickup: {getBranchName(booking?.pickupBranchId)}
+            </p>
+            <p className="font-semibold">
+              Return: {getBranchName(booking?.returnBranchId)}
+            </p>
           </div>
         </div>
       </div>

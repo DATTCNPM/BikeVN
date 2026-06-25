@@ -14,12 +14,18 @@ import { formatDateTime } from "@repo/utils";
 
 import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
-import type { Booking } from "@repo/types";
 import { Button } from "@repo/ui/components/ui/button";
 import { Spinner } from "@repo/ui/components/ui/spinner";
+
+import type { Booking } from "@repo/types";
+
 import { useBookingsByUser } from "@/features/bookings/queries";
-import { useVehicles } from "@repo/hooks";
 import { useProfile } from "@/features/profile/useProfile";
+
+type BookingWithVehicle = Booking & {
+  vehicleName?: string;
+  vehicleImage?: string;
+};
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {
@@ -55,30 +61,20 @@ const statusConfig: Record<Booking["status"], any> = {
 
 export default function MyBookingSection() {
   const navigate = useNavigate();
+
   const { data: profile } = useProfile();
+
   const { data: bookings = [], isLoading } = useBookingsByUser(
     profile?.id || "",
   );
-  const { data: vehicles, isLoading: vehicleLoading } = useVehicles();
 
-  if (isLoading || vehicleLoading) {
+  if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
       </div>
     );
   }
-
-  const vehicleData = vehicles?.data || [];
-
-  const bookingData = bookings?.map((b) => {
-    const vehicle = vehicleData.find((v) => v.id === b.vehicleId);
-    return {
-      ...b,
-      vehicleName: vehicle ? vehicle.name : "Unknown Vehicle",
-      vehicleImage: vehicle?.images?.[0] ? vehicle.images[0] : imageMock,
-    };
-  });
 
   return (
     <section className="space-y-6">
@@ -94,12 +90,12 @@ export default function MyBookingSection() {
         </div>
 
         <Badge variant="secondary" className="rounded-full px-4 py-1">
-          {bookings?.length || 0} bookings
+          {bookings.length} bookings
         </Badge>
       </div>
 
       <div className="grid gap-5">
-        {bookingData?.map((booking) => {
+        {(bookings as BookingWithVehicle[]).map((booking) => {
           const status = statusConfig[booking.status];
 
           const StatusIcon = status.icon;
@@ -113,8 +109,8 @@ export default function MyBookingSection() {
               <div className="flex flex-col lg:flex-row">
                 <div className="relative h-56 overflow-hidden lg:h-auto lg:w-[280px]">
                   <img
-                    src={booking.vehicleImage}
-                    alt={booking.vehicleName}
+                    src={booking.vehicleImage || imageMock}
+                    alt={booking.vehicleName || "Vehicle"}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
 
@@ -122,7 +118,8 @@ export default function MyBookingSection() {
 
                   <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1 text-sm text-white backdrop-blur">
                     <Bike className="size-4" />
-                    {booking.vehicleName}
+
+                    {booking.vehicleName || "Unknown Vehicle"}
                   </div>
                 </div>
 
@@ -169,7 +166,10 @@ export default function MyBookingSection() {
                     <Button
                       variant="outline"
                       className="h-10 rounded-full"
-                      onClick={() => navigate(`/booking-result/${booking.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/booking-result/${booking.id}`);
+                      }}
                     >
                       View Detail
                       <ChevronRight className="size-5" />

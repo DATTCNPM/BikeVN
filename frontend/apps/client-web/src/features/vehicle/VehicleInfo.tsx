@@ -2,7 +2,6 @@ import VehicleGallery from "@/features/vehicle/VehicleGallery";
 import { Badge } from "@repo/ui/components/ui/badge";
 import {
   MapPin,
-  Smile,
   Motorbike,
   Calendar,
   Fuel,
@@ -54,21 +53,6 @@ export default function VehicleInfo({
   const locationVehicle = useMemo(() => {
     return branches.find((b) => b.id === vehicle?.currentBranchId);
   }, [vehicle, branches]);
-
-  const statusMap = {
-    available: {
-      label: "Available",
-      variant: "default" as const,
-    },
-    unavailable: {
-      label: "Unavailable",
-      variant: "destructive" as const,
-    },
-    maintenance: {
-      label: "Maintenance",
-      variant: "secondary" as const,
-    },
-  };
 
   return (
     <div className="h-full">
@@ -239,19 +223,6 @@ export default function VehicleInfo({
           <ReviewSection vehicleId={vehicleData.id || "1"} />
         </TabsContent>
       </Tabs>
-
-      {/* <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Vehicle location</h2>
-
-        <Map
-          locations={locationVehicle ? [locationVehicle] : []}
-          selectedBranchId={vehicleData.currentBranchId}
-        />
-      </div>
-
-      <div className="mt-8">
-        <ReviewSection vehicleId={vehicleData.id || "1"} />
-      </div> */}
     </div>
   );
 }

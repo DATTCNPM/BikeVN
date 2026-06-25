@@ -1,10 +1,7 @@
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import EntityFormDialog from "@/components/common/EntityFormDialog";
-
-import { Input } from "@repo/ui/components/ui/input";
-import { Checkbox } from "@repo/ui/components/ui/checkbox";
 
 import {
   Field,

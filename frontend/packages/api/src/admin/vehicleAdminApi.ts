@@ -1,6 +1,5 @@
 import axiosAdmin from "../axios/axiosAdmin";
 import type {
-  ApiResponse,
   Vehicle,
   VehicleCreationRequest,
   VehicleUpdateRequest,

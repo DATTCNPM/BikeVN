@@ -1,15 +1,15 @@
+// components/payment/PaymentMethodCard.tsx
 import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
 import type { PaymentMethod } from "@repo/types";
 
-const methods: {
-  id: PaymentMethod;
-  name: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  isAvailable: boolean; // Thêm flag kiểm soát tính khả dụng của cổng thanh toán
-}[] = [
+type Props = {
+  selectedMethod: PaymentMethod;
+  onMethodSelect: (method: PaymentMethod) => void;
+};
+
+const PAYMENT_METHODS = [
   {
     id: "vnpay",
     name: "VNPay",
@@ -31,12 +31,7 @@ const methods: {
     icon: CreditCard,
     isAvailable: false,
   },
-];
-
-type Props = {
-  selectedMethod: PaymentMethod;
-  onMethodSelect: (method: PaymentMethod) => void;
-};
+] as const;
 
 export default function PaymentMethodCard({
   selectedMethod,
@@ -52,8 +47,8 @@ export default function PaymentMethodCard({
       </div>
 
       <div className="mt-8 grid gap-4">
-        {methods.map((method) => {
-          const active = selectedMethod === method.id;
+        {PAYMENT_METHODS.map((method) => {
+          const isActive = selectedMethod === method.id;
           const Icon = method.icon;
 
           return (
@@ -62,7 +57,7 @@ export default function PaymentMethodCard({
               disabled={!method.isAvailable}
               onClick={() => onMethodSelect(method.id)}
               className={`flex items-center justify-between rounded-3xl border p-5 text-left transition-all duration-300 ${
-                active
+                isActive
                   ? "border-primary bg-primary/10"
                   : method.isAvailable
                     ? "border-border hover:border-primary/30"
@@ -71,9 +66,7 @@ export default function PaymentMethodCard({
             >
               <div className="flex items-center gap-4">
                 <div
-                  className={`flex size-14 items-center justify-center rounded-2xl ${
-                    active ? "bg-primary text-primary-foreground" : "bg-muted"
-                  }`}
+                  className={`flex size-14 items-center justify-center rounded-2xl ${isActive ? "bg-primary text-primary-foreground" : "bg-muted"}`}
                 >
                   <Icon className="size-6" />
                 </div>
@@ -86,8 +79,7 @@ export default function PaymentMethodCard({
                 </div>
               </div>
 
-              {/* Hiển thị trạng thái phù hợp */}
-              {active && (
+              {isActive && (
                 <Badge className="rounded-full px-4 py-1">Selected</Badge>
               )}
               {!method.isAvailable && (

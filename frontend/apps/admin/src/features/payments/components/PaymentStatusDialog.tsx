@@ -10,7 +10,6 @@ import type { Payment } from "@repo/types";
 import {
   useApprovePaymentManually,
   useCancelPayment,
-  useConfirmPayment,
 } from "@/features/payments/mutations";
 
 type Props = {
@@ -30,31 +29,17 @@ export default function PaymentStatusDialog({
 }: Props) {
   const queryClient = useQueryClient();
 
-  const confirmMutation = useConfirmPayment();
-
   const approveMutation = useApprovePaymentManually();
 
-  const cancelMutation = useCancelPayment();
+  const cancelMutation = useCancelPayment({ id: payment?.id ?? "" });
 
-  const loading =
-    confirmMutation.isPending ||
-    approveMutation.isPending ||
-    cancelMutation.isPending;
+  const loading = approveMutation.isPending || cancelMutation.isPending;
 
   const handleConfirm = async () => {
     if (!payment) return;
 
     try {
       switch (mode) {
-        case "confirm":
-          await confirmMutation.mutateAsync({
-            id: payment.id,
-            transactionCode: payment.transactionCode ?? "",
-          });
-
-          toast.success("Confirm payment successfully");
-          break;
-
         case "approve-manually":
           await approveMutation.mutateAsync({
             id: payment.id,
@@ -66,9 +51,7 @@ export default function PaymentStatusDialog({
           break;
 
         case "cancel":
-          await cancelMutation.mutateAsync({
-            id: payment.id,
-          });
+          await cancelMutation.mutateAsync();
 
           toast.success("Cancel payment successfully");
           break;

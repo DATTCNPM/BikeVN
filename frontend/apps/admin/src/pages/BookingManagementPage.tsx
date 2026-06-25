@@ -9,14 +9,16 @@ import BookingStatusDialog from "@/features/bookings/components/BookingStatusDia
 import BookingInfoDropdown from "@/features/bookings/components/BookingInfoDropdown";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
+import UniversalFilterSheet, {
+  type FilterConfigItem,
+} from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
 import ReviewCreate from "@/features/reviews/components/ReviewCreate";
-
 import { Badge } from "@repo/ui/components/ui/badge";
 
-import { useBookings } from "@/features/bookings/queries";
+import { useBookings, useBookingFilters } from "@/features/bookings/queries";
 import { useBranches } from "@repo/hooks";
-import type { Booking } from "@repo/types";
+import type { Booking, BookingFilter } from "@repo/types";
 
 const bookingStatusMap = {
   pending:
@@ -38,27 +40,115 @@ const bookingStatusLabel = {
 
 export default function BookingManagementPage() {
   const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
 
-  const { data: branches = [], isLoading: isBranchesLoading } = useBranches();
-
+  // States quản lý Dialogs
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-
   const [dialogMode, setDialogMode] = useState<"approve" | "reject" | null>(
     null,
   );
-
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
-  const [search, setSearch] = useState("");
+  // State Object quản lý bộ lọc duy nhất cho Booking
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
+    {},
+  );
 
-  const [page, setPage] = useState(1);
-
+  // Fetch dữ liệu nền
+  const { data: branches = [], isLoading: isBranchesLoading } = useBranches();
   const { data: bookings, isLoading } = useBookings(page, 10);
 
   const findNameByBranchId = (branchId: string) => {
     const branch = branches.find((b) => b.id === branchId);
     return branch ? branch.name : "Unknown Branch";
   };
+
+  // 1. Cập nhật filterConfigs đầy đủ các trường theo Schema
+  const filterConfigs = useMemo<FilterConfigItem[]>(() => {
+    return [
+      {
+        key: "status",
+        title: "Booking Status",
+        type: "select",
+        options: [
+          { label: "Pending", value: "pending" },
+          { label: "Approved", value: "approved" },
+          { label: "Rejected", value: "rejected" },
+          { label: "Completed", value: "completed" },
+          { label: "Cancelled", value: "cancelled" },
+        ],
+      },
+      {
+        key: "pickupBranch",
+        title: "Pickup Branch",
+        type: "select",
+        options: branches.map((b) => ({ label: b.name, value: b.id })),
+      },
+      {
+        key: "fromDate",
+        title: "From Date (Từ ngày)",
+        type: "date",
+      },
+      {
+        key: "toDate",
+        title: "To Date (Đến ngày)",
+        type: "date",
+      },
+      {
+        key: "userId",
+        title: "Customer ID",
+        type: "text",
+      },
+      {
+        key: "vehicleId",
+        title: "Vehicle ID",
+        type: "text",
+      },
+    ];
+  }, [branches]);
+
+  // 2. Map dữ liệu từ UI gửi lên API (Có format chuẩn ISO Datetime cho backend)
+  const apiFilters = useMemo<
+    BookingFilter & { page: number; size: number }
+  >(() => {
+    const rawFromDate = selectedFilters["fromDate"];
+    const rawToDate = selectedFilters["toDate"];
+
+    return {
+      status: selectedFilters["status"]?.value,
+      userId: selectedFilters["userId"]?.trim() || undefined,
+      vehicleId: selectedFilters["vehicleId"]?.trim() || undefined,
+
+      // Chuyển đổi định dạng ngày "YYYY-MM-DD" thành chuẩn ISO "YYYY-MM-DDT00:00:00.000Z" theo schema
+      fromDate: rawFromDate ? new Date(rawFromDate).toISOString() : undefined,
+      toDate: rawToDate ? new Date(rawToDate).toISOString() : undefined,
+
+      page,
+      size: 10,
+    };
+  }, [selectedFilters, page]);
+
+  const hasFilter = Boolean(
+    search.trim() || Object.values(selectedFilters).some(Boolean),
+  );
+
+  // Gọi API filter khi trạng thái hasFilter = true
+  const { data: filteredBookings } = useBookingFilters(apiFilters, hasFilter);
+
+  const bookingData = useMemo(() => {
+    return (hasFilter ? filteredBookings?.data : bookings?.data) ?? [];
+  }, [bookings, filteredBookings, hasFilter]);
+
+  const pagination = useMemo(() => {
+    const currentSource = hasFilter ? filteredBookings : bookings;
+    return {
+      page: currentSource?.currentPage ?? 1,
+      pageSize: currentSource?.pageSize ?? 10,
+      totalPages: currentSource?.totalPages ?? 1,
+      totalElements: currentSource?.totalElements ?? 0,
+    };
+  }, [bookings, filteredBookings, hasFilter]);
 
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
@@ -117,13 +207,11 @@ export default function BookingManagementPage() {
           </Badge>
         ),
       },
-
       {
         id: "actions",
         header: "",
         cell: ({ row }) => {
           const booking = row.original;
-
           return (
             <BookingActionDropdown
               onApprove={() => {
@@ -146,7 +234,7 @@ export default function BookingManagementPage() {
         },
       },
     ],
-    [navigate],
+    [branches, navigate],
   );
 
   if (isLoading || isBranchesLoading) {
@@ -158,22 +246,41 @@ export default function BookingManagementPage() {
   }
 
   return (
-    <div>
+    <div className="space-y-4">
+      {/* Tách và dời Filter vào trong Toolbar gọn gàng tương tự trang Vehicles */}
       <DataTableToolbar
         search={search}
-        onSearchChange={setSearch}
-        // onCreateOpen={() => setOpenCreateDialog(true)}
-      />
+        onSearchChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
+      >
+        <UniversalFilterSheet
+          title="Filter Bookings"
+          configs={filterConfigs}
+          value={selectedFilters}
+          onChange={(newFilters) => {
+            setSelectedFilters(newFilters);
+            setPage(1);
+          }}
+          onReset={() => {
+            setSearch("");
+            setSelectedFilters({});
+            setPage(1);
+          }}
+        />
+      </DataTableToolbar>
 
-      <DataTable columns={columns} data={bookings?.data || []} />
+      <DataTable columns={columns} data={bookingData} />
 
       <TablePagination
-        page={bookings?.currentPage || 1}
-        totalPages={bookings?.totalPages || 1}
-        totalElements={bookings?.totalElements || 0}
-        pageSize={bookings?.pageSize || 10}
+        page={pagination.page}
+        pageSize={pagination.pageSize}
+        totalPages={pagination.totalPages}
+        totalElements={pagination.totalElements}
         onPageChange={setPage}
       />
+
       <BookingStatusDialog
         booking={selectedBooking}
         open={!!selectedBooking && dialogMode !== null}
@@ -185,6 +292,7 @@ export default function BookingManagementPage() {
         }}
         mode={dialogMode ?? "approve"}
       />
+
       {openCreateDialog && (
         <ReviewCreate
           open={openCreateDialog}

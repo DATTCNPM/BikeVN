@@ -1,8 +1,6 @@
 import { useState } from "react";
 
 import Map from "@/components/map/Map";
-
-import type { Branch } from "@repo/types";
 import type { VehicleCardData } from "@repo/types";
 import BranchVehicleList from "@/features/home/BranchVehicleList";
 import { useBranches, useVehicleFilters } from "@repo/hooks";

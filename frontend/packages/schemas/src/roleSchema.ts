@@ -5,7 +5,7 @@ export const roleCreationSchema = z.object({
 
   description: z.string().optional(),
 
-  permissions: z.array(z.string()).default([]),
+  permissions: z.array(z.string()),
 });
 
 export const roleSchema = roleCreationSchema.extend({

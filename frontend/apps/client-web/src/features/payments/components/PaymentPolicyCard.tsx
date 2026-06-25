@@ -1,13 +1,15 @@
+// components/payment/PaymentPolicyCard.tsx
 import { Card } from "@repo/ui/components/ui/card";
 import { ShieldCheck } from "lucide-react";
 
+const POLICY_ITEMS = [
+  "Deposit payment helps secure the bike for the selected period.",
+  "Rental fees will be confirmed upon bike pickup.",
+  "Refunds are subject to the timing of the booking cancellation.",
+  "Transactions are encrypted and securely processed.",
+] as const;
+
 export default function PaymentPolicyCard() {
-  const data = [
-    "Deposit payment helps secure the bike for the selected period.",
-    "Rental fees will be confirmed upon bike pickup.",
-    "Refunds are subject to the timing of the booking cancellation.",
-    "Transactions are encrypted and securely processed.",
-  ];
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">
       <div className="flex items-start gap-4">
@@ -17,9 +19,8 @@ export default function PaymentPolicyCard() {
 
         <div>
           <h3 className="text-xl font-bold">Payment Policy</h3>
-
           <div className="mt-4 space-y-3 text-muted-foreground">
-            {data.map((item, index) => (
+            {POLICY_ITEMS.map((item, index) => (
               <p key={index}>• {item}</p>
             ))}
           </div>

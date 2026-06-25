@@ -1,3 +1,5 @@
+import type { BookingFilter } from "@repo/types";
+
 export const bookingsKeys = {
   all: ["bookings"] as const,
 
@@ -5,6 +7,9 @@ export const bookingsKeys = {
 
   list: (page: number, size: number) =>
     [...bookingsKeys.lists(), { page, size }] as const,
+
+  filter: (params?: BookingFilter) =>
+    [...bookingsKeys.lists(), "filter", params] as const,
 
   byUser: (userId: string) =>
     [...bookingsKeys.lists(), "user", userId] as const,

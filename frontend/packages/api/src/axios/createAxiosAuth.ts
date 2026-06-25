@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { ApiError } from "../error/ApiError";
 import type { ApiResponse } from "@repo/types";
+import type { AxiosInstance } from "axios";
 
 type CreateAxiosAuthOptions = {
   tokenKey: string;
@@ -12,8 +13,8 @@ export function createAxiosAuth({
   tokenKey,
   loginPath,
 }: CreateAxiosAuthOptions) {
-  const instance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
+  const instance: AxiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || "https://bikevn.onrender.com",
     timeout: 10000,
   });
 
@@ -31,7 +32,7 @@ export function createAxiosAuth({
   );
 
   instance.interceptors.response.use(
-    (response) => {
+    (response): any => {
       const config = response.config as {
         skipAuthCheck?: boolean;
       };
@@ -42,7 +43,6 @@ export function createAxiosAuth({
         if (!config?.skipAuthCheck) {
           handleUnauthorized(tokenKey, loginPath);
         }
-
         throw new ApiError(data.code, data.message || "Unauthenticated");
       }
 

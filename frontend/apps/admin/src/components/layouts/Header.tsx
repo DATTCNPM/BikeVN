@@ -1,10 +1,6 @@
 import { Bell, ChevronDown, Menu, Search } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@repo/ui/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Button } from "@repo/ui/components/ui/button";
 import {
@@ -30,11 +26,8 @@ export default function AppHeader() {
   const { data: portalProfile } = usePortalProfile();
 
   const handleLogout = () => {
-    const success = logoutPortal();
-
-    if (success) {
-      void navigate("/login");
-    }
+    logoutPortal();
+    void navigate("/login");
   };
 
   const initials =
@@ -95,7 +88,6 @@ export default function AppHeader() {
                 className="h-14 rounded-2xl px-2 hover:bg-muted"
               >
                 <Avatar className="size-11 border">
-                  <AvatarImage src={portalProfile?.avatarUrl} />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
 
