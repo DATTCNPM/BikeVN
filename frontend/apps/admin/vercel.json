@@ -1,7 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/portal/assets/(.*)", "destination": "/portal/assets/$1" },
-    { "source": "/portal/(.*)", "destination": "/portal/index.html" },
-    { "source": "/(.*)", "destination": "/" }
-  ]
-}
