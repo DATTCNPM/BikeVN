@@ -30,7 +30,7 @@ const router = createBrowserRouter(
       element: <AuthRedirectRoute />,
     },
     {
-      path: "/admin",
+      path: "admin",
       element: (
         <ProtectedRoute>
           <MainLayout />
@@ -113,7 +113,7 @@ const router = createBrowserRouter(
     },
 
     {
-      path: "/employee",
+      path: "employee",
       element: (
         <ProtectedRoute>
           <MainLayout />
@@ -184,12 +184,12 @@ const router = createBrowserRouter(
     },
 
     {
-      path: "/login",
+      path: "login",
       element: <LoginPage />,
     },
   ],
   {
-    basename: "/portal",
+    basename: "/",
   },
 );
 
