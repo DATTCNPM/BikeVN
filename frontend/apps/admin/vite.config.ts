@@ -12,4 +12,5 @@ export default defineConfig({
       "@repo/types": path.resolve(__dirname, "../../packages/types/src"),
     },
   },
+  base: "/",
 });
