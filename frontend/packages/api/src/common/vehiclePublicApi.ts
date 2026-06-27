@@ -11,6 +11,7 @@ export const vehiclePublicApi = {
     page: number,
     size: number,
   ): Promise<PaginationResponse<Vehicle>> {
+    // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
     return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles", {
       params: { page, size },
     });
@@ -18,6 +19,7 @@ export const vehiclePublicApi = {
 
   // Lấy thông tin chi tiết của một chiếc xe
   async getVehicleById(id: string): Promise<Vehicle> {
+    // Bỏ tham số vế sau, chỉ giữ lại <Vehicle>
     return axiosPublic.get<Vehicle>(`/vehicles/${id}`);
   },
 
@@ -25,8 +27,9 @@ export const vehiclePublicApi = {
   async getVehicleFilters(
     params?: VehicleQueryParams,
   ): Promise<PaginationResponse<Vehicle>> {
+    // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
     return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles/filters", {
-      params, // Axios sẽ tự động loại bỏ các key có giá trị undefined
+      params,
     });
   },
 };

@@ -1,5 +1,5 @@
-import axiosPublic from "../axios/axiosPublic";
 import type { Branch } from "@repo/types";
+import axiosPublic from "../axios/axiosPublic";
 
 export const branchPublicApi = {
   // Lấy toàn bộ danh sách chi nhánh công khai
