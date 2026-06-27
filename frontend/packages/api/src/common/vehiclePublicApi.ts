@@ -5,55 +5,31 @@ import type {
   PaginationResponse,
 } from "@repo/types";
 
-// URL ảnh mock chất lượng cao để web trông chuyên nghiệp hơn khi chưa có ảnh thật
-const MOCK_VEHICLE_IMAGE = "https://images.unsplash.com/photo-1558981403-c5f91ebce068?q=80&w=1000&auto=format&fit=crop";
-
 export const vehiclePublicApi = {
-  async getVehicles(page: number, size: number) {
-    const res = await axiosPublic.get<
-      PaginationResponse<Vehicle>,
-      PaginationResponse<Vehicle>
-    >("/vehicles", {
+  // Lấy danh sách xe có phân trang thông thường
+  async getVehicles(
+    page: number,
+    size: number,
+  ): Promise<PaginationResponse<Vehicle>> {
+    // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
+    return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles", {
       params: { page, size },
     });
-
-    // MOCK ẢNH: Ghi đè ảnh cho toàn bộ danh sách xe trả về từ DB
-    if (res.data) {
-      res.data = res.data.map(vehicle => ({
-        ...vehicle,
-        images: [{ id: "mock-img", imageUrl: MOCK_VEHICLE_IMAGE, isPrimary: true }]
-      }));
-    }
-    
-    return res;
   },
 
-  async getVehicleById(id: string) {
-    const vehicle = await axiosPublic.get<Vehicle, Vehicle>(`/vehicles/${id}`);
-    
-    // MOCK ẢNH: Ghi đè ảnh cho chi tiết xe trả về từ DB
-    return {
-      ...vehicle,
-      images: [{ id: "mock-img", imageUrl: MOCK_VEHICLE_IMAGE, isPrimary: true }]
-    };
+  // Lấy thông tin chi tiết của một chiếc xe
+  async getVehicleById(id: string): Promise<Vehicle> {
+    // Bỏ tham số vế sau, chỉ giữ lại <Vehicle>
+    return axiosPublic.get<Vehicle>(`/vehicles/${id}`);
   },
 
-  async getVehicleFilters(params?: VehicleQueryParams) {
-    const res = await axiosPublic.get<
-      PaginationResponse<Vehicle>,
-      PaginationResponse<Vehicle>
-    >("/vehicles/filter", {
+  // Lấy danh sách xe dựa theo bộ lọc chuyên sâu (Search, Filter, Sort...)
+  async getVehicleFilters(
+    params?: VehicleQueryParams,
+  ): Promise<PaginationResponse<Vehicle>> {
+    // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
+    return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles/filters", {
       params,
     });
-
-    // MOCK ẢNH: Ghi đè ảnh cho kết quả lọc trả về từ DB
-    if (res.data) {
-      res.data = res.data.map(vehicle => ({
-        ...vehicle,
-        images: [{ id: "mock-img", imageUrl: MOCK_VEHICLE_IMAGE, isPrimary: true }]
-      }));
-    }
-
-    return res;
   },
 };

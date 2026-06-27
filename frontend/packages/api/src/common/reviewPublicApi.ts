@@ -13,7 +13,6 @@ export const reviewPublicApi = {
     size: number;
   }) {
     const data = await axiosPublic.get<
-      PaginationResponse<Review>,
       PaginationResponse<Review>
     >(`/reviews/vehicles/${vehicleId}`, {
       params: {
@@ -35,7 +34,6 @@ export const reviewPublicApi = {
     size: number;
   }) {
     const data = await axiosPublic.get<
-      PaginationResponse<Review>,
       PaginationResponse<Review>
     >(`/reviews/branches/${branchId}`, {
       params: {
@@ -59,7 +57,6 @@ export const reviewPublicApi = {
     size: number;
   }) {
     const data = await axiosPublic.get<
-      PaginationResponse<PublicReview>,
       PaginationResponse<PublicReview>
     >("/reviews/public/filter", {
       params: {

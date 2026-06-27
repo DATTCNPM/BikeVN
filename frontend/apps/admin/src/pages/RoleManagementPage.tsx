@@ -42,8 +42,7 @@ export default function RoleManagementPage() {
       {
         accessorKey: "permissions",
         header: "Permissions",
-        cell: ({ row }) =>
-          row.original.permissions.join(", ") || "-",
+        cell: ({ row }) => row.original.permissions.join(", ") || "-",
       },
       {
         id: "actions",
@@ -68,8 +67,6 @@ export default function RoleManagementPage() {
       </div>
     );
   }
-
-  console.log(roles);
 
   return (
     <div>

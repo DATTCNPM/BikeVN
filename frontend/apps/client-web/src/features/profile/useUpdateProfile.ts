@@ -1,30 +1,22 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
 import { userClientApi } from "@repo/api";
-
-import type { UpdateProfilePayload } from "@repo/types";
-
 import { authKeys } from "../auth/authKeys";
+import type { User, UpdateProfilePayload } from "@repo/types";
 
-import type { User } from "@repo/types";
+interface UpdateProfileParams {
+  userId: string;
+  payload: UpdateProfilePayload;
+}
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      userId,
-      payload,
-    }: {
-      userId: string;
-      payload: UpdateProfilePayload;
-    }) => {
-      const response = await userClientApi.updateUser(userId, payload);
-
-      return response;
+    mutationFn: async ({ userId, payload }: UpdateProfileParams) => {
+      return await userClientApi.updateUser(userId, payload);
     },
-
     onSuccess: (updatedUser: User) => {
+      // Cập nhật trực tiếp dữ liệu profile trong cache mà không cần reload từ server
       queryClient.setQueryData(authKeys.profile(), updatedUser);
     },
   });

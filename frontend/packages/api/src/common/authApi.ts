@@ -17,21 +17,21 @@ export const authApi = {
   },
 
   async login(payload: LoginPayload): Promise<AuthenticationResponse> {
-    return axiosPublic.post<LoginPayload, AuthenticationResponse>(
+    return axiosPublic.post< AuthenticationResponse>(
       "/auth/login",
       payload,
     );
   },
 
   async register(payload: RegisterPayload): Promise<AuthenticationResponse> {
-    return axiosPublic.post<RegisterPayload, AuthenticationResponse>(
+    return axiosPublic.post< AuthenticationResponse>(
       "/users",
       payload,
     );
   },
 
   async introspect(token: string): Promise<IntrospectResponse> {
-    return axiosPublic.post<any, IntrospectResponse>("/auth/introspect", {
+    return axiosPublic.post< IntrospectResponse>("/auth/introspect", {
       token,
     });
   },

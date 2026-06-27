@@ -1,16 +1,14 @@
-// src/apis/branchApi.ts
 import type { Branch } from "@repo/types";
 import axiosPublic from "../axios/axiosPublic";
 
 export const branchPublicApi = {
-  async getBranches() {
-    const data = await axiosPublic.get<Branch[], Branch[]>("/branches");
-    return data;
+  // Lấy toàn bộ danh sách chi nhánh công khai
+  async getBranches(): Promise<Branch[]> {
+    return axiosPublic.get<Branch[]>("/branches");
   },
 
-  async getBranchById(id: string) {
-    const data = await axiosPublic.get<Branch, Branch>(`/branches/${id}`);
-
-    return data;
+  // Lấy thông tin chi tiết một chi nhánh qua ID
+  async getBranchById(id: string): Promise<Branch> {
+    return axiosPublic.get<Branch>(`/branches/${id}`);
   },
 };

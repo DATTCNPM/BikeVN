@@ -1,31 +1,49 @@
 import { createBrowserRouter } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { lazy, Suspense } from "react";
 
 import { useInitialServerCheck } from "@/features/auth/useInitialServerCheck";
 
 import MainLayout from "@/components/layouts/MainLayout";
 import AuthLayout from "@/components/layouts/AuthLayout";
-import Landing from "@/pages/LandingPage";
-import HomePage from "@/pages/HomePage";
-import VehicleDetail from "@/pages/VehicleDetailPage";
-import ChatPage from "@/pages/ChatPage";
-import Login from "@/pages/LoginPage";
-import Register from "@/pages/RegisterPage";
-import ProfileLayout from "@/components/layouts/ProfileLayout";
-import InfoSection from "@/features/profile/components/InfoSection";
-import SettingSection from "@/features/profile/components/SettingSection";
-import ChatLayout from "@/components/layouts/ChatLayout";
-import BookingResultPage from "@/pages/BookingResultPage";
-import MyBookingSection from "@/features/profile/components/MyBookingSection";
-import PaymentPage from "@/pages/PaymentPage";
-import NotificationPage from "@/pages/NotificationPage";
-import NotFoundPage from "@/pages/NotFoundPage";
-import ServerErrorPage from "@/pages/ServerErrorPage";
+const Landing = lazy(() => import("@/pages/LandingPage"));
+const HomePage = lazy(() => import("@/pages/HomePage"));
+const VehicleDetail = lazy(() => import("@/pages/VehicleDetailPage"));
+const ChatPage = lazy(() => import("@/pages/ChatPage"));
+const Login = lazy(() => import("@/pages/LoginPage"));
+const Register = lazy(() => import("@/pages/RegisterPage"));
+const ProfileLayout = lazy(() => import("@/components/layouts/ProfileLayout"));
+const InfoSection = lazy(
+  () => import("@/features/profile/components/InfoSection"),
+);
+const SettingSection = lazy(
+  () => import("@/features/profile/components/SettingSection"),
+);
+const ChatLayout = lazy(() => import("@/components/layouts/ChatLayout"));
+const BookingResultPage = lazy(() => import("@/pages/BookingResultPage"));
+const MyBookingSection = lazy(
+  () => import("@/features/profile/components/MyBookingSection"),
+);
+const PaymentPage = lazy(() => import("@/pages/PaymentPage"));
+const NotificationPage = lazy(() => import("@/pages/NotificationPage"));
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const ServerErrorPage = lazy(() => import("@/pages/ServerErrorPage"));
+const PaymentResultPage = lazy(() => import("@/pages/PaymentResultPage"));
 
 import { Outlet } from "react-router-dom";
 import { useAuthStore } from "@/features/auth/authStore";
-import PaymentResultPage from "@/pages/PaymentResultPage";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+
+// 🌀 Tạo một Loading Component dùng chung cho việc chuyển trang
+function PageLoader() {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center bg-background">
+      <Spinner className="size-8" />
+    </div>
+  );
+}
+
 function GlobalRootLayout() {
   const navigate = useNavigate();
 
@@ -39,7 +57,11 @@ function GlobalRootLayout() {
     }
   }, [isServerDown, navigate]);
 
-  return <Outlet />;
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Outlet />
+    </Suspense>
+  );
 }
 
 function ProtectedRoute() {
@@ -53,7 +75,11 @@ function ProtectedRoute() {
   }, [isLogin]);
 
   // đã đăng nhập -> render route con
-  return <Outlet />;
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Outlet />
+    </Suspense>
+  );
 }
 
 const router = createBrowserRouter([
@@ -109,7 +135,7 @@ const router = createBrowserRouter([
                 element: <PaymentPage />,
               },
               {
-                path: "payment-result/:paymentId",
+                path: "payment-result",
                 element: <PaymentResultPage />,
               },
               {

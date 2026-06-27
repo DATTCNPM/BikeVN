@@ -16,12 +16,7 @@ import {
 } from "@repo/hooks";
 import { vehicleStatusSchema, vehicleTypeSchema } from "@repo/schemas";
 import type { VehicleCardData, VehicleQueryParams } from "@repo/types";
-
-const PRICE_RANGES = [
-  { label: "Below 100k", value: "under-100", min: 0, max: 100000 },
-  { label: "100k - 200k", value: "100-200", min: 100000, max: 200000 },
-  { label: "Above 200k", value: "over-200", min: 200000, max: undefined },
-];
+import { PRICE_RANGES } from "@repo/constants";
 
 export default function ListVehicle() {
   const [search, setSearch] = useState("");
