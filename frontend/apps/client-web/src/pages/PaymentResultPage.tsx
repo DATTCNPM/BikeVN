@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom"; // 👈 Thay useParams bằng useSearchParams
 import {
   CheckCircle2,
   XCircle,
@@ -12,7 +12,6 @@ import { Card } from "@repo/ui/components/ui/card";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { usePayment } from "@/features/payments/queries";
 
-// 1. Di chuyển cấu hình trạng thái ra ngoài Component để tránh re-create khi render
 const PAYMENT_STATUS_CONFIG = {
   completed: {
     icon: <CheckCircle2 className="size-12 text-emerald-500" />,
@@ -47,15 +46,14 @@ const PAYMENT_STATUS_CONFIG = {
 type PaymentStatus = keyof typeof PAYMENT_STATUS_CONFIG;
 
 export default function PaymentResultPage() {
-  const { paymentId } = useParams<{ paymentId: string }>();
+  const [searchParams] = useSearchParams(); // 👈 Khởi tạo hook đọc Query Params
   const navigate = useNavigate();
 
-  const {
-    data: payment,
-    isLoading,
-    error,
-    refetch,
-  } = usePayment(paymentId ?? "");
+  // 1. Trích xuất mã giao dịch (vnp_TxnRef) gửi về từ VNPay URL
+  const paymentId = searchParams.get("vnp_TxnRef") || "";
+
+  // 2. Gọi query lấy thông tin kiểm tra từ backend dựa trên ID thực tế này
+  const { data: payment, isLoading, error, refetch } = usePayment(paymentId);
 
   // LOADING STATE
   if (isLoading) {
@@ -70,7 +68,7 @@ export default function PaymentResultPage() {
   }
 
   // ERROR OR NOT FOUND STATE
-  if (error || !payment) {
+  if (error || !payment || !paymentId) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-md rounded-[2rem] border-border p-8 text-center shadow-lg">
@@ -95,7 +93,6 @@ export default function PaymentResultPage() {
     );
   }
 
-  // Khớp trạng thái an toàn với Type Guard fallback
   const statusKey = (
     payment.status in PAYMENT_STATUS_CONFIG ? payment.status : "pending"
   ) as PaymentStatus;
