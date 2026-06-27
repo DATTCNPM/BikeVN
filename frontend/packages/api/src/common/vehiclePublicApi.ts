@@ -1,4 +1,4 @@
-import { vehicles } from "../data/VehicleData";
+import axiosPublic from "../axios/axiosPublic";
 import type {
   Vehicle,
   VehicleQueryParams,
@@ -6,40 +6,27 @@ import type {
 } from "@repo/types";
 
 export const vehiclePublicApi = {
-  async getVehicles(page: number, size: number): Promise<PaginationResponse<Vehicle>> {
-    // Mock pagination logic
-    const start = (page - 1) * size;
-    const end = start + size;
-    const paginatedData = vehicles.slice(start, end);
-
-    return {
-      data: paginatedData,
-      totalElements: vehicles.length,
-      currentPage: page,
-      totalPages: Math.ceil(vehicles.length / size),
-      pageSize: size,
-    };
+  // Lấy danh sách xe có phân trang thông thường
+  async getVehicles(
+    page: number,
+    size: number,
+  ): Promise<PaginationResponse<Vehicle>> {
+    return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles", {
+      params: { page, size },
+    });
   },
 
+  // Lấy thông tin chi tiết của một chiếc xe
   async getVehicleById(id: string): Promise<Vehicle> {
-    const vehicle = vehicles.find((v) => v.id === id);
-    if (!vehicle) throw new Error("Vehicle not found in mock data");
-    return vehicle;
+    return axiosPublic.get<Vehicle>(`/vehicles/${id}`);
   },
 
-  async getVehicleFilters(params?: VehicleQueryParams): Promise<PaginationResponse<Vehicle>> {
-    // Basic mock filter logic (search only for demo)
-    let filtered = [...vehicles];
-    if (params?.search) {
-      filtered = filtered.filter(v => v.name.toLowerCase().includes(params.search!.toLowerCase()));
-    }
-
-    return {
-      data: filtered,
-      totalElements: filtered.length,
-      currentPage: 1,
-      totalPages: 1,
-      pageSize: filtered.length,
-    };
+  // Lấy danh sách xe dựa theo bộ lọc chuyên sâu (Search, Filter, Sort...)
+  async getVehicleFilters(
+    params?: VehicleQueryParams,
+  ): Promise<PaginationResponse<Vehicle>> {
+    return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles/filters", {
+      params, // Axios sẽ tự động loại bỏ các key có giá trị undefined
+    });
   },
 };

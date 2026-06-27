@@ -12,30 +12,64 @@ import { Card } from "@repo/ui/components/ui/card";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { usePayment } from "@/features/payments/queries";
 
+// 1. Di chuyển cấu hình trạng thái ra ngoài Component để tránh re-create khi render
+const PAYMENT_STATUS_CONFIG = {
+  completed: {
+    icon: <CheckCircle2 className="size-12 text-emerald-500" />,
+    bg: "bg-emerald-50 dark:bg-emerald-500/10",
+    title: "Payment Successful!",
+    description:
+      "Your payment has been successfully processed. Your ride is now ready.",
+  },
+  failed: {
+    icon: <XCircle className="size-12 text-destructive" />,
+    bg: "bg-destructive/10",
+    title: "Payment Failed",
+    description:
+      "The transaction was canceled or declined by the bank. Please try again.",
+  },
+  pending: {
+    icon: <RefreshCw className="size-12 text-amber-500 animate-spin" />,
+    bg: "bg-amber-50 dark:bg-amber-500/10",
+    title: "Payment Pending",
+    description:
+      "Response from the gateway might be delayed. Please click refresh to update status.",
+  },
+  refunded: {
+    icon: <AlertTriangle className="size-12 text-blue-500" />,
+    bg: "bg-blue-50 dark:bg-blue-500/10",
+    title: "Payment Refunded",
+    description:
+      "This transaction has been refunded to your account by the administrator.",
+  },
+} as const;
+
+type PaymentStatus = keyof typeof PAYMENT_STATUS_CONFIG;
+
 export default function PaymentResultPage() {
   const { paymentId } = useParams<{ paymentId: string }>();
   const navigate = useNavigate();
 
-  // Gọi API lấy trạng thái thanh toán mới nhất từ Backend (đã được VNPay IPN cập nhật)
   const {
     data: payment,
     isLoading,
     error,
     refetch,
-  } = usePayment(paymentId || "");
+  } = usePayment(paymentId ?? "");
 
+  // LOADING STATE
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
         <Spinner />
-        <p className="text-muted-foreground animate-pulse">
-          Đang xác thực giao dịch với ngân hàng...
+        <p className="text-muted-foreground animate-pulse font-medium">
+          Verifying transaction with the bank...
         </p>
       </div>
     );
   }
 
-  // Trường hợp không tìm thấy đơn thanh toán hoặc lỗi hệ thống
+  // ERROR OR NOT FOUND STATE
   if (error || !payment) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -44,61 +78,33 @@ export default function PaymentResultPage() {
             <AlertTriangle className="size-8" />
           </div>
           <h1 className="mt-6 text-2xl font-bold tracking-tight">
-            Không tìm thấy giao dịch
+            Transaction Not Found
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Đã có lỗi xảy ra hoặc mã hóa đơn thanh toán không tồn tại trên hệ
-            thống.
+            An error occurred or the payment reference does not exist in our
+            system.
           </p>
           <Button
             onClick={() => navigate("/")}
             className="mt-8 w-full rounded-2xl h-12 font-semibold"
           >
-            Quay lại trang chủ
+            Back to Home
           </Button>
         </Card>
       </main>
     );
   }
 
-  // Cấu hình giao diện động dựa theo trạng thái đồng bộ từ Backend Enum
-  const statusConfig = {
-    completed: {
-      icon: <CheckCircle2 className="size-12 text-emerald-500" />,
-      bg: "bg-emerald-50",
-      title: "Thanh toán thành công!",
-      description:
-        "Hệ thống đã ghi nhận khoản thanh toán của bạn. Chuyến đi của bạn đã được sẵn sàng kích hoạt.",
-    },
-    failed: {
-      icon: <XCircle className="size-12 text-destructive" />,
-      bg: "bg-destructive/10",
-      title: "Thanh toán thất bại",
-      description:
-        "Giao dịch bị hủy bỏ hoặc không thành công từ phía ngân hàng. Vui lòng thử lại.",
-    },
-    pending: {
-      icon: <RefreshCw className="size-12 text-amber-500 animate-spin" />,
-      bg: "bg-amber-50",
-      title: "Đang chờ xử lý",
-      description:
-        "Phản hồi từ cổng thanh toán có thể bị chậm quá 5 phút. Vui lòng nhấn cập nhật để kiểm tra.",
-    },
-    refunded: {
-      icon: <AlertTriangle className="size-12 text-blue-500" />,
-      bg: "bg-blue-50",
-      title: "Đã hoàn tiền",
-      description:
-        "Hóa đơn này đã được Admin thực hiện hoàn trả tiền vào tài khoản của bạn.",
-    },
-  };
-
-  const currentStatus = statusConfig[payment.status] || statusConfig.pending;
+  // Khớp trạng thái an toàn với Type Guard fallback
+  const statusKey = (
+    payment.status in PAYMENT_STATUS_CONFIG ? payment.status : "pending"
+  ) as PaymentStatus;
+  const currentStatus = PAYMENT_STATUS_CONFIG[statusKey];
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <Card className="w-full max-w-lg rounded-[2.5rem] border-border p-8 shadow-sm bg-card">
-        {/* Khu vực Trạng thái trạng thái trực quan */}
+        {/* Status Header */}
         <div className="text-center">
           <div
             className={`mx-auto flex size-24 items-center justify-center rounded-3xl ${currentStatus.bg}`}
@@ -113,48 +119,49 @@ export default function PaymentResultPage() {
           </p>
         </div>
 
-        {/* Thẻ thông tin chi tiết hóa đơn */}
+        {/* Invoice Details */}
         <div className="mt-8 rounded-2xl bg-muted/50 p-5 space-y-4 text-sm">
           <div className="flex justify-between items-center border-b border-border border-dashed pb-3">
-            <span className="text-muted-foreground">Mã thanh toán (ID)</span>
+            <span className="text-muted-foreground">Payment ID</span>
             <span className="font-mono font-medium text-foreground">
               {payment.id}
             </span>
           </div>
+
           <div className="flex justify-between items-center border-b border-border border-dashed pb-3">
-            <span className="text-muted-foreground">
-              Mã giao dịch ngân hàng
-            </span>
+            <span className="text-muted-foreground">Transaction Code</span>
             <span className="font-mono font-medium text-foreground">
               {payment.transactionCode || "N/A"}
             </span>
           </div>
+
           <div className="flex justify-between items-center border-b border-border border-dashed pb-3">
-            <span className="text-muted-foreground">Phương thức</span>
+            <span className="text-muted-foreground">Method</span>
             <span className="font-semibold uppercase text-primary">
               {payment.paymentMethod}
             </span>
           </div>
+
           <div className="flex justify-between items-center pt-1">
             <span className="text-muted-foreground text-base">
-              Tổng số tiền
+              Total Amount
             </span>
             <span className="text-xl font-black text-primary">
-              {payment.amount.toLocaleString("vi-VN")}đ
+              {(payment.amount ?? 0).toLocaleString("vi-VN")}đ
             </span>
           </div>
         </div>
 
-        {/* Khối điều hướng Actions */}
+        {/* Action Buttons */}
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          {payment.status === "pending" ? (
+          {statusKey === "pending" ? (
             <Button
-              onClick={() => refetch()}
+              onClick={() => void refetch()}
               variant="outline"
-              className="w-full rounded-2xl h-12 font-bold group border-amber-200 hover:bg-amber-50"
+              className="w-full rounded-2xl h-12 font-bold group border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-500/10"
             >
               <RefreshCw className="mr-2 size-4 group-hover:animate-spin" />
-              Cập nhật lại
+              Refresh Status
             </Button>
           ) : (
             <Button
@@ -163,7 +170,7 @@ export default function PaymentResultPage() {
               className="w-full rounded-2xl h-12 font-bold text-muted-foreground"
             >
               <Home className="mr-2 size-4" />
-              Về trang chủ
+              Back to Home
             </Button>
           )}
 
@@ -171,7 +178,7 @@ export default function PaymentResultPage() {
             onClick={() => navigate(`/bookings/${payment.bookingId}`)}
             className="w-full rounded-2xl h-12 font-bold shadow-sm"
           >
-            Chi tiết đơn thuê
+            Booking Details
             <ArrowRight className="ml-2 size-4" />
           </Button>
         </div>

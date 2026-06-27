@@ -28,6 +28,9 @@ import {
   useVehicleFilters,
 } from "@repo/hooks";
 
+// 📦 Import hằng số khoảng giá dùng chung cho toàn hệ thống
+import { PRICE_RANGES } from "@repo/constants";
+
 const vehicleStatusMap = {
   available:
     "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
@@ -47,24 +50,21 @@ export default function VehicleManagementPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  // Quản lý trạng thái Dialogs
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
 
-  // Gom toàn bộ mảng state filter đơn lẻ thành 1 Object duy nhất dùng chung
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
     {},
   );
 
-  // Kéo dữ liệu cấu hình các bộ lọc từ API hooks
   const { data: brands } = useVehicleBrands();
   const { data: models } = useVehicleModels();
   const { data: branches } = useBranches();
   const { data: vehicles, isLoading } = useVehicles(page, 10);
 
-  // 1. Tạo cấu hình metadata truyền vào UniversalFilterSheet
+  // 1. Tích hợp Price Range vào cấu hình metadata gửi sang Filter Sheet
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     return [
       {
@@ -103,10 +103,22 @@ export default function VehicleManagementPage() {
           { label: "Fuel Bike", value: "fuel" },
         ],
       },
+      {
+        key: "priceRange",
+        title: "Price Range",
+        options: PRICE_RANGES.map((p) => ({ label: p.label, value: p.value })), // Thêm dòng này
+      },
     ];
   }, [brands, models, branches]);
 
-  // 2. Chuyển đổi Object Filter UI thành query params gửi lên Server API
+  // 2. Tìm min/max price dựa trên option đang được chọn trong UI
+  const activePriceRange = useMemo(() => {
+    return PRICE_RANGES.find(
+      (p) => p.value === selectedFilters["priceRange"]?.value,
+    );
+  }, [selectedFilters]);
+
+  // 3. Map minPrice và maxPrice từ UI vào object Query Params gửi lên API
   const apiFilters: VehicleQueryParams = useMemo(
     () => ({
       search: search.trim() || undefined,
@@ -115,10 +127,12 @@ export default function VehicleManagementPage() {
       currentBranchName: selectedFilters["branch"]?.label,
       status: selectedFilters["status"]?.value,
       vehicleType: selectedFilters["type"]?.value,
+      minPrice: activePriceRange?.min, // Thêm dòng này
+      maxPrice: activePriceRange?.max, // Thêm dòng này
       page,
       size: 10,
     }),
-    [search, selectedFilters, page],
+    [search, selectedFilters, activePriceRange, page],
   );
 
   const hasFilter = Boolean(
@@ -242,8 +256,6 @@ export default function VehicleManagementPage() {
 
   return (
     <div className="space-y-4">
-      {/* Thanh Toolbar tích hợp Tìm kiếm & Nút mở Bộ lọc đa năng */}
-
       <DataTableToolbar
         showSearch={true}
         showCreate={true}
@@ -280,7 +292,6 @@ export default function VehicleManagementPage() {
         onPageChange={setPage}
       />
 
-      {/* Các Dialogs giữ nguyên */}
       <VehicleCreate
         open={openCreateDialog}
         onOpenChange={setOpenCreateDialog}

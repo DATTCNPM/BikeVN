@@ -1,126 +1,69 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Wrench, Home } from "lucide-react";
 
 import { Button } from "@repo/ui/components/ui/button";
-
 import ErrorPageLayout from "@/components/layouts/ErrorPageLayout";
 import MovingEmoji from "@/components/common/MovingEmoji";
 
 import { useServerRecovery } from "@/features/auth/useServerRecovery";
 import { useAuthStore } from "@/features/auth/authStore";
+import { useCanvasBackground } from "@/components/hooks/useCanvasBackground";
 
 const COUNTDOWN_TIME = 15;
 
 export default function ServerErrorPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
+  const [timeLeft, setTimeLeft] = useState(COUNTDOWN_TIME);
+
   useServerRecovery();
   const isServerDown = useAuthStore((state) => state.isServerDown);
-  const [timeLeft, setTimeLeft] = useState(COUNTDOWN_TIME);
 
   useEffect(() => {
     if (!isServerDown) {
       navigate("/");
     }
   }, [isServerDown, navigate]);
-  /**
-   * Canvas background
-   */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-
-    const particles = Array.from({ length: 40 }).map(() => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      radius: Math.random() * 1.5 + 0.5,
-      speed: Math.random() * 0.2 + 0.05,
-      opacity: Math.random() * 0.4,
-    }));
-
-    let animationFrame: number;
-
-    const isDarkMode = () =>
-      document.documentElement.classList.contains("dark");
-
-    const render = () => {
-      const dark = isDarkMode();
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+  // Cấu hình Canvas riêng cho trang 500 thông qua Hook tái sử dụng
+  useCanvasBackground(canvasRef, {
+    particleCount: 40,
+    baseRadius: 1.5,
+    speedRange: [0.05, 0.25],
+    direction: "down", // Hạt rơi xuống biểu thị hệ thống đang sập
+    getColors: (isDark, ctx, canvas) => {
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-
-      if (dark) {
+      if (isDark) {
         gradient.addColorStop(0, "#0c0a09");
         gradient.addColorStop(1, "#1c1917");
       } else {
         gradient.addColorStop(0, "#fffbeb");
         gradient.addColorStop(1, "#fef3c7");
       }
+      return {
+        background: gradient,
+        particle: isDark
+          ? "rgba(239,68,68,OPACITY)"
+          : "rgba(220,38,38,OPACITY)",
+      };
+    },
+  });
 
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((particle) => {
-        particle.y += particle.speed;
-
-        if (particle.y > canvas.height) {
-          particle.y = 0;
-        }
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-
-        ctx.fillStyle = dark
-          ? `rgba(239,68,68,${particle.opacity})`
-          : `rgba(220,38,38,${particle.opacity})`;
-
-        ctx.fill();
-      });
-
-      animationFrame = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      cancelAnimationFrame(animationFrame);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  /**
-   * Countdown UI
-   */
+  // Đếm ngược UI
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          return COUNTDOWN_TIME;
-        }
-
-        return prev - 1;
-      });
+      setTimeLeft((prev) => (prev <= 1 ? COUNTDOWN_TIME : prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
-  const progressPercentage =
-    ((COUNTDOWN_TIME - timeLeft) / COUNTDOWN_TIME) * 100;
+  // Tính toán % tiến trình tải mượt mà, tối ưu hóa bằng useMemo
+  const progressPercentage = useMemo(() => {
+    return ((COUNTDOWN_TIME - timeLeft) / COUNTDOWN_TIME) * 100;
+  }, [timeLeft]);
 
   return (
     <ErrorPageLayout
@@ -140,7 +83,6 @@ export default function ServerErrorPage() {
           >
             <div className="mb-2 flex justify-between text-xs text-muted-foreground">
               <span>Waiting for system recovery...</span>
-
               <span className="font-mono font-bold text-destructive">
                 {timeLeft} Seconds
               </span>
@@ -149,9 +91,7 @@ export default function ServerErrorPage() {
             <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
               <div
                 className="h-full bg-gradient-to-r from-orange-500 to-destructive transition-all duration-1000 ease-linear"
-                style={{
-                  width: `${progressPercentage}%`,
-                }}
+                style={{ width: `${progressPercentage}%` }}
               />
             </div>
           </motion.div>

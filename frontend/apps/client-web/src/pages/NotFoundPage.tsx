@@ -1,141 +1,66 @@
-import { useEffect, useRef } from "react";
-
+import { useRef } from "react";
 import { motion } from "framer-motion";
-
 import { Compass } from "lucide-react";
 
 import ErrorPageLayout from "@/components/layouts/ErrorPageLayout";
 import MovingEmoji from "@/components/common/MovingEmoji";
+import { useCanvasBackground } from "@/components/hooks/useCanvasBackground";
 
 export default function NotFoundPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-
-      canvas.height = window.innerHeight;
-    };
-
-    resize();
-
-    window.addEventListener("resize", resize);
-
-    const particles = Array.from({
-      length: 80,
-    }).map(() => ({
-      x: Math.random() * canvas.width,
-
-      y: Math.random() * canvas.height,
-
-      radius: Math.random() * 2 + 0.5,
-
-      speed: Math.random() * 0.4 + 0.1,
-
-      opacity: Math.random() * 0.5,
-    }));
-
-    let animationFrame: number;
-
-    const isDarkMode = () =>
-      document.documentElement.classList.contains("dark");
-
-    const render = () => {
-      const dark = isDarkMode();
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Background
+  // Áp dụng Hook rút gọn logic Canvas
+  useCanvasBackground(canvasRef, {
+    particleCount: 80,
+    baseRadius: 2,
+    speedRange: [0.1, 0.5],
+    direction: "up",
+    getColors: (isDark, ctx, canvas) => {
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-
-      if (dark) {
+      if (isDark) {
         gradient.addColorStop(0, "#09090b");
-
         gradient.addColorStop(1, "#18181b");
       } else {
         gradient.addColorStop(0, "#fafaf9");
-
         gradient.addColorStop(1, "#f5f5f4");
       }
-
-      ctx.fillStyle = gradient;
-
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Particles
-      particles.forEach((particle) => {
-        particle.y -= particle.speed;
-
-        if (particle.y < 0) {
-          particle.y = canvas.height;
-        }
-
-        ctx.beginPath();
-
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-
-        ctx.fillStyle = dark
-          ? `rgba(251,191,36,${particle.opacity})`
-          : `rgba(217,119,6,${particle.opacity})`;
-
-        ctx.fill();
-      });
-
-      // Road line
+      return {
+        background: gradient,
+        // Dùng từ khóa OPACITY để hook tự động điền thông số opacity ngẫu nhiên của hạt
+        particle: isDark
+          ? "rgba(251,191,36,OPACITY)"
+          : "rgba(217,119,6,OPACITY)",
+      };
+    },
+    drawExtra: (ctx, canvas, isDark) => {
+      // Road line riêng của trang 404
       ctx.beginPath();
-
       ctx.moveTo(0, canvas.height * 0.8);
-
       ctx.quadraticCurveTo(
         canvas.width * 0.2,
         canvas.height * 0.72,
-
         canvas.width * 0.45,
         canvas.height * 0.82,
       );
-
       ctx.quadraticCurveTo(
         canvas.width * 0.75,
         canvas.height * 0.92,
-
         canvas.width,
         canvas.height * 0.8,
       );
-
-      ctx.strokeStyle = dark ? "rgba(251,191,36,0.15)" : "rgba(217,119,6,0.12)";
-
+      ctx.strokeStyle = isDark
+        ? "rgba(251,191,36,0.15)"
+        : "rgba(217,119,6,0.12)";
       ctx.lineWidth = 4;
-
       ctx.stroke();
 
       // Glow circle
       ctx.beginPath();
-
       ctx.arc(canvas.width * 0.5, canvas.height * 0.3, 120, 0, Math.PI * 2);
-
-      ctx.fillStyle = dark ? "rgba(251,191,36,0.05)" : "rgba(217,119,6,0.04)";
-
+      ctx.fillStyle = isDark ? "rgba(251,191,36,0.05)" : "rgba(217,119,6,0.04)";
       ctx.fill();
-
-      animationFrame = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      cancelAnimationFrame(animationFrame);
-
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
+    },
+  });
 
   return (
     <ErrorPageLayout

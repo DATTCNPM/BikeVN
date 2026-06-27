@@ -1,14 +1,14 @@
-import { branches } from "../data/BranchData";
+import axiosPublic from "../axios/axiosPublic";
 import type { Branch } from "@repo/types";
 
 export const branchPublicApi = {
+  // Lấy toàn bộ danh sách chi nhánh công khai
   async getBranches(): Promise<Branch[]> {
-    return branches;
+    return axiosPublic.get<Branch[]>("/branches");
   },
 
+  // Lấy thông tin chi tiết một chi nhánh qua ID
   async getBranchById(id: string): Promise<Branch> {
-    const branch = branches.find((b) => b.id === id);
-    if (!branch) throw new Error("Branch not found in mock data");
-    return branch;
+    return axiosPublic.get<Branch>(`/branches/${id}`);
   },
 };
