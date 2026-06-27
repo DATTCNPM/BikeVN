@@ -39,7 +39,6 @@ public class SecurityConfig {
             "/payments/vnpay-return",
             "/payments/vnpay-ipn",
             "/reviews", "/reviews/**",
-            "/ws", "/ws/**"
     };
 
     @Autowired
@@ -47,8 +46,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-        
+
         httpSecurity.authorizeHttpRequests(req -> req
+                .requestMatchers("/ws", "/ws/**").permitAll() // Phải mở cái này thì mới vào được bước Handshake!
                 .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                 .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
 
@@ -77,6 +77,7 @@ public class SecurityConfig {
         corsConfiguration.addAllowedOrigin("http://localhost:5173");//user
         corsConfiguration.addAllowedOrigin("http://localhost:5174");//admin
         corsConfiguration.addAllowedOrigin("http://localhost:5175");//employee
+        corsConfiguration.addAllowedOrigin("http://localhost:63342");//employee
         //DEPLOY
         corsConfiguration.addAllowedOrigin("https://bike-vn.vercel.app");//user
         corsConfiguration.addAllowedOrigin("https://bike-vn-admin.vercel.app");//admin
