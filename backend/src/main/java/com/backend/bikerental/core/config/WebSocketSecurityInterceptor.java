@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.stereotype.Component;
+import com.backend.bikerental.module.chat.ChatMessageService;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
 public class WebSocketSecurityInterceptor implements ChannelInterceptor {
     CustomJWTDecoder customJWTDecoder;
     JwtAuthenticationConverter jwtAuthenticationConverter;
+    ChatMessageService chatMessageService;
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
@@ -59,6 +61,28 @@ public class WebSocketSecurityInterceptor implements ChannelInterceptor {
             } catch (JwtException e) {
                 log.error("WebSocket Authentication Failed: {}", e.getMessage());
                 throw new MessageDeliveryException("UNAUTHORIZED");
+            }
+        }
+
+        // 2. Kiểm tra quyền SUBSCRIBE vào cuộc hội thoại
+        if (accessor != null && StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+            String destination = accessor.getDestination();
+            if (destination != null && destination.startsWith("/topic/conversations/")) {
+                String conversationId = destination.substring("/topic/conversations/".length());
+
+                java.security.Principal principal = accessor.getUser();
+                if (principal == null) {
+                    log.error("WebSocket Subscription Failed: User not authenticated");
+                    throw new MessageDeliveryException("UNAUTHORIZED");
+                }
+
+                String email = principal.getName();
+                boolean hasAccess = chatMessageService.checkConversationAccess(email, conversationId);
+                if (!hasAccess) {
+                    log.error("WebSocket Subscription Denied: User {} has no access to conversation {}", email, conversationId);
+                    throw new MessageDeliveryException("ACCESS_DENIED");
+                }
+                log.info("WebSocket Subscription Allowed for user: {} to conversation: {}", email, conversationId);
             }
         }
         return message;
