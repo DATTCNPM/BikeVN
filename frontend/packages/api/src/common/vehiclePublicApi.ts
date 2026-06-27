@@ -1,45 +1,59 @@
-import { vehicles } from "../data/VehicleData";
+import axiosPublic from "../axios/axiosPublic";
 import type {
   Vehicle,
   VehicleQueryParams,
   PaginationResponse,
 } from "@repo/types";
 
-export const vehiclePublicApi = {
-  async getVehicles(page: number, size: number): Promise<PaginationResponse<Vehicle>> {
-    // Mock pagination logic
-    const start = (page - 1) * size;
-    const end = start + size;
-    const paginatedData = vehicles.slice(start, end);
+// URL ảnh mock chất lượng cao để web trông chuyên nghiệp hơn khi chưa có ảnh thật
+const MOCK_VEHICLE_IMAGE = "https://images.unsplash.com/photo-1558981403-c5f91ebce068?q=80&w=1000&auto=format&fit=crop";
 
+export const vehiclePublicApi = {
+  async getVehicles(page: number, size: number) {
+    const res = await axiosPublic.get<
+      PaginationResponse<Vehicle>,
+      PaginationResponse<Vehicle>
+    >("/vehicles", {
+      params: { page, size },
+    });
+
+    // MOCK ẢNH: Ghi đè ảnh cho toàn bộ danh sách xe trả về từ DB
+    if (res.data) {
+      res.data = res.data.map(vehicle => ({
+        ...vehicle,
+        images: [{ id: "mock-img", imageUrl: MOCK_VEHICLE_IMAGE, isPrimary: true }]
+      }));
+    }
+    
+    return res;
+  },
+
+  async getVehicleById(id: string) {
+    const vehicle = await axiosPublic.get<Vehicle, Vehicle>(`/vehicles/${id}`);
+    
+    // MOCK ẢNH: Ghi đè ảnh cho chi tiết xe trả về từ DB
     return {
-      data: paginatedData,
-      totalElements: vehicles.length,
-      currentPage: page,
-      totalPages: Math.ceil(vehicles.length / size),
-      pageSize: size,
+      ...vehicle,
+      images: [{ id: "mock-img", imageUrl: MOCK_VEHICLE_IMAGE, isPrimary: true }]
     };
   },
 
-  async getVehicleById(id: string): Promise<Vehicle> {
-    const vehicle = vehicles.find((v) => v.id === id);
-    if (!vehicle) throw new Error("Vehicle not found in mock data");
-    return vehicle;
-  },
+  async getVehicleFilters(params?: VehicleQueryParams) {
+    const res = await axiosPublic.get<
+      PaginationResponse<Vehicle>,
+      PaginationResponse<Vehicle>
+    >("/vehicles/filter", {
+      params,
+    });
 
-  async getVehicleFilters(params?: VehicleQueryParams): Promise<PaginationResponse<Vehicle>> {
-    // Basic mock filter logic (search only for demo)
-    let filtered = [...vehicles];
-    if (params?.search) {
-      filtered = filtered.filter(v => v.name.toLowerCase().includes(params.search!.toLowerCase()));
+    // MOCK ẢNH: Ghi đè ảnh cho kết quả lọc trả về từ DB
+    if (res.data) {
+      res.data = res.data.map(vehicle => ({
+        ...vehicle,
+        images: [{ id: "mock-img", imageUrl: MOCK_VEHICLE_IMAGE, isPrimary: true }]
+      }));
     }
 
-    return {
-      data: filtered,
-      totalElements: filtered.length,
-      currentPage: 1,
-      totalPages: 1,
-      pageSize: filtered.length,
-    };
+    return res;
   },
 };
