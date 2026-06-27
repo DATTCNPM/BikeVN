@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConversationResponse {
     String id;
+    String title;
+    String branchId;
     String lastMessageContent;
     LocalDateTime lastMessageTime;
 }

@@ -1,5 +1,6 @@
 package com.backend.bikerental.module.chat;
 
+import com.backend.bikerental.module.branch.Branch;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,10 +23,14 @@ public class Conversation {
     @Column(length = 36, nullable = false, updatable = false)
     String id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    Branch branch;
+
     @CreationTimestamp
     @Column(updatable = false)
     LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<ConversationMember> members;
 }
