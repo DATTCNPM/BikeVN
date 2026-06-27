@@ -4,7 +4,7 @@ import { Compass } from "lucide-react";
 
 import ErrorPageLayout from "@/components/layouts/ErrorPageLayout";
 import MovingEmoji from "@/components/common/MovingEmoji";
-import { useCanvasBackground } from "@/components/hooks/useCanvasBackground";
+import { useCanvasBackground } from "@/hooks/useCanvasBackground";
 
 export default function NotFoundPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

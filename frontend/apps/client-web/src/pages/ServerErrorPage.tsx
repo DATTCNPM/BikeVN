@@ -9,7 +9,7 @@ import MovingEmoji from "@/components/common/MovingEmoji";
 
 import { useServerRecovery } from "@/features/auth/useServerRecovery";
 import { useAuthStore } from "@/features/auth/authStore";
-import { useCanvasBackground } from "@/components/hooks/useCanvasBackground";
+import { useCanvasBackground } from "@/hooks/useCanvasBackground";
 
 const COUNTDOWN_TIME = 15;
 
