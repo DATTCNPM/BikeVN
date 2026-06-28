@@ -14,6 +14,5 @@ public class PaymentCreationRequest {
     String bookingId;
     BigDecimal amount;
     String paymentMethod;
-    String transactionCode;
     String idempotencyKey;
 }

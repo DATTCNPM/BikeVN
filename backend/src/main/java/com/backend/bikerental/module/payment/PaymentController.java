@@ -39,7 +39,10 @@ public class PaymentController {
     }
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     @GetMapping("/{paymentId}/vnpay-url")
-    public ApiResponse<String> getVNPayUrl(@PathVariable String paymentId, HttpServletRequest request) {
+    public ApiResponse<String> getVNPayUrl(
+            @PathVariable String paymentId,
+            @RequestParam(required = false) String returnUrl,
+            HttpServletRequest request) {
         PaymentResponse payment = paymentService.getPayment(paymentId);
         String ipAddress = VNPayUtil.getIpAddress(request);
 
@@ -49,7 +52,7 @@ public class PaymentController {
 
         // Convert money from Double/BigDecimal to long type
         long amount = (long) payment.getAmount().doubleValue();
-        String paymentUrl = vnPayService.createPaymentUrl(paymentId, amount, ipAddress);
+        String paymentUrl = vnPayService.createPaymentUrl(paymentId, amount, ipAddress, returnUrl);
 
         return ApiResponse.<String>builder()
                 .result(paymentUrl)
@@ -81,6 +84,19 @@ public class PaymentController {
         String responseCode = fields.get("vnp_ResponseCode");
         // The response code "00" represents a completely successful transaction.
         if ("00".equals(responseCode)) {
+            try {
+                String paymentId = fields.get("vnp_TxnRef");
+                String transactionCode = fields.get("vnp_TransactionNo");
+                long vnpAmount = Long.parseLong(fields.get("vnp_Amount")) / 100;
+                paymentService.processIpnPayment(paymentId, vnpAmount, responseCode, transactionCode);
+            } catch (AppException e) {
+                if (e.getErrorCode() != ErrorCode.PAYMENT_ALREADY_COMPLETED) {
+                    throw e;
+                }
+            } catch (Exception e) {
+                // Ignore other errors to ensure client still gets redirection response
+            }
+
             return ApiResponse.<String>builder()
                     .message("Order payment via VNPay successful")
                     .result("SUCCESS")
@@ -176,6 +192,7 @@ public class PaymentController {
             @RequestParam(required = false) String branchId,
             @RequestParam(required = false) PaymentStatus status,
             @RequestParam(required = false) PaymentType type,
+            @RequestParam(required = false) String notes,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(defaultValue = "1") int page,
@@ -192,7 +209,7 @@ public class PaymentController {
 
         return ApiResponse.<PageResponse<PaymentResponse>>builder()
                 .result(paymentService.filterPayments(
-                        bookingId, transactionCode, branchId, status, type, fromDate, toDate, page, size
+                        bookingId, transactionCode, branchId, status, type, notes, fromDate, toDate, page, size
                 ))
                 .build();
     }
