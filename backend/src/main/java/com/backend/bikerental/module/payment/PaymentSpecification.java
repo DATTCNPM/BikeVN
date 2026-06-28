@@ -19,6 +19,7 @@ public class PaymentSpecification {
             String branchId,
             PaymentStatus status,
             PaymentType type,
+            String notes,
             LocalDate fromDate,
             LocalDate toDate
     ) {
@@ -43,6 +44,12 @@ public class PaymentSpecification {
 
             if (type != null) {
                 predicates.add(criteriaBuilder.equal(root.get("type"), type));
+            }
+
+            if(notes != null && !notes.isBlank())
+            {
+                String searchPattern = "%" + notes + "%";
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("notes")), searchPattern));
             }
 
             if (fromDate != null) {
