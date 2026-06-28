@@ -54,9 +54,6 @@ public class PaymentService {
     BranchSecurityUtil branchSecurityUtil;
     UserRepository userRepository;
     VNPayService vnPayService;
-    static final String BANK_NAME = "MB BANK";
-    static final String BANK_ACCOUNT = "1223445";
-    static final String ACCOUNT_NAME = "Tran Hoang Phuong";
     static final int EXPIRE_MINUTES = 20;
     @Transactional
     public PaymentResponse createPayment(PaymentCreationRequest request) {
@@ -97,9 +94,6 @@ public class PaymentService {
         payment.setType(PaymentType.rental);
         payment.setCreatedAt(now);
         payment.setUpdatedAt(now);
-
-        System.out.println(payment.getType());
-        System.out.println(PaymentType.rental);
 
         paymentRepository.save(payment);
         System.out.println("DB TYPE = " + payment.getType());
@@ -174,6 +168,7 @@ public class PaymentService {
         payment.setTransactionCode(transactionCode);
         payment.setPaidAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
+
         if(PaymentType.rental.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.approved);
@@ -215,18 +210,17 @@ public class PaymentService {
 
         if ("00".equals(responseCode)) {
 
-            if (booking.getStatus() == BookingStatus.cancelled) {
-                payment.setStatus(PaymentStatus.completed);
+            if (booking.getStatus() == BookingStatus.cancelled || booking.getStatus() == BookingStatus.rejected) {
                 payment.setTransactionCode(transactionCode);
                 payment.setPaidAt(LocalDateTime.now());
-                payment.setNotes("NEEDS_REFUND");
-                paymentRepository.save(payment);
+                payment.setStatus(PaymentStatus.completed);
 
+                handleRefundLogic(booking, payment);
                 return;
             }
-
             confirmPayment(paymentId, transactionCode);
-        } else {
+        }
+        else {
             payment.setStatus(PaymentStatus.failed);
             payment.setUpdatedAt(LocalDateTime.now());
             paymentRepository.save(payment);
@@ -393,11 +387,14 @@ public class PaymentService {
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserId = authentication.getName();
+        String currentEmail = authentication.getName();
 
         boolean isStaff = authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_admin") || a.getAuthority().equals("ROLE_employee"));
-        boolean isOwner = booking.getUserId().equals(currentUserId);
+
+        User user = userRepository.findById(booking.getUserId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        boolean isOwner = user.getEmail().equals(currentEmail);
 
         if (!isStaff && !isOwner) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
@@ -405,6 +402,10 @@ public class PaymentService {
 
         if(payment.getStatus() == PaymentStatus.pending) {
             payment.setStatus(PaymentStatus.failed);
+        }
+        else if (payment.getStatus() == PaymentStatus.completed)
+        {
+            handleRefundLogic(booking, payment);
         }
 
         payment.setUpdatedAt(LocalDateTime.now());
@@ -420,13 +421,6 @@ public class PaymentService {
 
     private PaymentResponse buildResponse(Payment payment, Booking booking) {
 
-        String content = "BOOKING " + booking.getId();
-
-        String qrContent = "BANK:" + BANK_NAME
-                + "|ACC:" + BANK_ACCOUNT
-                + "|AMOUNT:" + payment.getAmount()
-                + "|INFO:" + content;
-
         return PaymentResponse.builder()
                 .id(payment.getId())
                 .bookingId(booking.getId())
@@ -435,12 +429,6 @@ public class PaymentService {
                 .type(payment.getType().name())
                 .paymentMethod(payment.getPaymentMethod())
                 .status(payment.getStatus())
-
-                .bankName(BANK_NAME)
-                .bankAccount(BANK_ACCOUNT)
-                .accountName(ACCOUNT_NAME)
-                .transferContent(content)
-                .qrContent(qrContent)
 
                 .createdAt(payment.getCreatedAt())
                 .build();
@@ -454,6 +442,7 @@ public class PaymentService {
             String branchId,
             PaymentStatus status,
             PaymentType type,
+            String notes,
             LocalDate fromDate,
             LocalDate toDate,
             int page,
@@ -463,7 +452,7 @@ public class PaymentService {
                 Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Specification<Payment> specification = PaymentSpecification.filterPayments(
-                bookingId, transactionCode, branchId, status, type, fromDate, toDate
+                bookingId, transactionCode, branchId, status, type, notes, fromDate, toDate
         );
 
         Page<Payment> pageData = paymentRepository.findAll(specification, pageable);
@@ -491,6 +480,12 @@ public class PaymentService {
             throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
         }
 
+        if(payment.getStatus() != PaymentStatus.processing_refund &&
+                payment.getStatus() != PaymentStatus.completed)
+        {
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String paidDate = payment.getPaidAt().format(formatter);
 
@@ -511,7 +506,23 @@ public class PaymentService {
 
             return buildResponse(payment, bookingRepository.findById(payment.getBookingId()).get());
         } else {
+            payment.setNotes("REFUND_FAILED");
+            paymentRepository.save(payment);
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+    }
+
+    public void handleRefundLogic(Booking booking, Payment payment)
+    {
+        boolean isEligibleForRefund =
+                booking.getStatus() == BookingStatus.cancelled ||
+                        booking.getStatus() == BookingStatus.rejected;
+
+        if(isEligibleForRefund)
+        {
+            payment.setStatus(PaymentStatus.processing_refund);
+            payment.setNotes("NEEDS_REFUND");
+            paymentRepository.save(payment);
         }
     }
 }
