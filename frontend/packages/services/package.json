@@ -12,8 +12,9 @@
     }
   },
   "dependencies": {
+    "@repo/constants": "workspace:*",
     "@repo/types": "workspace:*",
-    "@repo/constants": "workspace:*"
+    "@stomp/stompjs": "^7.3.0"
   },
   "private": true
 }

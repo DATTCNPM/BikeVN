@@ -15,3 +15,4 @@ export * from "./paymentType";
 export * from "./apiType";
 export * from "./userType";
 export * from "./vehicleReturnType";
+export * from "./chatType";

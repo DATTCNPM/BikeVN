@@ -1,62 +1,62 @@
-import type { message } from "@repo/types";
-
+import type { ChatMessageResponse } from "@repo/types";
 import { Card } from "@repo/ui/components/ui/card";
-
 import { cn } from "@repo/ui/lib/utils";
 
 type Props = {
-  message: message;
+  message: ChatMessageResponse;
   isCurrentUser: boolean;
 };
 
 export default function MessageItem({ message, isCurrentUser }: Props) {
-  console.log("message send Id", message.senderId);
-  console.log("isCurrentUser", isCurrentUser);
+  // Hàm format nhanh thời gian từ chuỗi ISO của Backend
+  const formatTime = (isoString: string) => {
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return "";
+    }
+  };
+
   return (
     <div
-      className={cn("flex", isCurrentUser ? "justify-end" : "justify-start")}
+      className={cn(
+        "flex flex-col gap-1",
+        isCurrentUser ? "items-end" : "items-start",
+      )}
     >
-      <Card
+      <div
         className={cn(
-          "max-w-[75%] overflow-hidden rounded-3xl shadow-none",
-          message.image ? "p-0" : "",
-          isCurrentUser
-            ? "rounded-br-md bg-primary text-primary-foreground"
-            : "rounded-bl-md bg-card",
+          "flex w-full",
+          isCurrentUser ? "justify-end" : "justify-start",
         )}
       >
-        {message.image && (
-          <div className="overflow-hidden">
-            <img
-              src={
-                typeof message.image === "string"
-                  ? message.image
-                  : URL.createObjectURL(message.image)
-              }
-              alt="message-image"
-              className="max-h-[320px] w-full object-cover"
-            />
-          </div>
-        )}
-
-        {message.content && (
-          <div className={cn("px-4 pt-3", message.image ? "pb-0" : "pb-3")}>
-            <p className="text-sm leading-relaxed">{message.content}</p>
-          </div>
-        )}
-
-        <div
+        <Card
           className={cn(
-            "px-4 pb-3 text-right text-[11px]",
+            "max-w-[75%] overflow-hidden rounded-3xl shadow-none border-none",
             isCurrentUser
-              ? "text-primary-foreground/70"
-              : "text-muted-foreground",
-            !message.content && "pt-2",
+              ? "rounded-br-md bg-primary text-primary-foreground"
+              : "rounded-bl-md bg-card text-foreground",
           )}
         >
-          {message.createdAt}
-        </div>
-      </Card>
+          {message.content && (
+            <div className="px-4 py-3">
+              <p className="text-sm leading-relaxed whitespace-pre-wrap break-all">
+                {message.content}
+              </p>
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Thời gian + Trạng thái đã đọc */}
+      <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground">
+        <span>{formatTime(message.createdAt)}</span>
+        {isCurrentUser && <span>• {message.isRead ? "Đã đọc" : "Đã gửi"}</span>}
+      </div>
     </div>
   );
 }

@@ -25,4 +25,4 @@ export type CancelPaymentPayload = z.infer<typeof cancelPaymentSchema>;
 export type ProcessRefundPayload = z.infer<typeof processRefundSchema>;
 
 // 4. Kiểu dữ liệu Query Parameters dành cho API bộ lọc Admin
-export type PaymentParams = z.infer<typeof paymentFilterParamsSchema>;
+export type PaymentFilterParams = z.infer<typeof paymentFilterParamsSchema>;

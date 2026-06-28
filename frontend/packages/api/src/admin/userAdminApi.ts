@@ -6,6 +6,7 @@ import type {
   PaginationResponse,
   AdminUserCreationPayload,
   UpdateEmployeePayload,
+  UserQueryParams,
 } from "@repo/types";
 import { createUserCommonApi } from "../common/createUserCommonApi";
 
@@ -86,5 +87,18 @@ export const userApi = {
 
   async deleteUser(id: string) {
     return axiosAdmin.delete(`/users/${id}`);
+  },
+
+  // Lấy danh sách xe dựa theo bộ lọc chuyên sâu (Search, Filter, Sort...)
+  async getUserFilters(
+    params?: UserQueryParams,
+  ): Promise<PaginationResponse<User>> {
+    // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
+    return axiosAdmin.get<PaginationResponse<User>, PaginationResponse<User>>(
+      "/users/filter",
+      {
+        params,
+      },
+    );
   },
 };

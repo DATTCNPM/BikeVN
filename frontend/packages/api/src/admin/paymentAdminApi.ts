@@ -1,4 +1,8 @@
-import type { Payment, PaginationResponse, PaymentParams } from "@repo/types";
+import type {
+  Payment,
+  PaginationResponse,
+  PaymentFilterParams,
+} from "@repo/types";
 import axiosAdmin from "../axios/axiosAdmin";
 import { createPaymentCommonApi } from "../common/createPaymentCommonApi";
 
@@ -7,7 +11,7 @@ export const paymentAdminApi = {
 
   // SỬA: Đổi từ "/payments" thành "/payments/admin/filter" cho đúng với BE
   async getAllPayments(
-    params?: PaymentParams,
+    params?: PaymentFilterParams,
   ): Promise<PaginationResponse<Payment>> {
     return axiosAdmin.get<
       PaginationResponse<Payment>,

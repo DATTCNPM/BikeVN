@@ -1,17 +1,15 @@
-import type { SendMessagePayload } from "@/features/chat/schemas";
-import type { conversation, message } from "@repo/types";
-
+import type { ConversationResponse, ChatMessageResponse } from "@repo/types";
+import type { SendMessagePayload } from "@repo/types";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageList from "../message/MessageList";
 
-import { useSendMessage } from "@/features/chat/mutations";
-
 type Props = {
   loading: boolean;
-  conversation?: conversation;
-  messages: message[];
+  conversation?: ConversationResponse;
+  messages: ChatMessageResponse[];
   currentUserId: string;
+  onSendMessage: (content: string) => void;
 };
 
 export default function ChatContent({
@@ -19,14 +17,15 @@ export default function ChatContent({
   conversation,
   messages,
   currentUserId,
+  onSendMessage,
 }: Props) {
-  const { mutate: sendMessage } = useSendMessage(conversation?.id || "");
   const handleSend = (data: SendMessagePayload) => {
-    sendMessage(data);
+    // Kích hoạt gửi tin nhắn text thông qua kênh WebSocket trực tiếp
+    onSendMessage(data.content ? data.content : "");
   };
 
   return (
-    <section className="col-span-12 flex h-full overflow-hidden flex-col bg-background md:col-span-8 lg:col-span-9">
+    <section className="col-span-12 flex h-full flex-col overflow-hidden bg-background md:col-span-8 lg:col-span-9">
       <ChatHeader conversation={conversation} />
 
       <MessageList

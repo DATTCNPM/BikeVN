@@ -3,9 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { paymentAdminApi } from "@repo/api";
 import { paymentsKeys } from "@repo/hooks";
 
-import type { Payment, PaginationResponse, PaymentParams } from "@repo/types";
+import type {
+  Payment,
+  PaginationResponse,
+  PaymentFilterParams,
+} from "@repo/types";
 
-export function usePayments(params?: PaymentParams) {
+export function usePayments(params?: PaymentFilterParams) {
   return useQuery<PaginationResponse<Payment>>({
     queryKey: paymentsKeys.list(params),
     queryFn: () => paymentAdminApi.getAllPayments(params),

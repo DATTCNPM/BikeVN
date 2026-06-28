@@ -28,7 +28,7 @@ export const vehiclePublicApi = {
     params?: VehicleQueryParams,
   ): Promise<PaginationResponse<Vehicle>> {
     // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
-    return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles/filters", {
+    return axiosPublic.get<PaginationResponse<Vehicle>>("/vehicles/filter", {
       params,
     });
   },

@@ -12,3 +12,4 @@ export * from "./branchSchema";
 export * from "./userSchema";
 export * from "./vehicleReturnSchema";
 export * from "./reviewSchema";
+export * from "./chatSchema";

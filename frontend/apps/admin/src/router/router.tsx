@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 // 📦 UI Components & Route Guards (Giữ nguyên import tĩnh vì cần chạy ngay lập tức)
 import MainLayout from "@/components/layouts/MainLayout";
@@ -9,24 +9,36 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 
 // 💤 Chuyển đổi toàn bộ các trang sang Lazy Loading
 const HomePage = lazy(() => import("@/pages/HomePage"));
-const VehicleManagementPage = lazy(() => import("@/pages/VehicleManagementPage"));
+const VehicleManagementPage = lazy(
+  () => import("@/pages/VehicleManagementPage"),
+);
 const BrandManagementPage = lazy(() => import("@/pages/BrandManagementPage"));
 const UserManagementPage = lazy(() => import("@/pages/UserManagementPage"));
 const BranchManagementPage = lazy(() => import("@/pages/BranchManagementPage"));
 const ModelManagementPage = lazy(() => import("@/pages/ModelManagementPage"));
-const VehicleImageManagementPage = lazy(() => import("@/pages/VehicleImageManagementPage"));
-const BookingManagementPage = lazy(() => import("@/pages/BookingManagementPage"));
+const VehicleImageManagementPage = lazy(
+  () => import("@/pages/VehicleImageManagementPage"),
+);
+const BookingManagementPage = lazy(
+  () => import("@/pages/BookingManagementPage"),
+);
 const ReviewManagementPage = lazy(() => import("@/pages/ReviewManagementPage"));
-const PaymentManagementPage = lazy(() => import("@/pages/PaymentManagementPage"));
+const PaymentManagementPage = lazy(
+  () => import("@/pages/PaymentManagementPage"),
+);
 const ChatManagementPage = lazy(() => import("@/pages/ChatManagementPage"));
 const InfoPage = lazy(() => import("@/pages/InfoPage"));
 const SecurityPage = lazy(() => import("@/pages/SecurityPage"));
 const SettingPage = lazy(() => import("@/pages/SettingPage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const BookingReturnPage = lazy(() => import("@/pages/BookingReturnPage"));
-const PermissionManagementPage = lazy(() => import("@/pages/PermissionManagementPage"));
+const PermissionManagementPage = lazy(
+  () => import("@/pages/PermissionManagementPage"),
+);
 const RoleManagementPage = lazy(() => import("@/pages/RoleManagementPage"));
-const EmployeeManagementPage = lazy(() => import("@/pages/EmployeeManagementPage"));
+const EmployeeManagementPage = lazy(
+  () => import("@/pages/EmployeeManagementPage"),
+);
 
 // 🌀 Loading Spinner toàn màn hình khi chuyển đổi giữa các module
 function AdminPageLoader() {
@@ -42,9 +54,6 @@ function AdminDashboardLayout() {
   return (
     <ProtectedRoute>
       <MainLayout />
-      <Suspense fallback={<AdminPageLoader />}>
-        <Outlet />
-      </Suspense>
     </ProtectedRoute>
   );
 }
@@ -69,7 +78,10 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "vehicles", element: <VehicleManagementPage /> },
-      { path: "vehicles/:vehicleId/images", element: <VehicleImageManagementPage /> },
+      {
+        path: "vehicles/:vehicleId/images",
+        element: <VehicleImageManagementPage />,
+      },
       { path: "brands", element: <BrandManagementPage /> },
       { path: "models", element: <ModelManagementPage /> },
       { path: "employees", element: <EmployeeManagementPage /> },
@@ -94,7 +106,10 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "vehicles", element: <VehicleManagementPage /> },
-      { path: "vehicles/:vehicleId/images", element: <VehicleImageManagementPage /> },
+      {
+        path: "vehicles/:vehicleId/images",
+        element: <VehicleImageManagementPage />,
+      },
       { path: "brands", element: <BrandManagementPage /> },
       { path: "models", element: <ModelManagementPage /> },
       { path: "users", element: <UserManagementPage /> },

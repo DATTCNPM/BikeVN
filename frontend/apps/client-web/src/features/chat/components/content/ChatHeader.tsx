@@ -1,10 +1,7 @@
 import { MoreVertical, Phone, Video } from "lucide-react";
-
-import type { conversation } from "@repo/types";
-
+import type { ConversationResponse } from "@repo/types";
 import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import { Button } from "@repo/ui/components/ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +10,7 @@ import {
 } from "@repo/ui/components/ui/dropdown-menu";
 
 type Props = {
-  conversation?: conversation;
+  conversation?: ConversationResponse;
 };
 
 export default function ChatHeader({ conversation }: Props) {
@@ -22,15 +19,17 @@ export default function ChatHeader({ conversation }: Props) {
       <div className="flex items-center gap-4">
         <Avatar className="size-12">
           <AvatarFallback className="bg-primary/15 text-primary">
-            CN
+            {conversation?.title?.substring(0, 2).toUpperCase() || "CN"}
           </AvatarFallback>
         </Avatar>
 
         <div>
-          <h2 className="font-semibold">{conversation?.branchName}</h2>
-
+          <h2 className="font-semibold">
+            {conversation?.title || "Chi nhánh"}
+          </h2>
           <p className="text-sm text-muted-foreground">
-            {conversation?.online ? "Online" : "Offline"}
+            {/* Mặc định hiển thị Trạng thái phòng chat */}
+            Hỗ trợ trực tuyến
           </p>
         </div>
       </div>
@@ -53,9 +52,7 @@ export default function ChatHeader({ conversation }: Props) {
 
           <DropdownMenuContent align="end">
             <DropdownMenuItem>View Information</DropdownMenuItem>
-
             <DropdownMenuItem>Mark as Read</DropdownMenuItem>
-
             <DropdownMenuItem className="text-destructive">
               Delete Conversation
             </DropdownMenuItem>
