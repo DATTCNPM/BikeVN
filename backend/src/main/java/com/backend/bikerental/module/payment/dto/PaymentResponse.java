@@ -21,10 +21,6 @@ public class PaymentResponse {
     String type;
     String paymentMethod;
     PaymentStatus status;
-    String bankName;
-    String bankAccount;
-    String accountName;
     String transferContent;
-    String qrContent;
     LocalDateTime createdAt;
 }
