@@ -36,6 +36,7 @@ public enum ErrorCode {
     RETURN_ALREADY_EXISTS(1023, "return already exist", HttpStatus.BAD_REQUEST),
     COMMENT_NOT_FOUND(1024, "comment not found", HttpStatus.NOT_FOUND),
     INVALID_AMOUNT(1025, "invalid amount", HttpStatus.BAD_REQUEST),
+    CONVERSATION_NOT_FOUND(1026, "conversation not found", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(2000, "role not found", HttpStatus.NOT_FOUND),
     PERMISSION_NOT_FOUND(2001, "permission not found", HttpStatus.NOT_FOUND),
     ROLE_EXISTED(2002, "role existed", HttpStatus.BAD_REQUEST),
