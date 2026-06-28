@@ -30,7 +30,51 @@ public class VNPayService {
     String returnUrl;
     @Value("${vnpay.api-url}")
     String vnpApiUrl;
-    public String createPaymentUrl(String paymentId, long amountInVnd, String ipAddress) {
+
+    public boolean verifyCallback(Map<String, String> fields) {
+        String vnp_SecureHash = fields.get("vnp_SecureHash");
+
+        //Remove signature fields from hash data
+        fields.remove("vnp_SecureHashType");
+        fields.remove("vnp_SecureHash");
+
+        //Sort the parameters
+        List<String> fieldNames = new ArrayList<>(fields.keySet());
+        Collections.sort(fieldNames);
+
+        StringBuilder hashData = new StringBuilder();
+        Iterator<String> itr = fieldNames.iterator();
+
+        try {
+            while (itr.hasNext()) {
+                String fieldName = itr.next();
+                String fieldValue = String.valueOf(fields.get(fieldName));
+
+                if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                    //FIX ERROR: RE-ENCODE USING US_ASCII BEFORE HASHING THE HASH
+                    hashData.append(fieldName);
+                    hashData.append('=');
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+
+                    if (itr.hasNext()) {
+                        hashData.append('&');
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String checkSum = VNPayUtil.hmacSHA512(hashSecret, hashData.toString());
+
+        System.out.println("\n--- DEBUG IPN CHECKSUM ---");
+        System.out.println("Backend Hash Data Thô: " + hashData.toString());
+        System.out.println("Backend Tự Băm Ra:     " + checkSum);
+        System.out.println("VNPay Gửi Sang:        " + vnp_SecureHash);
+
+        return checkSum.equalsIgnoreCase(vnp_SecureHash);
+    }
+    public String createPaymentUrl(String paymentId, long amountInVnd, String ipAddress, String customReturnUrl) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_OrderType = "other";
@@ -47,7 +91,9 @@ public class VNPayService {
         vnp_Params.put("vnp_OrderInfo", "Pay for the order " + paymentId);
         vnp_Params.put("vnp_OrderType", vnp_OrderType);
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", returnUrl);
+
+        String finalReturnUrl = (customReturnUrl != null && !customReturnUrl.trim().isEmpty()) ? customReturnUrl : returnUrl;
+        vnp_Params.put("vnp_ReturnUrl", finalReturnUrl);
         vnp_Params.put("vnp_IpAddr", ipAddress);
 
         ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
@@ -101,49 +147,6 @@ public class VNPayService {
         System.out.println("Secret Chain: " + hashSecret);
 
         return payUrl + "?" + queryUrl;
-    }
-    public boolean verifyCallback(Map<String, String> fields) {
-        String vnp_SecureHash = fields.get("vnp_SecureHash");
-
-        //Remove signature fields from hash data
-        fields.remove("vnp_SecureHashType");
-        fields.remove("vnp_SecureHash");
-
-        //Sort the parameters
-        List<String> fieldNames = new ArrayList<>(fields.keySet());
-        Collections.sort(fieldNames);
-
-        StringBuilder hashData = new StringBuilder();
-        Iterator<String> itr = fieldNames.iterator();
-
-        try {
-            while (itr.hasNext()) {
-                String fieldName = itr.next();
-                String fieldValue = String.valueOf(fields.get(fieldName));
-
-                if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                    //FIX ERROR: RE-ENCODE USING US_ASCII BEFORE HASHING THE HASH
-                    hashData.append(fieldName);
-                    hashData.append('=');
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-
-                    if (itr.hasNext()) {
-                        hashData.append('&');
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String checkSum = VNPayUtil.hmacSHA512(hashSecret, hashData.toString());
-        
-        System.out.println("\n--- DEBUG IPN CHECKSUM ---");
-        System.out.println("Backend Hash Data Thô: " + hashData.toString());
-        System.out.println("Backend Tự Băm Ra:     " + checkSum);
-        System.out.println("VNPay Gửi Sang:        " + vnp_SecureHash);
-
-        return checkSum.equalsIgnoreCase(vnp_SecureHash);
     }
 
     public boolean refundPayment(String paymentId, long amountInVnd, String transactionNo, String paidDate,
