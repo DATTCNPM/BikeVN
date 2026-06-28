@@ -8,11 +8,11 @@ export const vehicleConditionStatusSchema = z.enum([
 ]);
 
 export const vehicleReturnSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 
-  bookingId: z.string().uuid(),
+  bookingId: z.string(),
 
-  returnBranchId: z.string().uuid(),
+  returnBranchId: z.string(),
 
   conditionStatus: vehicleConditionStatusSchema,
 
@@ -26,19 +26,17 @@ export const vehicleReturnSchema = z.object({
 
   notes: z.string().nullable().optional(),
 
-  employeeId: z.string().uuid(),
+  employeeId: z.string(),
 
-  createdAt: z.string().datetime(),
+  createdAt: z.string(),
 
-  updatedAt: z.string().datetime(),
+  updatedAt: z.string(),
 });
 
 export const createVehicleReturnSchema = z.object({
   bookingId: z.string(),
 
-  returnBranchId: z.string().uuid({
-    message: "Chi nhánh trả xe không hợp lệ",
-  }),
+  returnBranchId: z.string(),
 
   conditionStatus: vehicleConditionStatusSchema,
 
@@ -57,9 +55,7 @@ export const createVehicleReturnSchema = z.object({
 
   notes: z.string().optional(),
 
-  employeeId: z.string().uuid({
-    message: "Nhân viên không hợp lệ",
-  }),
+  employeeId: z.string(),
 });
 
 export const updateVehicleReturnSchema = createVehicleReturnSchema.partial();

@@ -1,23 +1,17 @@
 import { useQueryClient } from "@tanstack/react-query";
-
 import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
-
 import { toast } from "@repo/ui/components/ui/sonner";
-
 import { paymentsKeys } from "@repo/hooks";
 import type { Payment } from "@repo/types";
-
 import {
   useApprovePaymentManually,
-  useCancelPayment,
+  useAdminCancelPayment,
 } from "@/features/payments/mutations";
 
 type Props = {
   payment: Payment | null;
-
   open: boolean;
   onOpenChange: (open: boolean) => void;
-
   mode: "confirm" | "approve-manually" | "cancel";
 };
 
@@ -28,10 +22,8 @@ export default function PaymentStatusDialog({
   mode,
 }: Props) {
   const queryClient = useQueryClient();
-
   const approveMutation = useApprovePaymentManually();
-
-  const cancelMutation = useCancelPayment({ id: payment?.id ?? "" });
+  const cancelMutation = useAdminCancelPayment();
 
   const loading = approveMutation.isPending || cancelMutation.isPending;
 
@@ -46,13 +38,15 @@ export default function PaymentStatusDialog({
             adminId: "current-admin-id",
             actualPaymentMethod: "cash",
           });
-
           toast.success("Approve payment manually successfully");
           break;
 
         case "cancel":
-          await cancelMutation.mutateAsync();
-
+          // SỬA: Truyền đúng cấu trúc object payload { id, reason } giải quyết lỗi crash
+          await cancelMutation.mutateAsync({
+            id: payment.id,
+            reason: "Admin canceled from dashboard",
+          });
           toast.success("Cancel payment successfully");
           break;
       }

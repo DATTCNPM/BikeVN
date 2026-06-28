@@ -2,10 +2,6 @@ import type { AxiosInstance } from "axios";
 import type { Payment } from "@repo/types";
 
 export const createPaymentCommonApi = (axiosInstance: AxiosInstance) => ({
-  async getPayment(id: string) {
-    return await axiosInstance.get<Payment, Payment>(`/payments/${id}`);
-  },
-
   async cancelPayment(id: string, reason?: string) {
     return axiosInstance.post<Payment>(`/payments/${id}/cancel`, null, {
       params: {

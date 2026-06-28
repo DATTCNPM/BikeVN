@@ -18,7 +18,7 @@ import type {
 type Props = {
   booking: Booking | null;
   selectedMethod: PaymentMethod;
-  userProfile: User | undefined; // Nhận thêm thông tin user từ trang cha
+  userProfile: User | undefined;
 };
 
 const formatVND = (value: number) => `${value.toLocaleString("vi-VN")}đ`;
@@ -31,27 +31,22 @@ export default function PaymentSummaryCard({
   const { mutate: createPayment, isPending: isCreating } = useCreatePayment();
   const { mutate: getVNPayUrl, isPending: isGettingUrl } = useGetVNPayUrl();
 
-  // State quản lý việc hiển thị modal thiếu thông tin
   const [modalOpen, setModalOpen] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
 
   const handlePayment = () => {
     if (!booking) return;
 
-    // 1. Kiểm tra thông tin cá nhân bắt buộc
     const missing: string[] = [];
     if (!userProfile?.phone) missing.push("Số điện thoại");
-
-    // Giả định trường dữ liệu CCCD của bạn là identityCard (hãy đổi lại nếu cần)
     if (!userProfile?.cccdNumber) missing.push("Căn cước công dân (CCCD)");
 
     if (missing.length > 0) {
       setMissingFields(missing);
       setModalOpen(true);
-      return; // Chặn không cho thực hiện tiếp tục thanh toán
+      return;
     }
 
-    // 2. Nếu thông tin đã đầy đủ, tiến hành tạo payment đơn hàng
     const payload: PaymentCreationPayload = {
       bookingId: booking.id,
       amount: booking.totalPrice || 0,
@@ -61,8 +56,10 @@ export default function PaymentSummaryCard({
 
     createPayment(payload, {
       onSuccess: (paymentData) => {
-        if (paymentData?.id) {
-          getVNPayUrl(paymentData.id);
+        // TỐI ƯU: Đảm bảo bóc tách an toàn id của đơn hàng vừa tạo để xin URL từ VNPay
+        const paymentId = paymentData?.id;
+        if (paymentId) {
+          getVNPayUrl(paymentId);
         }
       },
     });
@@ -123,7 +120,6 @@ export default function PaymentSummaryCard({
         </p>
       </Card>
 
-      {/* Đặt Modal ẩn tại đây */}
       <VerificationModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

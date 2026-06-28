@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { useEffect } from "react";
 
 import EntityFormDialog from "@/components/common/EntityFormDialog";
 import ImageUploadField from "@/components/common/ImageUploadField";
@@ -12,7 +13,6 @@ import {
 } from "@repo/ui/components/ui/field";
 
 import { Input } from "@repo/ui/components/ui/input";
-
 import { Textarea } from "@repo/ui/components/ui/textarea";
 
 import {
@@ -24,9 +24,7 @@ import {
 } from "@repo/ui/components/ui/select";
 
 import { toast } from "@repo/ui/components/ui/sonner";
-
 import { useBranches } from "@repo/hooks";
-
 import { useCreateVehicleReturn } from "@/features/vehicleReturns/vehicleReturnMutations";
 
 import {
@@ -35,7 +33,6 @@ import {
 } from "@repo/schemas";
 
 import type { CreateVehicleReturnRequest } from "@repo/types";
-
 import { usePortalProfile } from "@/features/auth/usePortalProfile";
 
 type Props = {
@@ -50,27 +47,18 @@ export default function VehicleReturnCreate({
   bookingId,
 }: Props) {
   const { mutateAsync, isPending } = useCreateVehicleReturn();
-
   const { data: branches = [] } = useBranches();
-
   const { data: profile } = usePortalProfile();
 
   const defaultValues: CreateVehicleReturnRequest = {
     bookingId,
     returnBranchId: "",
-
     conditionStatus: "excellent",
-
     damageDescription: "",
-
     extraFee: 0,
-
     images: [],
-
     returnOdometerReading: 0,
-
     notes: "",
-
     employeeId: profile?.id || "",
   };
 
@@ -78,7 +66,6 @@ export default function VehicleReturnCreate({
     register,
     control,
     handleSubmit,
-
     reset,
     setValue,
     formState: { errors },
@@ -87,6 +74,20 @@ export default function VehicleReturnCreate({
     defaultValues,
   });
 
+  // Đồng bộ employeeId khi dữ liệu profile tải xong nhằm vượt qua kiểm tra UUID của Zod
+  useEffect(() => {
+    if (profile?.id) {
+      setValue("employeeId", profile.id, { shouldValidate: true });
+    }
+  }, [profile, setValue]);
+
+  // Đồng bộ lại bookingId nếu component được tái sử dụng cho booking khác
+  useEffect(() => {
+    if (bookingId) {
+      setValue("bookingId", bookingId);
+    }
+  }, [bookingId, setValue]);
+
   const images = useWatch({
     control,
     name: "images",
@@ -94,45 +95,46 @@ export default function VehicleReturnCreate({
   });
 
   const onSubmit = async (values: CreateVehicleReturnRequest) => {
-    console.log("Submitting vehicle return with values:", values);
     try {
       await mutateAsync({
         ...values,
+        employeeId: profile?.id || values.employeeId,
+      });
+
+      toast.success("create vehicle return successfully");
+
+      // Reset form về trạng thái ban đầu sạch sẽ kèm theo ID nhân viên hiện tại
+      reset({
+        ...defaultValues,
         employeeId: profile?.id || "",
       });
 
-      toast.success("Tạo phiếu trả xe thành công");
-
-      reset(defaultValues);
-
       onOpenChange(false);
     } catch {
-      toast.error("Tạo phiếu trả xe thất bại");
+      toast.error("Failed to create vehicle return");
     }
   };
-
-  console.log("render create dialog", open);
 
   return (
     <EntityFormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Tạo phiếu trả xe"
-      description="Xác nhận tình trạng xe khi khách trả"
+      title="Create Vehicle Return"
+      description="Confirm vehicle condition when customer returns"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Xác nhận trả xe"
+      submitText="Confirm Return"
     >
       <FieldGroup>
         <Field>
-          <FieldLabel>Mã booking</FieldLabel>
+          <FieldLabel>Booking ID</FieldLabel>
           <input type="hidden" {...register("bookingId")} />
           <Input value={bookingId} disabled />
         </Field>
 
         <div className="grid gap-4 md:grid-cols-2">
           <Field>
-            <FieldLabel>Chi nhánh trả xe</FieldLabel>
+            <FieldLabel>Return Branch</FieldLabel>
 
             <Controller
               control={control}
@@ -140,7 +142,7 @@ export default function VehicleReturnCreate({
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn chi nhánh" />
+                    <SelectValue placeholder="Select branch" />
                   </SelectTrigger>
 
                   <SelectContent>
@@ -160,7 +162,7 @@ export default function VehicleReturnCreate({
           </Field>
 
           <Field>
-            <FieldLabel>Tình trạng xe</FieldLabel>
+            <FieldLabel>Vehicle Condition</FieldLabel>
 
             <Controller
               control={control}
@@ -175,12 +177,12 @@ export default function VehicleReturnCreate({
                     {vehicleConditionStatusSchema.options.map((status) => (
                       <SelectItem key={status} value={status}>
                         {status === "excellent"
-                          ? "Xuất sắc"
+                          ? "Excellent"
                           : status === "good"
-                            ? "Tốt"
+                            ? "Good"
                             : status === "fair"
-                              ? "Khá"
-                              : "Hư hỏng"}
+                              ? "Fair"
+                              : "Damaged"}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -196,7 +198,7 @@ export default function VehicleReturnCreate({
 
         <div className="grid gap-4 md:grid-cols-2">
           <Field>
-            <FieldLabel>Số km hiện tại</FieldLabel>
+            <FieldLabel>Current Odometer Reading</FieldLabel>
 
             <Input
               type="number"
@@ -211,7 +213,7 @@ export default function VehicleReturnCreate({
           </Field>
 
           <Field>
-            <FieldLabel>Phí phát sinh</FieldLabel>
+            <FieldLabel>Extra Fee</FieldLabel>
 
             <Input
               type="number"
@@ -227,30 +229,33 @@ export default function VehicleReturnCreate({
         </div>
 
         <Field>
-          <FieldLabel>Mô tả hư hỏng</FieldLabel>
+          <FieldLabel>Damage Description</FieldLabel>
 
           <Textarea
             {...register("damageDescription")}
-            placeholder="Mô tả tình trạng xe..."
+            placeholder="Describe vehicle condition..."
           />
         </Field>
 
         <Field>
-          <FieldLabel>Ghi chú</FieldLabel>
+          <FieldLabel>Notes</FieldLabel>
 
-          <Textarea {...register("notes")} placeholder="Thông tin bổ sung..." />
+          <Textarea
+            {...register("notes")}
+            placeholder="Additional information..."
+          />
         </Field>
 
         <div className="grid gap-4 md:grid-cols-2">
           <Field>
-            <FieldLabel>Nhân viên xác nhận</FieldLabel>
+            <FieldLabel>Confirming Employee</FieldLabel>
 
             <input type="hidden" {...register("employeeId")} />
-            <Input value={profile?.name} disabled />
+            <Input value={profile?.name || ""} disabled />
           </Field>
 
           <Field>
-            <FieldLabel>Hình ảnh</FieldLabel>
+            <FieldLabel>Images</FieldLabel>
 
             <ImageUploadField
               multiple
