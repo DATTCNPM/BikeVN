@@ -313,8 +313,8 @@ CREATE TABLE `users` (
   UNIQUE KEY `unique_email` (`email`),
   UNIQUE KEY `unique_cccd` (`cccd_number`),
   KEY `idx_is_active` (`is_active`),
-  KEY `idx_created_at` (`created_at`)
-  KEY `idx_ur_branch` (`branch_id`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_ur_branch` (`branch_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User accounts and authentication';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -332,8 +332,7 @@ CREATE TABLE `users_roles` (
   PRIMARY KEY (`user_id`,`role_id`),
   KEY `fk_role` (`role_id`),
   CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_ur_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL
+  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
