@@ -29,7 +29,7 @@ export default function ChatHeader({ conversation }: Props) {
           </h2>
           <p className="text-sm text-muted-foreground">
             {/* Mặc định hiển thị Trạng thái phòng chat */}
-            Hỗ trợ trực tuyến
+            Support Manager
           </p>
         </div>
       </div>

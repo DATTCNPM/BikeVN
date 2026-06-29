@@ -23,6 +23,7 @@ export default function ChatInput({ onSend }: Props) {
   });
 
   const onSubmit = (data: { content: string }) => {
+    console.log("🚀 ~ file: ChatInput.tsx:24 ~ onSubmit ~ data:", data);
     onSend(data);
     reset();
   };
@@ -41,7 +42,7 @@ export default function ChatInput({ onSend }: Props) {
         <div className="flex flex-1 flex-col">
           <Input
             {...register("content")}
-            placeholder="Nhập tin nhắn..."
+            placeholder="Type a message..."
             className="h-12 rounded-2xl"
             autoComplete="off"
           />

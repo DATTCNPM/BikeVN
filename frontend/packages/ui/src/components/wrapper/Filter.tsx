@@ -32,7 +32,7 @@ export default function Filter<T extends string>({
         onChange(selected);
       }}
     >
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-full h-10 rounded-xl bg-background border-border/80 focus:ring-1 focus:ring-primary">
         <SelectValue placeholder={title} />
       </SelectTrigger>
 

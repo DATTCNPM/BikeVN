@@ -1,31 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import {
+  Bike,
   CalendarDays,
   ChevronRight,
-  CircleCheckBig,
   Clock3,
+  CircleCheckBig,
   CircleX,
-  Bike,
 } from "lucide-react";
-
-import imageMock from "@/assets/images/motorbike1.png";
-
-import { formatDateTime } from "@repo/utils";
-
+import { Button } from "@repo/ui/components/ui/button";
 import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
-import { Button } from "@repo/ui/components/ui/button";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-
-import type { Booking } from "@repo/types";
-
 import { useBookingsByUser } from "@/features/bookings/queries";
-import { useProfile } from "@/features/profile/useProfile";
-
-type BookingWithVehicle = Booking & {
-  vehicleName?: string;
-  vehicleImage?: string;
-};
+import { formatDateTime } from "@repo/utils";
+import type { Booking } from "@repo/types";
+import imageMock from "@/assets/images/motorbike1.png";
 
 const statusConfig: Record<Booking["status"], any> = {
   pending: {
@@ -33,25 +22,21 @@ const statusConfig: Record<Booking["status"], any> = {
     className: "bg-yellow-500/15 text-yellow-600 border-yellow-500/20",
     icon: Clock3,
   },
-
   approved: {
     label: "Approved",
     className: "bg-green-500/15 text-green-600 border-green-500/20",
     icon: CircleCheckBig,
   },
-
   completed: {
     label: "Completed",
     className: "bg-primary/15 text-primary border-primary/20",
     icon: CircleCheckBig,
   },
-
   rejected: {
     label: "Rejected",
     className: "bg-red-500/15 text-red-500 border-red-500/20",
     icon: CircleX,
   },
-
   cancelled: {
     label: "Cancelled",
     className: "bg-muted text-muted-foreground border-border",
@@ -59,128 +44,103 @@ const statusConfig: Record<Booking["status"], any> = {
   },
 };
 
-export default function MyBookingSection() {
+type BookingWithVehicle = Booking & {
+  vehicleName?: string;
+  vehicleImage?: string;
+};
+
+interface MyBookingsProps {
+  userId: string;
+}
+
+export default function MyBookings({ userId }: MyBookingsProps) {
   const navigate = useNavigate();
+  const { data: bookings = [], isLoading: bookingsLoading } =
+    useBookingsByUser(userId);
 
-  const { data: profile } = useProfile();
-
-  const { data: bookings = [], isLoading } = useBookingsByUser(
-    profile?.id || "",
-  );
-
-  if (isLoading) {
+  if (bookingsLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div className="flex h-48 items-center justify-center">
         <Spinner />
       </div>
     );
   }
 
+  if (bookings.length === 0) {
+    return (
+      <p className="text-muted-foreground text-center py-8">
+        Bạn chưa có đơn đặt xe nào.
+      </p>
+    );
+  }
+
   return (
-    <section className="space-y-6">
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="text-sm font-medium uppercase tracking-wider text-primary">
-            Booking History
-          </p>
+    <div className="space-y-5">
+      {(bookings as BookingWithVehicle[]).map((booking) => {
+        const status = statusConfig[booking.status] || statusConfig.pending;
+        const StatusIcon = status.icon;
 
-          <h2 className="mt-2 text-3xl font-black tracking-tight">
-            My Bookings
-          </h2>
-        </div>
-
-        <Badge variant="secondary" className="rounded-full px-4 py-1">
-          {bookings.length} bookings
-        </Badge>
-      </div>
-
-      <div className="grid gap-5">
-        {(bookings as BookingWithVehicle[]).map((booking) => {
-          const status = statusConfig[booking.status];
-
-          const StatusIcon = status.icon;
-
-          return (
-            <Card
-              key={booking.id}
-              onClick={() => navigate(`/booking-result/${booking.id}`)}
-              className="group cursor-pointer overflow-hidden rounded-[2rem] border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl"
-            >
-              <div className="flex flex-col lg:flex-row">
-                <div className="relative h-56 overflow-hidden lg:h-auto lg:w-[280px]">
-                  <img
-                    src={booking.vehicleImage || imageMock}
-                    alt={booking.vehicleName || "Vehicle"}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-                  <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1 text-sm text-white backdrop-blur">
-                    <Bike className="size-4" />
-
-                    {booking.vehicleName || "Unknown Vehicle"}
-                  </div>
-                </div>
-
-                <div className="flex flex-1 flex-col justify-between p-6">
-                  <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Booking ID
-                      </p>
-
-                      <h3 className="mt-1 text-2xl font-bold tracking-tight">
-                        #{booking.id}
-                      </h3>
-
-                      <div className="mt-4 flex items-center gap-3 text-muted-foreground">
-                        <CalendarDays className="size-5 text-primary" />
-
-                        <p className="font-medium">
-                          {formatDateTime(booking.startTime)} →{" "}
-                          {formatDateTime(booking.endTime)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <Badge
-                      className={`flex h-10 items-center gap-2 rounded-full border px-4 text-sm ${status.className}`}
-                    >
-                      <StatusIcon className="size-4" />
-                      {status.label}
-                    </Badge>
-                  </div>
-
-                  <div className="mt-8 flex items-end justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        Total Price
-                      </p>
-
-                      <p className="mt-1 text-3xl font-black tracking-tight text-primary">
-                        {booking.totalPrice?.toLocaleString("vi-VN")}đ
-                      </p>
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      className="h-10 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/booking-result/${booking.id}`);
-                      }}
-                    >
-                      View Detail
-                      <ChevronRight className="size-5" />
-                    </Button>
-                  </div>
+        return (
+          <Card
+            key={booking.id}
+            onClick={() => navigate(`/booking-result/${booking.id}`)}
+            className="group cursor-pointer overflow-hidden rounded-2xl border-border bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-md"
+          >
+            <div className="flex flex-col sm:flex-row">
+              <div className="relative h-40 sm:h-auto sm:w-[200px] shrink-0 overflow-hidden">
+                <img
+                  src={booking.vehicleImage || imageMock}
+                  alt={booking.vehicleName || "Vehicle"}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white backdrop-blur">
+                  <Bike className="size-3.5" />
+                  {booking.vehicleName || "Vehicle"}
                 </div>
               </div>
-            </Card>
-          );
-        })}
-      </div>
-    </section>
+
+              <div className="flex flex-1 flex-col justify-between p-5">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      Booking ID: #{booking.id}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                      <CalendarDays className="size-4 text-primary" />
+                      <span>
+                        {formatDateTime(booking.startTime)} →{" "}
+                        {formatDateTime(booking.endTime)}
+                      </span>
+                    </div>
+                  </div>
+                  <Badge
+                    className={`flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs self-start ${status.className}`}
+                  >
+                    <StatusIcon className="size-3.5" />
+                    {status.label}
+                  </Badge>
+                </div>
+
+                <div className="mt-4 flex items-end justify-between pt-2 border-t border-dashed">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total Price</p>
+                    <p className="text-xl font-bold text-primary">
+                      {booking.totalPrice?.toLocaleString("vi-VN")}đ
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full gap-1"
+                  >
+                    Details <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

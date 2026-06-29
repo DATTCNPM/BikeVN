@@ -1,8 +1,8 @@
-// components/booking/BookingCard.tsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react"; // Thêm useState
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon } from "lucide-react"; // Import thêm icon lịch
 import {
   addDays,
   differenceInDays,
@@ -10,7 +10,7 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 
 import { Badge } from "@repo/ui/components/ui/badge";
@@ -38,6 +38,12 @@ import {
   SelectValue,
 } from "@repo/ui/components/ui/select";
 import { Separator } from "@repo/ui/components/ui/separator";
+// 📦 Import Popover components
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@repo/ui/components/ui/popover";
 
 import { useCreateBooking } from "@/features/bookings/mutations";
 import { useAuthStore } from "@/features/auth/authStore";
@@ -50,15 +56,20 @@ type Props = {
   branches: Branch[];
 };
 
-const formatVND = (value: number) => `${value.toLocaleString("vi-VN")}đ`;
+const formatCurrency = (value: number) =>
+  `${new Intl.NumberFormat("en-US").format(value)} VND`;
+
 const formatDate = (date: Date | undefined) =>
-  date ? format(date, "dd/MM/yyyy", { locale: vi }) : "--";
+  date ? format(date, "MMM dd, yyyy", { locale: enUS }) : "--";
 
 export default function BookingCard({ vehicle, branches }: Props) {
   const navigate = useNavigate();
   const { isLogin } = useAuthStore();
   const { data: profile } = useProfile();
   const { mutate: createBooking, isPending } = useCreateBooking();
+
+  // Trạng thái đóng/mở popover lịch
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingFormSchema),
@@ -86,7 +97,6 @@ export default function BookingCard({ vehicle, branches }: Props) {
     value: branch.id,
   }));
 
-  // Restore pending booking from localStorage
   useEffect(() => {
     const pendingBookingRaw = localStorage.getItem("pending-booking");
     if (!pendingBookingRaw) return;
@@ -135,47 +145,89 @@ export default function BookingCard({ vehicle, branches }: Props) {
   };
 
   return (
-    <Card className="w-full rounded-3xl">
+    <Card className="w-full rounded-3xl shadow-sm border-muted/60">
       <CardHeader className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Price</p>
-            <CardTitle className="text-3xl font-bold">
-              {formatVND(vehicle.pricePerDay)}
-              <span className="ml-1 text-base font-normal text-muted-foreground">
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              {formatCurrency(vehicle.pricePerDay ?? 0)}
+              <span className="ml-1 text-sm font-normal text-muted-foreground">
                 / day
               </span>
             </CardTitle>
           </div>
-          <Badge className="rounded-full">Available</Badge>
+          <Badge className="rounded-full bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 variant-none border-none">
+            Available
+          </Badge>
         </div>
       </CardHeader>
 
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent className="space-y-6">
+          {/* 🌟 THAY ĐỔI: Bọc Lịch vào Popover để tối ưu diện tích */}
           <Controller
             control={form.control}
             name="dateRange"
             render={({ field, fieldState }) => (
               <Field>
                 <FieldGroup>
-                  <FieldLabel>Rental Period</FieldLabel>
+                  <FieldLabel className="font-semibold text-foreground">
+                    Rental Period
+                  </FieldLabel>
                   <FieldContent>
-                    <div className="overflow-hidden rounded-2xl border">
-                      <Calendar
-                        mode="range"
-                        numberOfMonths={2}
-                        selected={field.value as DateRange}
-                        onSelect={(value) =>
-                          value?.from && value?.to && field.onChange(value)
-                        }
-                        defaultMonth={field.value?.from}
-                        disabled={(date) =>
-                          date <= new Date(new Date().setHours(0, 0, 0, 0))
-                        }
-                        className="w-full"
-                      />
-                    </div>
+                    <Popover
+                      open={isCalendarOpen}
+                      onOpenChange={setIsCalendarOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        {/* Biến ô hiển thị ngày cũ thành một Button Trigger cao cấp */}
+                        <button
+                          type="button"
+                          className="grid grid-cols-2 gap-4 w-full text-left rounded-2xl border bg-muted/30 p-4 hover:bg-muted/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                        >
+                          <div className="space-y-1">
+                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider flex items-center gap-1">
+                              <CalendarIcon className="size-3 text-primary" />{" "}
+                              Pick-up
+                            </p>
+                            <p className="text-sm font-semibold">
+                              {formatDate(startDate)}
+                            </p>
+                          </div>
+                          <div className="space-y-1 border-l pl-4 border-border/60">
+                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                              Return
+                            </p>
+                            <p className="text-sm font-semibold">
+                              {formatDate(endDate)}
+                            </p>
+                          </div>
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0 rounded-2xl shadow-xl border border-border/80"
+                        align="start"
+                      >
+                        <Calendar
+                          mode="range"
+                          numberOfMonths={1}
+                          selected={field.value as DateRange}
+                          onSelect={(value) => {
+                            if (value?.from) {
+                              field.onChange(value);
+                              // Tự động đóng popover khi người dùng chọn xong cả ngày đi lẫn ngày về
+                              if (value.to) {
+                                setIsCalendarOpen(false);
+                              }
+                            }
+                          }}
+                          defaultMonth={field.value?.from}
+                          disabled={(date) => date <= startOfDay(new Date())}
+                          className="p-3"
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </FieldContent>
                   {fieldState.error && (
                     <FieldError>{fieldState.error.message}</FieldError>
@@ -185,24 +237,15 @@ export default function BookingCard({ vehicle, branches }: Props) {
             )}
           />
 
-          <div className="grid grid-cols-2 gap-4 rounded-2xl border p-4">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Pick-up Date</p>
-              <p className="font-medium">{formatDate(startDate)}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Return Date</p>
-              <p className="font-medium">{formatDate(endDate)}</p>
-            </div>
-          </div>
-
           <Field className="pt-0">
             <FieldGroup>
-              <FieldLabel>Pick-up Location</FieldLabel>
+              <FieldLabel className="font-semibold text-foreground">
+                Pick-up Location
+              </FieldLabel>
               <FieldContent>
-                <p>
+                <p className="text-sm font-medium text-muted-foreground">
                   {branches.find((b) => b.id === vehicle.currentBranchId)
-                    ?.name || "--"}
+                    ?.name || "Not Specified"}
                 </p>
               </FieldContent>
             </FieldGroup>
@@ -214,7 +257,9 @@ export default function BookingCard({ vehicle, branches }: Props) {
             render={({ field, fieldState }) => (
               <Field>
                 <FieldGroup>
-                  <FieldLabel>Return Location</FieldLabel>
+                  <FieldLabel className="font-semibold text-foreground">
+                    Return Location
+                  </FieldLabel>
                   <FieldContent>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="h-12 rounded-2xl">
@@ -241,18 +286,24 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Rental Days</span>
-              <span>{totalDays} days</span>
+              <span className="text-muted-foreground">Rental Duration</span>
+              <span className="font-medium">
+                {totalDays} {totalDays === 1 ? "day" : "days"}
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Price per Day</span>
-              <span>{formatVND(vehicle.pricePerDay)}</span>
+              <span className="text-muted-foreground">Base Rate</span>
+              <span className="font-medium">
+                {formatCurrency(vehicle.pricePerDay ?? 0)}
+              </span>
             </div>
             <Separator />
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold">Total Price</span>
-              <span className="text-2xl font-bold">
-                {formatVND(totalPrice)}
+              <span className="text-base font-semibold text-foreground">
+                Total Price
+              </span>
+              <span className="text-xl font-bold text-primary">
+                {formatCurrency(totalPrice)}
               </span>
             </div>
           </div>
@@ -262,9 +313,9 @@ export default function BookingCard({ vehicle, branches }: Props) {
           <Button
             type="submit"
             disabled={isPending}
-            className="h-12 w-full rounded-2xl text-base font-semibold"
+            className="h-12 w-full rounded-2xl text-base font-semibold shadow-sm transition-all"
           >
-            {isPending ? "Processing..." : "Book Now"}
+            {isPending ? "Processing Request..." : "Book Now"}
           </Button>
         </CardFooter>
       </form>

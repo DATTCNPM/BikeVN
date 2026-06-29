@@ -1,34 +1,28 @@
 import { useParams } from "react-router-dom";
-
 import VehicleInfo from "@/features/vehicle/VehicleInfo";
 import BookingCard from "@/features/bookings/components/BookingCard";
-
 import {
   useBranches,
   useVehicle,
   useVehicleBrands,
   useVehicleModels,
 } from "@repo/hooks";
-
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export default function VehicleDetail() {
   const { id } = useParams();
-
   const vehicleId = id || "";
 
   const { data: vehicle = null, isLoading: vehicleLoading } =
     useVehicle(vehicleId);
-
   const { data: branches = [], isLoading: branchLoading } = useBranches();
-
   const { data: brands, isLoading: brandsLoading } = useVehicleBrands();
-
   const { data: models, isLoading: modelsLoading } = useVehicleModels();
 
-  const isPageLoading = vehicleLoading || branchLoading;
+  const isPageLoading =
+    vehicleLoading || branchLoading || brandsLoading || modelsLoading;
 
-  if (isPageLoading || brandsLoading || modelsLoading) {
+  if (isPageLoading) {
     return (
       <div className="flex h-[500px] items-center justify-center">
         <Spinner />
@@ -38,15 +32,16 @@ export default function VehicleDetail() {
 
   if (!vehicle) {
     return (
-      <div className="flex h-[500px] items-center justify-center">
+      <div className="flex h-[500px] items-center justify-center text-lg font-medium text-muted-foreground">
         Vehicle not found
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-12 gap-8 min-h-[calc(100vh-120px)] ">
-      <div className="col-span-8 pr-2">
+    <div className="grid grid-cols-12 gap-8 min-h-[calc(100vh-120px)] items-start">
+      {/* Left Column: Vehicle Details & Gallery */}
+      <div className="col-span-12 lg:col-span-8 pr-0 lg:pr-2">
         <VehicleInfo
           vehicle={vehicle}
           branches={branches}
@@ -55,7 +50,8 @@ export default function VehicleDetail() {
         />
       </div>
 
-      <div className="col-span-4">
+      {/* Right Column: Sticky Booking Card Widget */}
+      <div className="col-span-12 lg:col-span-4 sticky top-24">
         <BookingCard vehicle={vehicle} branches={branches} />
       </div>
     </div>

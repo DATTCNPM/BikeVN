@@ -1,6 +1,6 @@
 import Logo from "@/assets/icons/Logo_yellow.svg";
 import { Home, MessageCircle, CircleUserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   DropdownMenu,
@@ -12,61 +12,109 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
 import { NotificationPopover } from "@/features/notifications/components/notificationPopover";
-
 import { useProfile } from "@/features/profile/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
 
 export default function Header() {
   const { data: userProfile } = useProfile();
   const { mutateAsync: logout } = useLogout();
+
   return (
-    <header className="h-16 flex justify-between items-center bg-background border-b fixed top-0 left-0 right-0 z-100 px-8">
-      <Link to="/home" className="flex items-center gap-2">
-        <img src={Logo} alt="Logo" className="w-10" />
-        <span className="text-2xl text-primary font-bold">BikeVN</span>
-      </Link>
-      <nav className="flex items-center gap-4">
+    <header className="h-16 w-full fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl transition-all duration-300">
+      <div className="max-w-[1680px] h-full mx-auto px-6 lg:px-8 flex justify-between items-center">
+        {/* Brand Logo */}
         <Link
           to="/home"
-          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all"
+          className="flex items-center gap-2.5 active:scale-95 transition-transform"
         >
-          <Home className="w-4 h-4" /> Home
+          <img
+            src={Logo}
+            alt="BikeVN Logo"
+            className="w-9 h-9 object-contain"
+          />
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+            BikeVN
+          </span>
         </Link>
-        <Link
-          to="/chat"
-          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all"
-        >
-          <MessageCircle className="w-4 h-4" /> Chat
-        </Link>
-      </nav>
-      <div className="flex items-center gap-4">
-        <NotificationPopover />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <CircleUserRound className="w-4 h-4" />
-              <span className="ml-2">{userProfile?.name || "User"}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem>
-                <Link to="/profile/info">Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link to="/profile/settings">Settings</Link>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>Danger Zone</DropdownMenuLabel>
-              <DropdownMenuItem variant="destructive" onClick={() => logout()}>
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+        {/* Consumer Global Navigation */}
+        <nav className="flex items-center gap-1 sm:gap-2">
+          <NavLink
+            to="/home"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? "text-foreground bg-secondary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              }`
+            }
+          >
+            <Home className="w-4 h-4" />
+            <span className="hidden sm:inline">Home</span>
+          </NavLink>
+
+          <NavLink
+            to="/chat"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? "text-foreground bg-secondary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              }`
+            }
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">Chat</span>
+          </NavLink>
+        </nav>
+
+        {/* Action Widgets */}
+        <div className="flex items-center gap-4">
+          <NotificationPopover />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="rounded-full pl-2 pr-4 h-9 border border-border/60 hover:bg-secondary flex items-center gap-2"
+              >
+                <CircleUserRound className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs font-semibold text-foreground max-w-[80px] truncate">
+                  {userProfile?.name || "User"}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              className="w-56 mt-2 rounded-2xl shadow-xl border border-border/50 animate-in fade-in-50 zoom-in-95 duration-200"
+            >
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs text-muted-foreground uppercase tracking-wider">
+                  My Account
+                </DropdownMenuLabel>
+                <DropdownMenuItem
+                  asChild
+                  className="rounded-lg focus:bg-secondary py-2 cursor-pointer"
+                >
+                  <Link to="/profile" className="w-full">
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator className="bg-border/60" />
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => logout()}
+                  className="rounded-lg py-2 focus:bg-destructive/10 focus:text-destructive font-medium cursor-pointer"
+                >
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

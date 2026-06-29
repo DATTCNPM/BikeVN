@@ -1,14 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Fuel, Globe, MapPin, Zap } from "lucide-react";
+import { Fuel, Globe, MapPin, Zap } from "lucide-react";
 import { Badge } from "@repo/ui/components/ui/badge";
-import { Button } from "@repo/ui/components/ui/button";
-import { Card, CardContent } from "@repo/ui/components/ui/card";
 import { getImageUrl } from "@repo/utils";
 import motorPlaceholder from "@/assets/images/motorbike1.png";
 import type { VehicleCardData } from "@repo/types";
 import VehicleStatusBadge from "./VehicleStatusBadge";
 
-// 1. Tách cấu hình loại xe ra ngoài để JSX sạch hơn
 const VEHICLE_TYPE_CONFIG = {
   electric: { label: "Electric", icon: Zap },
   fuel: { label: "Fuel", icon: Fuel },
@@ -21,12 +18,10 @@ export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
     navigate(`/vehicles/${vehicle.id}`);
   };
 
-  // Rút trích thông tin nhanh
   const brandAndModel = [vehicle.brandName, vehicle.modelName]
     .filter(Boolean)
     .join(" • ");
 
-  // Lấy đúng cấu hình Type (Mặc định là fuel nếu lỗi data)
   const typeConfig =
     VEHICLE_TYPE_CONFIG[
       vehicle.vehicleType as keyof typeof VEHICLE_TYPE_CONFIG
@@ -34,76 +29,79 @@ export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
   const TypeIcon = typeConfig.icon;
 
   return (
-    <Card className="group overflow-hidden pt-0 transition-all duration-300 hover:shadow-xl">
-      {/* Media Section */}
-      <div className="relative overflow-hidden">
+    <div
+      onClick={handleViewDetails}
+      className="group relative bg-card rounded-[22px] border border-border/40 overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.5)]"
+    >
+      {/* Media Spotlight Section */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/40">
         <img
           src={vehicle.image ? getImageUrl(vehicle.image) : motorPlaceholder}
           alt={vehicle.name}
-          className="h-[260px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-        <div className="absolute right-2 top-2">
+        {/* Lớp gradient dịu mắt bảo vệ badge */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent opacity-60" />
+
+        {/* Floating Glassmorphism Badge */}
+        <div className="absolute top-3 right-3 z-10 backdrop-blur-md rounded-full overflow-hidden shadow-sm">
           <VehicleStatusBadge status={vehicle.status || "unavailable"} />
         </div>
       </div>
 
-      {/* Content Section */}
-      <CardContent className="space-y-4 p-5">
+      {/* Thông tin chi tiết */}
+      <div className="p-4 space-y-3">
         <div>
-          <h3 className="line-clamp-1 text-xl font-semibold">{vehicle.name}</h3>
+          <h3 className="text-base font-semibold text-foreground tracking-tight line-clamp-1 group-hover:text-primary transition-colors duration-200">
+            {vehicle.name}
+          </h3>
           {brandAndModel && (
-            <p className="text-sm text-muted-foreground">{brandAndModel}</p>
+            <p className="text-xs font-medium text-muted-foreground/80 mt-0.5">
+              {brandAndModel}
+            </p>
           )}
         </div>
 
-        {/* Badges */}
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary">
-            <TypeIcon className="mr-1 size-3" />
+        {/* Cụm Badges tính năng mini */}
+        <div className="flex flex-wrap gap-1.5">
+          <Badge
+            variant="secondary"
+            className="px-2 py-0.5 text-[10px] font-medium bg-secondary/80 text-foreground rounded-md border-none"
+          >
+            <TypeIcon className="mr-1 size-2.5 text-muted-foreground" />
             {typeConfig.label}
           </Badge>
 
           {vehicle.country && (
-            <Badge variant="outline">
-              <Globe className="mr-1 size-3" />
+            <Badge
+              variant="outline"
+              className="px-2 py-0.5 text-[10px] font-medium text-muted-foreground/90 rounded-md border-border/60"
+            >
+              <Globe className="mr-1 size-2.5" />
               {vehicle.country}
             </Badge>
           )}
         </div>
 
-        {/* Location */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="size-4" />
-          {vehicle.currentBranchName || "Unknown Location"}
+        {/* Địa điểm định vị */}
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+          <MapPin className="size-3.5 shrink-0 text-muted-foreground/70" />
+          <span className="truncate">
+            {vehicle.currentBranchName || "Not specified"}
+          </span>
         </div>
 
-        {/* Price */}
-        <div>
-          <div className="text-2xl font-bold text-primary">
-            {(vehicle.pricePerDay ?? 0).toLocaleString("vi-VN")}đ{" "}
-            <span className="text-sm font-normal text-muted-foreground">
+        {/* Khu vực Giá thành */}
+        <div className="pt-2 border-t border-border/30 flex items-baseline justify-between">
+          <div className="text-lg font-bold text-foreground tracking-tight">
+            {(vehicle.pricePerDay ?? 0).toLocaleString("vi-VN")}đ
+            <span className="text-xs font-normal text-muted-foreground ml-1">
               / day
             </span>
           </div>
         </div>
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <Button className="flex-1" onClick={handleViewDetails}>
-            Book Now
-            <ArrowRight className="ml-2 size-4" />
-          </Button>
-
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={handleViewDetails}
-          >
-            Details
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

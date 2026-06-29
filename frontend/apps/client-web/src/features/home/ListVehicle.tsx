@@ -23,12 +23,10 @@ export default function ListVehicle() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  // Khởi tạo một object state duy nhất quản lý các mảng lọc
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
     {},
   );
 
-  // Fetching dữ liệu phục vụ các option filter
   const { data: branches = [], isLoading: branchLoading } = useBranches();
   const { data: brands } = useVehicleBrands();
   const { data: models } = useVehicleModels();
@@ -37,12 +35,11 @@ export default function ListVehicle() {
     pageSize,
   );
 
-  // 1. Khởi tạo cấu hình Metadata cho Filter Sheet (Rất trực quan và dễ quản lý)
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     return [
       {
         key: "branch",
-        title: "Location",
+        title: "Branch",
         options: branches.map((b) => ({ label: b.name, value: b.name })),
       },
       {
@@ -82,12 +79,10 @@ export default function ListVehicle() {
     ];
   }, [branches, brands, models]);
 
-  // Tìm min/max price dựa trên option đang select hiện tại
   const activePriceRange = PRICE_RANGES.find(
     (p) => p.value === selectedFilters["priceRange"]?.value,
   );
 
-  // 2. Chuyển đổi dữ liệu từ object state sang Query Params gửi lên API
   const apiFilters = useMemo<VehicleQueryParams>(
     () => ({
       search: search.trim() || undefined,
@@ -107,37 +102,61 @@ export default function ListVehicle() {
   const hasFilter = Boolean(
     search.trim() || Object.values(selectedFilters).some(Boolean),
   );
-
   const { data: filteredVehicles } = useVehicleFilters(apiFilters, hasFilter);
   const currentData = hasFilter ? filteredVehicles : vehicles;
   const vehicleData = currentData?.data ?? [];
 
-  // Map data hiển thị cho card sản phẩm
-  const vehicleCardData: VehicleCardData[] = vehicleData.map((vehicle) => ({
-    id: vehicle.id,
-    name: vehicle.name,
-    pricePerDay: vehicle.pricePerDay,
-    image: vehicle.images?.[0]?.imageUrl ?? null,
-    currentBranchName: vehicle.currentBranchName,
-    vehicleType: vehicle.vehicleType,
-    brandName: vehicle.brandName,
-    modelName: vehicle.modelName,
-    country: vehicle.country,
-    status: vehicle.status,
-  }));
+  // 🛠️ Bọc và tối ưu hóa mảng dữ liệu hiển thị bằng useMemo
+  const vehicleCardData = useMemo<VehicleCardData[]>(() => {
+    if (!vehicleData) return [];
+
+    // 1. Map dữ liệu thô sang cấu trúc VehicleCardData
+    const mappedData: VehicleCardData[] = vehicleData.map((vehicle) => ({
+      id: vehicle.id,
+      name: vehicle.name,
+      pricePerDay: vehicle.pricePerDay,
+      image: vehicle.images?.[0]?.imageUrl ?? null,
+      currentBranchName: vehicle.currentBranchName,
+      vehicleType: vehicle.vehicleType,
+      brandName: vehicle.brandName,
+      modelName: vehicle.modelName,
+      country: vehicle.country,
+      status: vehicle.status,
+    }));
+
+    // 2. Sắp xếp: Đẩy "available" lên đầu, các trạng thái khác giữ nguyên vị trí tương đối
+    return mappedData.sort((a, b) => {
+      if (a.status === "available" && b.status !== "available") return -1;
+      if (a.status !== "available" && b.status === "available") return 1;
+      return 0;
+    });
+  }, [vehicleData]); // Chạy lại mỗi khi mảng dữ liệu gốc từ API thay đổi
+
+  // Hàm xử lý nhanh khi click vào Quick Chips Hãng xe
+  const handleQuickBrandSelect = (brandName: string) => {
+    setSelectedFilters((prev) => {
+      const isSelected = prev["brand"]?.value === brandName;
+      return {
+        ...prev,
+        brand: isSelected ? undefined : { label: brandName, value: brandName },
+      };
+    });
+    setPage(1);
+  };
 
   if (vehicleLoading || branchLoading) {
     return (
-      <div className="flex h-[300px] items-center justify-center">
-        <Spinner />
+      <div className="flex h-[400px] items-center justify-center">
+        <Spinner className="size-8 text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <div className="flex-1">
+    <div className="space-y-6">
+      {/* 🛠️ BAR TÌM KIẾM & LỌC CAO CẤP */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card p-4 rounded-2xl border border-border/50 shadow-sm">
+        <div className="w-full md:max-w-md">
           <SearchComponent
             value={search}
             onChange={(value) => {
@@ -148,9 +167,8 @@ export default function ListVehicle() {
           />
         </div>
 
-        {/* Gọi Component Sheet đa năng đã tách biệt hoàn toàn */}
         <UniversalFilterSheet
-          title="Vehicle Filters"
+          title="Advanced Filters"
           configs={filterConfigs}
           value={selectedFilters}
           onChange={(newFilters) => {
@@ -165,18 +183,64 @@ export default function ListVehicle() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-4">
-        {vehicleCardData.map((vehicle) => (
-          <CardProduct key={vehicle.id} vehicle={vehicle} />
-        ))}
-      </div>
+      {/* 🏷️ QUICK BRAND CHIPS BAR (Chuẩn Airbnb phong cách tối giản) */}
+      {brands?.data && brands.data.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mask-linear-r">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-2 shrink-0">
+            Quick Brands:
+          </span>
+          {brands.data.map((b) => {
+            const isTarget = selectedFilters["brand"]?.value === b.name;
+            return (
+              <button
+                key={b.id}
+                onClick={() => handleQuickBrandSelect(b.name)}
+                className={`px-4 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 shrink-0 ${
+                  isTarget
+                    ? "bg-foreground text-background border-foreground shadow-sm"
+                    : "bg-background text-muted-foreground border-border hover:border-foreground hover:text-foreground"
+                }`}
+              >
+                {b.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-      <PaginationComponent
-        page={currentData?.currentPage ?? 1}
-        totalPages={currentData?.totalPages ?? 1}
-        totalElements={currentData?.totalElements ?? 0}
-        onPageChange={setPage}
-      />
+      {/* 🔲 LƯỚI CARD SẢN PHẨM 5 CỘT KHÔNG GIAN RỘNG */}
+      {vehicleCardData.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {vehicleCardData.map((vehicle) => (
+            <CardProduct key={vehicle.id} vehicle={vehicle} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed rounded-3xl border-border/60">
+          <p className="text-muted-foreground font-medium">
+            No vehicles found matching your criteria.
+          </p>
+          <button
+            onClick={() => {
+              setSearch("");
+              setSelectedFilters({});
+            }}
+            className="mt-3 text-xs text-primary font-semibold hover:underline"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
+
+      {/* 📑 PHÂN TRANG */}
+      {currentData && currentData.totalPages > 1 && (
+        <PaginationComponent
+          page={currentData.currentPage}
+          totalPages={currentData.totalPages}
+          totalElements={currentData.totalElements}
+          onPageChange={setPage}
+        />
+      )}
     </div>
   );
 }

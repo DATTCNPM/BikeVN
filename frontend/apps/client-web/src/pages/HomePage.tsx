@@ -1,8 +1,6 @@
 import ListVehicle from "../features/home/ListVehicle";
 import MapVehicle from "../features/home/MapVehicle";
-
 import { List, MapPin } from "lucide-react";
-
 import {
   Tabs,
   TabsContent,
@@ -12,25 +10,45 @@ import {
 
 export default function HomePage() {
   return (
-    <Tabs defaultValue="list" className="space-y-4">
-      <TabsList className="w-[200px]">
-        <TabsTrigger value="list" className="w-full">
-          <List className="mr-2 h-4 w-4" />
-          List
-        </TabsTrigger>
-        <TabsTrigger value="map" className="w-full">
-          <MapPin className="mr-2 h-4 w-4" />
-          Map
-        </TabsTrigger>
-      </TabsList>
+    <div className="w-full space-y-6">
+      <Tabs defaultValue="list" className="w-full">
+        {/* Header ẩn của trang chủ: Chứa tiêu đề và nút chuyển List/Map song song */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Welcome to BikeVN
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Your Ultimate Vehicle Rental Platform
+            </p>
+          </div>
 
-      <TabsContent value="list">
-        <ListVehicle />
-      </TabsContent>
+          <TabsList className="p-1 bg-secondary rounded-full h-10 w-full sm:w-[200px] shrink-0">
+            <TabsTrigger
+              value="list"
+              className="rounded-full h-8 text-xs font-medium transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              <List className="mr-1.5 h-3.5 w-3.5" />
+              List View
+            </TabsTrigger>
+            <TabsTrigger
+              value="map"
+              className="rounded-full h-8 text-xs font-medium transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
+              <MapPin className="mr-1.5 h-3.5 w-3.5" />
+              Map View
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      <TabsContent value="map">
-        <MapVehicle />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="list" className="mt-6 focus-visible:outline-none">
+          <ListVehicle />
+        </TabsContent>
+
+        <TabsContent value="map" className="mt-6 focus-visible:outline-none">
+          <MapVehicle />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

@@ -115,18 +115,26 @@ export default function UniversalFilterSheet({
 
             // Trường hợp 3: Mặc định là Select Dropdown cũ
             return (
-              <Filter
-                key={config.key}
-                title={config.title}
-                options={config.options || []}
-                value={localFilters[config.key]}
-                onChange={(selectedValue) =>
-                  setLocalFilters((prev) => ({
-                    ...prev,
-                    [config.key]: selectedValue,
-                  }))
-                }
-              />
+              <div key={config.key} className="space-y-2 flex flex-col">
+                <label className="text-sm font-medium text-foreground">
+                  {config.title}
+                </label>
+                <div className="w-full [&>button]:w-full">
+                  {" "}
+                  {/* Ép SelectTrigger của con bung full width */}
+                  <Filter
+                    title={config.title}
+                    options={config.options || []}
+                    value={localFilters[config.key]}
+                    onChange={(selectedValue) =>
+                      setLocalFilters((prev) => ({
+                        ...prev,
+                        [config.key]: selectedValue,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
             );
           })}
 

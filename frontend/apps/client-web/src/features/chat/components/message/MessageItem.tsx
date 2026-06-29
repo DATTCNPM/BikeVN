@@ -55,7 +55,7 @@ export default function MessageItem({ message, isCurrentUser }: Props) {
       {/* Thời gian + Trạng thái đã đọc */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground">
         <span>{formatTime(message.createdAt)}</span>
-        {isCurrentUser && <span>• {message.isRead ? "Đã đọc" : "Đã gửi"}</span>}
+        {isCurrentUser && <span>• {message.isRead ? "Read" : "Sent"}</span>}
       </div>
     </div>
   );
