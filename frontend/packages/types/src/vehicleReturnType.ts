@@ -5,6 +5,7 @@ import {
   vehicleReturnSchema,
   createVehicleReturnSchema,
   updateVehicleReturnSchema,
+  vehicleReturnFilterParamsSchema,
 } from "@repo/schemas";
 
 export type VehicleConditionStatus = z.infer<
@@ -19,4 +20,8 @@ export type CreateVehicleReturnRequest = z.infer<
 
 export type UpdateVehicleReturnRequest = z.infer<
   typeof updateVehicleReturnSchema
+>;
+
+export type VehicleReturnFilterParams = z.infer<
+  typeof vehicleReturnFilterParamsSchema
 >;

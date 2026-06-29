@@ -14,10 +14,11 @@ import {
   TableRow,
 } from "@repo/ui/components/ui/table";
 
-type Props<TData> = {
-  columns: ColumnDef<TData>[];
+// Cập nhật kiểu Props để nhận diện chuẩn generic từ mọi data truyền vào
+interface Props<TData> {
+  columns: ColumnDef<TData, any>[];
   data: TData[];
-};
+}
 
 export default function DataTable<TData>({ columns, data }: Props<TData>) {
   const table = useReactTable({
@@ -50,7 +51,7 @@ export default function DataTable<TData>({ columns, data }: Props<TData>) {
         </TableHeader>
 
         <TableBody>
-          {table.getRowModel().rows.length ? (
+          {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}

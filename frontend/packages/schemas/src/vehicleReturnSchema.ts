@@ -59,3 +59,13 @@ export const createVehicleReturnSchema = z.object({
 });
 
 export const updateVehicleReturnSchema = createVehicleReturnSchema.partial();
+
+export const vehicleReturnFilterParamsSchema = z.object({
+  bookingId: z.string().optional(),
+  returnBranchId: z.string().optional(),
+  conditionStatus: vehicleConditionStatusSchema.optional(),
+  fromDate: z.string().optional(),
+  toDate: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  size: z.coerce.number().int().min(1).optional(),
+});
