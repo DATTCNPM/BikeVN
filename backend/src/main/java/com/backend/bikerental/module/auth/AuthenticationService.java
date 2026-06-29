@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class AuthenticationService {
     UserRepository userRepository;
-    InvalidatedTokenRepository invalidatedTokenRepository;
     StringRedisTemplate stringRedisTemplate;
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -61,11 +60,19 @@ public class AuthenticationService {
         var signToken = verifyToken(request.getToken());
         String jit = signToken.getJWTClaimsSet().getJWTID();
         Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
-        InvalidatedToken invalidateToken = InvalidatedToken.builder()
-                .id(jit)
-                .expiryTime(expiryTime)
-                .build();
-        invalidatedTokenRepository.save(invalidateToken);
+
+        long remainingTime = expiryTime.getTime() - System.currentTimeMillis();
+
+        if(remainingTime > 0)
+        {
+            stringRedisTemplate.opsForValue().set(jit, "invalidated", remainingTime, TimeUnit.MILLISECONDS);
+
+        }
+
+        if(request.getRefreshToken() != null && !request.getRefreshToken().trim().isEmpty())
+        {
+            stringRedisTemplate.delete(request.getRefreshToken());
+        }
     }
 
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
@@ -74,10 +81,14 @@ public class AuthenticationService {
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
         var verified = signedJWT.verify(verifier);
 
-        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+        String jit = signedJWT.getJWTClaimsSet().getJWTID();
+
+        if(Boolean.TRUE.equals(stringRedisTemplate.hasKey(jit)))
+        {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
-        if (!verified && expiryTime.after(new Date())) {
+
+        if (!verified || expiryTime.before(new Date())) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         return signedJWT;
