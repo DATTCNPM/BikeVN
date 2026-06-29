@@ -2,6 +2,7 @@ package com.backend.bikerental.module.user;
 
 import com.backend.bikerental.core.dto.ApiResponse;
 import com.backend.bikerental.core.dto.PageResponse;
+import com.backend.bikerental.module.auth.dto.AuthenticationResponse;
 import com.backend.bikerental.module.user.dto.UserCreationRequest;
 import com.backend.bikerental.module.user.dto.UserResponse;
 import com.backend.bikerental.module.user.dto.UserUpdateRequest;
@@ -21,11 +22,11 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest request)
+    ApiResponse<AuthenticationResponse> createUser(@RequestBody UserCreationRequest request)
     {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userService.createUser(request));
-        return apiResponse;
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(userService.createUser(request))
+                .build();
     }
 
     @PostMapping("/employee")
