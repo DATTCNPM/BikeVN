@@ -1,6 +1,8 @@
 package com.backend.bikerental.module.user;
 
 import com.backend.bikerental.core.dto.PageResponse;
+import com.backend.bikerental.module.auth.AuthenticationService;
+import com.backend.bikerental.module.auth.dto.AuthenticationResponse;
 import com.backend.bikerental.module.user.dto.UserCreationRequest;
 import com.backend.bikerental.module.user.dto.UserResponse;
 import com.backend.bikerental.module.user.dto.UserUpdateRequest;
@@ -37,9 +39,10 @@ public class UserService {
     RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
     BranchRepository branchRepository;
+    AuthenticationService authenticationService;
 
     @Transactional
-    public UserResponse createUser(UserCreationRequest request)
+    public AuthenticationResponse createUser(UserCreationRequest request)
     {
         if(userRepository.existsByEmail(request.getEmail()))
         {
@@ -59,7 +62,12 @@ public class UserService {
         user.setRoles(Set.of(role));
         user.setBranch(null);
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        String token = authenticationService.generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
     }
 
     @Transactional
