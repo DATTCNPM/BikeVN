@@ -1,13 +1,13 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
-// 📦 UI Components & Route Guards (Giữ nguyên import tĩnh vì cần chạy ngay lập tức)
+// 📦 UI Components & Route Guards
 import MainLayout from "@/components/layouts/MainLayout";
 import ProtectedRoute from "@/features/auth/ProtectedRoute";
 import AuthRedirectRoute from "@/features/auth/AuthRedirectRoute";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-// 💤 Chuyển đổi toàn bộ các trang sang Lazy Loading
+// 💤 Lazy Loading các trang cũ
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const VehicleManagementPage = lazy(
   () => import("@/pages/VehicleManagementPage"),
@@ -40,7 +40,15 @@ const EmployeeManagementPage = lazy(
   () => import("@/pages/EmployeeManagementPage"),
 );
 
-// 🌀 Loading Spinner toàn màn hình khi chuyển đổi giữa các module
+// 🆕 Lazy Loading 2 trang lịch sử trả xe mới tinh chỉnh
+const VehicleReturnAdminPage = lazy(
+  () => import("@/pages/VehicleReturnAdminPage"),
+);
+const VehicleReturnBranchPage = lazy(
+  () => import("@/pages/VehicleReturnBranchPage"),
+);
+
+// 🌀 Loading Spinner toàn màn hình
 function AdminPageLoader() {
   return (
     <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-background">
@@ -53,7 +61,12 @@ function AdminPageLoader() {
 function AdminDashboardLayout() {
   return (
     <ProtectedRoute>
-      <MainLayout />
+      {/* Bọc Suspense ở đây để khi bấm menu chuyển giữa các trang Lazy load, 
+        nó sẽ hiển thị AdminPageLoader thay vì làm crash ứng dụng.
+      */}
+      <Suspense fallback={<AdminPageLoader />}>
+        <MainLayout />
+      </Suspense>
     </ProtectedRoute>
   );
 }
@@ -91,6 +104,10 @@ const router = createBrowserRouter([
       { path: "reviews", element: <ReviewManagementPage /> },
       { path: "payments", element: <PaymentManagementPage /> },
       { path: "bookings/:bookingId/return", element: <BookingReturnPage /> },
+
+      // 🆕 Route danh sách quản lý trả xe tổng (Admin)
+      { path: "vehicle-returns", element: <VehicleReturnAdminPage /> },
+
       { path: "chats", element: <ChatManagementPage /> },
       { path: "info", element: <InfoPage /> },
       { path: "security", element: <SecurityPage /> },
@@ -118,6 +135,10 @@ const router = createBrowserRouter([
       { path: "reviews", element: <ReviewManagementPage /> },
       { path: "payments", element: <PaymentManagementPage /> },
       { path: "bookings/:bookingId/return", element: <BookingReturnPage /> },
+
+      // 🆕 Route danh sách lịch sử trả xe nội bộ chi nhánh (Employee)
+      { path: "vehicle-returns", element: <VehicleReturnBranchPage /> },
+
       { path: "chats", element: <ChatManagementPage /> },
       { path: "info", element: <InfoPage /> },
       { path: "security", element: <SecurityPage /> },

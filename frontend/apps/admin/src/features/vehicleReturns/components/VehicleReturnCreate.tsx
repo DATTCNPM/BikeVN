@@ -74,14 +74,12 @@ export default function VehicleReturnCreate({
     defaultValues,
   });
 
-  // Đồng bộ employeeId khi dữ liệu profile tải xong nhằm vượt qua kiểm tra UUID của Zod
   useEffect(() => {
     if (profile?.id) {
       setValue("employeeId", profile.id, { shouldValidate: true });
     }
   }, [profile, setValue]);
 
-  // Đồng bộ lại bookingId nếu component được tái sử dụng cho booking khác
   useEffect(() => {
     if (bookingId) {
       setValue("bookingId", bookingId);
@@ -103,7 +101,6 @@ export default function VehicleReturnCreate({
 
       toast.success("create vehicle return successfully");
 
-      // Reset form về trạng thái ban đầu sạch sẽ kèm theo ID nhân viên hiện tại
       reset({
         ...defaultValues,
         employeeId: profile?.id || "",
@@ -124,155 +121,159 @@ export default function VehicleReturnCreate({
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitText="Confirm Return"
+      // MẸO: Bạn nên truyền className vào Content của Dialog thông qua component EntityFormDialog nếu nó hỗ trợ
+      // className="max-w-3xl max-h-[85vh] flex flex-col"
     >
-      <FieldGroup>
-        <Field>
-          <FieldLabel>Booking ID</FieldLabel>
-          <input type="hidden" {...register("bookingId")} />
-          <Input value={bookingId} disabled />
-        </Field>
+      {/* Bọc một lớp cuộn nội dung tự động nếu EntityFormDialog chưa có.
+        Giúp nút Submit luôn hiển thị ở chân Dialog mà không bị đẩy mất.
+      */}
+      <div className="max-h-[60vh] overflow-y-auto pr-2 -mr-2">
+        <FieldGroup className="space-y-5">
+          {/* Hàng 1: Thông tin cố định hệ thống */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field>
+              <FieldLabel>Booking ID</FieldLabel>
+              <input type="hidden" {...register("bookingId")} />
+              <Input value={bookingId} disabled className="bg-muted" />
+            </Field>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field>
-            <FieldLabel>Return Branch</FieldLabel>
+            <Field>
+              <FieldLabel>Confirming Employee</FieldLabel>
+              <input type="hidden" {...register("employeeId")} />
+              <Input
+                value={profile?.name || ""}
+                disabled
+                className="bg-muted"
+              />
+            </Field>
+          </div>
 
-            <Controller
-              control={control}
-              name="returnBranchId"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select branch" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {branches.map((branch) => (
-                      <SelectItem key={branch.id} value={branch.id}>
-                        {branch.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          {/* Hàng 2: Chi tiết trạng thái xe nhận về */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field>
+              <FieldLabel>Return Branch</FieldLabel>
+              <Controller
+                control={control}
+                name="returnBranchId"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {branches.map((branch) => (
+                        <SelectItem key={branch.id} value={branch.id}>
+                          {branch.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.returnBranchId && (
+                <FieldError>{errors.returnBranchId.message}</FieldError>
               )}
-            />
+            </Field>
 
-            {errors.returnBranchId && (
-              <FieldError>{errors.returnBranchId.message}</FieldError>
-            )}
-          </Field>
-
-          <Field>
-            <FieldLabel>Vehicle Condition</FieldLabel>
-
-            <Controller
-              control={control}
-              name="conditionStatus"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {vehicleConditionStatusSchema.options.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status === "excellent"
-                          ? "Excellent"
-                          : status === "good"
-                            ? "Good"
-                            : status === "fair"
-                              ? "Fair"
-                              : "Damaged"}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <Field>
+              <FieldLabel>Vehicle Condition</FieldLabel>
+              <Controller
+                control={control}
+                name="conditionStatus"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {vehicleConditionStatusSchema.options.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status === "excellent"
+                            ? "Excellent"
+                            : status === "good"
+                              ? "Good"
+                              : status === "fair"
+                                ? "Fair"
+                                : "Damaged"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.conditionStatus && (
+                <FieldError>{errors.conditionStatus.message}</FieldError>
               )}
-            />
+            </Field>
+          </div>
 
-            {errors.conditionStatus && (
-              <FieldError>{errors.conditionStatus.message}</FieldError>
-            )}
-          </Field>
-        </div>
+          {/* Hàng 3: Chỉ số đo lường tài chính & vận hành */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field>
+              <FieldLabel>Current Odometer Reading</FieldLabel>
+              <Input
+                type="number"
+                {...register("returnOdometerReading", { valueAsNumber: true })}
+              />
+              {errors.returnOdometerReading && (
+                <FieldError>{errors.returnOdometerReading.message}</FieldError>
+              )}
+            </Field>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field>
-            <FieldLabel>Current Odometer Reading</FieldLabel>
+            <Field>
+              <FieldLabel>Extra Fee</FieldLabel>
+              <Input
+                type="number"
+                {...register("extraFee", { valueAsNumber: true })}
+              />
+              {errors.extraFee && (
+                <FieldError>{errors.extraFee.message}</FieldError>
+              )}
+            </Field>
+          </div>
 
-            <Input
-              type="number"
-              {...register("returnOdometerReading", {
-                valueAsNumber: true,
-              })}
-            />
+          {/* Hàng 4: Các ghi chú dạng text */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field>
+              <FieldLabel>Damage Description</FieldLabel>
+              <Textarea
+                {...register("damageDescription")}
+                placeholder="Describe vehicle condition..."
+                className="resize-none min-h-[80px]"
+              />
+            </Field>
 
-            {errors.returnOdometerReading && (
-              <FieldError>{errors.returnOdometerReading.message}</FieldError>
-            )}
-          </Field>
+            <Field>
+              <FieldLabel>Notes</FieldLabel>
+              <Textarea
+                {...register("notes")}
+                placeholder="Additional information..."
+                className="resize-none min-h-[80px]"
+              />
+            </Field>
+          </div>
 
-          <Field>
-            <FieldLabel>Extra Fee</FieldLabel>
-
-            <Input
-              type="number"
-              {...register("extraFee", {
-                valueAsNumber: true,
-              })}
-            />
-
-            {errors.extraFee && (
-              <FieldError>{errors.extraFee.message}</FieldError>
-            )}
-          </Field>
-        </div>
-
-        <Field>
-          <FieldLabel>Damage Description</FieldLabel>
-
-          <Textarea
-            {...register("damageDescription")}
-            placeholder="Describe vehicle condition..."
-          />
-        </Field>
-
-        <Field>
-          <FieldLabel>Notes</FieldLabel>
-
-          <Textarea
-            {...register("notes")}
-            placeholder="Additional information..."
-          />
-        </Field>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field>
-            <FieldLabel>Confirming Employee</FieldLabel>
-
-            <input type="hidden" {...register("employeeId")} />
-            <Input value={profile?.name || ""} disabled />
-          </Field>
-
-          <Field>
-            <FieldLabel>Images</FieldLabel>
-
-            <ImageUploadField
-              multiple
-              value={images}
-              onChange={(files) =>
-                setValue("images", files, {
-                  shouldValidate: true,
-                })
-              }
-            />
-
+          {/* Hàng 5: Khu vực Upload ảnh - Chiếm trọn 1 hàng lớn phía dưới cùng nội dung */}
+          <Field className="border-t pt-4">
+            <FieldLabel>Images Documentation</FieldLabel>
+            {/* LƯU Ý: Phía bên trong `ImageUploadField`, bạn nên cấu hình vùng chứa ảnh preview 
+              có `max-h-[150px] overflow-y-auto` hoặc hiển thị dạng grid thu nhỏ để không chiếm diện tích dọc.
+            */}
+            <div className="mt-1">
+              <ImageUploadField
+                multiple
+                value={images}
+                onChange={(files) =>
+                  setValue("images", files, { shouldValidate: true })
+                }
+              />
+            </div>
             {errors.images && (
               <FieldError>{errors.images.message as string}</FieldError>
             )}
           </Field>
-        </div>
-      </FieldGroup>
+        </FieldGroup>
+      </div>
     </EntityFormDialog>
   );
 }

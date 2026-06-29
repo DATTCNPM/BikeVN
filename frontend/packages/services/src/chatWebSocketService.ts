@@ -26,7 +26,8 @@ export class ChatWebSocketService {
     const token = localStorage.getItem(this.tokenKey);
 
     // Thay đổi ws:// hoặc wss:// tuỳ theo môi trường của bạn (giống baseURL)
-    const socketUrl = import.meta.env.VITE_WS_URL || "ws://localhost:8080/ws";
+    const socketUrl =
+      import.meta.env.VITE_WS_URL || "https://bikevn.onrender.com";
 
     this.stompClient = new Client({
       brokerURL: socketUrl,
