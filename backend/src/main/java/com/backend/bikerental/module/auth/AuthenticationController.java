@@ -1,11 +1,7 @@
 package com.backend.bikerental.module.auth;
 
-import com.backend.bikerental.module.auth.dto.AuthenticationRequest;
-import com.backend.bikerental.module.auth.dto.IntrospectRequest;
-import com.backend.bikerental.module.auth.dto.LogoutRequest;
+import com.backend.bikerental.module.auth.dto.*;
 import com.backend.bikerental.core.dto.ApiResponse;
-import com.backend.bikerental.module.auth.dto.AuthenticationResponse;
-import com.backend.bikerental.module.auth.dto.IntrospectResponse;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +49,13 @@ public class AuthenticationController {
         var result = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationService.refreshToken(request))
                 .build();
     }
 

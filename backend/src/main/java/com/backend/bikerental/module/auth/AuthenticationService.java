@@ -1,10 +1,6 @@
 package com.backend.bikerental.module.auth;
 
-import com.backend.bikerental.module.auth.dto.AuthenticationRequest;
-import com.backend.bikerental.module.auth.dto.IntrospectRequest;
-import com.backend.bikerental.module.auth.dto.LogoutRequest;
-import com.backend.bikerental.module.auth.dto.AuthenticationResponse;
-import com.backend.bikerental.module.auth.dto.IntrospectResponse;
+import com.backend.bikerental.module.auth.dto.*;
 import com.backend.bikerental.module.user.User;
 import com.backend.bikerental.core.exception.AppException;
 import com.backend.bikerental.core.exception.ErrorCode;
@@ -20,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +37,7 @@ import java.util.UUID;
 public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    StringRedisTemplate stringRedisTemplate;
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String signerKey;
@@ -49,9 +48,7 @@ public class AuthenticationService {
         boolean isValid = true;
         try {
             verifyToken(token);
-        }
-        catch (RuntimeException e)
-        {
+        } catch (RuntimeException e) {
             isValid = false;
         }
         return IntrospectResponse.builder()
@@ -77,67 +74,95 @@ public class AuthenticationService {
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
         var verified = signedJWT.verify(verifier);
 
-        if(invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
-        {
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
-        if(!verified && expiryTime.after(new Date()))
-        {
+        if (!verified && expiryTime.after(new Date())) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         return signedJWT;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request)
-    {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> {
-                    return new AppException(ErrorCode.USER_NOT_EXISTED);
-                });
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
             throw new AppException(ErrorCode.INVALID_PASSWORD);
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
-        if(!authenticated)
-        {
+        if (!authenticated) {
             throw new AppException(ErrorCode.INVALID_PASSWORD);
         }
-        var token = generateToken(user);
+
+        var accessToken = generateToken(user);
+        var refreshToken = generateRefreshToken(user.getEmail());
+
         return AuthenticationResponse.builder()
-                .token(token)
+                .token(accessToken)
+                .refreshToken(refreshToken)
                 .authenticated(true)
                 .build();
     }
 
-    public String generateToken(User user)
-    {
+    public String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getEmail())
                 .issuer("bike.vn")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(10, ChronoUnit.DAYS ).toEpochMilli()
+                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
-                .claim("branchId",user.getBranch() != null ? user.getBranch().getId() : null)
+                .claim("branchId", user.getBranch() != null ? user.getBranch().getId() : null)
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
-        try
-        {
+        try {
             jwsObject.sign(new MACSigner(signerKey.getBytes()));
             return jwsObject.serialize();
-        }
-        catch (JOSEException e)
-        {
+        } catch (JOSEException e) {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
+
+    private String generateRefreshToken(String email)
+    {
+        String refreshToken = UUID.randomUUID().toString();
+
+        stringRedisTemplate.opsForValue().set(refreshToken, email, 7, TimeUnit.DAYS);
+        return refreshToken;
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest request)
+    {
+        String refreshToken = request.getRefreshToken();
+        String email = stringRedisTemplate.opsForValue().get(refreshToken);
+
+        if(email == null)
+        {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        stringRedisTemplate.delete(refreshToken);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        String newAccessToken = generateToken(user);
+        String newRefreshToken = generateRefreshToken(email);
+
+        return  AuthenticationResponse.builder()
+                .token(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .authenticated(true)
+                .build();
+    }
+
     private String buildScope(User user)
     {
         StringJoiner stringJoiner = new StringJoiner(" ");
