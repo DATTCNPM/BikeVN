@@ -4,8 +4,8 @@ export const reviewCreationSchema = z.object({
   bookingId: z.string(),
   rating: z
     .number()
-    .min(1, "Đánh giá tối thiểu 1 sao")
-    .max(5, "Đánh giá tối đa 5 sao"),
+    .min(1, "Rating must be at least 1 star")
+    .max(5, "Rating must be at most 5 stars"),
   comment: z.string().optional(),
 });
 

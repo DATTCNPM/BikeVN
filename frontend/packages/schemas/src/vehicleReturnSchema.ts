@@ -48,7 +48,7 @@ export const createVehicleReturnSchema = z.object({
 
   returnOdometerReading: z
     .number({
-      message: "Vui lòng nhập số km hiện tại",
+      message: "Please enter the current mileage",
     })
     .int()
     .nonnegative(),

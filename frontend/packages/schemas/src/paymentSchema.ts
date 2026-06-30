@@ -21,9 +21,9 @@ export const paymentSchema = z.object({
   transactionCode: z.string().nullish(),
   idempotencyKey: z.string().uuid().nullish(),
   notes: z.string().nullish(),
-  paidAt: z.string().datetime().nullish(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime().optional(),
+  paidAt: z.string().nullish(),
+  createdAt: z.string(),
+  updatedAt: z.string().optional(),
 
   // Các trường thông tin bổ sung từ PaymentResponse phục vụ hiển thị QR/Chuyển khoản
   bankName: z.string().nullish(),
@@ -35,11 +35,11 @@ export const paymentSchema = z.object({
 
 // 3. Schemas cho các luồng Request Payloads (Khởi tạo, Duyệt tay, Hủy, Hoàn tiền)
 export const paymentCreationSchema = z.object({
-  bookingId: z.string().min(1, "Booking ID là bắt buộc"),
-  amount: z.coerce.number().positive("Số tiền phải lớn hơn 0"),
-  paymentMethod: z.string().min(1, "Phương thức thanh toán là bắt buộc"),
+  bookingId: z.string().min(1, "Booking ID is required"),
+  amount: z.coerce.number().positive("Amount must be a positive number"),
+  paymentMethod: z.string().min(1, "Payment method is required"),
   transactionCode: z.string().optional(),
-  idempotencyKey: z.string().uuid("Idempotency Key phải đúng định dạng UUID"),
+  idempotencyKey: z.string().uuid("Idempotency Key must be a valid UUID"),
 });
 
 export const approvePaymentManualSchema = z.object({
@@ -67,11 +67,11 @@ export const paymentFilterParamsSchema = z.object({
   type: paymentTypeSchema.optional(),
   fromDate: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Định dạng ngày phải là YYYY-MM-DD")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date format must be YYYY-MM-DD")
     .optional(),
   toDate: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Định dạng ngày phải là YYYY-MM-DD")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date format must be YYYY-MM-DD")
     .optional(),
   page: z.coerce.number().int().positive().default(1).optional(),
   size: z.coerce.number().int().positive().default(10).optional(),

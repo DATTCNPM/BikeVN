@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const permissionCreationSchema = z.object({
-  name: z.string().min(1, "Tên quyền không được để trống"),
+  name: z.string().min(1, "Permission name cannot be empty"),
 
   description: z.string().optional(),
 });

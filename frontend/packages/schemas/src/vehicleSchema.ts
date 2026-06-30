@@ -52,15 +52,15 @@ export const vehicleSchema = z.object({
 });
 
 export const vehicleCreationSchema = z.object({
-  name: z.string().min(1, "Tên xe không được để trống"),
+  name: z.string().min(1, "Vehicle name cannot be empty"),
 
   brandId: z.number().int().min(1),
 
   modelId: z.number().int().min(1),
 
-  licensePlate: z.string().min(1, "Biển số xe không được để trống"),
+  licensePlate: z.string().min(1, "License plate cannot be empty"),
 
-  color: z.string().min(1, "Màu sắc không được để trống"),
+  color: z.string().min(1, "Color cannot be empty"),
 
   year: z
     .number()
@@ -68,17 +68,17 @@ export const vehicleCreationSchema = z.object({
     .min(1900)
     .max(new Date().getFullYear() + 1),
 
-  pricePerDay: z.number().min(0, "Giá thuê phải lớn hơn hoặc bằng 0"),
+  pricePerDay: z.number().min(0, "Price per day must be a positive number"),
 
   vehicleType: vehicleTypeSchema,
 
-  mileage: z.number().min(0, "Số ODO phải lớn hơn hoặc bằng 0"),
+  mileage: z.number().min(0, "Odometer reading must be a positive number"),
 
   description: z.string().optional(),
 
   status: vehicleStatusSchema,
 
-  currentBranchId: z.string().min(1, "Vui lòng chọn chi nhánh"),
+  currentBranchId: z.string().min(1, "Please select a branch"),
 });
 
 export const vehicleCardData = z.object({
