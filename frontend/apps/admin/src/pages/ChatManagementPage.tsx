@@ -66,7 +66,7 @@ export default function ChatManagementPage() {
 
   // Trích xuất mảng tin nhắn
   const messages = useMemo(() => {
-    return [...(messagesData?.data || [])].reverse();
+    return [...(messagesData?.content || [])].reverse();
   }, [messagesData]);
 
   // Tính toán tổng số tin nhắn chưa đọc

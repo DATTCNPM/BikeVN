@@ -9,7 +9,7 @@ export default function MainLayout() {
       <Header />
 
       {/* Tận dụng tối đa không gian hiển thị sản phẩm */}
-      <main className="flex-1 w-full max-w-[1680px] mx-auto px-6 lg:px-8 pt-24 pb-16 transition-all duration-300">
+      <main className="flex-1 w-full max-w-[1680px] mx-auto px-6 lg:px-8 pt-24 pb-5 transition-all duration-300">
         <Outlet />
       </main>
 

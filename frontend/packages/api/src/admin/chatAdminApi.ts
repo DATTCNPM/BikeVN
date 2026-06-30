@@ -2,7 +2,7 @@ import axiosAdmin from "../axios/axiosAdmin";
 import type {
   ConversationResponse,
   ChatMessageResponse,
-  PaginationResponse,
+  ChatResponse,
 } from "@repo/types";
 
 export const chatAdminApi = {
@@ -10,10 +10,10 @@ export const chatAdminApi = {
   async getMessageHistory(
     conversationId: string,
     params?: { page?: number; size?: number },
-  ): Promise<PaginationResponse<ChatMessageResponse>> {
+  ): Promise<ChatResponse<ChatMessageResponse>> {
     return axiosAdmin.get<
-      PaginationResponse<ChatMessageResponse>,
-      PaginationResponse<ChatMessageResponse>
+      ChatResponse<ChatMessageResponse>,
+      ChatResponse<ChatMessageResponse>
     >(`/chat/${conversationId}`, { params });
   },
 

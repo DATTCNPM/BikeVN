@@ -36,15 +36,15 @@ export default function MessageItem({ message, isCurrentUser }: Props) {
       >
         <Card
           className={cn(
-            "max-w-[75%] overflow-hidden rounded-3xl shadow-none border-none",
+            "max-w-[75%] rounded-2xl shadow-none border-none h-auto block clear-both",
             isCurrentUser
-              ? "rounded-br-md bg-primary text-primary-foreground"
+              ? "rounded-br-md bg-primary text-secondary-foreground"
               : "rounded-bl-md bg-card text-foreground",
           )}
         >
           {message.content && (
-            <div className="px-4 py-3">
-              <p className="text-sm leading-relaxed whitespace-pre-wrap break-all">
+            <div className="px-4 py-2">
+              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
                 {message.content}
               </p>
             </div>

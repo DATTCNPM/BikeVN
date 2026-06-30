@@ -4,7 +4,7 @@ import { chatClientWebSocket } from "@repo/services";
 import { chatKeys } from "./useChatQueries";
 import type {
   ChatMessageResponse,
-  PaginationResponse,
+  ChatResponse,
   ReadReceiptEvent,
 } from "@repo/types";
 
@@ -23,7 +23,7 @@ export function useChatManager(conversationId: string | null) {
       // Callback 1: Xử lý khi có TIN NHẮN MỚI
       (newMessage: ChatMessageResponse) => {
         // Cập nhật trực tiếp vào danh sách lịch sử tin nhắn của React Query
-        queryClient.setQueryData<PaginationResponse<ChatMessageResponse>>(
+        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
           chatKeys.history(conversationId),
           (oldData) => {
             if (!oldData) return oldData;
@@ -31,7 +31,7 @@ export function useChatManager(conversationId: string | null) {
               ...oldData,
               // Vì backend trả về Pageable, tùy thuộc cấu trúc của bạn (ví dụ data.result hoặc mảng content)
               // Giả lập push tin nhắn mới vào đầu hoặc cuối mảng tùy theo Sort hướng hiển thị
-              content: [newMessage, ...(oldData.data || [])],
+              content: [newMessage, ...(oldData.content || [])],
             };
           },
         );
@@ -42,14 +42,14 @@ export function useChatManager(conversationId: string | null) {
 
       // Callback 2: Xử lý khi có SỰ KIỆN ĐÃ ĐỌC (Read Receipt)
       (readEvent: ReadReceiptEvent) => {
-        queryClient.setQueryData<PaginationResponse<ChatMessageResponse>>(
+        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
           chatKeys.history(conversationId),
           (oldData) => {
             if (!oldData) return oldData;
             return {
               ...oldData,
               // Cập nhật tất cả tin nhắn của người kia thành isRead = true
-              content: oldData.data?.map((msg) =>
+              content: oldData.content?.map((msg) =>
                 msg.senderId !== readEvent.readerId
                   ? { ...msg, isRead: true }
                   : msg,

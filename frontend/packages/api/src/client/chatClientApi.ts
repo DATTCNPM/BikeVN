@@ -2,7 +2,7 @@ import axiosClient from "../axios/axiosClient";
 import type {
   ConversationResponse,
   ChatMessageResponse,
-  PaginationResponse,
+  ChatResponse,
 } from "@repo/types";
 
 export const chatClientApi = {
@@ -19,10 +19,10 @@ export const chatClientApi = {
   async getMessageHistory(
     conversationId: string,
     params?: { page?: number; size?: number },
-  ): Promise<PaginationResponse<ChatMessageResponse>> {
+  ): Promise<ChatResponse<ChatMessageResponse>> {
     return axiosClient.get<
-      PaginationResponse<ChatMessageResponse>,
-      PaginationResponse<ChatMessageResponse>
+      ChatResponse<ChatMessageResponse>,
+      ChatResponse<ChatMessageResponse>
     >(`/chat/${conversationId}`, { params });
   },
 

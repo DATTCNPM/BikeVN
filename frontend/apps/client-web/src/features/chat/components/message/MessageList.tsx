@@ -17,23 +17,28 @@ export default function MessageList({
 }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Tự động cuộn xuống đáy khi có tin nhắn mới đổ về
+  // Cơ chế cuộn xuống đáy an toàn khi nhận được mảng dữ liệu tin nhắn của phòng mới
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Đảo ngược mảng hiển thị nếu backend trả về sort DESC, hoặc giữ nguyên nếu backend là ASC
-  const sortedMessages = [...messages].reverse();
+    if (!loading && messages && messages.length > 0) {
+      // Đợi 60ms cho luồng render của React ổn định layout phòng mới
+      const timer = setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "auto" }); // Dùng "auto" thay vì "smooth" để tránh bị giật lửng lơ khi chuyển phòng nhanh
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [messages, loading]);
 
   return (
-    <ScrollArea className="h-[calc(100vh-14rem)] w-full bg-muted/30">
+    // Sử dụng h-full để lấp đầy không gian ChatPage cấp cho
+    <ScrollArea className="h-full w-full bg-muted/30">
+      {/* ✨ SỬA TẠI ĐÂY: Chỉ dùng flex flex-col gap-4 p-4 đơn giản nhất, KHÔNG justify-end, KHÔNG min-h-full */}
       <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4">
         {loading ? (
           <div className="flex justify-center p-4">
             <Spinner />
           </div>
         ) : (
-          sortedMessages.map((message) => (
+          messages.map((message) => (
             <MessageItem
               key={message.id}
               message={message}
@@ -41,7 +46,9 @@ export default function MessageList({
             />
           ))
         )}
-        <div ref={bottomRef} />
+
+        {/* Thẻ neo đáy */}
+        <div ref={bottomRef} className="h-1 shrink-0 clear-both" />
       </div>
     </ScrollArea>
   );

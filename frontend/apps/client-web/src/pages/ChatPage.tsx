@@ -6,10 +6,11 @@ import {
   useMessageHistory,
 } from "@/features/chat/useChatQueries";
 import { useChatManager } from "@/features/chat/useChatManager";
-
-const currentUserId = "1";
+import { useProfile } from "@/features/profile/useProfile";
 
 export default function ChatPage() {
+  const { data: profile } = useProfile();
+  const currentUserId = profile?.id ?? "";
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(null);
@@ -34,8 +35,12 @@ export default function ChatPage() {
   );
 
   const { sendMessage } = useChatManager(selectedConversationId);
-  const messageList = useMemo(() => messagesData?.data || [], [messagesData]);
+  const messageList = useMemo(
+    () => messagesData?.content || [],
+    [messagesData],
+  );
 
+  console.log("message data", messagesData);
   console.log(
     "🚀 ~ file: ChatPage.tsx:38 ~ ChatPage ~ messageList:",
     messageList,
@@ -43,7 +48,7 @@ export default function ChatPage() {
 
   return (
     // Sử dụng h-[calc(100vh-theme(spacing.16)-padding)] để không bị lố chiều cao layout tổng
-    <div className="flex h-[calc(100vh-8rem)] gap-6 overflow-hidden items-start antialiased">
+    <div className="flex h-[calc(100vh-14rem)] gap-6 overflow-hidden items-start antialiased">
       <ChatSidebar
         loading={conversationsLoading}
         conversations={conversations}
@@ -52,6 +57,7 @@ export default function ChatPage() {
       />
 
       <ChatContent
+        key={selectedConversationId ?? "empty"}
         loading={messagesLoading}
         conversation={activeConversation}
         messages={messageList}

@@ -4,7 +4,7 @@ import { chatAdminWebSocket } from "@repo/services"; // Instance WebSocket của
 import { chatAdminKeys } from "./useChatQueries";
 import type {
   ChatMessageResponse,
-  PaginationResponse,
+  ChatResponse,
   ReadReceiptEvent,
 } from "@repo/types";
 
@@ -22,13 +22,13 @@ export function useAdminChatManager(conversationId: string | null) {
       conversationId,
       // Callback 1: Khi nhận được TIN NHẮN MỚI của Khách hàng gửi lên hoặc từ Admin khác cùng phản hồi
       (newMessage: ChatMessageResponse) => {
-        queryClient.setQueryData<PaginationResponse<ChatMessageResponse>>(
+        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
           chatAdminKeys.history(conversationId),
           (oldData) => {
             if (!oldData) return oldData;
             return {
               ...oldData,
-              content: [newMessage, ...(oldData.data || [])],
+              content: [newMessage, ...(oldData.content || [])],
             };
           },
         );
@@ -41,14 +41,14 @@ export function useAdminChatManager(conversationId: string | null) {
 
       // Callback 2: Khi Khách hàng hoặc Admin khác bấm xem và phát sự kiện ĐÃ ĐỌC (Read Receipt)
       (readEvent: ReadReceiptEvent) => {
-        queryClient.setQueryData<PaginationResponse<ChatMessageResponse>>(
+        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
           chatAdminKeys.history(conversationId),
           (oldData) => {
             if (!oldData) return oldData;
             return {
               ...oldData,
               // Cập nhật các tin nhắn mà đối phương vừa đọc thành isRead = true
-              content: oldData.data?.map((msg) =>
+              content: oldData.content?.map((msg) =>
                 msg.senderId !== readEvent.readerId
                   ? { ...msg, isRead: true }
                   : msg,

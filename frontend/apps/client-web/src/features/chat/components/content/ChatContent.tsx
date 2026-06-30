@@ -49,6 +49,11 @@ export default function ChatContent({
     );
   }
 
+  console.log(
+    "🚀 ~ file: ChatContent.tsx:43 ~ ChatContent ~ messages:",
+    messages,
+  );
+
   return (
     <section
       className={`
@@ -72,7 +77,7 @@ export default function ChatContent({
       </div>
 
       {/* Danh sách tin nhắn */}
-      <div className="flex-1 overflow-hidden bg-muted/5">
+      <div className="flex-1 h-0 min-h-0 overflow-hidden bg-muted/5">
         <MessageList
           loading={loading}
           messages={messages}
