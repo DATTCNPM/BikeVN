@@ -50,6 +50,17 @@ public class BookingController {
                 .build();
     }
 
+    @GetMapping("/branch")
+    public ApiResponse<PageResponse<BookingResponse>> getAllBookingByBranch(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    )
+    {
+        return ApiResponse.<PageResponse<BookingResponse>>builder()
+                .result(bookingService.getAllBookingByBranch(page, size))
+                .build();
+    }
+
     //get booking by user
     @GetMapping("/user/{userId}")
     public ApiResponse<List<BookingResponse>> getBookingsByUser(@PathVariable String userId)

@@ -1,6 +1,8 @@
 package com.backend.bikerental.module.booking;
 
 import com.backend.bikerental.module.booking.enums.BookingStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -59,4 +61,8 @@ public interface BookingRepository extends JpaRepository<Booking, String>, JpaSp
             "GROUP BY v.brand " +
             "ORDER BY COUNT(b.id) DESC")
     List<Object[]> getPopularVehicleBrands();
+
+    Page<Booking> findByPickupBranchIdOrReturnBranchId(String pickupBranchId,
+                                                       String returnBranchId,
+                                                       Pageable pageable);
 }
