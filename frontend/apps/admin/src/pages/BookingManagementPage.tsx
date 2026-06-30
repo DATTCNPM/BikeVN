@@ -15,6 +15,7 @@ import UniversalFilterSheet, {
 
 import ReviewCreate from "@/features/reviews/components/ReviewCreate";
 import { Badge } from "@repo/ui/components/ui/badge";
+import { IdCell } from "@/components/common/IdCell";
 
 import { useBookings, useBookingFilters } from "@/features/bookings/queries";
 import { useBranches } from "@repo/hooks";
@@ -153,11 +154,20 @@ export default function BookingManagementPage() {
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
       {
+        accessorKey: "id",
+        header: "Booking ID",
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            <IdCell id={row.original.id} prefix="#" />
+          </span>
+        ),
+      },
+      {
         accessorKey: "user_id",
         header: "Customer",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
-            User #{row.original.userId.substring(0, 4)}
+            <IdCell id={row.original.userId} prefix="User #" />
           </span>
         ),
       },
@@ -166,7 +176,7 @@ export default function BookingManagementPage() {
         header: "Vehicle",
         cell: ({ row }) => (
           <span className="text-sm font-medium">
-            Xe #{row.original.vehicleId.substring(0, 4)}
+            <IdCell id={row.original.vehicleId} prefix="Vehicle #" />
           </span>
         ),
       },

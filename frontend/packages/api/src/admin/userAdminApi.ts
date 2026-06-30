@@ -7,6 +7,7 @@ import type {
   AdminUserCreationPayload,
   UpdateEmployeePayload,
   UserQueryParams,
+  EmployeeQueryParams,
 } from "@repo/types";
 import { createUserCommonApi } from "../common/createUserCommonApi";
 
@@ -100,5 +101,17 @@ export const userApi = {
         params,
       },
     );
+  },
+
+  async getEmployeeFilters(
+    params?: EmployeeQueryParams,
+  ): Promise<PaginationResponse<Employee>> {
+    // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
+    return axiosAdmin.get<
+      PaginationResponse<Employee>,
+      PaginationResponse<Employee>
+    >("/users/filter", {
+      params,
+    });
   },
 };

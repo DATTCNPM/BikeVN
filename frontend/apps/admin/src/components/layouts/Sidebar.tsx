@@ -78,6 +78,18 @@ const menuItems = [
     roles: [ROLES.ADMIN, ROLES.EMPLOYEE],
   },
   {
+    title: "Booking Return Admin",
+    icon: ClipboardList,
+    path: "vehicle-returns",
+    roles: [ROLES.ADMIN],
+  },
+  {
+    title: "Booking Return Employee",
+    icon: ClipboardList,
+    path: "vehicle-returns",
+    roles: [ROLES.EMPLOYEE],
+  },
+  {
     title: "Reviews",
     icon: Star,
     path: "reviews",

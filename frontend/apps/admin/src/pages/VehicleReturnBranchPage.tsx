@@ -10,6 +10,7 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import UniversalFilterSheet, {
   type FilterConfigItem,
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
+import { IdCell } from "@/components/common/IdCell";
 
 import {
   useVehicleReturnsPerBranch,
@@ -94,7 +95,9 @@ export default function VehicleReturnBranchPage() {
         accessorKey: "bookingId",
         header: "Booking ID",
         cell: ({ row }) => (
-          <span className="font-mono text-xs">{row.original.bookingId}</span>
+          <span className="font-mono text-xs">
+            <IdCell id={row.original.bookingId} prefix="#" />
+          </span>
         ),
       },
       {
@@ -141,7 +144,11 @@ export default function VehicleReturnBranchPage() {
       {
         accessorKey: "employeeId",
         header: "Inspected By",
-        cell: ({ row }) => <span>{row.original.employeeId || "Staff"}</span>,
+        cell: ({ row }) => (
+          <span>
+            <IdCell id={row.original.employeeId} prefix="#" />
+          </span>
+        ),
       },
       {
         accessorKey: "createdAt",

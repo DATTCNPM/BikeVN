@@ -11,6 +11,7 @@ import {
   adminEmployeeCreationSchema,
   employeeSchema,
   userQuerySchema,
+  employeeQuerySchema,
 } from "@repo/schemas";
 
 export type User = z.infer<typeof userSchema>;
@@ -34,3 +35,5 @@ export type AdminEmployeeCreationPayload = z.infer<
 >;
 
 export type UserQueryParams = z.infer<typeof userQuerySchema>;
+
+export type EmployeeQueryParams = z.infer<typeof employeeQuerySchema>;

@@ -7,7 +7,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
-// import TablePagination from "@/components/common/TablePagination";
+import { IdCell } from "@/components/common/IdCell";
 
 import VehicleImageCreate from "@/features/vehicleImages/components/ImageCreate";
 import VehicleImageEdit from "@/features/vehicleImages/components/ImageEdit";
@@ -37,6 +37,17 @@ export default function VehicleImageManagementPage() {
 
   const columns = useMemo<ColumnDef<VehicleImage>[]>(
     () => [
+      {
+        accessorKey: "id",
+
+        header: "Image ID",
+
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            <IdCell id={row.original.id} prefix="#" />
+          </span>
+        ),
+      },
       {
         accessorKey: "imageUrl",
 

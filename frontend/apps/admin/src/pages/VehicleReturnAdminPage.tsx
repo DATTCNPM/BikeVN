@@ -10,6 +10,7 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import UniversalFilterSheet, {
   type FilterConfigItem,
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
+import { IdCell } from "@/components/common/IdCell";
 
 import { useBranches } from "@repo/hooks";
 import {
@@ -111,14 +112,20 @@ export default function VehicleReturnAdminPage() {
         accessorKey: "bookingId",
         header: "Booking ID",
         cell: ({ row }) => (
-          <span className="font-mono text-xs">{row.original.bookingId}</span>
+          <span className="font-mono text-xs">
+            <IdCell id={row.original.bookingId} prefix="#" />
+          </span>
         ),
       },
       {
-        accessorKey: "branchId",
+        accessorKey: "returnBranchId",
         header: "Return Branch",
         // 🟢 FIX 2: Ưu tiên hiển thị tên branch được populate từ backend, nếu không có mới fall back về ID
-        cell: ({ row }) => <span>{row.original.returnBranchId}</span>,
+        cell: ({ row }) => (
+          <span>
+            <IdCell id={row.original.returnBranchId} prefix="#" />
+          </span>
+        ),
       },
       {
         accessorKey: "conditionStatus",

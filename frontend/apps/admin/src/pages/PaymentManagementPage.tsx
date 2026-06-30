@@ -7,6 +7,7 @@ import PaymentActionDropdown from "@/features/payments/components/PaymentActionD
 import PaymentStatusDialog from "@/features/payments/components/PaymentStatusDialog";
 import TablePagination from "@/components/common/TablePagination";
 import PaymentInfoPopover from "@/features/payments/components/PaymentInfoPopover";
+import { IdCell } from "@/components/common/IdCell";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
@@ -130,7 +131,7 @@ export default function PaymentManagementPage() {
         header: "Booking ID",
         cell: ({ row }) => (
           <span className="font-medium">
-            #{row.original.bookingId.slice(0, 8)}
+            <IdCell id={row.original.bookingId} prefix="#" />
           </span>
         ),
       },

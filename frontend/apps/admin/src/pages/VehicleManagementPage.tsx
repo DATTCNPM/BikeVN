@@ -12,6 +12,7 @@ import VehicleCreate from "@/features/vehicles/components/VehicleCreate";
 import VehicleDelete from "@/features/vehicles/components/VehicleDelete";
 import VehicleEdit from "@/features/vehicles/components/VehicleEdit";
 import VehicleInfoDropdown from "@/features/vehicles/components/VehicleInfoDropdown";
+import { IdCell } from "@/components/common/IdCell";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
@@ -158,6 +159,15 @@ export default function VehicleManagementPage() {
   // Khởi tạo các Columns cho TanStack Table
   const columns = useMemo<ColumnDef<Vehicle>[]>(
     () => [
+      {
+        accessorKey: "id",
+        header: "Vehicle ID",
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            <IdCell id={row.original.id} prefix="#" />
+          </span>
+        ),
+      },
       {
         accessorKey: "name",
         header: "Vehicle",
