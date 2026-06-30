@@ -6,6 +6,7 @@ import DataTableToolbar from "@/components/common/DataTableToolbar";
 import StatusBadge from "@/components/common/StatusBadge";
 import TableActionDropdown from "@/components/common/TableActionDropdown";
 import { Spinner } from "@repo/ui/components/ui/spinner";
+import {IdCell} from "@/components/common/IdCell";
 
 import BranchCreate from "@/features/branches/components/BranchCreate";
 import BranchEdit from "@/features/branches/components/BranchEdit";
@@ -26,6 +27,15 @@ export default function BranchManagementPage() {
 
   const columns = useMemo<ColumnDef<Branch>[]>(
     () => [
+      {
+        accessorKey: "id",
+        header: "Branch ID",
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            <IdCell id={row.original.id} prefix="#" />
+          </span>
+        ),
+      },
       {
         accessorKey: "name",
         header: "Branch Name",

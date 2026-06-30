@@ -35,6 +35,13 @@ export default function BrandManagementPage() {
   const columns = useMemo<ColumnDef<VehicleBrand>[]>(
     () => [
       {
+        accessorKey: "id",
+        header: "Brand ID",
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">{row.original.id}</span>
+        ),
+      },
+      {
         accessorKey: "name",
         header: "Brand Name",
       },

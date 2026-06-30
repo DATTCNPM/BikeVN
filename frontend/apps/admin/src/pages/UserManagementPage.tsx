@@ -10,13 +10,13 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import UniversalFilterSheet, {
   type FilterConfigItem,
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
+import { IdCell } from "@/components/common/IdCell";
 
 import UserCreate from "@/features/users/components/UserCreate";
 import UserEdit from "@/features/users/components/UserEdit";
 import UserDelete from "@/features/users/components/UserDelete";
 
 import { useUsers } from "@/features/users/queries";
-import { useBranches } from "@repo/hooks";
 import { useUserFilters } from "@/features/users/queries";
 
 import type { User, UserQueryParams } from "@repo/types";
@@ -34,9 +34,6 @@ export default function UserManagementPage() {
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
     {},
   );
-
-  // 2. Fetch data từ API danh sách chi nhánh & danh sách users mặc định
-  const { data: branches } = useBranches();
   const { data: usersResponse, isLoading: isInitialLoading } = useUsers(
     page,
     10,
@@ -45,11 +42,6 @@ export default function UserManagementPage() {
   // 3. Định nghĩa cấu hình hiển thị cho Filter Sheet
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     return [
-      {
-        key: "branchId",
-        title: "Branch",
-        options: branches?.map((b) => ({ label: b.name, value: b.id })) ?? [],
-      },
       {
         key: "roleName",
         title: "Role",
@@ -68,13 +60,12 @@ export default function UserManagementPage() {
         ],
       },
     ];
-  }, [branches]);
+  }, []);
 
   // 4. Ánh xạ bộ lọc từ UI thành Query Params gửi lên API
   const apiFilters = useMemo<UserQueryParams>(
     () => ({
       keyword: search.trim() || undefined,
-      branchId: selectedFilters["branchId"]?.value,
       roleName: selectedFilters["roleName"]?.value,
       isActive: selectedFilters["isActive"]
         ? selectedFilters["isActive"].value === "true"
@@ -119,6 +110,15 @@ export default function UserManagementPage() {
   // 9. Cấu hình các cột hiển thị trong TanStack Table
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
+      {
+        accessorKey: "id",
+        header: "User ID",
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">
+            <IdCell id={row.original.id} prefix="#" />
+          </span>
+        ),
+      },
       {
         accessorKey: "name",
         header: "Name",

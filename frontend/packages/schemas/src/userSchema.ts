@@ -41,8 +41,14 @@ export const updateProfileSchema = userBaseSchema;
 export const userQuerySchema = z.object({
   keyword: z.string().optional(),
   isActive: z.boolean().optional(),
+  page: z.number().optional(),
+  size: z.number().optional(),
+});
+
+export const employeeQuerySchema = z.object({
+  keyword: z.string().optional(),
+  isActive: z.boolean().optional(),
   branchId: z.string().optional(),
-  roleName: z.string().optional(),
   page: z.number().optional(),
   size: z.number().optional(),
 });

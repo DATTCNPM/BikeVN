@@ -40,6 +40,13 @@ export default function ModelManagementPage() {
   const columns = useMemo<ColumnDef<VehicleModel>[]>(
     () => [
       {
+        accessorKey: "id",
+        header: "Model ID",
+        cell: ({ row }) => (
+          <span className="text-sm font-medium">{row.original.id}</span>
+        ),
+      },
+      {
         accessorKey: "name",
         header: "Model",
       },
