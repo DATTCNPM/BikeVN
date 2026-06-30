@@ -198,6 +198,12 @@ public class VehicleService {
     public VehicleImageResponse updateVehicleImage(String vehicleId, String imageId,
                                                    MultipartFile file, String altText,
                                                    Integer displayOrder, Boolean isPrimary) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
+        String vehicleBranchId = vehicle.getCurrentBranch() != null ? vehicle.getCurrentBranch().getId() : null;
+        branchSecurityUtil.verifyBranchAccess(vehicleBranchId);
+
         VehicleImage image = vehicleImageRepository.findByIdAndVehicle_Id(imageId, vehicleId)
                 .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
 
