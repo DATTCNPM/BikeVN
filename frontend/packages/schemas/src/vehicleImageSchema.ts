@@ -27,5 +27,5 @@ export const vehicleImageSchema = vehicleImageCreationSchema
     altText: z.string().nullable(),
     displayOrder: z.number(),
     isPrimary: z.boolean(),
-    createdAt: z.string().datetime(),
+    createdAt: z.string(),
   });

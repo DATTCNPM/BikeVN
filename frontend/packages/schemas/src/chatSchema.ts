@@ -18,7 +18,7 @@ export const conversationResponseSchema = z.object({
 
 export const chatMessageRequestSchema = z.object({
   conversationId: z.string(),
-  content: z.string().min(1, "Tin nhắn không được để trống"),
+  content: z.string().min(1, "Message cannot be empty"),
 });
 
 export const readReceiptEventSchema = z.object({

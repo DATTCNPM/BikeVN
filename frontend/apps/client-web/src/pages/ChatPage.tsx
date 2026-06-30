@@ -36,6 +36,11 @@ export default function ChatPage() {
   const { sendMessage } = useChatManager(selectedConversationId);
   const messageList = useMemo(() => messagesData?.data || [], [messagesData]);
 
+  console.log(
+    "🚀 ~ file: ChatPage.tsx:38 ~ ChatPage ~ messageList:",
+    messageList,
+  );
+
   return (
     // Sử dụng h-[calc(100vh-theme(spacing.16)-padding)] để không bị lố chiều cao layout tổng
     <div className="flex h-[calc(100vh-8rem)] gap-6 overflow-hidden items-start antialiased">

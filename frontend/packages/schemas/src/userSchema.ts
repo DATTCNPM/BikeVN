@@ -4,10 +4,10 @@ export const userRoleSchema = z.enum(["user", "admin", "employee"]);
 
 const optionalString = (schema: z.ZodString) => schema.or(z.literal(""));
 const userBaseSchema = z.object({
-  name: z.string().min(1, "USER_INVALID"),
-  email: z.string().email("Email không hợp lệ"),
-  phone: optionalString(z.string().min(10, "Số điện thoại không hợp lệ")),
-  cccdNumber: optionalString(z.string().min(9, "Số CCCD không hợp lệ")),
+  name: z.string().min(1, "User name cannot be empty"),
+  email: z.string().email("Email is invalid"),
+  phone: optionalString(z.string().min(10, "Phone number is invalid")),
+  cccdNumber: optionalString(z.string().min(9, "CCCD number is invalid")),
 });
 
 export const userSchema = userBaseSchema.extend({
@@ -17,7 +17,9 @@ export const userSchema = userBaseSchema.extend({
 });
 
 export const userCreationSchema = userBaseSchema.extend({
-  passwordHash: z.string().min(6),
+  passwordHash: z
+    .string()
+    .min(6, "Password must be at least 6 characters long"),
 });
 
 export const employeeSchema = userSchema.extend({
@@ -29,7 +31,7 @@ export const updateEmployeeSchema = userBaseSchema.extend({
 });
 
 export const adminEmployeeCreationSchema = userCreationSchema.extend({
-  branchId: z.string().min(1, "Chi nhánh không được để trống"),
+  branchId: z.string().min(1, "Branch cannot be empty"),
 });
 export const adminUserCreationSchema = userCreationSchema.extend({});
 export const updateUserSchema = userBaseSchema.extend({});

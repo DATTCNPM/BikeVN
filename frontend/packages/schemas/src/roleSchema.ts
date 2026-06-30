@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const roleCreationSchema = z.object({
-  name: z.string().min(1, "Tên vai trò không được để trống"),
+  name: z.string().min(1, "Role name cannot be empty"),
 
   description: z.string().optional(),
 

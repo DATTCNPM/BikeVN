@@ -13,7 +13,6 @@ import {
 import { enUS } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 
-import { Badge } from "@repo/ui/components/ui/badge";
 import { Button } from "@repo/ui/components/ui/button";
 import { Calendar } from "@repo/ui/components/ui/calendar";
 import {
@@ -44,6 +43,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@repo/ui/components/ui/popover";
+import VehicleStatusBadge from "@/components/common/VehicleStatusBadge";
 
 import { useCreateBooking } from "@/features/bookings/mutations";
 import { useAuthStore } from "@/features/auth/authStore";
@@ -157,9 +157,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
               </span>
             </CardTitle>
           </div>
-          <Badge className="rounded-full bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 variant-none border-none">
-            Available
-          </Badge>
+          <VehicleStatusBadge status={vehicle.status || "unavailable"} />
         </div>
       </CardHeader>
 

@@ -2,12 +2,12 @@ import { z } from "zod";
 
 export const vehicleModelCreationSchema = z.object({
   brandId: z.number({
-    message: "Vui lòng chọn thương hiệu xe",
+    message: "Please select a vehicle brand",
   }),
 
-  name: z.string().min(1, "Tên dòng xe không được để trống"),
+  name: z.string().min(1, "Model name cannot be empty"),
 
-  engineCapacity: z.number().min(50, "Dung tích động cơ không hợp lệ"),
+  engineCapacity: z.number().min(50, "Engine capacity is invalid"),
 
   yearFrom: z.number().optional(),
 
@@ -18,5 +18,5 @@ export const vehicleModelUpdateSchema = vehicleModelCreationSchema;
 
 export const vehicleModelSchema = vehicleModelCreationSchema.extend({
   id: z.number(),
-  createdAt: z.string().datetime(),
+  createdAt: z.string(),
 });
