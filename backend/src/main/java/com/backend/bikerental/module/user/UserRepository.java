@@ -1,10 +1,10 @@
 package com.backend.bikerental.module.user;
 
-import com.backend.bikerental.module.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -20,4 +20,11 @@ public interface UserRepository extends JpaRepository<User, String>, JpaSpecific
 
     // 3. Get Employees (Employee only can see their teammates)
     Page<User> findByBranchId(String branchId, Pageable pageable);
+
+    // Ném vào UserRepository.java
+    @Query("SELECT COUNT(u) FROM User u JOIN u.roles r WHERE r.name = 'user'")
+    long countCustomers();
+
+    @Query("SELECT COUNT(u) FROM User u JOIN u.roles r WHERE r.name = 'employee'")
+    long countEmployees();
 }
