@@ -44,6 +44,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@repo/ui/components/ui/popover";
+import VehicleStatusBadge from "@/components/common/VehicleStatusBadge";
 
 import { useCreateBooking } from "@/features/bookings/mutations";
 import { useAuthStore } from "@/features/auth/authStore";
@@ -157,9 +158,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
               </span>
             </CardTitle>
           </div>
-          <Badge className="rounded-full bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 variant-none border-none">
-            Available
-          </Badge>
+          <VehicleStatusBadge status={vehicle.status || "unavailable"} />
         </div>
       </CardHeader>
 

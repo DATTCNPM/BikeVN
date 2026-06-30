@@ -27,7 +27,7 @@ export class ChatWebSocketService {
 
     // Thay đổi ws:// hoặc wss:// tuỳ theo môi trường của bạn (giống baseURL)
     const socketUrl =
-      import.meta.env.VITE_WS_URL || "https://bikevn.onrender.com";
+      import.meta.env.VITE_WS_URL || "wss://bikevn.onrender.com/ws";
 
     this.stompClient = new Client({
       brokerURL: socketUrl,

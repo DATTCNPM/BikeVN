@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import VehicleGallery from "@/features/vehicle/VehicleGallery";
 import { Badge } from "@repo/ui/components/ui/badge";
 import {
@@ -36,6 +36,8 @@ export default function VehicleInfo({
   brands,
   models,
 }: Props) {
+  const [currentTab, setCurrentTab] = useState("overview");
+
   const vehicleData = useMemo(() => {
     return {
       ...vehicle,
@@ -46,10 +48,6 @@ export default function VehicleInfo({
       modelName: models.find((m) => m.id === vehicle.modelId)?.name || "N/A",
     };
   }, [vehicle, branches, brands, models]);
-
-  const locationVehicle = useMemo(() => {
-    return branches.find((b) => b.id === vehicle?.currentBranchId);
-  }, [vehicle, branches]);
 
   return (
     <div className="h-full space-y-6">
@@ -103,10 +101,10 @@ export default function VehicleInfo({
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid grid-cols-3 w-full max-w-[400px]">
+      <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
+        <TabsList className="grid grid-cols-2 w-full max-w-[400px]">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="location">Location</TabsTrigger>
+
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
         </TabsList>
 
@@ -183,16 +181,14 @@ export default function VehicleInfo({
                 : "N/A"}
             </p>
           </div>
-        </TabsContent>
 
-        <TabsContent
-          value="location"
-          className="pt-4 h-[400px] rounded-2xl overflow-hidden border"
-        >
-          <Map
-            locations={locationVehicle ? [locationVehicle] : []}
-            selectedBranchId={vehicleData.currentBranchId}
-          />
+          <div className="pt-4 h-[400px] rounded-2xl overflow-hidden border relative bg-card data-[state=inactive]:absolute data-[state=inactive]:opacity-0 data-[state=inactive]:pointer-events-none">
+            <Map
+              locations={branches}
+              selectedBranchId={vehicleData.currentBranchId}
+              currentTab={currentTab}
+            />
+          </div>
         </TabsContent>
 
         <TabsContent value="reviews" className="pt-4">

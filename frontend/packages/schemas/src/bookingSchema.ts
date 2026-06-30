@@ -13,8 +13,8 @@ export const bookingFilterSchema = z.object({
   userId: z.string().optional(),
   vehicleId: z.string().optional(),
   status: bookingStatusSchema.optional(),
-  fromDate: z.string().datetime().optional(),
-  toDate: z.string().datetime().optional(),
+  fromDate: z.string().optional(),
+  toDate: z.string().optional(),
 });
 
 // Định nghĩa schema cho việc tạo booking mới
@@ -24,27 +24,27 @@ export const bookingCreationSchema = z.object({
   pickupBranchId: z.string().min(1),
   returnBranchId: z.string().min(1),
 
-  startTime: z.string().datetime(),
-  endTime: z.string().datetime(),
+  startTime: z.string(),
+  endTime: z.string(),
 });
 
 export const bookingUpdateSchema = z.object({
   pickupBranchId: z.string().min(1).optional(),
   returnBranchId: z.string().min(1).optional(),
-  startTime: z.string().datetime().optional(),
-  endTime: z.string().datetime().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
   status: bookingStatusSchema.optional(),
 });
 
 // Định nghĩa schema cho booking hoàn chỉnh, bao gồm cả các trường tự động sinh ra
 export const bookingSchema = bookingCreationSchema.extend({
   id: z.string(),
-  actualReturnTime: z.string().datetime().nullable().optional(),
+  actualReturnTime: z.string().nullable().optional(),
   totalPrice: z.number().nullable().optional(),
   status: bookingStatusSchema,
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  expiresAt: z.string().datetime(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  expiresAt: z.string(),
 });
 
 // Tạo kiểu TypeScript từ schema
@@ -57,7 +57,7 @@ export const bookingFormSchema = z.object({
       to: z.date(),
     })
     .refine((data) => data.to > data.from, {
-      message: "Ngày trả xe phải sau ngày nhận xe",
+      message: "End date must be after start date",
       path: ["to"],
     }),
 });
