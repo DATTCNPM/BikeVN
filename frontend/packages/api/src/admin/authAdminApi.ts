@@ -9,4 +9,11 @@ export const authAdminApi = {
   async logout(token: string) {
     return axiosAdmin.post("/auth/logout", { token });
   },
+
+  async refreshToken(token: string) {
+    return axiosAdmin.post<{ accessToken: string; refreshToken: string }>(
+      "/auth/refresh",
+      { token },
+    );
+  },
 };

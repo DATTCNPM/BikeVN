@@ -19,3 +19,11 @@ export function useBooking(id: string) {
     enabled: !!id,
   });
 }
+
+export function useVehicleReturnByBookingId(bookingId: string) {
+  return useQuery({
+    queryKey: bookingsKeys.vehicleReturn(bookingId),
+    queryFn: () => bookingClientApi.getVehicleReturn(bookingId),
+    enabled: !!bookingId,
+  });
+}

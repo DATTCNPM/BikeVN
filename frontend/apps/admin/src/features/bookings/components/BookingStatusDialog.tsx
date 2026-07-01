@@ -73,7 +73,7 @@ export default function BookingStatusDialog({
           ? "Are you sure you want to confirm this booking?"
           : "Are you sure you want to reject this booking?"
       }
-      confirmText={mode === "approve" ? "Confirm Booking" : "Reject Booking"}
+      confirmText={mode === "approve" ? "Approve Booking" : "Reject Booking"}
     />
   );
 }

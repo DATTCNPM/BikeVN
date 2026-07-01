@@ -7,61 +7,36 @@ import type {
 } from "@repo/types";
 import { vehicleReturnQueryKeys } from "./vehicleReturnQueryKeys";
 
-// 1. Lấy chi tiết biên bản trả xe theo mã Booking
+// 1. Lấy chi tiết biên bản trả xe theo mã Booking - GIỮ NGUYÊN
 export const useVehicleReturnByBookingId = (bookingId: string) => {
-  return useQuery<VehicleReturn, VehicleReturn>({
+  return useQuery<VehicleReturn, Error>({
     queryKey: vehicleReturnQueryKeys.detail(bookingId),
-    queryFn: () => vehicleReturnAdminApi.getVehicleReturnByBookingId(bookingId),
+    queryFn: () => vehicleReturnAdminApi.getVehicleReturn(bookingId),
     enabled: !!bookingId,
   });
 };
 
-// 2. Hook lấy toàn bộ danh sách biên bản (Dành cho Admin)
+// 2. Hook lấy toàn bộ danh sách biên bản (SỬA TYPE)
 export const useVehicleReturnsAll = (page = 1, size = 10) => {
-  return useQuery<
-    PaginationResponse<VehicleReturn[]>,
-    PaginationResponse<VehicleReturn[]>
-  >({
+  return useQuery<PaginationResponse<VehicleReturn>, Error>({
     queryKey: vehicleReturnQueryKeys.list(page, size),
-    queryFn: async () => {
-      const response = await vehicleReturnAdminApi.getVehicleReturnAll(
-        page,
-        size,
-      );
-      return response;
-    },
+    queryFn: () => vehicleReturnAdminApi.getVehicleReturnAll(page, size),
   });
 };
 
-// 3. Hook lấy danh sách biên bản theo chi nhánh (Dành cho Employee)
+// 3. Hook lấy danh sách biên bản theo chi nhánh (SỬA TYPE)
 export const useVehicleReturnsPerBranch = (page = 1, size = 10) => {
-  return useQuery<
-    PaginationResponse<VehicleReturn[]>,
-    PaginationResponse<VehicleReturn[]>
-  >({
+  return useQuery<PaginationResponse<VehicleReturn>, Error>({
     queryKey: vehicleReturnQueryKeys.branchList(page, size),
-    queryFn: async () => {
-      const response = await vehicleReturnAdminApi.getVehicleReturnsPerBranch(
-        page,
-        size,
-      );
-      return response;
-    },
+    queryFn: () => vehicleReturnAdminApi.getVehicleReturnsPerBranch(page, size),
   });
 };
 
-// 4. Hook lọc tìm kiếm nâng cao
+// 4. Hook lọc tìm kiếm nâng cao (SỬA TYPE VÀ KHỚP ĐÚNG PHÂN TRANG)
 export const useFilterVehicleReturns = (params: VehicleReturnFilterParams) => {
-  return useQuery<
-    PaginationResponse<VehicleReturn[]>,
-    PaginationResponse<VehicleReturn[]>
-  >({
+  return useQuery<PaginationResponse<VehicleReturn>, Error>({
     queryKey: vehicleReturnQueryKeys.filter(params),
-    queryFn: async () => {
-      const response = await vehicleReturnAdminApi.filterVehicleReturns(params);
-      return response;
-    },
-    // Giữ lại dữ liệu cũ trong lúc fetch dữ liệu mới (Tránh tình trạng loading giật màn hình khi đổi page/filter)
-    placeholderData: (previousData) => previousData,
+    queryFn: () => vehicleReturnAdminApi.filterVehicleReturns(params),
+    placeholderData: (previousData) => previousData, // Giữ dữ liệu mượt mà khi qua trang mới
   });
 };

@@ -7,12 +7,14 @@ import {
   useApprovePaymentManually,
   useAdminCancelPayment,
 } from "@/features/payments/mutations";
+import { useProcessRefund } from "@/features/payments/mutations";
+import { usePortalProfile } from "@/features/auth/usePortalProfile";
 
 type Props = {
   payment: Payment | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mode: "confirm" | "approve-manually" | "cancel";
+  mode: "approve" | "cancel" | "refund"; // Đổi confirm thành refund
 };
 
 export default function PaymentStatusDialog({
@@ -24,58 +26,67 @@ export default function PaymentStatusDialog({
   const queryClient = useQueryClient();
   const approveMutation = useApprovePaymentManually();
   const cancelMutation = useAdminCancelPayment();
+  const refundMutation = useProcessRefund(); // Thêm mới mutation hoàn tiền
 
-  const loading = approveMutation.isPending || cancelMutation.isPending;
+  // Giả định bạn có hook lấy thông tin admin hiện tại
+  const { data: currentAdmin } = usePortalProfile();
+  const adminId = currentAdmin?.id || "system-admin";
+
+  const loading =
+    approveMutation.isPending ||
+    cancelMutation.isPending ||
+    refundMutation.isPending;
 
   const handleConfirm = async () => {
     if (!payment) return;
 
     try {
       switch (mode) {
-        case "approve-manually":
+        case "approve":
           await approveMutation.mutateAsync({
             id: payment.id,
-            adminId: "current-admin-id",
+            adminId,
             actualPaymentMethod: "cash",
           });
-          toast.success("Approve payment manually successfully");
+          toast.success("Approved payment manually successfully");
           break;
 
         case "cancel":
-          // SỬA: Truyền đúng cấu trúc object payload { id, reason } giải quyết lỗi crash
           await cancelMutation.mutateAsync({
             id: payment.id,
             reason: "Admin canceled from dashboard",
           });
-          toast.success("Cancel payment successfully");
+          toast.success("Canceled payment successfully");
+          break;
+
+        case "refund": // Thêm mới xử lý refund
+          await refundMutation.mutateAsync({
+            id: payment.id,
+            adminId,
+          });
+          toast.success("Refund processed successfully");
           break;
       }
 
-      await queryClient.invalidateQueries({
-        queryKey: paymentsKeys.all,
-      });
-
+      await queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
       onOpenChange(false);
     } catch {
-      toast.error(
-        mode === "cancel"
-          ? "Failed to cancel payment"
-          : "Failed to perform action",
-      );
+      toast.error("Failed to perform action");
     }
   };
 
   const titleMap = {
-    confirm: "Confirm Payment",
-    "approve-manually": "Approve Payment Manually",
+    "approve": "Approve Payment Manually",
     cancel: "Cancel Payment",
+    refund: "Refund Transaction",
   };
 
   const descriptionMap = {
-    confirm: "Are you sure you want to confirm this transaction?",
-    "approve-manually":
+    "approve":
       "Are you sure you want to approve this payment manually?",
     cancel: "Are you sure you want to cancel this transaction?",
+    refund:
+      "Are you sure you want to process a refund for this transaction via VNPay?",
   };
 
   return (

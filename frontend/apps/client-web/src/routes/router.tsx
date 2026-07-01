@@ -20,6 +20,7 @@ const NotificationPage = lazy(() => import("@/pages/NotificationPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const ServerErrorPage = lazy(() => import("@/pages/ServerErrorPage"));
 const PaymentResultPage = lazy(() => import("@/pages/PaymentResultPage"));
+const MyBookingPage = lazy(() => import("@/pages/MyBookingPage"));
 
 // Lazy loading profile sections (Sẽ gom cụm lại ở Phase 3)
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
@@ -102,6 +103,7 @@ const router = createBrowserRouter([
               { path: "payment/:id", element: <PaymentPage /> },
               { path: "payment-result", element: <PaymentResultPage /> },
               { path: "notifications", element: <NotificationPage /> },
+              { path: "my-bookings", element: <MyBookingPage /> },
             ],
           },
         ],

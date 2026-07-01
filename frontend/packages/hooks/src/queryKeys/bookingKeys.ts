@@ -15,4 +15,7 @@ export const bookingsKeys = {
     [...bookingsKeys.lists(), "user", userId] as const,
 
   detail: (id: string) => [...bookingsKeys.all, "detail", id] as const,
+
+  vehicleReturn: (bookingId: string) =>
+    [...bookingsKeys.all, "vehicleReturn", bookingId] as const,
 };

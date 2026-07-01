@@ -75,7 +75,7 @@ export default function ChatManagementPage() {
       </div>
 
       {/* Main Grid Workspace */}
-      <div className="grid grid-cols-12 border bg-card rounded-3xl overflow-hidden shadow-sm flex-1">
+      <div className="grid grid-cols-12 border bg-card rounded-3xl overflow-hidden shadow-sm flex-1 max-h-full min-h-0">
         <ChatSidebar
           conversations={conversations}
           selectedId={selectedId}

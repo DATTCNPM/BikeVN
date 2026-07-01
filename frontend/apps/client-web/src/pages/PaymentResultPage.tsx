@@ -67,14 +67,17 @@ export default function PaymentResultPage() {
   // LOGIC ĐÁNH GIÁ TRẠNG THÁI CUỐI CÙNG
   let statusKey: "completed" | "failed" | "pending" = "pending";
 
-  if (error) {
-    statusKey = "failed"; // Nếu interceptor throw ApiError (khi code sai, code !== 1000)
-  } else if (verifyResult === "SUCCESS") {
-    statusKey = "completed"; // verifyResult lúc này chính là chuỗi "SUCCESS"
-  } else if (verifyResult === "FAILED" || responseCode !== "00") {
+  if (isLoading || isRefetching) {
+    statusKey = "pending";
+  } else if (error || verifyResult === "FAILED") {
     statusKey = "failed";
-  } else if (responseCode === "00") {
+  } else if (verifyResult === "SUCCESS") {
     statusKey = "completed";
+  } else if (responseCode === "00") {
+    // Nếu chưa có verifyResult từ BE nhưng VNPay báo 00 -> Đợi cập nhật thêm
+    statusKey = "pending";
+  } else {
+    statusKey = "failed";
   }
 
   const PAYMENT_STATUS_CONFIG = {

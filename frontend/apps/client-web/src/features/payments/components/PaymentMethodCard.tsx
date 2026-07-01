@@ -25,11 +25,11 @@ const PAYMENT_METHODS = [
     isAvailable: false,
   },
   {
-    id: "card",
-    name: "Credit Card",
-    description: "Visa / Mastercard quốc tế",
+    id: "cash",
+    name: "Cash",
+    description: "Thanh toán bằng tiền mặt",
     icon: CreditCard,
-    isAvailable: false,
+    isAvailable: true,
   },
 ] as const;
 

@@ -21,7 +21,7 @@ export const useLogout = () => {
           console.error("Logout request failed:", error);
         }
       }
-      authStorageService.clearToken();
+      authStorageService.clearTokens();
     },
     onSuccess: async () => {
       setIsLogin(false); // Cập nhật Zustand về false

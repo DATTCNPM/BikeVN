@@ -16,7 +16,7 @@ export const useRegister = () => {
     // 2. onSuccess: Xử lý toàn bộ side-effects sau khi API thành công
     onSuccess: async (response) => {
       // Lưu token vào localStorage/cookie
-      authStorageService.setToken(response.token);
+      authStorageService.setTokens(response.token, response.refreshToken);
 
       // Cập nhật state Zustand
       setIsLogin(true);

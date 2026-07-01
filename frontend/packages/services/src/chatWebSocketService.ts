@@ -23,8 +23,6 @@ export class ChatWebSocketService {
 
   // Đã sửa: Loại bỏ tham số config bị thừa để fix lỗi TS6133
   private initStompClient() {
-    const token = localStorage.getItem(this.tokenKey);
-
     // Thay đổi ws:// hoặc wss:// tuỳ theo môi trường của bạn (giống baseURL)
     const socketUrl =
       import.meta.env.VITE_WS_URL || "wss://bikevn.onrender.com/ws";
@@ -32,7 +30,9 @@ export class ChatWebSocketService {
     this.stompClient = new Client({
       brokerURL: socketUrl,
       connectHeaders: {
-        Authorization: token ? `Bearer ${token}` : "",
+        Authorization: localStorage.getItem(this.tokenKey)
+          ? `Bearer ${localStorage.getItem(this.tokenKey)}`
+          : "",
       },
       debug: (str) => {
         if (import.meta.env.DEV) console.log("[WebSocket Debug]", str);

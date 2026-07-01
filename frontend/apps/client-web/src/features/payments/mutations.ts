@@ -16,11 +16,16 @@ export function useClientCancelPayment() {
 
 export function useGetVNPayUrl() {
   return useMutation({
-    mutationFn: (paymentId: string) => paymentClientApi.getVNPayUrl(paymentId),
+    mutationFn: ({
+      paymentId,
+      returnUrl,
+    }: {
+      paymentId: string;
+      returnUrl?: string;
+    }) => paymentClientApi.getVNPayUrl(paymentId, returnUrl),
     onSuccess: (vnpayUrl) => {
-      // SỬA: vnpayUrl bây giờ là một chuỗi string thuần túy chứa link redirect
       if (vnpayUrl && typeof vnpayUrl === "string") {
-        window.location.href = vnpayUrl; // Chuyển hướng thẳng sang cổng VNPay
+        window.location.href = vnpayUrl;
       }
     },
   });
