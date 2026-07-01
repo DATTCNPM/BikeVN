@@ -4,8 +4,8 @@ import { CalendarDays, MapPinned } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useBranches } from "@repo/hooks";
 import { formatDateTime } from "@repo/utils";
-import { differenceInDays } from "date-fns";
 import type { Booking } from "@repo/types";
+import { calculateTotalDays } from "@repo/utils";
 
 type Props = {
   booking: Booking | null;
@@ -25,16 +25,7 @@ export default function PaymentBookingCard({ booking }: Props) {
   const getBranchName = (branchId: string | undefined) =>
     branches?.find((b) => b.id === branchId)?.name || "Unknown Branch";
 
-  const totalDays =
-    booking?.startTime && booking?.endTime
-      ? Math.max(
-          1,
-          differenceInDays(
-            new Date(booking.endTime),
-            new Date(booking.startTime),
-          ),
-        )
-      : null;
+  const totalDays = calculateTotalDays(booking?.startTime, booking?.endTime);
 
   return (
     <Card className="rounded-[2rem] border-border p-6 shadow-sm">

@@ -2,10 +2,12 @@ package com.backend.bikerental.core.component;
 
 import com.backend.bikerental.core.exception.AppException;
 import com.backend.bikerental.core.exception.ErrorCode;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,15 +16,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class FileStorageService {
-    @Value("${app.upload-dir:upload}")
-    String uploadDir;
+    Cloudinary cloudinary;
 
     public String storeVehicleImage(MultipartFile file)
     {
@@ -49,26 +52,19 @@ public class FileStorageService {
         }
 
         try {
-            Path rootPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-            Path imageDir = rootPath.resolve(subFolder);
+            String publicId = UUID.randomUUID().toString();
 
-            Files.createDirectories(imageDir);
-            String originalFileName = file.getOriginalFilename();
-            String extension = "";
-            if(originalFileName != null && originalFileName.contains("."))
-            {
-                extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            }
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "bikevn/" + subFolder,
+                            "publicId", publicId
+                    ));
 
-            String storedFilename = UUID.randomUUID() + extension;
-            Path targetPath = imageDir.resolve(storedFilename);
-            file.transferTo(targetPath);
-
-            return "/uploads/" + subFolder + "/" + storedFilename;
-
+            return uploadResult.get("secure_url").toString();
         }
         catch (IOException exception)
         {
+            log.error("Cloudinary upload failed for subfolder: {}", subFolder, exception);
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
@@ -80,11 +76,22 @@ public class FileStorageService {
             return;
         }
         try {
-            String relativePath = imgUrl.startsWith("/") ? imgUrl.substring(1) : imgUrl;
-            Path rootPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-            Path filePath = rootPath.resolve(relativePath.replaceFirst("^upload/", ""));
-            Files.deleteIfExists(filePath);
+            String folderPrefix = "bikevn/";
+            int folderIndex = imgUrl.indexOf(folderPrefix);
+
+            if (folderIndex != -1)
+            {
+                String pathWithExtension = imgUrl.substring(folderIndex);
+                int dotIndex = pathWithExtension.lastIndexOf(".");
+                String publicId = (dotIndex != -1) ? pathWithExtension.substring(0, dotIndex)
+                        : pathWithExtension;
+
+                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                log.info("Successfully deleted image from Cloudinary: {}", publicId);
+            }
+
         } catch (IOException e) {
+            log.error("Failed to delete image from Cloudinary: {}", imgUrl, e);
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }

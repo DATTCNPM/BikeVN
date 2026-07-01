@@ -21,18 +21,10 @@ import UniversalFilterSheet, {
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
 import { type Vehicle, type VehicleQueryParams } from "@repo/types";
-import {
-  useVehicles,
-  useVehicleBrands,
-  useVehicleModels,
-  useBranches,
-  useVehicleFilters,
-} from "@repo/hooks";
-
-// 📦 Import hằng số khoảng giá dùng chung cho toàn hệ thống
+import { useVehicles, useVehicleFilters } from "@repo/hooks";
 import { PRICE_RANGES } from "@repo/constants";
 
-const vehicleStatusMap = {
+const VEHICLE_STATUS_MAP = {
   available:
     "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
   unavailable: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
@@ -40,7 +32,7 @@ const vehicleStatusMap = {
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
 };
 
-const vehicleStatusLabel = {
+const VEHICLE_STATUS_LABEL = {
   available: "Available",
   unavailable: "Unavailable",
   maintenance: "Under Maintenance",
@@ -55,37 +47,78 @@ export default function VehicleManagementPage() {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
-
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
     {},
   );
 
-  const { data: brands } = useVehicleBrands();
-  const { data: models } = useVehicleModels();
-  const { data: branches } = useBranches();
-  const { data: vehicles, isLoading } = useVehicles(page, 10);
+  // Fetch baseline dataset paginated records
+  const { data: vehicles, isLoading: baselineLoading } = useVehicles(page, 10);
 
-  // 1. Tích hợp Price Range vào cấu hình metadata gửi sang Filter Sheet
+  const activePriceRange = useMemo(() => {
+    return PRICE_RANGES.find(
+      (p) => p.value === selectedFilters["priceRange"]?.value,
+    );
+  }, [selectedFilters]);
+
+  const hasFilter = Boolean(
+    search.trim() || Object.values(selectedFilters).some(Boolean),
+  );
+
+  const apiFilters: VehicleQueryParams = useMemo(
+    () => ({
+      search: search.trim() || undefined,
+      brandName: selectedFilters["brand"]?.value,
+      modelName: selectedFilters["model"]?.value,
+      currentBranchName: selectedFilters["branch"]?.value,
+      status: selectedFilters["status"]?.value,
+      vehicleType: selectedFilters["type"]?.value,
+      minPrice: activePriceRange?.min,
+      maxPrice: activePriceRange?.max,
+      page,
+      size: 10,
+    }),
+    [search, selectedFilters, activePriceRange, page],
+  );
+
+  const { data: vehicleFilters, isLoading: filterLoading } = useVehicleFilters(
+    apiFilters,
+    hasFilter,
+  );
+
+  // Consolidate conditional backend data-stream dependencies
+  const currentDataSource = hasFilter ? vehicleFilters : vehicles;
+  const vehicleData = useMemo(
+    () => currentDataSource?.data ?? [],
+    [currentDataSource],
+  );
+
+  // Derive advanced filter items dynamically from available records
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
+    const uniqueBrands = Array.from(
+      new Set(vehicleData.map((v) => v.brandName).filter(Boolean)),
+    );
+    const uniqueModels = Array.from(
+      new Set(vehicleData.map((v) => v.modelName).filter(Boolean)),
+    );
+    const uniqueBranches = Array.from(
+      new Set(vehicleData.map((v) => v.currentBranchName).filter(Boolean)),
+    );
+
     return [
       {
         key: "brand",
-        title: "Brand",
-        options:
-          brands?.data.map((b) => ({ label: b.name, value: String(b.id) })) ??
-          [],
+        title: "Brand / Maker",
+        options: uniqueBrands.map((name) => ({ label: name, value: name })),
       },
       {
         key: "model",
-        title: "Model",
-        options:
-          models?.data.map((m) => ({ label: m.name, value: String(m.id) })) ??
-          [],
+        title: "Model Name",
+        options: uniqueModels.map((name) => ({ label: name, value: name })),
       },
       {
         key: "branch",
-        title: "Branch",
-        options: branches?.map((b) => ({ label: b.name, value: b.id })) ?? [],
+        title: "Branch Location",
+        options: uniqueBranches.map((name) => ({ label: name, value: name })),
       },
       {
         key: "status",
@@ -106,81 +139,43 @@ export default function VehicleManagementPage() {
       },
       {
         key: "priceRange",
-        title: "Price Range",
-        options: PRICE_RANGES.map((p) => ({ label: p.label, value: p.value })), // Thêm dòng này
+        title: "Daily Rate Range",
+        options: PRICE_RANGES.map((p) => ({ label: p.label, value: p.value })),
       },
     ];
-  }, [brands, models, branches]);
+  }, [vehicleData]);
 
-  // 2. Tìm min/max price dựa trên option đang được chọn trong UI
-  const activePriceRange = useMemo(() => {
-    return PRICE_RANGES.find(
-      (p) => p.value === selectedFilters["priceRange"]?.value,
-    );
-  }, [selectedFilters]);
-
-  // 3. Map minPrice và maxPrice từ UI vào object Query Params gửi lên API
-  const apiFilters: VehicleQueryParams = useMemo(
+  const pagination = useMemo(
     () => ({
-      search: search.trim() || undefined,
-      brandName: selectedFilters["brand"]?.label,
-      modelName: selectedFilters["model"]?.label,
-      currentBranchName: selectedFilters["branch"]?.label,
-      status: selectedFilters["status"]?.value,
-      vehicleType: selectedFilters["type"]?.value,
-      minPrice: activePriceRange?.min, // Thêm dòng này
-      maxPrice: activePriceRange?.max, // Thêm dòng này
-      page,
-      size: 10,
+      page: currentDataSource?.currentPage ?? 1,
+      pageSize: currentDataSource?.pageSize ?? 10,
+      totalPages: currentDataSource?.totalPages ?? 1,
+      totalElements: currentDataSource?.totalElements ?? 0,
     }),
-    [search, selectedFilters, activePriceRange, page],
+    [currentDataSource],
   );
 
-  const hasFilter = Boolean(
-    search.trim() || Object.values(selectedFilters).some(Boolean),
-  );
-
-  const { data: vehicleFilters } = useVehicleFilters(apiFilters, hasFilter);
-
-  const vehicleData = useMemo(() => {
-    return (hasFilter ? vehicleFilters?.data : vehicles?.data) ?? [];
-  }, [vehicles, vehicleFilters, hasFilter]);
-
-  const pagination = useMemo(() => {
-    const currentSource = hasFilter ? vehicleFilters : vehicles;
-    return {
-      page: currentSource?.currentPage ?? 1,
-      pageSize: currentSource?.pageSize ?? 10,
-      totalPages: currentSource?.totalPages ?? 1,
-      totalElements: currentSource?.totalElements ?? 0,
-    };
-  }, [vehicles, vehicleFilters, hasFilter]);
-
-  // Khởi tạo các Columns cho TanStack Table
+  // Define data columns layout for TanStack Table instance
   const columns = useMemo<ColumnDef<Vehicle>[]>(
     () => [
       {
         accessorKey: "id",
         header: "Vehicle ID",
-        cell: ({ row }) => (
-          <span className="text-sm font-medium">
-            <IdCell id={row.original.id} prefix="#" />
-          </span>
-        ),
+        cell: ({ row }) => <IdCell id={row.original.id} prefix="#" />,
       },
       {
         accessorKey: "name",
-        header: "Vehicle",
+        header: "Vehicle Details",
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
             <img
-              src={mockImageMotor}
+              src={row.original.images?.[0]?.imageUrl || mockImageMotor}
               alt={row.original.name}
               className="h-14 w-20 rounded-md object-cover"
             />
             <div className="min-w-0">
               <p className="truncate font-medium">{row.original.name}</p>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-sm uppercase tracking-wider">
                 {row.original.licensePlate}
               </p>
             </div>
@@ -189,41 +184,35 @@ export default function VehicleManagementPage() {
       },
       {
         accessorKey: "brand",
-        header: "Brand",
-        cell: ({ row }) => {
-          const brand = brands?.data.find((b) => b.id === row.original.brandId);
-          const model = models?.data.find((m) => m.id === row.original.modelId);
-          return (
-            <div>
-              <p className="font-medium">{brand?.name || "N/A"}</p>
-              <p className="text-muted-foreground text-sm">
-                {model?.name || "N/A"}
-              </p>
-            </div>
-          );
-        },
+        header: "Make & Model",
+        cell: ({ row }) => (
+          <div>
+            <p className="font-medium">{row.original.brandName || "N/A"}</p>
+            <p className="text-muted-foreground text-sm">
+              {row.original.modelName || "N/A"}
+            </p>
+          </div>
+        ),
       },
       {
         accessorKey: "price",
-        header: "Rental Price",
-        cell: ({ row }) => `${row.original.pricePerDay.toLocaleString()}đ`,
+        header: "Rental Rate",
+        cell: ({ row }) =>
+          `${row.original.pricePerDay.toLocaleString("en-US")} VND`,
       },
       {
         accessorKey: "currentBranchId",
-        header: "Branch",
+        header: "Current Branch",
         cell: ({ row }) => (
-          <span>
-            {branches?.find((b) => b.id === row.original.currentBranchId)
-              ?.name || "N/A"}
-          </span>
+          <span>{row.original.currentBranchName || "N/A"}</span>
         ),
       },
       {
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => (
-          <Badge className={vehicleStatusMap[row.original.status]}>
-            {vehicleStatusLabel[row.original.status]}
+          <Badge className={VEHICLE_STATUS_MAP[row.original.status]}>
+            {VEHICLE_STATUS_LABEL[row.original.status]}
           </Badge>
         ),
       },
@@ -253,10 +242,10 @@ export default function VehicleManagementPage() {
         ),
       },
     ],
-    [brands, models, navigate, branches],
+    [navigate],
   );
 
-  if (isLoading) {
+  if (baselineLoading || (hasFilter && filterLoading)) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
@@ -267,8 +256,8 @@ export default function VehicleManagementPage() {
   return (
     <div className="space-y-4">
       <DataTableToolbar
-        showSearch={true}
-        showCreate={true}
+        showSearch
+        showCreate
         search={search}
         onSearchChange={(value) => {
           setSearch(value);

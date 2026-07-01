@@ -264,26 +264,26 @@ INSERT INTO bookings (id, user_id, vehicle_id, pickup_branch_id, return_branch_i
 -- ========================================
 -- SAMPLE DATA - payments (UUID primary keys)
 -- ========================================
-INSERT INTO payments (id, booking_id, amount, type, payment_method, status, transaction_code, idempotency_key, branch_id, paid_at) VALUES
-('1be094c5-c813-4dd5-bfd0-da3725cf7548', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', 'IDEM-20240115-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-15 18:30:00'),
-('bea5e207-a453-4695-a2e9-d1a01da067d8', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 500000, 'rental', 'transfer', 'completed', 'TXN002', 'IDEM-20240117-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-17 10:00:00'),
-('b44d22f8-4ef6-4d2a-bac9-259f42afd195', '2e6d884a-1d71-4651-902e-361d3711b632', 1600000, 'rental', 'cash', 'completed', NULL, 'IDEM-20240120-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-20 11:00:00'),
-('5324521c-f023-4b82-b4f2-41520ce996f4', '6af7ca78-7529-4d8d-8e07-d825cec4ed3e', 300000, 'extra_fee', 'credit_card', 'pending', 'TXN003', 'IDEM-20240125-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', NULL),
-('7f2b7d60-746e-4ca5-8510-79e26a114781', '8e980655-1c5c-4dc2-9c0c-bb9226218476', 600000, 'rental', 'transfer', 'pending', NULL, 'IDEM-20240201-001', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', NULL),
-('4f4a17b3-f4c3-4834-9d21-dc2e1f1e5e85', '46a80466-6fce-4592-b44d-9d6df1d54fee', 450000, 'extra_fee', 'credit_card', 'refunded', 'TXN004', 'IDEM-20240118-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 20:00:00'),
+INSERT INTO payments (id, booking_id, amount, type, payment_method, status, transaction_code, idempotency_key, branch_id, paid_at, created_at, updated_at, notes) VALUES
+('1be094c5-c813-4dd5-bfd0-da3725cf7548', 'd68cc7f7-a578-4efb-baaa-6ab8f72be8fa', 1500000, 'rental', 'credit_card', 'completed', 'TXN001', 'IDEM-20240115-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-15 18:30:00', '2024-01-15 18:30:00', '2024-01-15 18:30:00', 'Payment for rental'),
+('bea5e207-a453-4695-a2e9-d1a01da067d8', '46c3f037-57ef-4bd2-ba74-d075e18c96f1', 500000, 'rental', 'transfer', 'completed', 'TXN002', 'IDEM-20240117-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-17 10:00:00', '2024-01-17 10:00:00', '2024-01-17 10:00:00', 'Payment for rental'),
+('b44d22f8-4ef6-4d2a-bac9-259f42afd195', '2e6d884a-1d71-4651-902e-361d3711b632', 1600000, 'rental', 'cash', 'completed', NULL, 'IDEM-20240120-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-20 11:00:00', '2024-01-20 11:00:00', '2024-01-20 11:00:00', 'Payment for rental'),
+('5324521c-f023-4b82-b4f2-41520ce996f4', '6af7ca78-7529-4d8d-8e07-d825cec4ed3e', 300000, 'extra_fee', 'credit_card', 'pending', 'TXN003', 'IDEM-20240125-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', NULL, '2024-01-25 11:00:00', '2024-01-25 11:00:00', 'Payment for extra fee'),
+('7f2b7d60-746e-4ca5-8510-79e26a114781', '8e980655-1c5c-4dc2-9c0c-bb9226218476', 600000, 'rental', 'transfer', 'pending', NULL, 'IDEM-20240201-001', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', NULL, '2024-02-01 11:00:00', '2024-02-01 11:00:00', 'Payment for rental'),
+('4f4a17b3-f4c3-4834-9d21-dc2e1f1e5e85', '46a80466-6fce-4592-b44d-9d6df1d54fee', 450000, 'extra_fee', 'credit_card', 'refunded', 'TXN004', 'IDEM-20240118-001', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-01-18 20:00:00', '2024-01-18 20:00:00', '2024-01-18 20:00:00', 'Payment for extra fee'),
 
 -- Payments for One-way rental
 -- 1. Initial rental paid at HCMC
-('pay-hcmc-rental-001', 'one-way-booking-uuid-001', 300000, 'rental', 'credit_card', 'completed', 'TXN-HCMC-01', 'IDEM-HCMC-01', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-02-10 08:15:00'),
+('pay-hcmc-rental-001', 'one-way-booking-uuid-001', 300000, 'rental', 'credit_card', 'completed', 'TXN-HCMC-01', 'IDEM-HCMC-01', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-02-10 08:15:00', '2024-02-10 08:15:00', '2024-02-10 08:15:00', 'Payment for rental'),
 -- 2. Late fee paid at Hanoi on return
-('pay-hanoi-extra-001', 'one-way-booking-uuid-001', 150000, 'extra_fee', 'cash', 'completed', 'TXN-HN-01', 'IDEM-HN-01', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-12 10:45:00'),
+('pay-hanoi-extra-001', 'one-way-booking-uuid-001', 150000, 'extra_fee', 'cash', 'completed', 'TXN-HN-01', 'IDEM-HN-01', 'e58c1884-0ded-477d-a0e6-7a7cb8099771', '2024-02-12 10:45:00', '2024-02-12 10:45:00', '2024-02-12 10:45:00', 'Payment for extra fee'),
 -- Payments for Future #2 (Completed Booking - Full Upfront paid at HCMC)
-('pay-rental-future-002', 'booking-hcmc-future-002', 280000, 'rental', 'credit_card', 'completed', 'TXN-FUT-02', 'IDEM-FUT-02', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-02-15 08:10:00'),
+('pay-rental-future-002', 'booking-hcmc-future-002', 280000, 'rental', 'credit_card', 'completed', 'TXN-FUT-02', 'IDEM-FUT-02', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-02-15 08:10:00', '2024-02-15 08:10:00', '2024-02-15 08:10:00', 'Payment for rental'),
 -- Payments for AB #2 (One-Way + Late Return)
 -- 1. Initial 100% Rental paid at Can Tho Branch
-('pay-rental-ab-002', 'booking-late-ab-002', 360000, 'rental', 'transfer', 'completed', 'TXN-AB-02', 'IDEM-AB-02', '8ffb93d8-6e47-4114-a67e-b870919ab33b', '2024-03-01 08:05:00'),
+('pay-rental-ab-002', 'booking-late-ab-002', 360000, 'rental', 'transfer', 'completed', 'TXN-AB-02', 'IDEM-AB-02', '8ffb93d8-6e47-4114-a67e-b870919ab33b', '2024-03-01 08:05:00', '2024-03-01 08:05:00', '2024-03-01 08:05:00', 'Payment for rental'),
 -- 2. Settlement Extra Fee paid at HCMC return (50k branch + 250k late fee = 300k)
-('pay-extra-ab-002', 'booking-late-ab-002', 300000, 'extra_fee', 'cash', 'completed', 'TXN-AB-EXTRA-02', 'IDEM-AB-EXT-02', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-03-04 10:15:00');
+('pay-extra-ab-002', 'booking-late-ab-002', 300000, 'extra_fee', 'cash', 'completed', 'TXN-AB-EXTRA-02', 'IDEM-AB-EXT-02', '42ce84a3-e54f-415d-b707-a8a818c00a9c', '2024-03-04 10:15:00', '2024-03-04 10:15:00', '2024-03-04 10:15:00', 'Payment for extra fee');
 
 -- ========================================
 -- SAMPLE DATA - vehicle_returns (UUID primary keys)
@@ -302,10 +302,10 @@ INSERT INTO vehicle_returns (id, booking_id, return_branch_id, condition_status,
 -- ========================================
 -- SAMPLE DATA - conversations (UUID primary keys)
 -- ========================================
-INSERT INTO conversations (id, created_at) VALUES
-('46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', NOW()),
-('50b672cb-6559-4dd8-8908-9bda53bab347', DATE_SUB(NOW(), INTERVAL 2 DAY)),
-('9b95a351-89fa-4d8f-822e-b1c921f264f4', DATE_SUB(NOW(), INTERVAL 5 DAY));
+INSERT INTO conversations (id, created_at, branch_id) VALUES
+('46da2c35-b7b0-4a6f-9ce9-461a0f6ebc5a', NOW(), '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('50b672cb-6559-4dd8-8908-9bda53bab347', DATE_SUB(NOW(), INTERVAL 2 DAY), '42ce84a3-e54f-415d-b707-a8a818c00a9c'),
+('9b95a351-89fa-4d8f-822e-b1c921f264f4', DATE_SUB(NOW(), INTERVAL 5 DAY), '42ce84a3-e54f-415d-b707-a8a818c00a9c');
 
 -- ========================================
 -- SAMPLE DATA - conversation_members (UUID primary keys)
