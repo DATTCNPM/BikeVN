@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
-    "@repo/types": "workspace:*"
+    "@repo/types": "workspace:*",
+    "framer-motion": "^12.38.0"
   },
   "private": true
 }

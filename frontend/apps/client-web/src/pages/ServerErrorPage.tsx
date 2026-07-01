@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Wrench, Home } from "lucide-react";
@@ -27,13 +27,13 @@ export default function ServerErrorPage() {
     }
   }, [isServerDown, navigate]);
 
-  // Cấu hình Canvas riêng cho trang 500 thông qua Hook tái sử dụng
-  useCanvasBackground(canvasRef, {
-    particleCount: 40,
-    baseRadius: 1.5,
-    speedRange: [0.05, 0.25],
-    direction: "down", // Hạt rơi xuống biểu thị hệ thống đang sập
-    getColors: (isDark, ctx, canvas) => {
+  // Memoize canvas rendering to lock dependencies and protect client performance
+  const handleGetColors = useCallback(
+    (
+      isDark: boolean,
+      ctx: CanvasRenderingContext2D,
+      canvas: HTMLCanvasElement,
+    ) => {
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
       if (isDark) {
         gradient.addColorStop(0, "#0c0a09");
@@ -44,14 +44,22 @@ export default function ServerErrorPage() {
       }
       return {
         background: gradient,
-        particle: isDark
-          ? "rgba(239,68,68,OPACITY)"
-          : "rgba(220,38,38,OPACITY)",
+        // Using the exact required format from your custom useCanvasBackground hook
+        particleRawColor: isDark ? "239, 68, 68" : "220, 38, 38",
       };
     },
+    [],
+  );
+
+  useCanvasBackground(canvasRef, {
+    particleCount: 40,
+    baseRadius: 1.5,
+    speedRange: [0.05, 0.25],
+    direction: "down", // Matrix-like falling effect signaling system downtime
+    getColors: handleGetColors,
   });
 
-  // Đếm ngược UI
+  // Smooth operational UI countdown logic loop
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev <= 1 ? COUNTDOWN_TIME : prev - 1));
@@ -60,7 +68,6 @@ export default function ServerErrorPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Tính toán % tiến trình tải mượt mà, tối ưu hóa bằng useMemo
   const progressPercentage = useMemo(() => {
     return ((COUNTDOWN_TIME - timeLeft) / COUNTDOWN_TIME) * 100;
   }, [timeLeft]);
@@ -70,8 +77,8 @@ export default function ServerErrorPage() {
       canvas={<canvas ref={canvasRef} className="absolute inset-0" />}
       glowClassName="absolute top-1/2 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-destructive/10 blur-3xl"
       code="500"
-      title="Gara đang bảo trì đột xuất"
-      description='Hệ thống máy chủ BikeVN hiện đang gặp sự cố kỹ thuật nhỏ. Đội ngũ kỹ sư của chúng tôi đang nhanh chóng sửa chữa và hồi sức cho "chiến mã" của bạn.'
+      title="Garage Under Emergency Maintenance"
+      description="The MotoRent infrastructure servers are experiencing minor technical hitches. Our engineering crew is already on-site fine-tuning the mechanics to rev your rides back to life."
       codeClassName="bg-gradient-to-b from-destructive via-orange-500 to-destructive/30 bg-clip-text text-[120px] leading-none font-black tracking-tight text-transparent drop-shadow-[0_0_30px_rgba(239,68,68,0.2)] md:text-[180px]"
       middleContent={
         <>

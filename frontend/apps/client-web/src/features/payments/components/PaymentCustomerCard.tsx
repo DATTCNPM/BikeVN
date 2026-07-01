@@ -17,7 +17,7 @@ export default function PaymentCustomerCard({
         <h2 className="mt-2 text-2xl font-bold">Customer Information</h2>
       </div>
 
-      <div className="mt-8 grid gap-5 md:grid-cols-3">
+      <div className="mt-8 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <InfoItem
           icon={<User2 className="size-5" />}
           label="Full Name"
@@ -34,6 +34,11 @@ export default function PaymentCustomerCard({
           icon={<Phone className="size-5" />}
           label="Phone"
           value={user?.phone || "N/A"}
+        />
+        <InfoItem
+          icon={<User2 className="size-5" />}
+          label="CCCD Number"
+          value={user?.cccdNumber || "N/A"}
         />
       </div>
     </Card>

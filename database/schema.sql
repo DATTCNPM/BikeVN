@@ -138,25 +138,15 @@ DROP TABLE IF EXISTS `conversations`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `conversations` (
   `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'UUID primary key',
+  `branch_id` varchar(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_created_at` (`created_at`)
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_branch` (`branch_id`),
+  CONSTRAINT `fk_conversations_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Chat conversations';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `invalidate_token`
---
-
-DROP TABLE IF EXISTS `invalidate_token`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `invalidate_token` (
-  `id` varchar(255) NOT NULL,
-  `expiry_time` datetime(6) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `messages`
@@ -202,6 +192,7 @@ CREATE TABLE `payments` (
   `paid_at` datetime DEFAULT NULL COMMENT 'Actual payment date/time',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `notes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Notes about the payment',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_transaction_code` (`transaction_code`) COMMENT 'Prevent duplicate transactions from external provider',
   UNIQUE KEY `unique_booking_type` (`booking_id`,`type`) COMMENT 'Only one payment of each type per booking',
