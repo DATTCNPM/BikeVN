@@ -66,8 +66,6 @@ export default function PaymentSummaryCard({
   };
 
   const basePrice = booking?.totalPrice || 0;
-  const depositPrice = basePrice * 0.2;
-  const serviceFee = basePrice * 0.1;
 
   const isLoading = isCreating || isGettingUrl;
 
@@ -94,8 +92,6 @@ export default function PaymentSummaryCard({
 
         <div className="mt-8 space-y-5">
           <SummaryItem label="Rental Price" value={basePrice} />
-          <SummaryItem label="Deposit (20%)" value={depositPrice} />
-          <SummaryItem label="Service Fee (10%)" value={serviceFee} />
 
           <div className="border-t border-dashed border-border pt-5">
             <div className="flex items-center justify-between">
