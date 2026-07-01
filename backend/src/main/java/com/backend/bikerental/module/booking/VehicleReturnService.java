@@ -78,7 +78,8 @@ public class VehicleReturnService {
         PaymentResponse paymentResponse = paymentService.createExtraFeePayment(
                 request.getBookingId(),
                 damageFee,
-                request.getReturnBranchId()
+                request.getReturnBranchId(),
+                request.getPaymentMethod()
         );
 
         if(paymentResponse != null)

@@ -22,4 +22,5 @@ public class VehicleReturnRequest {
     Integer returnOdometerReading;
     String notes;
     String employeeId;
+    String paymentMethod;
 }
