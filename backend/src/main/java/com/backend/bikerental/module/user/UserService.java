@@ -62,10 +62,14 @@ public class UserService {
         user.setRoles(Set.of(role));
         user.setBranch(null);
 
+        user = userRepository.save(user);
+
         String token = authenticationService.generateToken(user);
+        String refreshToken = authenticationService.generateRefreshToken(user.getEmail());
 
         return AuthenticationResponse.builder()
                 .token(token)
+                .refreshToken(refreshToken)
                 .authenticated(true)
                 .build();
     }
