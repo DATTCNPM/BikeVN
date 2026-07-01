@@ -31,6 +31,8 @@ const paymentStatusMap: Record<PaymentStatus, string> = {
   completed:
     "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
   failed: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
+  processing_refund:
+    "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300", // THÊM MỚI
   refunded: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
 };
 
@@ -38,6 +40,7 @@ const paymentStatusLabel: Record<PaymentStatus, string> = {
   pending: "Pending",
   completed: "Completed",
   failed: "Failed",
+  processing_refund: "Processing Refund", // THÊM MỚI
   refunded: "Refunded",
 };
 
@@ -53,7 +56,7 @@ export default function PaymentManagementPage() {
 
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [dialogMode, setDialogMode] = useState<
-    "confirm" | "approve-manually" | "cancel" | null
+    "approve" | "cancel" | "refund" | null
   >(null);
 
   // 1. Quản lý trạng thái bộ lọc nâng cao trên UI
@@ -79,6 +82,7 @@ export default function PaymentManagementPage() {
           { label: "Pending", value: "pending" },
           { label: "Completed", value: "completed" },
           { label: "Failed", value: "failed" },
+          { label: "Processing Refund", value: "processing_refund" }, // THÊM MỚI
           { label: "Refunded", value: "refunded" },
         ],
       },
@@ -184,17 +188,29 @@ export default function PaymentManagementPage() {
         header: "",
         cell: ({ row }) => {
           const payment = row.original;
-          if (payment.status === "completed") return null;
 
+          // Nếu đã hoàn tiền hoặc giao dịch thất bại thì không cần làm gì nữa
+          if (payment.status === "refunded" || payment.status === "failed")
+            return null;
+
+          // Nếu đã thanh toán thành công, Admin chỉ có quyền kích hoạt Hoàn tiền (Refund)
+          if (payment.status === "completed") {
+            return (
+              <PaymentActionDropdown
+                onRefund={() => {
+                  setSelectedPayment(payment);
+                  setDialogMode("refund");
+                }}
+              />
+            );
+          }
+
+          // Nếu đang Pending, Admin có thể Duyệt tay hoặc Hủy
           return (
             <PaymentActionDropdown
-              onConfirm={() => {
-                setSelectedPayment(payment);
-                setDialogMode("confirm");
-              }}
               onApproveManually={() => {
                 setSelectedPayment(payment);
-                setDialogMode("approve-manually");
+                setDialogMode("approve");
               }}
               onCancel={() => {
                 setSelectedPayment(payment);
@@ -254,7 +270,7 @@ export default function PaymentManagementPage() {
             setDialogMode(null);
           }
         }}
-        mode={dialogMode ?? "confirm"}
+        mode={dialogMode ?? "approve"}
       />
 
       <TablePagination

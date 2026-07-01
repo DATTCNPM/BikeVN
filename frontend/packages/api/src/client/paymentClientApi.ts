@@ -11,8 +11,10 @@ export const paymentClientApi = {
   },
 
   // SỬA: Interceptor đã lột vỏ ApiResponse và trả về thẳng data.result (chuỗi URL string)
-  async getVNPayUrl(paymentId: string): Promise<string> {
-    return axiosClient.get<any, string>(`/payments/${paymentId}/vnpay-url`);
+  async getVNPayUrl(paymentId: string, returnUrl?: string): Promise<string> {
+    return axiosClient.get<any, string>(`/payments/${paymentId}/vnpay-url`, {
+      params: { returnUrl },
+    });
   },
 
   // SỬA: Tương tự, hàm check return sẽ nhận về chuỗi trạng thái từ data.result ("SUCCESS" hoặc "FAILED")

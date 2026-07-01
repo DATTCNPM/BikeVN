@@ -16,7 +16,7 @@ export const useLogin = () => {
     // 2. onSuccess lo toàn bộ side-effects sau khi có data thành công
     onSuccess: async (auth) => {
       // Lưu token vào storage
-      authStorageService.setToken(auth.token);
+      authStorageService.setTokens(auth.token, auth.refreshToken);
 
       // Cập nhật trạng thái đăng nhập vào Zustand
       setIsLogin(true);

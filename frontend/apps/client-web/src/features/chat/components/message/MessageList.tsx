@@ -17,28 +17,32 @@ export default function MessageList({
 }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Cơ chế cuộn xuống đáy an toàn khi nhận được mảng dữ liệu tin nhắn của phòng mới
+  // 🌟 SẮP XẾP HOẶC ĐẢO NGƯỢC TIN NHẮN TẠI ĐÂY
+  // Cách A: Nếu API trả về tin nhắn mới nhất lên đầu (mảng ngược), ta đảo lại cho đúng chuẩn chat:
+  const orderedMessages = [...messages].reverse();
+
+  // Cách B: Nếu muốn chắc chắn theo thời gian (giả sử có trường createdAt hoặc timestamp):
+  // const orderedMessages = [...messages].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
   useEffect(() => {
-    if (!loading && messages && messages.length > 0) {
-      // Đợi 60ms cho luồng render của React ổn định layout phòng mới
+    if (!loading && orderedMessages && orderedMessages.length > 0) {
       const timer = setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "auto" }); // Dùng "auto" thay vì "smooth" để tránh bị giật lửng lơ khi chuyển phòng nhanh
+        bottomRef.current?.scrollIntoView({ behavior: "auto" });
       }, 60);
       return () => clearTimeout(timer);
     }
-  }, [messages, loading]);
+  }, [orderedMessages, loading]); // Đổi dependency thành orderedMessages
 
   return (
-    // Sử dụng h-full để lấp đầy không gian ChatPage cấp cho
     <ScrollArea className="h-full w-full bg-muted/30">
-      {/* ✨ SỬA TẠI ĐÂY: Chỉ dùng flex flex-col gap-4 p-4 đơn giản nhất, KHÔNG justify-end, KHÔNG min-h-full */}
       <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4">
         {loading ? (
           <div className="flex justify-center p-4">
             <Spinner />
           </div>
         ) : (
-          messages.map((message) => (
+          // 🌟 Thay 'messages.map' bằng 'orderedMessages.map'
+          orderedMessages.map((message) => (
             <MessageItem
               key={message.id}
               message={message}
@@ -47,7 +51,6 @@ export default function MessageList({
           ))
         )}
 
-        {/* Thẻ neo đáy */}
         <div ref={bottomRef} className="h-1 shrink-0 clear-both" />
       </div>
     </ScrollArea>

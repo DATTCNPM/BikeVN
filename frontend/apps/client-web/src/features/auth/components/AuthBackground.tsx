@@ -1,203 +1,123 @@
-import { motion } from "framer-motion";
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
 type AuthBackgroundProps = {
   children: ReactNode;
 };
 
-// 1. Giữ nguyên mảng mảnh kim loại tĩnh ngoài component
-const metalShards = Array.from({ length: 20 }).map((_, i) => {
-  const orbit = 420 + Math.random() * 720;
-  return {
-    id: i,
-    size: 40 + Math.random() * 90,
-    orbit,
-    duration: 20 + orbit / 35,
-    delay: -Math.random() * 30,
-    rotate: Math.random() * 360,
-    top: `${Math.random() * 18}%`,
-    opacity: 0.35 + Math.random() * 0.45,
-    blur: orbit > 850 ? 1.2 : orbit > 650 ? 0.8 : 0.3,
-    // Tối ưu: Tính toán trước thời gian nhún nhảy tại đây để tránh random lại khi re-render
-    floatDuration: 10 + Math.random() * 8,
-  };
-});
-
-function MetalShard({
-  size,
-  orbit,
-  duration,
-  delay,
-  rotate,
-  top,
-  opacity,
-  blur,
-  floatDuration,
-}: (typeof metalShards)[0]) {
-  return (
-    <motion.div
-      className="absolute left-1/2 top-1/2 will-change-transform" // Tối ưu bật tăng tốc phần cứng (GPU)
-      animate={{ rotate: 360 }}
-      transition={{
-        duration,
-        repeat: Infinity,
-        ease: "linear",
-        delay,
-      }}
-      style={{
-        width: orbit * 2,
-        height: orbit * 2,
-        marginLeft: -orbit,
-        marginTop: -orbit,
-      }}
-    >
-      <motion.div
-        className="absolute left-1/2 will-change-transform"
-        style={{
-          top,
-          transform: "translateX(-50%)",
-        }}
-        animate={{
-          rotate: [rotate, rotate + 12, rotate - 10, rotate],
-          y: [0, -8, 6, 0],
-          x: [0, 4, -3, 0],
-        }}
-        transition={{
-          duration: floatDuration, // Dùng giá trị cố định đã tính trước
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      >
-        <div
-          className="relative"
-          style={{
-            width: size,
-            height: size * 0.42,
-            opacity,
-            filter: `blur(${blur}px)`,
-          }}
-        >
-          {/* Main metal shard */}
-          <div
-            className="absolute inset-0 border border-white/10 shadow-[0_0_30px_rgba(250,204,21,0.08)]"
-            style={{
-              clipPath:
-                "polygon(0% 62%, 10% 38%, 22% 0%, 70% 8%, 100% 48%, 82% 100%, 24% 86%)",
-              background:
-                "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(161,161,170,0.92) 18%, rgba(82,82,91,0.88) 42%, rgba(24,24,27,0.95) 100%)",
-              transform: `rotate(${rotate}deg)`,
-            }}
-          />
-
-          {/* Edge highlight */}
-          <div
-            className="absolute left-[14%] top-[18%] h-[2px] w-[38%] bg-white/80 blur-[1px]"
-            style={{ transform: `rotate(${rotate + 10}deg)` }}
-          />
-
-          {/* Golden reflection */}
-          <div
-            className="absolute right-[16%] top-[52%] h-[1px] w-[20%] bg-yellow-200/60 blur-[1px]"
-            style={{ transform: `rotate(${rotate - 18}deg)` }}
-          />
-
-          {/* Subtle energy glow */}
-          <div
-            className="absolute inset-0 opacity-50 blur-md"
-            style={{
-              clipPath:
-                "polygon(0% 62%, 10% 38%, 22% 0%, 70% 8%, 100% 48%, 82% 100%, 24% 86%)",
-              background:
-                "linear-gradient(135deg, rgba(250,204,21,0.14), transparent 70%)",
-              transform: `rotate(${rotate}deg)`,
-            }}
-          />
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 export default function AuthBackground({ children }: AuthBackgroundProps) {
-  // 2. Tối ưu hóa mảng bụi (Dust Particles) chỉ khởi tạo Duy nhất 1 lần khi mount trang
-  const dustParticles = useMemo(() => {
-    return Array.from({ length: 40 }).map((_, i) => ({
-      id: i,
-      width: Math.random() * 2 + 1,
-      height: Math.random() * 2 + 1,
-      startX: `${Math.random() * 100}%`,
-      startY: `${Math.random() * 100}%`,
-      endY: `${Math.random() * 100 - 10}%`,
-      duration: 5 + Math.random() * 8,
-      delay: Math.random() * 5,
-    }));
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    // Cấu hình hệ thống hạt giả lập bụi vũ trụ và vệt sáng kim loại nhẹ
+    const particleCount = Math.min(60, Math.floor((width * height) / 30000)); // Tự thích ứng màn hình
+    const particles: Array<{
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      opacity: number;
+      fadeSpeed: number;
+      color: string;
+    }> = [];
+
+    const colors = [
+      "rgba(255, 255, 255, ",
+      "rgba(250, 204, 21, ", // Ánh vàng Neon nhẹ matching thương hiệu
+      "rgba(161, 161, 170, ", // Màu kim loại Titan
+    ];
+
+    // Khởi tạo cụm hạt
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * 2.5 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: -Math.random() * 0.5 - 0.1, // Luôn bay nhẹ lên trên
+        opacity: Math.random() * 0.6 + 0.2,
+        fadeSpeed: Math.random() * 0.005 + 0.002,
+        color: colors[Math.floor(Math.random() * colors.length)],
+      });
+    }
+
+    // Vòng lặp vẽ đồ họa bằng Canvas (Tối ưu phần cứng tuyệt đối)
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = 0; i < particleCount; i++) {
+        const p = particles[i]!;
+
+        // Cập nhật vị trí
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        // Xử lý khi hạt bay ra khỏi màn hình
+        if (p.y < -10) {
+          p.y = height + 10;
+          p.x = Math.random() * width;
+        }
+        if (p.x < -10 || p.x > width + 10) {
+          p.speedX *= -1;
+        }
+
+        // Vẽ hạt dạng bụi mịn quý phái
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `${p.color}${p.opacity})`;
+        ctx.fill();
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    // Xử lý co giãn trình duyệt
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050505]">
-      {/* Cosmic background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.12),transparent_35%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(255,255,255,0.04),transparent_45%)]" />
-
-      {/* Large ambient glow */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{
-          duration: 90,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="absolute h-[1400px] w-[1400px] rounded-full opacity-30 blur-3xl will-change-transform"
-        style={{
-          background: `conic-gradient(from 0deg, transparent, oklch(0.852 0.199 91.936 / 0.16), transparent, transparent)`,
-        }}
+      {/* Canvas chạy ngầm siêu mượt - Thay thế 60 DOM Nodes cũ */}
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none absolute inset-0 z-0"
       />
 
-      {/* Orbit rings */}
-      <div className="absolute h-[700px] w-[700px] rounded-full border border-yellow-500/10 pointer-events-none" />
-      <div className="absolute h-[1100px] w-[1100px] rounded-full border border-yellow-400/5 pointer-events-none" />
-      <div className="absolute h-[1500px] w-[1500px] rounded-full border border-zinc-400/5 pointer-events-none" />
+      {/* Cosmic background / Ambient Glow (Giữ lại các lớp layer tĩnh, không chuyển động) */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.08),transparent_40%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(255,255,255,0.02),transparent_50%)]" />
 
-      {/* Floating metal shards */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {metalShards.map((shard) => (
-          <MetalShard key={shard.id} {...shard} />
-        ))}
-      </div>
+      {/* Vòng tròn quỹ đạo tĩnh nghệ thuật (Không quay bằng JS -> Cực nhẹ) */}
+      <div className="absolute h-[700px] w-[700px] rounded-full border border-yellow-500/5 pointer-events-none" />
+      <div className="absolute h-[1100px] w-[1100px] rounded-full border border-zinc-400/5 pointer-events-none" />
 
-      {/* Optimized Dust particles */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {dustParticles.map((dust) => (
-          <motion.div
-            key={dust.id}
-            className="absolute rounded-full bg-white/40 will-change-transform"
-            style={{
-              width: dust.width,
-              height: dust.height,
-            }}
-            initial={{
-              x: dust.startX,
-              y: dust.startY,
-              opacity: 0,
-            }}
-            animate={{
-              y: [dust.startY, dust.endY],
-              opacity: [0, 0.8, 0],
-            }}
-            transition={{
-              duration: dust.duration,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: dust.delay,
-            }}
-          />
-        ))}
-      </div>
+      {/* Lớp phủ điện ảnh Vignette đậm chất Dark Mode */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,transparent_45%,rgba(0,0,0,0.9)_100%)]" />
 
-      {/* Vignette */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,transparent_45%,rgba(0,0,0,0.85)_100%)]" />
-
-      {/* Content */}
+      {/* Khung nội dung Form Đăng nhập/Đăng ký */}
       <div className="relative z-10 w-full px-6">
         <div className="mx-auto w-full max-w-md">{children}</div>
       </div>

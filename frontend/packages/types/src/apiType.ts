@@ -6,6 +6,7 @@ export interface ApiResponse<T> {
 
 export interface AuthenticationResponse {
   token: string;
+  refreshToken: string;
   authenticated: boolean;
 }
 

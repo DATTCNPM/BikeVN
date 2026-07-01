@@ -9,6 +9,7 @@ import UniversalFilterSheet, {
 import { useVehicleFilters, useVehicles } from "@repo/hooks";
 import { vehicleStatusSchema, vehicleTypeSchema } from "@repo/schemas";
 import type { VehicleCardData, VehicleQueryParams, Vehicle } from "@repo/types";
+import { useDebounce } from "@repo/hooks";
 
 import { motion } from "framer-motion";
 import {
@@ -24,16 +25,16 @@ import { PRICE_RANGES } from "@repo/constants";
 export default function ListVehicle() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const size = 10;
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
     {},
   );
 
+  // Ô input gõ cập nhật searchQuery liên tục, nhưng debouncedQuery thì 1000ms sau mới đổi
+  const debouncedQuery = useDebounce(search, 1000);
+
   // 1. Fetch main fleet and handle active filter state switching
-  const { data: vehicles, isLoading: vehicleLoading } = useVehicles(
-    page,
-    pageSize,
-  );
+  const { data: vehicles, isLoading: vehicleLoading } = useVehicles(page, size);
 
   const activePriceRange = PRICE_RANGES.find(
     (p) => p.value === selectedFilters["priceRange"]?.value,
@@ -45,7 +46,7 @@ export default function ListVehicle() {
 
   const apiFilters = useMemo<VehicleQueryParams>(
     () => ({
-      search: search.trim() || undefined,
+      name: debouncedQuery.trim() || undefined, // ✨ ĐỔI TỪ search THÀNH debouncedQuery
       currentBranchName: selectedFilters["branch"]?.value,
       brandName: selectedFilters["brand"]?.value,
       modelName: selectedFilters["model"]?.value,
@@ -54,9 +55,9 @@ export default function ListVehicle() {
       minPrice: activePriceRange?.min,
       maxPrice: activePriceRange?.max,
       page,
-      pageSize,
+      size,
     }),
-    [search, selectedFilters, activePriceRange, page],
+    [debouncedQuery, selectedFilters, activePriceRange, page], // ✨ Đổi dependency từ search thành debouncedQuery
   );
 
   const { data: filteredVehicles, isLoading: filterLoading } =

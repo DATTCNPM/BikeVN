@@ -1,6 +1,9 @@
 export const TOKEN_KEYS = {
-  CLIENT: "client_token",
-  PORTAL: "portal_token",
+  CLIENT_ACCESS: "client_token",
+  CLIENT_REFRESH: "client_refresh_token",
+
+  PORTAL_ACCESS: "portal_token",
+  PORTAL_REFRESH: "portal_refresh_token",
 } as const;
 
 export const ROLES = {

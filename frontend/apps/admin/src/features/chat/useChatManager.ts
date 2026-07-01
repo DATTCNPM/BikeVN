@@ -28,7 +28,8 @@ export function useAdminChatManager(conversationId: string | null) {
             if (!oldData) return oldData;
             return {
               ...oldData,
-              content: [newMessage, ...(oldData.content || [])],
+              // Thay đổi: Nhét tin nhắn mới vào CUỐI MẢNG để đồng bộ với cấu trúc trả về của API
+              content: [...(oldData.content || []), newMessage],
             };
           },
         );

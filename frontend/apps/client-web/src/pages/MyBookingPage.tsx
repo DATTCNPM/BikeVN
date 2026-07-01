@@ -12,6 +12,7 @@ import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useBookingsByUser } from "@/features/bookings/queries";
+import { useProfile } from "@/features/profile/useProfile";
 import { formatDateTime } from "@repo/utils";
 import type { Booking } from "@repo/types";
 import imageMock from "@/assets/images/motorbike1.png";
@@ -49,14 +50,12 @@ type BookingWithVehicle = Booking & {
   vehicleImage?: string;
 };
 
-interface MyBookingsProps {
-  userId: string;
-}
-
-export default function MyBookings({ userId }: MyBookingsProps) {
+export default function MyBookingPage() {
   const navigate = useNavigate();
-  const { data: bookings = [], isLoading: bookingsLoading } =
-    useBookingsByUser(userId);
+  const { data: user } = useProfile();
+  const { data: bookings = [], isLoading: bookingsLoading } = useBookingsByUser(
+    user?.id || "",
+  );
 
   if (bookingsLoading) {
     return (
@@ -69,7 +68,7 @@ export default function MyBookings({ userId }: MyBookingsProps) {
   if (bookings.length === 0) {
     return (
       <p className="text-muted-foreground text-center py-8">
-        Bạn chưa có đơn đặt xe nào.
+        You have no bookings yet. Start exploring and book your first ride!
       </p>
     );
   }

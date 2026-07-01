@@ -1,4 +1,4 @@
-import { LogOut, CalendarDays, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -6,19 +6,10 @@ import {
 } from "@repo/ui/components/ui/avatar";
 import { Button } from "@repo/ui/components/ui/button";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@repo/ui/components/ui/tabs";
 
 // Hooks
 import { useProfile } from "@/features/profile/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
-
-// Local Sub-components
-import MyBookings from "@/features/profile/components/MyBookingSection";
 import AccountSettings from "@/features/profile/components/AccountSettingSection";
 
 export default function ProfilePage() {
@@ -62,37 +53,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Shadcn UI Tabs System */}
-        <Tabs defaultValue="settings" className="w-full space-y-6">
-          <TabsList className="w-full justify-start h-auto p-0 bg-transparent border-b border-border rounded-none space-x-2">
-            <TabsTrigger
-              value="settings"
-              className="flex items-center gap-2 px-4 py-3 border-b-1 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-sm rounded-none -mb-[1px]"
-            >
-              <User className="w-4 h-4" />
-              <span>Account Settings</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="bookings"
-              className="flex items-center gap-2 px-4 py-3 border-b-1 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-sm rounded-none -mb-[1px]"
-            >
-              <CalendarDays className="w-4 h-4" />
-              <span>My Bookings</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent
-            value="settings"
-            className="mt-0 focus-visible:outline-none"
-          >
-            <AccountSettings user={user} />
-          </TabsContent>
-          <TabsContent
-            value="bookings"
-            className="mt-0 focus-visible:outline-none"
-          >
-            <MyBookings userId={user?.id || ""} />
-          </TabsContent>
-        </Tabs>
+        <AccountSettings user={user} />
       </main>
     </div>
   );

@@ -9,13 +9,13 @@ import {
 } from "@repo/ui/components/ui/dropdown-menu";
 
 type Props = {
-  onConfirm?: () => void;
+  onRefund?: () => void;
   onApproveManually?: () => void;
   onCancel?: () => void;
 };
 
 export default function PaymentActionDropdown({
-  onConfirm,
+  onRefund,
   onApproveManually,
   onCancel,
 }: Props) {
@@ -28,10 +28,10 @@ export default function PaymentActionDropdown({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-52 rounded-2xl">
-        {onConfirm && (
-          <DropdownMenuItem onClick={onConfirm}>
+        {onRefund && (
+          <DropdownMenuItem onClick={onRefund}>
             <Check className="mr-2 size-4" />
-            Confirm Payment
+            Refund Payment
           </DropdownMenuItem>
         )}
 

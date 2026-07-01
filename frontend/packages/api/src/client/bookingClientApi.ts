@@ -3,9 +3,11 @@ import axiosClient from "../axios/axiosClient";
 import type { Booking, BookingCreationPayload } from "@repo/types";
 
 import { createBookingCommonApi } from "../common/createBookingCommonApi";
+import { createVehicleReturnCommonApi } from "../common/createVehicleReturnCommonApi";
 
 export const bookingClientApi = {
   ...createBookingCommonApi(axiosClient),
+  ...createVehicleReturnCommonApi(axiosClient),
   async createBooking(payload: BookingCreationPayload) {
     console.log("Creating booking with payload:", payload);
     const idempotencyKey = crypto.randomUUID();

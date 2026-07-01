@@ -1,5 +1,23 @@
 import { z } from "zod";
 
+// --- THÊM MỚI: Schema cho PaymentResponse để khớp với Backend ---
+export const paymentResponseSchema = z.object({
+  id: z.string(),
+  bookingId: z.string(),
+  amount: z.number(),
+  status: z.enum([
+    "pending",
+    "completed",
+    "failed",
+    "processing_refund",
+    "refunded",
+  ]),
+  type: z.enum(["rental", "extra_fee", "unspecified"]),
+  transferContent: z.string().nullable().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+
 export const vehicleConditionStatusSchema = z.enum([
   "excellent",
   "good",
@@ -7,6 +25,7 @@ export const vehicleConditionStatusSchema = z.enum([
   "damaged",
 ]);
 
+// --- CẬP NHẬT: Thêm trường payment vào đây ---
 export const vehicleReturnSchema = z.object({
   id: z.string(),
 
@@ -27,6 +46,9 @@ export const vehicleReturnSchema = z.object({
   notes: z.string().nullable().optional(),
 
   employeeId: z.string(),
+
+  // 🟢 BỔ SUNG: Cho phép có hoặc không có payment (vì nếu extraFee = 0, backend trả về null)
+  payment: paymentResponseSchema.nullable().optional(),
 
   createdAt: z.string(),
 
