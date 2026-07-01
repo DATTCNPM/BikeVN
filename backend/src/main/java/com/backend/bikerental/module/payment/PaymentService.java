@@ -104,8 +104,7 @@ public class PaymentService {
     @Transactional
     public PaymentResponse createExtraFeePayment(String bookingId, BigDecimal damageFee,
                                                  String actualReturnBranchId,
-                                                 String paymentMethod, String ipAddress,
-                                                 String customReturnUrl)
+                                                 String paymentMethod)
     {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
@@ -148,17 +147,8 @@ public class PaymentService {
         bookingRepository.save(booking);
 
         PaymentResponse paymentResponse = buildResponse(savedPayment, booking);
-        paymentResponse.setTransferContent(fee.invoiceDetails());
 
-        if ("bank_transfer".equalsIgnoreCase(paymentMethod)) {
-            String vnpayUrl = vnPayService.createPaymentUrl(
-                    savedPayment.getId(),
-                    savedPayment.getAmount().longValue(),
-                    ipAddress, customReturnUrl);
-
-            paymentResponse.setTransferContent(vnpayUrl);
-        }
-        else if ("cash".equalsIgnoreCase(paymentMethod)) {
+        if("cash".equalsIgnoreCase(paymentMethod)) {
             paymentResponse.setTransferContent("Please pay in cash at the counter");
         }
         else {

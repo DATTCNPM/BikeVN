@@ -5,6 +5,7 @@ import com.backend.bikerental.core.dto.PageResponse;
 import com.backend.bikerental.module.vehicle.enums.VehicleConditionStatus;
 import com.backend.bikerental.module.booking.dto.VehicleReturnRequest;
 import com.backend.bikerental.module.booking.dto.VehicleReturnResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
