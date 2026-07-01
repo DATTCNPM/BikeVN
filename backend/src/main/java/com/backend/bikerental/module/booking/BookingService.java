@@ -146,6 +146,37 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public PageResponse<BookingResponse> getAllBookingByBranch(int page, int size)
+    {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        User employee = userRepository.findByEmail(auth.getName())
+                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        String branchId = employee.getBranch() != null ? employee.getBranch().getId() : null;
+        if (branchId == null)
+        {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Booking> pageData = bookingRepository
+                .findByPickupBranchIdOrReturnBranchId(branchId, branchId, pageable);
+
+        var bookingResponses = pageData.getContent().stream()
+                .map(bookingMapper::toBookingResponse)
+                .toList();
+
+        return PageResponse.<BookingResponse>builder()
+                .currentPage(page)
+                .totalPages(pageData.getTotalPages())
+                .pageSize(size)
+                .totalElements(pageData.getTotalElements())
+                .data(bookingResponses)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
     @PreAuthorize("isAuthenticated()")
     public List<BookingResponse> getBookingsByUser(String userId) {
         User user = userRepository.findById(userId)
