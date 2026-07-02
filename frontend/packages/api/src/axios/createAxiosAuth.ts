@@ -50,24 +50,28 @@ export function createAxiosAuth({
       const config = response.config as any;
       const data = response.data as ApiResponse<any>;
 
-      // ĐẢM BẢO KHÔNG REFRESH KHI CHÍNH REQUEST ĐÓ LÀ REFRESH/LOGIN
+      // 1. Chặn xử lý vòng lặp nếu đây là request REFRESH hoặc LOGIN
       if (
         config.url?.includes("/auth/refresh") ||
         config.url?.includes("/login")
       ) {
         if (data?.code === 1000) return data.result;
         if (typeof data?.code === "number") {
-          throw new ApiError(data.code, data.message || "Logic error");
+          throw new ApiError(data.code, data.message || "Auth Logic Error");
         }
         return data;
       }
 
+      // 2. Xử lý mã lỗi logic hết hạn token từ Backend (Ví dụ: 5555)
       if (data?.code === 5555 && !config?._retry && !config?.skipAuthCheck) {
         config._retry = true;
         return handleTokenRefresh(config);
       }
 
+      // 3. Xử lý khi API chạy thành công chuẩn chuẩn 1000
       if (data?.code === 1000) return data.result;
+
+      // 4. Các lỗi logic khác từ backend (Ví dụ: 4002, 4003...)
       if (typeof data?.code === "number") {
         throw new ApiError(data.code, data.message || "Logic error");
       }
@@ -77,11 +81,12 @@ export function createAxiosAuth({
     async (error) => {
       const config = error.config as any;
 
-      // KHÔNG xử lý 401 nếu bản thân nó là request refresh token
+      // 1. Nếu bản thân request refresh token bị lỗi HTTP (401, 403, 500...), ném lỗi ra ngay
       if (config.url?.includes("/auth/refresh")) {
         return Promise.reject(error);
       }
 
+      // 2. Xử lý mã lỗi HTTP chuẩn 401 Unauthorized cho các API thông thường
       if (
         error.response?.status === 401 &&
         !config?._retry &&
@@ -146,9 +151,11 @@ function handleUnauthorized(
 ) {
   if (typeof window === "undefined") return;
 
+  // Sửa từ xóa đơn lẻ sang xóa sạch sẽ theo Key hệ thống
   localStorage.removeItem(tokenKey);
-  localStorage.removeItem(refreshTokenKey); // Xóa nốt refresh token khi logout
+  localStorage.removeItem(refreshTokenKey);
 
+  // Chỉ chuyển hướng nếu user đang KHÔNG ở trang login
   if (!window.location.pathname.startsWith(loginPath)) {
     window.location.href = loginPath;
   }

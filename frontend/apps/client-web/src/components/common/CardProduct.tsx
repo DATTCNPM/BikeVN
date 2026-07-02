@@ -12,9 +12,6 @@ const VEHICLE_TYPE_CONFIG = {
 
 export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
   const navigate = useNavigate();
-  const baseImageUrl =
-    import.meta.env.BASE_IMAGE_URL ||
-    "https://res.cloudinary.com/dhtnzr5f/image/";
   const handleViewDetails = () => {
     navigate(`/vehicles/${vehicle.id}`);
   };
@@ -41,7 +38,7 @@ export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
       {/* Media Spotlight Section */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/40">
         <img
-          src={vehicle.image ? baseImageUrl + vehicle.image : motorPlaceholder}
+          src={vehicle.image ?vehicle.image : motorPlaceholder}
           alt={vehicle.name}
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           loading="lazy"

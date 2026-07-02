@@ -245,7 +245,7 @@ export default function BookingReturnPage() {
                   className="group relative aspect-video overflow-hidden rounded-xl border bg-muted shadow-sm transition-all duration-200 hover:ring-2 hover:ring-primary/50 cursor-pointer"
                 >
                   <img
-                    src={`https://bikevn.onrender.com${image}`}
+                    src={`${image}`}
                     alt={`Vehicle return inspection ${index + 1}`}
                     className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
