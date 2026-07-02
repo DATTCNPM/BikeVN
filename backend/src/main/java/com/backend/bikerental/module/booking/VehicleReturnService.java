@@ -5,6 +5,7 @@ import com.backend.bikerental.module.booking.dto.VehicleReturnRequest;
 import com.backend.bikerental.core.dto.PageResponse;
 import com.backend.bikerental.module.payment.dto.PaymentResponse;
 import com.backend.bikerental.module.booking.dto.VehicleReturnResponse;
+import com.backend.bikerental.module.user.User;
 import com.backend.bikerental.module.vehicle.enums.StatusVehicleEnum;
 import com.backend.bikerental.module.vehicle.enums.VehicleConditionStatus;
 import com.backend.bikerental.core.exception.AppException;
@@ -173,11 +174,28 @@ public class VehicleReturnService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('admin', 'employee') or returnObject.booking.userId == authentication.name")
+    @PreAuthorize("isAuthenticated()")
     public VehicleReturnResponse getReturnByBookingId(String bookingId)
     {
         VehicleReturn vehicleReturn = vehicleReturnRepository.findByBookingId(bookingId)
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isStaff = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin")
+                        || a.getAuthority().equals("ROLE_employee"));
+
+        if (!isStaff) {
+            User user = userRepository.findById(booking.getUserId())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            
+            if (!user.getEmail().equals(auth.getName())) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
         return vehicleReturnMapper.toVehicleReturnResponse(vehicleReturn);
     }
 
