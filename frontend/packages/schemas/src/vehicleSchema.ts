@@ -5,6 +5,7 @@ export const vehicleStatusSchema = z.enum([
   "available",
   "unavailable",
   "maintenance",
+  "rented",
 ]);
 
 export const vehicleTypeSchema = z.enum(["fuel", "electric"]);

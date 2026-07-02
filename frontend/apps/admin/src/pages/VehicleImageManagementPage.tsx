@@ -135,6 +135,7 @@ export default function VehicleImageManagementPage() {
   return (
     <>
       <DataTableToolbar
+        showCreate={true}
         search={search}
         onSearchChange={setSearch}
         onCreateOpen={() => setOpenCreate(true)}
