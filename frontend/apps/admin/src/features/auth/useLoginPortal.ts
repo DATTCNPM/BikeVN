@@ -28,7 +28,7 @@ export function useLoginPortal() {
         throw new Error("Bạn không có quyền truy cập hệ thống quản trị");
       }
 
-      authStorageService.setPortalToken(token);
+      authStorageService.setPortalTokens(token, auth.refreshToken);
 
       setPortalLogin(true);
 

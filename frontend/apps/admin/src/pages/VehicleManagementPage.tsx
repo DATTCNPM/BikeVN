@@ -30,12 +30,14 @@ const VEHICLE_STATUS_MAP = {
   unavailable: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
   maintenance:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-300",
+  rented: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
 };
 
 const VEHICLE_STATUS_LABEL = {
   available: "Available",
   unavailable: "Unavailable",
   maintenance: "Under Maintenance",
+  rented: "Rented",
 };
 
 export default function VehicleManagementPage() {
@@ -127,6 +129,7 @@ export default function VehicleManagementPage() {
           { label: "Available", value: "available" },
           { label: "Unavailable", value: "unavailable" },
           { label: "Under Maintenance", value: "maintenance" },
+          { label: "Rented", value: "rented" },
         ],
       },
       {

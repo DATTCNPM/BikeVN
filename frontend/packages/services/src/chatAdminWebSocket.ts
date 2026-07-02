@@ -3,5 +3,4 @@ import { ChatWebSocketService } from "./chatWebSocketService";
 
 export const chatAdminWebSocket = new ChatWebSocketService({
   tokenKey: TOKEN_KEYS.PORTAL_ACCESS,
-  onMessageReceived: (msg) => console.log("Admin received:", msg),
 });

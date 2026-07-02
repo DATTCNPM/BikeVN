@@ -23,7 +23,6 @@ export function createAxiosAuth({
     timeout: 10000,
   });
 
-  // Cơ chế xếp hàng (Queue) để tránh nhiều request gọi refresh token cùng lúc
   let isRefreshing = false;
   let failedQueue: any[] = [];
 
@@ -51,7 +50,18 @@ export function createAxiosAuth({
       const config = response.config as any;
       const data = response.data as ApiResponse<any>;
 
-      // Xử lý mã lỗi từ Backend (Ví dụ hệ thống của bạn trả về 5555 làm mã hết hạn token)
+      // ĐẢM BẢO KHÔNG REFRESH KHI CHÍNH REQUEST ĐÓ LÀ REFRESH/LOGIN
+      if (
+        config.url?.includes("/auth/refresh") ||
+        config.url?.includes("/login")
+      ) {
+        if (data?.code === 1000) return data.result;
+        if (typeof data?.code === "number") {
+          throw new ApiError(data.code, data.message || "Logic error");
+        }
+        return data;
+      }
+
       if (data?.code === 5555 && !config?._retry && !config?.skipAuthCheck) {
         config._retry = true;
         return handleTokenRefresh(config);
@@ -67,7 +77,11 @@ export function createAxiosAuth({
     async (error) => {
       const config = error.config as any;
 
-      // Xử lý mã lỗi HTTP chuẩn 401 Unauthorized
+      // KHÔNG xử lý 401 nếu bản thân nó là request refresh token
+      if (config.url?.includes("/auth/refresh")) {
+        return Promise.reject(error);
+      }
+
       if (
         error.response?.status === 401 &&
         !config?._retry &&
@@ -81,7 +95,6 @@ export function createAxiosAuth({
     },
   );
 
-  // Hàm xử lý chung cho cả 2 trường hợp lỗi 401 hoặc Code 5555
   async function handleTokenRefresh(originalRequest: any) {
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
@@ -100,11 +113,8 @@ export function createAxiosAuth({
       const refreshToken = localStorage.getItem(refreshTokenKey);
       if (!refreshToken) throw new Error("No refresh token available");
 
-      // Gọi hàm refresh token được truyền từ ngoài vào
       const res = await onRefreshToken(refreshToken);
 
-      // Ở đây tùy thuộc Backend của bạn trả về data trực tiếp hay bọc trong ApiResponse<T>
-      // Giả sử res nhận về dạng { accessToken, refreshToken }
       const newAccessToken = res.accessToken;
       const newRefreshToken = res.refreshToken;
 

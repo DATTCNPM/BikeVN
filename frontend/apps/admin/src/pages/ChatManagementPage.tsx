@@ -42,7 +42,9 @@ export default function ChatManagementPage() {
   }, [conversations, selectedId]);
 
   const messages = useMemo(() => {
-    return [...(messagesData?.content || [])].reverse();
+    if (!messagesData?.content) return [];
+    // Tạo một mảng shallow sao chép rồi mới reverse để an toàn cho React render
+    return [...messagesData.content].reverse();
   }, [messagesData]);
 
   const totalUnread = useMemo(() => {

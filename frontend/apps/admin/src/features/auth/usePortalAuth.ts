@@ -24,47 +24,34 @@ export const usePortalAuth = create<AdminAuthState>()(
       isPortalLogin: !!authStorageService.getPortalToken(),
 
       setPortalLogin: (value) => {
-        set({
-          isPortalLogin: value,
-        });
+        set({ isPortalLogin: value });
       },
 
       logoutPortal: () => {
-        authStorageService.clearPortalToken();
+        // SỬA TẠI ĐÂY: Xóa toàn bộ token (Access + Refresh) để tránh rò rỉ quyền
+        authStorageService.clearPortalTokens();
 
-        set({
-          isPortalLogin: false,
-        });
+        set({ isPortalLogin: false });
       },
 
       initializeAuth: () => {
         const token = authStorageService.getPortalToken();
 
         if (!token) {
-          set({
-            isPortalLogin: false,
-          });
-
+          set({ isPortalLogin: false });
           return;
         }
 
+        // SỬA TẠI ĐÂY: Nếu token hết hạn hoặc sai quyền, cũng phải dọn sạch cả cặp
         if (tokenService.isExpired(token) || !hasAdminAccess(token)) {
-          authStorageService.clearPortalToken();
-
-          set({
-            isPortalLogin: false,
-          });
-
+          authStorageService.clearPortalTokens();
+          set({ isPortalLogin: false });
           return;
         }
 
-        set({
-          isPortalLogin: true,
-        });
+        set({ isPortalLogin: true });
       },
     }),
-    {
-      name: "portal-auth-store",
-    },
+    { name: "portal-auth-store" },
   ),
 );

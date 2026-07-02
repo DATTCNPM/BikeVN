@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Fuel, Globe, MapPin, Zap } from "lucide-react";
 import { Badge } from "@repo/ui/components/ui/badge";
-import { getImageUrl } from "@repo/utils";
 import motorPlaceholder from "@/assets/images/motorbike1.png";
 import type { VehicleCardData } from "@repo/types";
 import VehicleStatusBadge from "./VehicleStatusBadge";
@@ -13,7 +12,9 @@ const VEHICLE_TYPE_CONFIG = {
 
 export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
   const navigate = useNavigate();
-
+  const baseImageUrl =
+    import.meta.env.BASE_IMAGE_URL ||
+    "https://res.cloudinary.com/dhtnzr5f/image/";
   const handleViewDetails = () => {
     navigate(`/vehicles/${vehicle.id}`);
   };
@@ -28,6 +29,10 @@ export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
     ] ?? VEHICLE_TYPE_CONFIG.fuel;
   const TypeIcon = typeConfig.icon;
 
+  console.log(
+    "🚀 ~ file: CardProduct.tsx:24 ~ CardProduct ~ vehicle:",
+    vehicle,
+  );
   return (
     <div
       onClick={handleViewDetails}
@@ -36,7 +41,7 @@ export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
       {/* Media Spotlight Section */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/40">
         <img
-          src={vehicle.image ? getImageUrl(vehicle.image) : motorPlaceholder}
+          src={vehicle.image ? baseImageUrl + vehicle.image : motorPlaceholder}
           alt={vehicle.name}
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           loading="lazy"

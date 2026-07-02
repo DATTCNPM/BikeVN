@@ -1,130 +1,210 @@
-import { Client, type Message } from "@stomp/stompjs";
+import { Client, type IMessage, type StompSubscription } from "@stomp/stompjs";
 import type {
   ChatMessageRequest,
   ChatMessageResponse,
   ReadReceiptEvent,
 } from "@repo/types";
 
+type MessageCallback = (message: ChatMessageResponse) => void;
+type ReadReceiptCallback = (event: ReadReceiptEvent) => void;
+
 type WebSocketConfig = {
   tokenKey: string;
-  onMessageReceived?: (message: ChatMessageResponse) => void;
-  onReadReceiptReceived?: (event: ReadReceiptEvent) => void;
 };
 
 export class ChatWebSocketService {
-  private stompClient: Client | null = null;
-  private tokenKey: string;
-  private currentSubscriptionId: string | null = null;
+  private readonly tokenKey: string;
+
+  private readonly stompClient: Client;
+
+  private currentConversationId: string | null = null;
+
+  private currentSubscription: StompSubscription | null = null;
+
+  private onMessageReceived?: MessageCallback;
+
+  private onReadReceiptReceived?: ReadReceiptCallback;
 
   constructor(config: WebSocketConfig) {
     this.tokenKey = config.tokenKey;
-    this.initStompClient(); // Đã sửa: Không cần truyền config vào đây nữa
-  }
 
-  // Đã sửa: Loại bỏ tham số config bị thừa để fix lỗi TS6133
-  private initStompClient() {
-    // Thay đổi ws:// hoặc wss:// tuỳ theo môi trường của bạn (giống baseURL)
     const socketUrl =
       import.meta.env.VITE_WS_URL || "wss://bikevn.onrender.com/ws";
 
     this.stompClient = new Client({
       brokerURL: socketUrl,
-      connectHeaders: {
-        Authorization: localStorage.getItem(this.tokenKey)
-          ? `Bearer ${localStorage.getItem(this.tokenKey)}`
-          : "",
-      },
-      debug: (str) => {
-        if (import.meta.env.DEV) console.log("[WebSocket Debug]", str);
-      },
+
       reconnectDelay: 5000,
+
       heartbeatIncoming: 4000,
+
       heartbeatOutgoing: 4000,
+
+      debug: (msg) => {
+        if (import.meta.env.DEV) {
+          console.log("[WebSocket]", msg);
+        }
+      },
+
+      beforeConnect: async () => {
+        const token = localStorage.getItem(this.tokenKey);
+
+        this.stompClient.connectHeaders = {
+          Authorization: token ? `Bearer ${token}` : "",
+        };
+
+        if (import.meta.env.DEV) {
+          console.log("[WebSocket] CONNECT TOKEN:", token);
+        }
+      },
     });
 
     this.stompClient.onConnect = () => {
-      console.log("Connected to WebSocket Broker");
+      console.log("[WebSocket] Connected");
+
+      if (this.currentConversationId) {
+        this.subscribeInternal();
+      }
+    };
+
+    this.stompClient.onDisconnect = () => {
+      console.log("[WebSocket] Disconnected");
+    };
+
+    this.stompClient.onWebSocketClose = () => {
+      console.log("[WebSocket] Socket Closed");
     };
 
     this.stompClient.onStompError = (frame) => {
-      console.error("Broker reported error: " + frame.headers["message"]);
-      console.error("Additional details: " + frame.body);
+      console.error(
+        "[WebSocket] Broker Error:",
+        frame.headers["message"],
+      );
+
+      console.error(frame.body);
     };
   }
 
-  // Kích hoạt kết nối
+  /**
+   * Chỉ activate đúng một lần.
+   */
   public activate() {
-    this.stompClient?.activate();
+    if (this.stompClient.active) return;
+
+    this.stompClient.activate();
   }
 
-  // Ngắt kết nối
+  /**
+   * Ngắt toàn bộ kết nối.
+   */
   public deactivate() {
     this.unsubscribeCurrentConversation();
-    this.stompClient?.deactivate();
+
+    if (this.stompClient.active) {
+      this.stompClient.deactivate();
+    }
   }
 
-  // Đăng ký lắng nghe một phòng chat cụ thể (/topic/conversations/{id})
+  /**
+   * Subscribe phòng chat.
+   * Nếu socket chưa connect thì sẽ tự subscribe
+   * sau khi onConnect được gọi.
+   */
   public subscribeToConversation(
     conversationId: string,
-    onMessageReceived: (message: ChatMessageResponse) => void,
-    onReadReceiptReceived?: (event: ReadReceiptEvent) => void,
+    onMessageReceived: MessageCallback,
+    onReadReceiptReceived?: ReadReceiptCallback,
   ) {
-    this.unsubscribeCurrentConversation();
+    this.currentConversationId = conversationId;
 
-    if (!this.stompClient || !this.stompClient.connected) {
-      console.warn("Stomp client is not connected yet.");
-      return;
+    this.onMessageReceived = onMessageReceived;
+
+    this.onReadReceiptReceived = onReadReceiptReceived;
+
+    if (this.stompClient.connected) {
+      this.subscribeInternal();
+    }
+  }
+
+  /**
+   * Subscribe thật sự.
+   */
+  private subscribeInternal() {
+    if (!this.currentConversationId) return;
+
+    if (!this.stompClient.connected) return;
+
+    if (this.currentSubscription) {
+      this.currentSubscription.unsubscribe();
+      this.currentSubscription = null;
     }
 
-    const destination = `/topic/conversations/${conversationId}`;
+    const destination = `/topic/conversations/${this.currentConversationId}`;
 
-    const subscription = this.stompClient.subscribe(
+    this.currentSubscription = this.stompClient.subscribe(
       destination,
-      (message: Message) => {
+      (message: IMessage) => {
         if (!message.body) return;
 
-        const parsedData = JSON.parse(message.body);
+        const payload = JSON.parse(message.body);
 
-        // Nhận diện payload gửi về là Tin nhắn mới hay Sự kiện đã đọc (Read Receipt)
-        if (parsedData.eventType === "READ_RECEIPT") {
-          if (onReadReceiptReceived)
-            onReadReceiptReceived(parsedData as ReadReceiptEvent);
-        } else {
-          onMessageReceived(parsedData as ChatMessageResponse);
+        if (payload.eventType === "READ_RECEIPT") {
+          this.onReadReceiptReceived?.(
+            payload as ReadReceiptEvent,
+          );
+          return;
         }
+
+        this.onMessageReceived?.(
+          payload as ChatMessageResponse,
+        );
       },
     );
 
-    this.currentSubscriptionId = subscription.id;
+    console.log(
+      "[WebSocket] Subscribed:",
+      this.currentConversationId,
+    );
   }
 
-  // Hủy lắng nghe phòng hiện tại khi rời box chat
+  /**
+   * Huỷ subscribe hiện tại.
+   */
   public unsubscribeCurrentConversation() {
-    if (this.currentSubscriptionId && this.stompClient) {
-      this.stompClient.unsubscribe(this.currentSubscriptionId);
-      this.currentSubscriptionId = null;
+    if (this.currentSubscription) {
+      this.currentSubscription.unsubscribe();
+      this.currentSubscription = null;
     }
+
+    this.currentConversationId = null;
   }
 
-  // Gửi tin nhắn qua WebSocket (/app/chat.sendMessage)
+  /**
+   * Gửi tin nhắn.
+   */
   public sendMessage(payload: ChatMessageRequest) {
-    if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.publish({
-        destination: "/app/chat.sendMessage",
-        body: JSON.stringify(payload),
-      });
-    } else {
-      console.error("Cannot send message. WebSocket is not connected.");
+    if (!this.stompClient.connected) {
+      console.warn("[WebSocket] Not connected.");
+      return;
     }
+
+    this.stompClient.publish({
+      destination: "/app/chat.sendMessage",
+      body: JSON.stringify(payload),
+    });
   }
 
-  // Đánh dấu đã đọc qua WebSocket (/app/chat.markAsRead)
+  /**
+   * Đánh dấu đã đọc.
+   */
   public markAsRead(conversationId: string) {
-    if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.publish({
-        destination: "/app/chat.markAsRead",
-        body: conversationId, // Gửi text thuần (String payload) đúng như Backend chỉ định
-      });
+    if (!this.stompClient.connected) {
+      return;
     }
+
+    this.stompClient.publish({
+      destination: "/app/chat.markAsRead",
+      body: conversationId,
+    });
   }
 }
