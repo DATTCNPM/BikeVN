@@ -39,7 +39,7 @@ public class RedisConfig {
                 .socketOptions(io.lettuce.core.SocketOptions.builder()
                         .keepAlive(true) // Liên tục ping để Load Balancer không cắt
                         .build())
-                .disconnectedBehavior(io.lettuce.core.ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+                .autoReconnect(true)
                 .build());
 
         // Bật SSL nếu Render/Upstash yêu cầu (Rất quan trọng trên Cloud)
