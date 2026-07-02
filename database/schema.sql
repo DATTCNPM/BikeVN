@@ -445,7 +445,7 @@ CREATE TABLE `vehicles` (
   `vehicle_type` enum('fuel','electric') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Fuel type: fuel or electric',
   `mileage` int DEFAULT '0' COMMENT 'Current mileage in km',
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('available','unavailable','maintenance') COLLATE utf8mb4_unicode_ci DEFAULT 'available',
+  `status` enum('available','unavailable','maintenance','rented') COLLATE utf8mb4_unicode_ci DEFAULT 'available',
   `current_branch_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Current location (branch)',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
