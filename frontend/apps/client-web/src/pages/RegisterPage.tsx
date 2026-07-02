@@ -7,7 +7,6 @@ import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
 import {
@@ -43,10 +42,9 @@ export default function Register() {
     formState: { errors },
   } = methods;
   const onSubmit = async (data: RegisterPayload) => {
-    console.log("Submitting registration data:", data);
     const success = await registerUser(data);
     if (success) {
-      navigate("/login");
+      navigate("/home");
     }
   };
 
@@ -131,10 +129,7 @@ export default function Register() {
         </Field>
         <Button type="submit" size="lg">
           {loading ? (
-            <span className="flex items-center gap-2">
-              <Spinner className="w-5 h-5" />
-              Registering...
-            </span>
+            <span className="flex items-center gap-2">Registering...</span>
           ) : (
             "Register"
           )}

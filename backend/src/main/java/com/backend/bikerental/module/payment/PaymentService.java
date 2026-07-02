@@ -103,7 +103,8 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponse createExtraFeePayment(String bookingId, BigDecimal damageFee,
-                                                 String actualReturnBranchId)
+                                                 String actualReturnBranchId,
+                                                 String paymentMethod)
     {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
@@ -133,7 +134,7 @@ public class PaymentService {
         payment.setAmount(fee.totalFee());
         payment.setStatus(PaymentStatus.pending);
 
-        payment.setPaymentMethod("unspecified");
+        payment.setPaymentMethod(paymentMethod != null ? paymentMethod : "unspecified");
         payment.setType(PaymentType.extra_fee);
 
         payment.setIdempotencyKey("EXTRA_FEE_" + bookingId + "_" + now.toEpochSecond(java.time.ZoneOffset.UTC));
@@ -146,7 +147,13 @@ public class PaymentService {
         bookingRepository.save(booking);
 
         PaymentResponse paymentResponse = buildResponse(savedPayment, booking);
-        paymentResponse.setTransferContent(fee.invoiceDetails());
+
+        if("cash".equalsIgnoreCase(paymentMethod)) {
+            paymentResponse.setTransferContent("Please pay in cash at the counter");
+        }
+        else {
+            paymentResponse.setTransferContent(fee.invoiceDetails());
+        }
 
         return paymentResponse;
 
@@ -175,7 +182,7 @@ public class PaymentService {
 
             Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
                     .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
-            vehicle.setStatus(StatusVehicleEnum.unavailable);
+            vehicle.setStatus(StatusVehicleEnum.rented);
             vehicleRepository.save(vehicle);
 
             bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());

@@ -7,7 +7,10 @@ import type {
   VehicleReturnFilterParams, // Thêm type filter đã định nghĩa từ bài trước
 } from "@repo/types";
 
+import { createVehicleReturnCommonApi } from "../common/createVehicleReturnCommonApi";
+
 export const vehicleReturnAdminApi = {
+  ...createVehicleReturnCommonApi(axiosAdmin),
   // 1. Tạo biên bản trả xe (Multipart Form Data)
   async createVehicleReturn(payload: CreateVehicleReturnRequest) {
     const formData = new FormData();
@@ -56,19 +59,11 @@ export const vehicleReturnAdminApi = {
     };
   },
 
-  // 2. Lấy chi tiết biên bản theo Booking ID
-  async getVehicleReturnByBookingId(bookingId: string) {
-    // Interceptor tự unwrap data.result về kiểu VehicleReturn
-    return axiosAdmin.get<VehicleReturn, VehicleReturn>(
-      `/bookings/returns/booking/${bookingId}`,
-    );
-  },
-
   // 3. Lấy TOÀN BỘ danh sách (Dành cho siêu Admin hệ thống)
   async getVehicleReturnAll(page = 1, size = 10) {
     return axiosAdmin.get<
-      PaginationResponse<VehicleReturn[]>,
-      PaginationResponse<VehicleReturn[]>
+      PaginationResponse<VehicleReturn>,
+      PaginationResponse<VehicleReturn>
     >("/bookings/returns/all", {
       params: { page, size },
     });
@@ -77,8 +72,8 @@ export const vehicleReturnAdminApi = {
   // 4. Lấy danh sách giới hạn theo chi nhánh của nhân viên đang login
   async getVehicleReturnsPerBranch(page = 1, size = 10) {
     return axiosAdmin.get<
-      PaginationResponse<VehicleReturn[]>,
-      PaginationResponse<VehicleReturn[]>
+      PaginationResponse<VehicleReturn>,
+      PaginationResponse<VehicleReturn>
     >("/bookings/returns", {
       params: { page, size },
     });
@@ -87,12 +82,10 @@ export const vehicleReturnAdminApi = {
   // 5. Bộ lọc tìm kiếm nâng cao (Dành cho cả Admin lẫn Employee)
   async filterVehicleReturns(filters: VehicleReturnFilterParams) {
     return axiosAdmin.get<
-      PaginationResponse<VehicleReturn[]>,
-      PaginationResponse<VehicleReturn[]>
+      PaginationResponse<VehicleReturn>,
+      PaginationResponse<VehicleReturn>
     >("/bookings/returns/filter", {
       params: {
-        page: 1,
-        size: 10,
         ...filters,
       },
     });

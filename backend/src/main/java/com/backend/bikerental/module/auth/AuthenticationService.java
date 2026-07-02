@@ -141,7 +141,7 @@ public class AuthenticationService {
         }
     }
 
-    private String generateRefreshToken(String email)
+    public String generateRefreshToken(String email)
     {
         String refreshToken = UUID.randomUUID().toString();
 

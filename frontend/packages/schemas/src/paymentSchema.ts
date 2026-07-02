@@ -6,6 +6,7 @@ export const paymentStatusSchema = z.enum([
   "pending",
   "completed",
   "failed",
+  "processing_refund", // THÊM MỚI
   "refunded",
 ]);
 

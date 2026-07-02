@@ -1,12 +1,7 @@
 import { useParams } from "react-router-dom";
 import VehicleInfo from "@/features/vehicle/VehicleInfo";
 import BookingCard from "@/features/bookings/components/BookingCard";
-import {
-  useBranches,
-  useVehicle,
-  useVehicleBrands,
-  useVehicleModels,
-} from "@repo/hooks";
+import { useBranches, useVehicle } from "@repo/hooks";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export default function VehicleDetail() {
@@ -16,11 +11,8 @@ export default function VehicleDetail() {
   const { data: vehicle = null, isLoading: vehicleLoading } =
     useVehicle(vehicleId);
   const { data: branches = [], isLoading: branchLoading } = useBranches();
-  const { data: brands, isLoading: brandsLoading } = useVehicleBrands();
-  const { data: models, isLoading: modelsLoading } = useVehicleModels();
 
-  const isPageLoading =
-    vehicleLoading || branchLoading || brandsLoading || modelsLoading;
+  const isPageLoading = vehicleLoading || branchLoading;
 
   if (isPageLoading) {
     return (
@@ -42,12 +34,7 @@ export default function VehicleDetail() {
     <div className="grid grid-cols-12 gap-8 min-h-[calc(100vh-120px)] items-start">
       {/* Left Column: Vehicle Details & Gallery */}
       <div className="col-span-12 lg:col-span-8 pr-0 lg:pr-2">
-        <VehicleInfo
-          vehicle={vehicle}
-          branches={branches}
-          brands={brands?.data ?? []}
-          models={models?.data ?? []}
-        />
+        <VehicleInfo vehicle={vehicle} branches={branches} />
       </div>
 
       {/* Right Column: Sticky Booking Card Widget */}

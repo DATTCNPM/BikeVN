@@ -1,8 +1,6 @@
 import { Card } from "@repo/ui/components/ui/card";
-import { MapPin } from "lucide-react";
+import { MapPin, Motorbike } from "lucide-react";
 import type { Vehicle } from "@repo/types";
-import { useBranches } from "@repo/hooks";
-import { Spinner } from "@repo/ui/components/ui/spinner";
 import { filterImagePrimary } from "@repo/utils";
 import imageMock from "@/assets/images/motorbike1.png";
 
@@ -11,26 +9,13 @@ export default function PaymentVehicleCard({
 }: {
   vehicle: Vehicle | null;
 }) {
-  const { data: branches = [], isLoading } = useBranches();
-
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-
-  const nameBranches =
-    branches.find((branch) => branch.id === vehicle?.currentBranchId)?.name ||
-    "Unknown Branch";
   return (
     <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm">
-      <div className="grid lg:grid-cols-[280px_1fr]">
+      <div className="grid lg:grid-cols-2">
         <img
           src={filterImagePrimary(vehicle?.images || []) || imageMock}
           alt={vehicle?.name}
-          className="h-full min-h-[240px] w-full object-cover"
+          className="h-full min-h-[240px] w-full object-fit"
         />
 
         <div className="p-6">
@@ -42,11 +27,27 @@ export default function PaymentVehicleCard({
             {vehicle?.name}
           </h2>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <VehicleInfo
               icon={<MapPin className="size-5" />}
               label="Branch"
-              value={nameBranches}
+              value={vehicle?.currentBranchName || "Unknown Branch"}
+            />
+            <VehicleInfo
+              icon={<Motorbike className="size-5" />}
+              label="Vehicle Type"
+              value={vehicle?.vehicleType || "Unknown Type"}
+            />
+
+            <VehicleInfo
+              icon={<Motorbike className="size-5" />}
+              label="Vehicle Model"
+              value={vehicle?.modelName || "Unknown Model"}
+            />
+            <VehicleInfo
+              icon={<Motorbike className="size-5" />}
+              label="Vehicle Brand"
+              value={vehicle?.brandName || "Unknown Brand"}
             />
           </div>
         </div>

@@ -14,7 +14,6 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@repo/ui/components/ui/field";
-import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useNavigate } from "react-router-dom";
 
@@ -101,10 +100,7 @@ export default function Login() {
         </Field>
         <Button type="submit" size="lg" className="w-full" disabled={isPending}>
           {isPending ? (
-            <span className="flex items-center gap-2">
-              <Spinner className="w-5 h-5" />
-              Logging in...
-            </span>
+            <span className="flex items-center gap-2">Logging in...</span>
           ) : (
             "Login"
           )}

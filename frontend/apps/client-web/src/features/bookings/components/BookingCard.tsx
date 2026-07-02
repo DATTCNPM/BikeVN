@@ -1,15 +1,9 @@
-import { useEffect, useState } from "react"; // Thêm useState
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "lucide-react"; // Import thêm icon lịch
-import {
-  addDays,
-  differenceInDays,
-  format,
-  startOfDay,
-  endOfDay,
-} from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { addDays, format, startOfDay, endOfDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 
@@ -37,7 +31,6 @@ import {
   SelectValue,
 } from "@repo/ui/components/ui/select";
 import { Separator } from "@repo/ui/components/ui/separator";
-// 📦 Import Popover components
 import {
   Popover,
   PopoverContent,
@@ -50,6 +43,7 @@ import { useAuthStore } from "@/features/auth/authStore";
 import { useProfile } from "@/features/profile/useProfile";
 import { bookingFormSchema } from "@repo/schemas";
 import type { Branch, Vehicle, BookingFormValues } from "@repo/types";
+import { calculateTotalDays, calculateTotalPrice } from "@repo/utils";
 
 type Props = {
   vehicle: Vehicle;
@@ -67,8 +61,6 @@ export default function BookingCard({ vehicle, branches }: Props) {
   const { isLogin } = useAuthStore();
   const { data: profile } = useProfile();
   const { mutate: createBooking, isPending } = useCreateBooking();
-
-  // Trạng thái đóng/mở popover lịch
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const form = useForm<BookingFormValues>({
@@ -86,16 +78,15 @@ export default function BookingCard({ vehicle, branches }: Props) {
   const startDate = dateRange?.from;
   const endDate = dateRange?.to;
 
-  const totalDays =
-    startDate && endDate
-      ? Math.max(1, differenceInDays(endDate, startDate))
-      : 0;
-  const totalPrice = totalDays * (vehicle.pricePerDay ?? 0);
+  const totalDays = calculateTotalDays(startDate, endDate);
+  const totalPriceBooking = calculateTotalPrice(totalDays, vehicle.pricePerDay);
 
-  const branchOptions = branches.map((branch) => ({
-    label: branch.name,
-    value: branch.id,
-  }));
+  const branchOptions = useMemo(() => {
+    return branches.map((branch) => ({
+      label: branch.name,
+      value: branch.id,
+    }));
+  }, [branches]);
 
   useEffect(() => {
     const pendingBookingRaw = localStorage.getItem("pending-booking");
@@ -163,7 +154,6 @@ export default function BookingCard({ vehicle, branches }: Props) {
 
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent className="space-y-6">
-          {/* 🌟 THAY ĐỔI: Bọc Lịch vào Popover để tối ưu diện tích */}
           <Controller
             control={form.control}
             name="dateRange"
@@ -179,7 +169,6 @@ export default function BookingCard({ vehicle, branches }: Props) {
                       onOpenChange={setIsCalendarOpen}
                     >
                       <PopoverTrigger asChild>
-                        {/* Biến ô hiển thị ngày cũ thành một Button Trigger cao cấp */}
                         <button
                           type="button"
                           className="grid grid-cols-2 gap-4 w-full text-left rounded-2xl border bg-muted/30 p-4 hover:bg-muted/50 focus:outline-none focus:ring-1 focus:ring-primary transition-all"
@@ -214,14 +203,13 @@ export default function BookingCard({ vehicle, branches }: Props) {
                           onSelect={(value) => {
                             if (value?.from) {
                               field.onChange(value);
-                              // Tự động đóng popover khi người dùng chọn xong cả ngày đi lẫn ngày về
                               if (value.to) {
                                 setIsCalendarOpen(false);
                               }
                             }
                           }}
                           defaultMonth={field.value?.from}
-                          disabled={(date) => date <= startOfDay(new Date())}
+                          disabled={(date) => date < startOfDay(new Date())}
                           className="p-3"
                         />
                       </PopoverContent>
@@ -242,8 +230,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
               </FieldLabel>
               <FieldContent>
                 <p className="text-sm font-medium text-muted-foreground">
-                  {branches.find((b) => b.id === vehicle.currentBranchId)
-                    ?.name || "Not Specified"}
+                  {vehicle.currentBranchName || "Not Specified"}
                 </p>
               </FieldContent>
             </FieldGroup>
@@ -301,7 +288,7 @@ export default function BookingCard({ vehicle, branches }: Props) {
                 Total Price
               </span>
               <span className="text-xl font-bold text-primary">
-                {formatCurrency(totalPrice)}
+                {formatCurrency(totalPriceBooking)}
               </span>
             </div>
           </div>

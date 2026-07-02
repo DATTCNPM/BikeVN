@@ -1,5 +1,6 @@
 // components/payment/PaymentSummaryCard.tsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
 import { Card } from "@repo/ui/components/ui/card";
@@ -14,6 +15,7 @@ import type {
   PaymentMethod,
   User,
 } from "@repo/types";
+import { toast } from "@repo/ui/components/ui/sonner";
 
 type Props = {
   booking: Booking | null;
@@ -28,6 +30,7 @@ export default function PaymentSummaryCard({
   selectedMethod,
   userProfile,
 }: Props) {
+  const navigate = useNavigate();
   const { mutate: createPayment, isPending: isCreating } = useCreatePayment();
   const { mutate: getVNPayUrl, isPending: isGettingUrl } = useGetVNPayUrl();
 
@@ -38,8 +41,8 @@ export default function PaymentSummaryCard({
     if (!booking) return;
 
     const missing: string[] = [];
-    if (!userProfile?.phone) missing.push("Số điện thoại");
-    if (!userProfile?.cccdNumber) missing.push("Căn cước công dân (CCCD)");
+    if (!userProfile?.phone) missing.push("Phone Number");
+    if (!userProfile?.cccdNumber) missing.push("National ID (CCCD)");
 
     if (missing.length > 0) {
       setMissingFields(missing);
@@ -56,25 +59,34 @@ export default function PaymentSummaryCard({
 
     createPayment(payload, {
       onSuccess: (paymentData) => {
-        // TỐI ƯU: Đảm bảo bóc tách an toàn id của đơn hàng vừa tạo để xin URL từ VNPay
         const paymentId = paymentData?.id;
-        if (paymentId) {
-          getVNPayUrl(paymentId);
+        if (!paymentId) return;
+
+        // KIỂM TRA PHƯƠNG THỨC THANH TOÁN
+        if (selectedMethod === "cash") {
+          // Luồng tiền mặt: Thông báo và chuyển hướng về trang lịch sử đặt xe
+          toast.success("Booking order created! Please pay at the counter.");
+          navigate(`/booking-result/${booking.id}`);
+        } else if (selectedMethod === "vnpay") {
+          // Luồng VNPay: Xin URL và redirect đi cổng thanh toán
+          const returnUrl = `${window.location.origin}/payment-result`;
+          getVNPayUrl({ paymentId, returnUrl });
         }
+      },
+      onError: (error) => {
+        toast.error(`Has an error: ${error.message}`);
       },
     });
   };
 
   const basePrice = booking?.totalPrice || 0;
-  const depositPrice = basePrice * 0.2;
-  const serviceFee = basePrice * 0.1;
 
   const isLoading = isCreating || isGettingUrl;
 
   const getButtonText = () => {
-    if (isCreating) return "Đang khởi tạo đơn hàng...";
-    if (isGettingUrl) return "Đang chuyển hướng đến VNPay...";
-    return "Thanh toán ngay";
+    if (isCreating) return "Creating...";
+    if (isGettingUrl) return "Redirecting to VNPay...";
+    return selectedMethod === "cash" ? "Confirm Booking" : "Pay Now"; // Tối ưu text theo phương thức
   };
 
   return (
@@ -94,8 +106,6 @@ export default function PaymentSummaryCard({
 
         <div className="mt-8 space-y-5">
           <SummaryItem label="Rental Price" value={basePrice} />
-          <SummaryItem label="Deposit (20%)" value={depositPrice} />
-          <SummaryItem label="Service Fee (10%)" value={serviceFee} />
 
           <div className="border-t border-dashed border-border pt-5">
             <div className="flex items-center justify-between">

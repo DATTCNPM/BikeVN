@@ -37,7 +37,7 @@ export default function BookingActionDropdown({
             }}
           >
             <Check className="mr-2 size-4" />
-            Confirm Booking
+            Approve Booking
           </DropdownMenuItem>
         )}
 

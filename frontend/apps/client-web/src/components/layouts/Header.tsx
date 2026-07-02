@@ -1,5 +1,10 @@
 import Logo from "@/assets/icons/Logo_yellow.svg";
-import { Home, MessageCircle, CircleUserRound } from "lucide-react";
+import {
+  Home,
+  MessageCircle,
+  CircleUserRound,
+  CalendarDays,
+} from "lucide-react";
 import { NavLink, Link } from "react-router-dom";
 import { Button } from "@repo/ui/components/ui/button";
 import {
@@ -65,6 +70,20 @@ export default function Header() {
           >
             <MessageCircle className="w-4 h-4" />
             <span className="hidden sm:inline">Chat</span>
+          </NavLink>
+
+          <NavLink
+            to="/my-bookings"
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? "text-foreground bg-secondary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              }`
+            }
+          >
+            <CalendarDays className="w-4 h-4" />
+            <span className="hidden sm:inline">My Bookings</span>
           </NavLink>
         </nav>
 

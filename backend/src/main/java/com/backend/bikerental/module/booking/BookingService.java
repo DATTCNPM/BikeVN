@@ -238,7 +238,7 @@ public class BookingService {
         Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
                 .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
 
-        vehicle.setStatus(StatusVehicleEnum.unavailable);
+        vehicle.setStatus(StatusVehicleEnum.rented);
         vehicleRepository.save(vehicle);
     }
 
