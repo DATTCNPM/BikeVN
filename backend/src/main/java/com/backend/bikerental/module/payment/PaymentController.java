@@ -156,6 +156,7 @@ public class PaymentController {
                 result.put("RspCode", "99"); result.put("Message", "Unknown error");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             result.put("RspCode", "99");
             result.put("Message", "Unknown error");
         }
