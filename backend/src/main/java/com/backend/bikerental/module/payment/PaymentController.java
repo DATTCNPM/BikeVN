@@ -159,6 +159,7 @@ public class PaymentController {
             e.printStackTrace();
             result.put("RspCode", "99");
             result.put("Message", "Unknown error");
+            result.put("Message", "Bug lộ diện: " + e.getClass().getSimpleName() + " - " + e.getMessage());
         }
 
         return result;
