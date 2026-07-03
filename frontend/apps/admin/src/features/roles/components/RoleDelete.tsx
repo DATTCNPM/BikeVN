@@ -1,10 +1,9 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
-
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useDeleteRole } from "../mutationsRole";
 
 import type { Role } from "@repo/types";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 type Props = {
   open: boolean;
@@ -29,15 +28,17 @@ export default function RoleDelete({ open, onOpenChange, role }: Props) {
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant="destructive"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Role"
       description={`Are you sure you want to delete the role "${role?.name}"? This action cannot be undone.`}
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

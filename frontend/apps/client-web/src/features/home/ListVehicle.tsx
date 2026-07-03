@@ -10,7 +10,6 @@ import UniversalFilterSheet, {
 import { useVehicleFilters, useVehicles } from "@repo/hooks";
 import { vehicleStatusSchema, vehicleTypeSchema } from "@repo/schemas";
 import type { VehicleCardData, VehicleQueryParams, Vehicle } from "@repo/types";
-import { useDebounce } from "@repo/hooks";
 
 import { motion } from "framer-motion";
 import {
@@ -23,9 +22,8 @@ import ListVehiclePageSkeleton from "./ListVehiclePageSkeleton";
 import { PRICE_RANGES } from "@repo/constants";
 
 export default function ListVehicle() {
-  // Bóc thêm setSearchParams để chủ động làm sạch URL khi reset
   const [searchParams, setSearchParams] = useSearchParams();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(""); // Lưu trữ chuỗi tìm kiếm thực tế đã kích hoạt
   const [page, setPage] = useState(1);
   const size = 10;
 
@@ -57,9 +55,7 @@ export default function ListVehicle() {
     },
   );
 
-  const debouncedQuery = useDebounce(search, 1000);
-
-  // 1. Fetch main fleet and handle active filter state switching
+  // Fetch dữ liệu mặc định
   const { data: vehicles, isLoading: vehicleLoading } = useVehicles(page, size);
 
   const activePriceRange = PRICE_RANGES.find(
@@ -70,9 +66,10 @@ export default function ListVehicle() {
     search.trim() || Object.values(selectedFilters).some(Boolean),
   );
 
+  // Ánh xạ tham số bộ lọc - Thay thế `debouncedQuery` bằng `search` đã nhấn Enter
   const apiFilters = useMemo<VehicleQueryParams>(
     () => ({
-      name: debouncedQuery.trim() || undefined,
+      name: search.trim() || undefined,
       currentBranchName: selectedFilters["branch"]?.value,
       brandName: selectedFilters["brand"]?.value,
       modelName: selectedFilters["model"]?.value,
@@ -83,7 +80,7 @@ export default function ListVehicle() {
       page,
       size,
     }),
-    [debouncedQuery, selectedFilters, activePriceRange, page],
+    [search, selectedFilters, activePriceRange, page],
   );
 
   const { data: filteredVehicles, isLoading: filterLoading } =
@@ -92,10 +89,9 @@ export default function ListVehicle() {
   const currentData = hasFilter ? filteredVehicles : vehicles;
   const rawVehicleList: Vehicle[] = currentData?.data ?? [];
 
-  // Kiểm tra xem bộ lọc Quick Location (branch) hiện tại có đang được chọn hay không
   const isBranchFilterActive = Boolean(selectedFilters["branch"]?.value);
 
-  // 2. Derive dynamic options for Advanced Filters
+  // Định nghĩa cấu hình hiển thị nâng cao
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     const uniqueBranches = Array.from(
       new Set(rawVehicleList.map((v) => v.currentBranchName).filter(Boolean)),
@@ -157,14 +153,12 @@ export default function ListVehicle() {
     ];
   }, [rawVehicleList]);
 
-  // QUICK LOCATIONS
   const availableQuickLocations = useMemo<string[]>(() => {
     return Array.from(
       new Set(rawVehicleList.map((v) => v.currentBranchName).filter(Boolean)),
     );
   }, [rawVehicleList]);
 
-  // 3. Process và map dữ liệu
   const vehicleCardData = useMemo<VehicleCardData[]>(() => {
     return rawVehicleList.map((vehicle) => ({
       id: vehicle.id,
@@ -188,7 +182,6 @@ export default function ListVehicle() {
     setPage(1);
   };
 
-  // Hàm loại bỏ riêng bộ lọc branch (Dùng cho nút reset ở hàng Quick Locations)
   const handleClearBranchFilter = () => {
     setSelectedFilters((prev) => {
       const nextFilters = { ...prev };
@@ -196,7 +189,6 @@ export default function ListVehicle() {
       return nextFilters;
     });
 
-    // Đồng thời xóa param branch khỏi URL nếu có
     if (searchParams.has("branch")) {
       const nextParams = new URLSearchParams(searchParams);
       nextParams.delete("branch");
@@ -205,16 +197,15 @@ export default function ListVehicle() {
     setPage(1);
   };
 
-  // Hàm Tổng lực Clear Sạch Sẽ (Cả State lẫn URL params)
   const handleMasterGlobalReset = () => {
-    setSearch("");
+    setSearch(""); // Xóa trắng keyword kích hoạt, ô tìm kiếm con tự đồng bộ lại chuỗi rỗng
     setSelectedFilters({
       status: {
         label: "Available Now",
         value: vehicleStatusSchema.enum.available,
       },
     });
-    setSearchParams({}, { replace: true }); // Clear trắng query parameters trên thanh URL
+    setSearchParams({}, { replace: true });
     setPage(1);
   };
 
@@ -230,7 +221,7 @@ export default function ListVehicle() {
           <SearchComponent
             value={search}
             onChange={(value) => {
-              setSearch(value);
+              setSearch(value); // Nhận chuỗi mới khi nhấn Enter từ con phát ra
               setPage(1);
             }}
             results={currentData?.totalElements ?? 0}
@@ -249,7 +240,7 @@ export default function ListVehicle() {
         />
       </div>
 
-      {/* QUICK LOCATIONS CHIPS SELECTOR BAR */}
+      {/* QUICK LOCATIONS */}
       {availableQuickLocations.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mask-linear-r">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-2 shrink-0">
@@ -272,7 +263,6 @@ export default function ListVehicle() {
             );
           })}
 
-          {/* ✨ NÚT RESET QUICK LOCATION (Chỉ hiển thị khi có chi nhánh đang được chọn) */}
           {isBranchFilterActive && (
             <button
               onClick={handleClearBranchFilter}
@@ -284,7 +274,7 @@ export default function ListVehicle() {
         </div>
       )}
 
-      {/* VEHICLES PRODUCT CARD GRID */}
+      {/* PRODUCT GRID */}
       {vehicleCardData.length > 0 ? (
         <motion.div
           variants={MOTION_LIST_CONTAINER}
@@ -321,7 +311,7 @@ export default function ListVehicle() {
         </motion.div>
       )}
 
-      {/* COMPONENT PAGINATION LAYER */}
+      {/* PAGINATION */}
       {currentData && currentData.totalPages > 1 && (
         <PaginationComponent
           page={currentData.currentPage}

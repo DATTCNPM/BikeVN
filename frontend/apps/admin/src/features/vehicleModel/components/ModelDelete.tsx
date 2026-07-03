@@ -1,4 +1,4 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
@@ -30,15 +30,17 @@ export default function ModelDelete({ open, onOpenChange, model }: Props) {
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant="destructive"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Vehicle Model"
       description={`Are you sure you want to delete model ${model?.name}?`}
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

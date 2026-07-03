@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { Input } from "@repo/ui/components/ui/input";
 
@@ -57,14 +57,16 @@ export default function PermissionCreate({ open, onOpenChange }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create Permission"
       description="Create a new permission in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Create"
+      submitLabel="Create"
     >
       <FieldGroup>
         <Field>
@@ -84,6 +86,6 @@ export default function PermissionCreate({ open, onOpenChange }: Props) {
           )}
         </Field>
       </FieldGroup>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { vehicleBrandPublicApi } from "@repo/api";
 import { vehicleBrandKeys } from "../queryKeys/vehicleBrandKeys";
 
-import type { VehicleBrand, PaginationResponse } from "@repo/types";
+import type {
+  VehicleBrand,
+  PaginationResponse,
+  VehicleBrandQueryParams,
+} from "@repo/types";
 
 export const useVehicleBrands = (page: number = 1, size: number = 10) => {
   return useQuery<PaginationResponse<VehicleBrand>>({
@@ -26,5 +30,16 @@ export const useVehicleBrand = (brandId: number) => {
     },
 
     enabled: !!brandId,
+  });
+};
+
+export const useVehicleBrandFilters = (
+  params: VehicleBrandQueryParams,
+  enabled: boolean,
+) => {
+  return useQuery<PaginationResponse<VehicleBrand>>({
+    queryKey: vehicleBrandKeys.filter(params),
+    queryFn: () => vehicleBrandPublicApi.filterBrands(params),
+    enabled: enabled,
   });
 };

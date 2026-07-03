@@ -1,4 +1,4 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { useDeleteUser } from "@/features/users/mutations";
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { User } from "@repo/types";
@@ -24,15 +24,17 @@ export default function UserDelete({ open, onOpenChange, user }: Props) {
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant="destructive"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Delete User"
       description={`Are you sure you want to delete the user "${user?.name}"? This action cannot be undone.`}
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

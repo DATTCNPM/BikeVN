@@ -1,7 +1,7 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import {
   Field,
@@ -69,14 +69,16 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Upload Vehicle Image"
       description="Upload a new image for the vehicle"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Upload"
+      submitLabel="Upload"
     >
       <FieldGroup>
         <Field>
@@ -97,6 +99,6 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
           )}
         </Field>
       </FieldGroup>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

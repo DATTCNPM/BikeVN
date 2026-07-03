@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
 import {
   Field,
@@ -54,14 +54,16 @@ export default function UserCreate({ open, onOpenChange }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create User"
       description="Create a new user in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Create User"
+      submitLabel="Create User"
     >
       <div className="grid gap-5">
         <FieldGroup>
@@ -108,6 +110,6 @@ export default function UserCreate({ open, onOpenChange }: Props) {
           </Field>
         </FieldGroup>
       </div>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useEffect } from "react";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import ImageUploadField from "@/components/common/ImageUploadField";
 
 import {
@@ -113,14 +113,16 @@ export default function VehicleReturnCreate({
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create Vehicle Return"
       description="Confirm vehicle condition when customer returns"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Confirm Return"
+      submitLabel="Confirm Return"
       // MẸO: Bạn nên truyền className vào Content của Dialog thông qua component EntityFormDialog nếu nó hỗ trợ
       // className="max-w-3xl max-h-[85vh] flex flex-col"
     >
@@ -274,6 +276,6 @@ export default function VehicleReturnCreate({
           </Field>
         </FieldGroup>
       </div>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

@@ -1,4 +1,4 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { useDeleteBranch } from "@/features/branches/mutations";
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { Branch } from "@repo/types";
@@ -24,15 +24,17 @@ export default function BranchDelete({ open, onOpenChange, branch }: Props) {
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant="destructive"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Branch"
       description={`Are you sure you want to delete the branch ${branch?.name}? This action cannot be undone.`}
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

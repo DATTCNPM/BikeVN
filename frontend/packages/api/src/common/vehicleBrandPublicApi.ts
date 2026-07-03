@@ -1,5 +1,9 @@
 import axiosPublic from "../axios/axiosPublic";
-import type { VehicleBrand, PaginationResponse } from "@repo/types";
+import type {
+  VehicleBrand,
+  PaginationResponse,
+  VehicleBrandQueryParams,
+} from "@repo/types";
 
 export const vehicleBrandPublicApi = {
   async getBrands(page: number, size: number) {
@@ -14,5 +18,16 @@ export const vehicleBrandPublicApi = {
     const data = await axiosPublic.get<VehicleBrand>(`/vehicle-brands/${id}`);
 
     return data;
+  },
+
+  // HÀM MỚI: Gọi tới endpoint filter trả về dữ liệu phân trang chuẩn
+  async filterBrands(
+    params: VehicleBrandQueryParams,
+  ): Promise<PaginationResponse<VehicleBrand>> {
+    const response = await axiosPublic.get<PaginationResponse<VehicleBrand>>(
+      "/vehicle-brands/filter",
+      { params },
+    );
+    return response;
   },
 };

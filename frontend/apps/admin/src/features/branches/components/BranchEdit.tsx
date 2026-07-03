@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
 
 import {
@@ -58,14 +58,16 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Edit Branch"
       description="Update branch information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Save Changes"
+      submitLabel="Save Changes"
     >
       <div className="grid gap-5">
         <FieldGroup>
@@ -102,6 +104,6 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
           </Field>
         </FieldGroup>
       </div>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

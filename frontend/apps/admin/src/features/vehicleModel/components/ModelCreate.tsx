@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { Input } from "@repo/ui/components/ui/input";
 
@@ -73,14 +73,16 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create Vehicle Model"
       description="Create a new vehicle model"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Create Model"
+      submitLabel="Create Model"
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -171,6 +173,6 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
           </Field>
         </div>
       </FieldGroup>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

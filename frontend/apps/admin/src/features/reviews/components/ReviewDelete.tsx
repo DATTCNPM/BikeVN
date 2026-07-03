@@ -1,10 +1,9 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
-
 import { useDeleteReview } from "@repo/hooks";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import type { Review } from "@repo/types";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 type Props = {
   open: boolean;
@@ -30,15 +29,17 @@ export default function ReviewDelete({ open, onOpenChange, review }: Props) {
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant="destructive"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Review"
       description={`Are you sure you want to delete the review of user #${review?.userId.slice(0, 6)}? This action cannot be undone.`}
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

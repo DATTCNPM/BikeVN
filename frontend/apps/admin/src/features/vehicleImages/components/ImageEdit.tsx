@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { Input } from "@repo/ui/components/ui/input";
 import { Checkbox } from "@repo/ui/components/ui/checkbox";
@@ -112,14 +112,16 @@ export default function ImageEdit({
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Edit Image"
       description="Update image information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Save Changes"
+      submitLabel="Save Changes"
     >
       <FieldGroup>
         <Field>
@@ -189,6 +191,6 @@ export default function ImageEdit({
           </div>
         </Field>
       </FieldGroup>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

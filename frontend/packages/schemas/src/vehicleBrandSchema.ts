@@ -18,3 +18,10 @@ export const vehicleBrandSchema = vehicleBrandCreationSchema.extend({
   id: z.number(),
   createdAt: z.string(),
 });
+
+export const VehicleBrandQueryParamsSchema = z.object({
+  name: z.string().optional(),
+  country: z.string().optional(),
+  page: z.number().default(1),
+  size: z.number().default(10),
+});

@@ -11,9 +11,12 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useProfile } from "@/features/profile/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
 import AccountSettings from "@/features/profile/components/AccountSettingSection";
+import { useState } from "react";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 export default function ProfilePage() {
   const { data: user, isLoading: profileLoading } = useProfile();
+  const [openLogout, setOpenLogout] = useState(false);
   const { mutate: logout } = useLogout();
 
   if (profileLoading) {
@@ -44,7 +47,7 @@ export default function ProfilePage() {
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => logout()}
+            onClick={() => setOpenLogout(true)}
             className="self-start sm:self-center gap-2 rounded-full"
           >
             <LogOut className="w-4 h-4" />
@@ -55,6 +58,17 @@ export default function ProfilePage() {
         {/* Shadcn UI Tabs System */}
         <AccountSettings user={user} />
       </main>
+      <UniversalDialog
+        type="confirm"
+        variant="destructive"
+        submitLabel="Logout"
+        trigger={null}
+        title="Confirm Logout"
+        description="Are you sure you want to logout?"
+        onSubmit={() => logout()}
+        open={openLogout}
+        onOpenChange={setOpenLogout}
+      />
     </div>
   );
 }

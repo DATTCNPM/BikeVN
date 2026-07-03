@@ -1,8 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
-
 import { Input } from "@repo/ui/components/ui/input";
 import {
   Field,
@@ -17,6 +15,7 @@ import { roleCreationSchema } from "@repo/schemas";
 import { useCreateRole } from "../mutationsRole";
 
 import type { RoleRequest } from "@repo/types";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 type Props = {
   open: boolean;
@@ -57,14 +56,16 @@ export default function RoleCreate({ open, onOpenChange }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create Role"
       description="Create a new role in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Create Role"
+      submitLabel="Create Role"
     >
       <FieldGroup>
         <Field>
@@ -111,6 +112,6 @@ export default function RoleCreate({ open, onOpenChange }: Props) {
           )}
         </Field>
       </FieldGroup>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

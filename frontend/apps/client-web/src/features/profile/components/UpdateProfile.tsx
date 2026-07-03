@@ -1,4 +1,4 @@
-import FormDialog from "@/components/common/FormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { updateProfileSchema } from "@repo/schemas";
 import type { UpdateProfilePayload } from "@repo/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -68,10 +68,11 @@ export default function UpdateProfile({
   };
 
   return (
-    <FormDialog
+    <UniversalDialog
+      type="form"
       trigger={trigger}
       open={open}
-      onOpen={setOpen}
+      onOpenChange={setOpen}
       title="Update Profile"
       description="Update your personal information and contact details"
       onSubmit={handleSubmit(onSubmit)}
@@ -130,6 +131,6 @@ export default function UpdateProfile({
           </FieldContent>
         </Field>
       </FieldGroup>
-    </FormDialog>
+    </UniversalDialog>
   );
 }

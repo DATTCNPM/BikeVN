@@ -1,4 +1,4 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { useDeleteEmployee } from "@/features/employees/mutationEmployee";
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { User } from "@repo/types";
@@ -24,15 +24,17 @@ export default function EmployeeDelete({ open, onOpenChange, user }: Props) {
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      variant="destructive"
+      trigger={null}
+      type="confirm"
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Employee"
       description={`Are you sure you want to delete employee ${user?.name}? This action cannot be undone.`}
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

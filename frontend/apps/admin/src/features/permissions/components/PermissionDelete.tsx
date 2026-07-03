@@ -1,4 +1,4 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
@@ -34,15 +34,17 @@ export default function PermissionDelete({
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant="destructive"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Permission"
       description={`Are you sure you want to delete the permission "${permission?.name}"? This action cannot be undone.`}
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

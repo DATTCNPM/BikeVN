@@ -1,10 +1,9 @@
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
-
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useDeleteVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
 
 import type { VehicleImage } from "@repo/types";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 type Props = {
   open: boolean;
@@ -41,15 +40,17 @@ export default function VehicleImageDelete({
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant="destructive"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Delete Vehicle Image"
       description="Are you sure you want to delete this image?"
-      onConfirm={handleDelete}
+      onSubmit={handleDelete}
       loading={isPending}
-      confirmText="Delete"
-      cancelText="Cancel"
+      submitLabel="Delete"
     />
   );
 }

@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
@@ -33,47 +33,49 @@ export default function BookingStatusDialog({
 
   const loading = approveMutation.isPending || rejectMutation.isPending;
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!booking) return;
 
-    try {
-      if (mode === "approve") {
-        await approveMutation.mutateAsync(booking.id);
+    const mutation = mode === "approve" ? approveMutation : rejectMutation;
+    const successMsg =
+      mode === "approve"
+        ? "Booking approved successfully"
+        : "Booking rejected successfully";
+    const errorMsg =
+      mode === "approve"
+        ? "Failed to approve booking"
+        : "Failed to reject booking";
 
-        toast.success("Booking approved successfully");
-      } else {
-        await rejectMutation.mutateAsync(booking.id);
-
-        toast.success("Booking rejected successfully");
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: bookingsKeys.all,
+    mutation
+      .mutateAsync(booking.id)
+      .then(() => {
+        toast.success(successMsg);
+        return queryClient.invalidateQueries({ queryKey: bookingsKeys.all });
+      })
+      .then(() => {
+        onOpenChange(false);
+      })
+      .catch(() => {
+        toast.error(errorMsg);
       });
-
-      onOpenChange(false);
-    } catch {
-      toast.error(
-        mode === "approve"
-          ? "Failed to approve booking"
-          : "Failed to reject booking",
-      );
-    }
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      variant={mode === "approve" ? "default" : "destructive"}
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       loading={loading}
-      onConfirm={handleConfirm}
+      onSubmit={handleConfirm}
       title={mode === "approve" ? "Confirm Booking" : "Reject Booking"}
       description={
         mode === "approve"
           ? "Are you sure you want to confirm this booking?"
           : "Are you sure you want to reject this booking?"
       }
-      confirmText={mode === "approve" ? "Approve Booking" : "Reject Booking"}
+      submitLabel={mode === "approve" ? "Approve Booking" : "Reject Booking"}
     />
   );
 }

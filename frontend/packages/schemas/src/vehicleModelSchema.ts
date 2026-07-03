@@ -20,3 +20,13 @@ export const vehicleModelSchema = vehicleModelCreationSchema.extend({
   id: z.number(),
   createdAt: z.string(),
 });
+
+export const VehicleModelQueryParamsSchema = z.object({
+  brandId: z.number().optional(),
+  name: z.string().optional(),
+  minEngineCapacity: z.number().optional(),
+  maxEngineCapacity: z.number().optional(),
+  productionYear: z.number().optional(),
+  page: z.number().default(1),
+  size: z.number().default(10),
+});

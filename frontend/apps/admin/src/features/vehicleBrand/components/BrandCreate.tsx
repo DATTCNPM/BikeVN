@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { Input } from "@repo/ui/components/ui/input";
 
@@ -57,14 +57,16 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create Vehicle Brand"
       description="Create a new vehicle brand"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Create Brand"
+      submitLabel="Create Brand"
     >
       <FieldGroup>
         <Field>
@@ -83,6 +85,6 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
           {errors.country && <FieldError>{errors.country.message}</FieldError>}
         </Field>
       </FieldGroup>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

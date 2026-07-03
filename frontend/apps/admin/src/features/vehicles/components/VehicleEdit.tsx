@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
 import { Textarea } from "@repo/ui/components/ui/textarea";
 
@@ -92,14 +92,16 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Edit Vehicle"
       description="Update vehicle information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Save Changes"
+      submitLabel="Save Changes"
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -288,6 +290,6 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
           )}
         </Field>
       </FieldGroup>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

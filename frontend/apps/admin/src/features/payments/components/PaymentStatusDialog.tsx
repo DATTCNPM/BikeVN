@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import ConfirmAlertDialog from "@/components/common/ConfirmAlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { paymentsKeys } from "@repo/hooks";
 import type { Payment } from "@repo/types";
@@ -76,28 +76,30 @@ export default function PaymentStatusDialog({
   };
 
   const titleMap = {
-    "approve": "Approve Payment Manually",
+    approve: "Approve Payment Manually",
     cancel: "Cancel Payment",
     refund: "Refund Transaction",
   };
 
   const descriptionMap = {
-    "approve":
-      "Are you sure you want to approve this payment manually?",
+    approve: "Are you sure you want to approve this payment manually?",
     cancel: "Are you sure you want to cancel this transaction?",
     refund:
       "Are you sure you want to process a refund for this transaction via VNPay?",
   };
 
   return (
-    <ConfirmAlertDialog
+    <UniversalDialog
+      type="confirm"
+      trigger={null}
+      variant={mode === "cancel" ? "destructive" : "default"}
       open={open}
       onOpenChange={onOpenChange}
       loading={loading}
-      onConfirm={handleConfirm}
+      onSubmit={handleConfirm}
       title={titleMap[mode]}
       description={descriptionMap[mode]}
-      confirmText={titleMap[mode]}
+      submitLabel={titleMap[mode]}
     />
   );
 }

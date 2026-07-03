@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
 import {
   Field,
@@ -61,14 +61,16 @@ export default function ReviewCreate({ open, onOpenChange, bookingId }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create Review"
       description="Create a new review"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Create Review"
+      submitLabel="Create Review"
     >
       <div className="grid gap-5">
         <FieldGroup>
@@ -93,6 +95,6 @@ export default function ReviewCreate({ open, onOpenChange, bookingId }: Props) {
           </Field>
         </FieldGroup>
       </div>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

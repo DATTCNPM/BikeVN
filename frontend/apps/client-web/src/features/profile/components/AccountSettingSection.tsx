@@ -33,12 +33,13 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Switch } from "@repo/ui/components/ui/switch";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
-import AlertDialog from "@/components/common/AlertDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import UpdateProfile from "./UpdateProfile";
 
 import { useDeleteUser } from "@/features/profile/useDeleteUser";
 import { updatePasswordSchema } from "@repo/schemas";
 import type { UpdatePasswordPayload } from "@repo/types";
+import { useState } from "react";
 
 interface AccountSettingsProps {
   user: any; // Thay bằng Type User của bạn
@@ -47,6 +48,7 @@ interface AccountSettingsProps {
 export default function AccountSettings({ user }: AccountSettingsProps) {
   const { theme, setTheme } = useTheme();
   const { mutate: deleteUser } = useDeleteUser();
+  const [openDelete, setOpenDelete] = useState(false);
 
   const methods = useForm<UpdatePasswordPayload>({
     resolver: zodResolver(updatePasswordSchema),
@@ -223,7 +225,9 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <AlertDialog
+            <UniversalDialog
+              type="confirm"
+              submitLabel="Delete"
               trigger={
                 <Button variant="destructive" size="sm">
                   Delete Account
@@ -232,7 +236,9 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
               variant="destructive"
               title="Confirm Account Deletion"
               description="Are you sure you want to delete your account? This action cannot be undone."
-              onConfirm={() => deleteUser(user?.id || "")}
+              onSubmit={() => deleteUser(user?.id || "")}
+              open={openDelete}
+              onOpenChange={setOpenDelete}
             />
           </CardFooter>
         </Card>

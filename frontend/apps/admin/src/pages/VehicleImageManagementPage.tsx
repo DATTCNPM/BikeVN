@@ -55,7 +55,7 @@ export default function VehicleImageManagementPage() {
 
         cell: ({ row }) => (
           <img
-            src={`http://localhost:8080${row.original.imageUrl}`}
+            src={`${row.original.imageUrl}`}
             alt={row.original.altText ?? ""}
             className="h-20 w-32 rounded-lg border object-cover"
           />

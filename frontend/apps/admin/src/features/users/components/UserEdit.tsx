@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
 import {
   Field,
@@ -49,22 +49,24 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
     if (!user) return;
     try {
       await mutateAsync({ id: user.id, payload: values });
-      toast.success("Cập nhật người dùng thành công");
+      toast.success("Update user successfully");
       onOpenChange(false);
     } catch {
-      toast.error("Cập nhật người dùng thất bại");
+      toast.error("Failed to update user");
     }
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Edit User"
       description="Update user information"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Save Changes"
+      submitLabel="Save Changes"
     >
       <div className="grid gap-5">
         <FieldGroup>
@@ -95,6 +97,6 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
           </Field>
         </FieldGroup>
       </div>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }

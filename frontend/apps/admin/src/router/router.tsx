@@ -47,6 +47,8 @@ const VehicleReturnAdminPage = lazy(
 const VehicleReturnBranchPage = lazy(
   () => import("@/pages/VehicleReturnBranchPage"),
 );
+import { NotFoundPage } from "@/pages/NotFoundPage";
+import { ServerErrorPage } from "@/pages/ServerErrorPage";
 
 // 🌀 Loading Spinner toàn màn hình
 function AdminPageLoader() {
@@ -145,6 +147,9 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingPage /> },
     ],
   },
+  // 🛑 Các trang lỗi
+  { path: "*", element: <NotFoundPage /> },
+  { path: "server-error", element: <ServerErrorPage /> },
 ]);
 
 export default router;

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import EntityFormDialog from "@/components/common/EntityFormDialog";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
 import {
   Field,
@@ -46,7 +46,6 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
   });
 
   const onSubmit = async (values: CreateBranchPayload) => {
-    console.log("Submitting branch creation with values:", values);
     try {
       await mutateAsync(values);
       toast.success("Branch created successfully");
@@ -58,14 +57,16 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
   };
 
   return (
-    <EntityFormDialog
+    <UniversalDialog
+      type="form"
+      trigger={null}
       open={open}
       onOpenChange={onOpenChange}
       title="Create New Branch"
       description="Create a new branch in the system"
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
-      submitText="Create Branch"
+      submitLabel="Create Branch"
     >
       <div className="grid gap-5">
         <FieldGroup>
@@ -105,6 +106,6 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
           </Field>
         </FieldGroup>
       </div>
-    </EntityFormDialog>
+    </UniversalDialog>
   );
 }
