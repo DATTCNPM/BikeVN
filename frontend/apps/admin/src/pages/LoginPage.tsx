@@ -11,7 +11,7 @@ import type { LoginPayload } from "@repo/types";
 // UI Components từ Monorepo Monolith
 import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
-import { Spinner } from "@repo/ui/components/ui/spinner";
+
 import {
   Card,
   CardHeader,
@@ -147,7 +147,6 @@ export default function Login() {
               >
                 {isPending ? (
                   <span className="flex items-center justify-center gap-2">
-                    <Spinner className="h-4 w-4 animate-spin text-current" />
                     Logging in...
                   </span>
                 ) : (

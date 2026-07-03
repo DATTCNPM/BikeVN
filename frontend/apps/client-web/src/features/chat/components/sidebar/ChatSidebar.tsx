@@ -4,7 +4,6 @@ import type { ConversationResponse } from "@repo/types";
 import { Button } from "@repo/ui/components/ui/button";
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-// 🌟 Thay đổi cách import nhóm Select của Shadcn UI
 import {
   Select,
   SelectContent,
@@ -33,20 +32,27 @@ export default function ChatSidebar({
   const { mutate: getOrCreateConversation, isPending: isCreatingChat } =
     useGetOrCreateConversation();
 
-  const [selectValue, setSelectValue] = useState("placeholder");
+  // 🌟 SỬA: Chuyển default thành undefined để hiển thị chữ placeholder chuẩn Shadcn
+  const [selectValue, setSelectValue] = useState<string | undefined>(undefined);
 
-  // 🌟 Hàm xử lý đổi mới: Nhận trực tiếp string value thay vì event target
   const handleBranchChange = (branchId: string) => {
     if (!branchId) return;
+
+    // Đặt tạm value để UI hiển thị nhánh đang chọn trong lúc loading
+    setSelectValue(branchId);
 
     getOrCreateConversation(branchId, {
       onSuccess: (data) => {
         const conversationId = data?.id;
-        if (conversationId) onSelectConversation(conversationId);
+        if (conversationId) {
+          onSelectConversation(conversationId);
+        }
+        // 🌟 SỬA: Reset về undefined sau khi tạo thành công để có thể bấm lại lần sau
+        setSelectValue(undefined);
       },
       onError: () => {
-        // Nếu lỗi cũng trả về trạng thái cũ
-        setSelectValue("placeholder");
+        // Reset về ban đầu nếu lỗi
+        setSelectValue(undefined);
       },
     });
   };
@@ -70,7 +76,7 @@ export default function ChatSidebar({
         </Button>
       </div>
 
-      {/* 🌟 Bộ chọn chi nhánh nâng cấp lên Shadcn UI */}
+      {/* Bộ chọn chi nhánh */}
       <div className="border-b border-border/40 p-4 bg-muted/20">
         <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <Building2 className="size-3.5 text-primary" /> Quick Connect to
@@ -83,9 +89,12 @@ export default function ChatSidebar({
           value={selectValue}
         >
           <SelectTrigger className="w-full h-9 rounded-xl border border-input bg-background px-3 text-xs font-medium shadow-sm focus:ring-1 focus:ring-primary/40 transition-all">
-            <SelectValue>
-              {isCreatingChat ? "Creating..." : "Select a branch..."}
-            </SelectValue>
+            {/* 🌟 SỬA: Bọc nội dung bằng SelectValue placeholder để hiển thị chữ mặc định một cách tự động */}
+            <SelectValue
+              placeholder={
+                isCreatingChat ? "Creating..." : "Select a branch..."
+              }
+            />
           </SelectTrigger>
           <SelectContent className="rounded-xl shadow-lg border border-border/80">
             {branches.map((branch) => (

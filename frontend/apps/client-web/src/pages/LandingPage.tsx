@@ -1,4 +1,3 @@
-import { Button } from "@repo/ui/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "@/features/auth/authStore";
@@ -20,7 +19,6 @@ import {
 
 export default function Landing() {
   const isLogin = useAuthStore((state) => state.isLogin);
-  console.log("isLogin:", isLogin);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,9 +77,9 @@ export default function Landing() {
             <button className="text-sm font-medium text-white/80 hover:text-primary transition-colors duration-200">
               <Link to="/login">Login</Link>
             </button>
-            <Button size="lg" className="rounded-xl" asChild>
+            <button className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-black/90 hover:bg-primary/90 transition-colors duration-200">
               <Link to="/register">Register</Link>
-            </Button>
+            </button>
           </div>
         </div>
       </header>

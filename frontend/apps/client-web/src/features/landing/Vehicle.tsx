@@ -1,9 +1,14 @@
 import CardProduct from "@/components/common/CardProduct";
-import { useVehicles } from "@repo/hooks";
-import type { VehicleCardData } from "@repo/types";
+import { useVehicleFilters } from "@repo/hooks";
+import type { VehicleCardData, VehicleQueryParams } from "@repo/types";
 
 export default function Vehicle() {
-  const { data: vehicles, isLoading } = useVehicles(1, 10);
+  const paramsFilter: VehicleQueryParams = {
+    status: "available",
+    page: 1,
+    size: 10,
+  };
+  const { data: vehicles, isLoading } = useVehicleFilters(paramsFilter, true);
   const vehicleData = vehicles?.data || [];
 
   const vehicleCardData: VehicleCardData[] = vehicleData.map((vehicle) => ({

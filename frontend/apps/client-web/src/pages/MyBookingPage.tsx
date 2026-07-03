@@ -73,6 +73,11 @@ export default function MyBookingPage() {
     );
   }
 
+  console.log(
+    "🚀 ~ file: MyBookingPage.tsx:66 ~ MyBookingPage ~ bookings:",
+    bookings,
+  );
+
   return (
     <div className="space-y-5">
       {(bookings as BookingWithVehicle[]).map((booking) => {
