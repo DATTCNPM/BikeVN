@@ -19,7 +19,7 @@ export default function MapVehicle() {
     {
       currentBranchName: selectedBranchData?.name,
       page: 1,
-      pageSize: 100,
+      size: 100,
     },
     !!selectedBranchData,
   );
@@ -58,8 +58,7 @@ export default function MapVehicle() {
           }`}
           onClick={() => setActiveTab("list")}
         >
-          List ({selectedBranchData ? vehicleCardData.length : "Chưa chọn"}
-          )
+          List ({selectedBranchData ? vehicleCardData.length : "Chưa chọn"})
         </button>
         <button
           className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${

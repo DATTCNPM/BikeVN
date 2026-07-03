@@ -118,5 +118,5 @@ export const vehicleQuerySchema = z.object({
 
   page: z.number().optional(),
 
-  pageSize: z.number().optional(),
+  size: z.number().optional(),
 });

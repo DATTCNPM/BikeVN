@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import CardProduct from "@/components/common/CardProduct";
 import PaginationComponent from "@/components/common/PaginationComponent";
 import SearchComponent from "@/components/common/Search";
@@ -19,27 +20,46 @@ import {
 } from "@repo/utils";
 
 import ListVehiclePageSkeleton from "./ListVehiclePageSkeleton";
-
 import { PRICE_RANGES } from "@repo/constants";
 
 export default function ListVehicle() {
+  // Bóc thêm setSearchParams để chủ động làm sạch URL khi reset
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const size = 10;
 
-  // Chủ động set mặc định chỉ tìm các xe có trạng thái Available
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({
-    status: {
-      label: "Available Now",
-      value: vehicleStatusSchema.enum.available,
-    },
-  });
+  // Khởi tạo state bộ lọc đồng bộ từ Landing Page
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
+    () => {
+      const initialFilters: Record<string, any> = {
+        status: {
+          label: "Available Now",
+          value: vehicleStatusSchema.enum.available,
+        },
+      };
 
-  // Ô input gõ cập nhật searchQuery liên tục, nhưng debouncedQuery thì 1000ms sau mới đổi
+      const urlBranch = searchParams.get("branch");
+      const urlType = searchParams.get("type");
+
+      if (urlBranch) {
+        initialFilters["branch"] = { label: urlBranch, value: urlBranch };
+      }
+      if (urlType) {
+        const typeLabel =
+          urlType === vehicleTypeSchema.enum.electric
+            ? "Electric Vehicle"
+            : "Internal Combustion (Fuel)";
+        initialFilters["type"] = { label: typeLabel, value: urlType };
+      }
+
+      return initialFilters;
+    },
+  );
+
   const debouncedQuery = useDebounce(search, 1000);
 
   // 1. Fetch main fleet and handle active filter state switching
-  // Vì mặc định đã có filter status nên luồng dữ liệu chính sẽ đi qua useVehicleFilters bên dưới
   const { data: vehicles, isLoading: vehicleLoading } = useVehicles(page, size);
 
   const activePriceRange = PRICE_RANGES.find(
@@ -57,7 +77,7 @@ export default function ListVehicle() {
       brandName: selectedFilters["brand"]?.value,
       modelName: selectedFilters["model"]?.value,
       vehicleType: selectedFilters["type"]?.value,
-      status: selectedFilters["status"]?.value, // Sẽ luôn gửi "available" trừ khi bị ghi đè hoặc xóa
+      status: selectedFilters["status"]?.value,
       minPrice: activePriceRange?.min,
       maxPrice: activePriceRange?.max,
       page,
@@ -69,11 +89,13 @@ export default function ListVehicle() {
   const { data: filteredVehicles, isLoading: filterLoading } =
     useVehicleFilters(apiFilters, hasFilter);
 
-  // Determine the primary source of truth data stream
   const currentData = hasFilter ? filteredVehicles : vehicles;
   const rawVehicleList: Vehicle[] = currentData?.data ?? [];
 
-  // 2. Derive dynamic options for Advanced Filters using existing payload metadata
+  // Kiểm tra xem bộ lọc Quick Location (branch) hiện tại có đang được chọn hay không
+  const isBranchFilterActive = Boolean(selectedFilters["branch"]?.value);
+
+  // 2. Derive dynamic options for Advanced Filters
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     const uniqueBranches = Array.from(
       new Set(rawVehicleList.map((v) => v.currentBranchName).filter(Boolean)),
@@ -135,14 +157,14 @@ export default function ListVehicle() {
     ];
   }, [rawVehicleList]);
 
-  // ✨ ĐỔI THÀNH QUICK LOCATIONS: Lấy danh sách chi nhánh duy nhất từ data trả về
+  // QUICK LOCATIONS
   const availableQuickLocations = useMemo<string[]>(() => {
     return Array.from(
       new Set(rawVehicleList.map((v) => v.currentBranchName).filter(Boolean)),
     );
   }, [rawVehicleList]);
 
-  // 3. Process và map dữ liệu (ĐÃ BỎ SORT STATUS)
+  // 3. Process và map dữ liệu
   const vehicleCardData = useMemo<VehicleCardData[]>(() => {
     return rawVehicleList.map((vehicle) => ({
       id: vehicle.id,
@@ -158,17 +180,41 @@ export default function ListVehicle() {
     }));
   }, [rawVehicleList]);
 
-  // ✨ ĐỔI THÀNH XỬ LÝ CHỌN QUICK LOCATION
   const handleQuickLocationSelect = (branchName: string) => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      branch: { label: branchName, value: branchName },
+    }));
+    setPage(1);
+  };
+
+  // Hàm loại bỏ riêng bộ lọc branch (Dùng cho nút reset ở hàng Quick Locations)
+  const handleClearBranchFilter = () => {
     setSelectedFilters((prev) => {
-      const isSelected = prev["branch"]?.value === branchName;
-      return {
-        ...prev,
-        branch: isSelected
-          ? undefined
-          : { label: branchName, value: branchName },
-      };
+      const nextFilters = { ...prev };
+      delete nextFilters.branch;
+      return nextFilters;
     });
+
+    // Đồng thời xóa param branch khỏi URL nếu có
+    if (searchParams.has("branch")) {
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete("branch");
+      setSearchParams(nextParams);
+    }
+    setPage(1);
+  };
+
+  // Hàm Tổng lực Clear Sạch Sẽ (Cả State lẫn URL params)
+  const handleMasterGlobalReset = () => {
+    setSearch("");
+    setSelectedFilters({
+      status: {
+        label: "Available Now",
+        value: vehicleStatusSchema.enum.available,
+      },
+    });
+    setSearchParams({}, { replace: true }); // Clear trắng query parameters trên thanh URL
     setPage(1);
   };
 
@@ -199,21 +245,11 @@ export default function ListVehicle() {
             setSelectedFilters(newFilters);
             setPage(1);
           }}
-          onReset={() => {
-            setSearch("");
-            // Reset về trạng thái mặc định ban đầu (chỉ lấy xe Available)
-            setSelectedFilters({
-              status: {
-                label: "Available Now",
-                value: vehicleStatusSchema.enum.available,
-              },
-            });
-            setPage(1);
-          }}
+          onReset={handleMasterGlobalReset}
         />
       </div>
 
-      {/* ✨ QUICK LOCATIONS CHIPS SELECTOR BAR */}
+      {/* QUICK LOCATIONS CHIPS SELECTOR BAR */}
       {availableQuickLocations.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none mask-linear-r">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mr-2 shrink-0">
@@ -235,6 +271,16 @@ export default function ListVehicle() {
               </button>
             );
           })}
+
+          {/* ✨ NÚT RESET QUICK LOCATION (Chỉ hiển thị khi có chi nhánh đang được chọn) */}
+          {isBranchFilterActive && (
+            <button
+              onClick={handleClearBranchFilter}
+              className="px-3 py-1.5 rounded-full text-xs font-semibold bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive hover:text-white transition-all duration-200 shrink-0 flex items-center gap-1 cursor-pointer ml-2"
+            >
+              Clear Location ✕
+            </button>
+          )}
         </div>
       )}
 
@@ -267,15 +313,7 @@ export default function ListVehicle() {
             No vehicles match your selected search criteria.
           </p>
           <button
-            onClick={() => {
-              setSearch("");
-              setSelectedFilters({
-                status: {
-                  label: "Available Now",
-                  value: vehicleStatusSchema.enum.available,
-                },
-              });
-            }}
+            onClick={handleMasterGlobalReset}
             className="mt-3 text-xs text-primary font-semibold hover:underline"
           >
             Clear all filters
