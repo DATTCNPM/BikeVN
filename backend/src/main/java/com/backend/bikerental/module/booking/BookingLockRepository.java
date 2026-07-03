@@ -14,19 +14,22 @@ public interface BookingLockRepository extends JpaRepository<BookingLock, String
             "WHERE l.vehicleId = :vehicleId " +
             "AND l.userId != :currentUserId " +
             "AND l.status = 'active' " +
-            "AND l.lockExpiresAt > CURRENT_TIMESTAMP " +
+            "AND l.lockExpiresAt > :now " +
             "AND (l.startTime < :endTime " +
             "AND l.endTime > :startTime)")
     boolean existsActiveLockByOthers(@Param("vehicleId") String vehicleId,
                              @Param("currentUserId") String userId,
                              @Param("startTime") LocalDateTime startTime,
-                             @Param("endTime")LocalDateTime endTime);
+                             @Param("endTime") LocalDateTime endTime,
+                             @Param("now") LocalDateTime now);
 
     @Query("SELECT l FROM BookingLock l " +
             "WHERE l.vehicleId = :vehicleId " +
             "AND l.userId = :userId " +
             "AND l.status = 'active' " +
-            "AND l.lockExpiresAt > CURRENT_TIMESTAMP")
-    Optional<BookingLock> findActiveLock(@Param("vehicleId") String vehicleId, @Param("userId") String userId);
+            "AND l.lockExpiresAt > :now")
+    Optional<BookingLock> findActiveLock(@Param("vehicleId") String vehicleId,
+                                         @Param("userId") String userId,
+                                         @Param("now") LocalDateTime now);
 
 }
