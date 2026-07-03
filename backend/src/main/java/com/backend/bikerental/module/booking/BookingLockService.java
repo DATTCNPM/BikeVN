@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -18,14 +19,14 @@ import java.time.LocalDateTime;
 public class BookingLockService {
     BookingLockRepository bookingLockRepository;
     VehicleRepository vehicleRepository;
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void createLock(String vehicleId, String userId, LocalDateTime start, LocalDateTime end, int lockMinutes)
     {
         //Goi luong nay truoc duoc xu ly xe truoc
         vehicleRepository.findByIdForUpdate(vehicleId)
                 .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
 
-        if(bookingLockRepository.existsActiveLockByOthers(vehicleId, userId, start, end))
+        if(bookingLockRepository.existsActiveLockByOthers(vehicleId, userId, start, end, LocalDateTime.now()))
         {
             throw new AppException(ErrorCode.VEHICLE_ALREADY_LOCKED);
         }
@@ -41,24 +42,24 @@ public class BookingLockService {
         bookingLockRepository.save(bookingLock);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public BookingLock validateLock(String vehicleId, String userId)
     {
-        return bookingLockRepository.findActiveLock(vehicleId, userId)
+        return bookingLockRepository.findActiveLock(vehicleId, userId, LocalDateTime.now())
                 .orElseThrow(()-> new AppException(ErrorCode.LOCK_NOT_FOUND));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void releaseLock(BookingLock bookingLock)
     {
         bookingLock.setStatus(BookingLockEnum.released);
         bookingLockRepository.save(bookingLock);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void releaseLockByVehicleAndUser(String vehicleId, String userId)
     {
-        bookingLockRepository.findActiveLock(vehicleId, userId)
+        bookingLockRepository.findActiveLock(vehicleId, userId, LocalDateTime.now())
                 .ifPresent(lock -> {
                     lock.setStatus(BookingLockEnum.released);
                     bookingLockRepository.save(lock);

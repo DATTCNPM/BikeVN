@@ -26,6 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -47,7 +48,7 @@ public class BookingService {
     private static final int EXPIRE_MINUTES = 20;
     private final BookingLockRepository bookingLockRepository;
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @PreAuthorize("isAuthenticated()")
     public BookingResponse createBooking(BookingCreationRequest request) {
 
@@ -73,7 +74,7 @@ public class BookingService {
         }
 
         boolean isLockedByOther = bookingLockRepository.existsActiveLockByOthers(
-                request.getVehicleId(), request.getUserId(), request.getStartTime(), request.getEndTime());
+                request.getVehicleId(), request.getUserId(), request.getStartTime(), request.getEndTime(), LocalDateTime.now());
 
         if (isLockedByOther)
         {
