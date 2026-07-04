@@ -24,12 +24,20 @@ export function createAxiosAuth({
   });
 
   let isRefreshing = false;
-  let failedQueue: any[] = [];
+  // ✨ SỬA: failedQueue chứa các callback nhận vào token
+  let failedQueue: Array<{
+    resolve: (token: string) => void;
+    reject: (error: any) => void;
+  }> = [];
 
+  // ✨ SỬA: Hàm xử lý queue chuẩn
   const processQueue = (error: any, token: string | null = null) => {
     failedQueue.forEach((prom) => {
-      if (error) prom.reject(error);
-      else prom.resolve(token);
+      if (error) {
+        prom.reject(error);
+      } else if (token) {
+        prom.resolve(token);
+      }
     });
     failedQueue = [];
   };
@@ -50,7 +58,6 @@ export function createAxiosAuth({
       const config = response.config as any;
       const data = response.data as ApiResponse<any>;
 
-      // 1. Chặn xử lý vòng lặp nếu đây là request REFRESH hoặc LOGIN
       if (
         config.url?.includes("/auth/refresh") ||
         config.url?.includes("/login")
@@ -62,16 +69,14 @@ export function createAxiosAuth({
         return data;
       }
 
-      // 2. Xử lý mã lỗi logic hết hạn token từ Backend (Ví dụ: 5555)
+      // 💡 Nếu backend trả về code hết hạn qua response body thành công (200 OK)
       if (data?.code === 5555 && !config?._retry && !config?.skipAuthCheck) {
         config._retry = true;
         return handleTokenRefresh(config);
       }
 
-      // 3. Xử lý khi API chạy thành công chuẩn chuẩn 1000
       if (data?.code === 1000) return data.result;
 
-      // 4. Các lỗi logic khác từ backend (Ví dụ: 4002, 4003...)
       if (typeof data?.code === "number") {
         throw new ApiError(data.code, data.message || "Logic error");
       }
@@ -81,26 +86,22 @@ export function createAxiosAuth({
     async (error) => {
       const config = error.config as any;
 
-      // ✨ ĐÃ SỬA: Kiểm tra sập nguồn hệ thống toàn cục (Lỗi kết nối mạng hoặc lỗi Gateway 5xx)
       if (
         typeof window !== "undefined" &&
         (!error.response || error.response.status >= 500)
       ) {
-        // Tránh loop vô hạn nếu bản thân trình duyệt đang cố tải trang server-error
         if (window.location.pathname !== "/server-error") {
-          // Ghi nhớ trạng thái sập vào sessionStorage trước khi chuyển trang (F5)
           sessionStorage.setItem("server_is_collapsed", "true");
           window.location.href = "/server-error";
           return Promise.reject(error);
         }
       }
 
-      // 1. Nếu bản thân request refresh token bị lỗi HTTP (401, 403...), ném lỗi ra ngay
       if (config.url?.includes("/auth/refresh")) {
         return Promise.reject(error);
       }
 
-      // 2. Xử lý mã lỗi HTTP chuẩn 401 Unauthorized cho các API thông thường
+      // 💡 Nếu backend trả về lỗi 401 Unauthorized chuẩn HTTP
       if (
         error.response?.status === 401 &&
         !config?._retry &&
@@ -115,12 +116,14 @@ export function createAxiosAuth({
   );
 
   async function handleTokenRefresh(originalRequest: any) {
+    // ✨ SỬA: Nếu đang refresh, chặn request lại và đưa vào hàng đợi
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       })
         .then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token}`;
+          // Gọi lại chính request này với token mới
           return instance(originalRequest);
         })
         .catch((err) => Promise.reject(err));
@@ -132,6 +135,7 @@ export function createAxiosAuth({
       const refreshToken = localStorage.getItem(refreshTokenKey);
       if (!refreshToken) throw new Error("No refresh token available");
 
+      // Gọi hàm refresh token bên ngoài truyền vào
       const res = await onRefreshToken(refreshToken);
 
       const newAccessToken = res.accessToken;
@@ -140,16 +144,22 @@ export function createAxiosAuth({
       localStorage.setItem(tokenKey, newAccessToken);
       localStorage.setItem(refreshTokenKey, newRefreshToken);
 
+      // Cập nhật token cho instance chung phòng trường hợp có request mới tạo hoàn toàn
       instance.defaults.headers.common["Authorization"] =
         `Bearer ${newAccessToken}`;
+
+      // Cập nhật token cho request hiện tại đang bị lỗi
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
+      // ✨ Kích hoạt giải phóng hàng đợi với token mới
       processQueue(null, newAccessToken);
+
+      // Thực thi lại request gốc ban đầu
       return instance(originalRequest);
     } catch (refreshError: any) {
+      // Nếu refresh lỗi, hủy toàn bộ hàng đợi
       processQueue(refreshError, null);
 
-      // ✨ ĐÃ SỬA: Nếu quá trình refresh thất bại do sập mạng (chứ không phải do token hết hạn)
       if (
         typeof window !== "undefined" &&
         (!refreshError.response || refreshError.response.status >= 500)
@@ -157,7 +167,6 @@ export function createAxiosAuth({
         sessionStorage.setItem("server_is_collapsed", "true");
         window.location.href = "/server-error";
       } else {
-        // Nếu thực sự refresh token đã chết hoàn toàn -> đá về login
         handleUnauthorized(tokenKey, refreshTokenKey, loginPath);
       }
 
