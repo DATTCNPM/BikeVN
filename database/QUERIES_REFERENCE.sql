@@ -70,9 +70,11 @@ WHERE status = 'available' AND vehicle_type = 'fuel'
 ORDER BY price_per_day ASC;
 
 -- 3. Get Vehicles by Branch with Complete Info
-SELECT v.id, v.name, v.brand, v.model, v.license_plate, v.color, v.year, 
-       v.engine_capacity, v.vehicle_type, v.price_per_day, v.mileage, v.status
+SELECT v.id, v.name, vb.name as brand, vm.name as model, v.license_plate, v.color, v.year, 
+  vm.engine_capacity, v.vehicle_type, v.price_per_day, v.mileage, v.status
 FROM vehicles v
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 JOIN branches b ON v.current_branch_id = b.id
 WHERE b.id = '550e8400-e29b-41d4-a716-446655440101'
 ORDER BY v.price_per_day;
@@ -91,8 +93,10 @@ GROUP BY vehicle_type
 ORDER BY avg_price DESC;
 
 -- 6. Find Vehicles Available for Date Range
-SELECT v.id, v.name, v.brand, v.model, v.vehicle_type, v.price_per_day, b.name as branch
+SELECT v.id, v.name, vb.name as brand, vm.name as model, v.vehicle_type, v.price_per_day, b.name as branch
 FROM vehicles v
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 JOIN branches b ON v.current_branch_id = b.id
 WHERE v.status = 'available'
   AND v.id NOT IN (
@@ -104,10 +108,13 @@ WHERE v.status = 'available'
 ORDER BY v.price_per_day;
 
 -- 7. Get Vehicle Details with Description
-SELECT v.id, v.name, v.brand, v.model, v.license_plate, v.color, v.year,
-       v.engine_capacity, v.vehicle_type, v.price_per_day, v.mileage, 
-       v.description, v.image_url, v.status
+SELECT v.id, v.name, vb.name as brand, vm.name as model, v.license_plate, v.color, v.year,
+       vm.engine_capacity, v.vehicle_type, v.price_per_day, v.mileage, 
+       v.description, vi.image_url, v.status
 FROM vehicles v
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
+LEFT JOIN vehicle_images vi ON v.id = vi.vehicle_id AND vi.is_primary = 1
 WHERE v.id = '550e8400-e29b-41d4-a716-446655440201';
 
 -- ========================================
@@ -118,10 +125,12 @@ WHERE v.id = '550e8400-e29b-41d4-a716-446655440201';
 SELECT * FROM bookings WHERE status = 'completed' ORDER BY created_at DESC;
 
 -- 2. Get User's Bookings with Vehicle Details
-SELECT b.*, v.name as vehicle_name, v.brand, v.model, v.license_plate,
+SELECT b.*, v.name as vehicle_name, vb.name as brand, vm.name as model, v.license_plate,
        u.name as user_name, b_pickup.name as pickup_branch, b_return.name as return_branch
 FROM bookings b
 JOIN vehicles v ON b.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 JOIN users u ON b.user_id = u.id
 JOIN branches b_pickup ON b.pickup_branch_id = b_pickup.id
 JOIN branches b_return ON b.return_branch_id = b_return.id
@@ -131,11 +140,13 @@ ORDER BY b.start_time DESC;
 -- 3. Get Booking Details with Full Info
 SELECT b.id, b.status, b.start_time, b.end_time, b.actual_return_time, b.total_price,
        u.name as user_name, u.phone as user_phone,
-       v.name as vehicle_name, v.brand, v.model, v.vehicle_type, v.price_per_day,
+  v.name as vehicle_name, vb.name as brand, vm.name as model, v.vehicle_type, v.price_per_day,
        b_pickup.name as pickup_branch, b_return.name as return_branch
 FROM bookings b
 JOIN users u ON b.user_id = u.id
 JOIN vehicles v ON b.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 JOIN branches b_pickup ON b.pickup_branch_id = b_pickup.id
 JOIN branches b_return ON b.return_branch_id = b_return.id
 WHERE b.id = '550e8400-e29b-41d4-a716-446655440301';
@@ -159,12 +170,14 @@ GROUP BY status;
 -- 6. Find Completed Bookings with Reviews
 SELECT b.id, b.start_time, b.end_time, b.total_price,
        u.name as user_name,
-       v.name as vehicle_name, v.brand, v.model,
+  v.name as vehicle_name, vb.name as brand, vm.name as model,
        r.rating, r.comment
 FROM bookings b
 LEFT JOIN reviews r ON b.id = r.booking_id
 JOIN users u ON b.user_id = u.id
 JOIN vehicles v ON b.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 WHERE b.status = 'completed'
 ORDER BY b.end_time DESC;
 
@@ -188,7 +201,7 @@ SELECT status, COUNT(*) as count, SUM(amount) as total_amount
 FROM payments
 GROUP BY status;
 
--- 2. Get Payments by Type (deposit/rental)
+-- 2. Get Payments by Type (rental/extra_fee)
 SELECT type, COUNT(*) as count, SUM(amount) as total_amount
 FROM payments
 GROUP BY type;
@@ -196,12 +209,14 @@ GROUP BY type;
 -- 3. Get Pending Payments
 SELECT p.id, p.amount, p.type, p.payment_method, p.created_at,
        u.name as user_name, u.email, u.phone,
-       v.name as vehicle_name, v.brand, v.model,
+  v.name as vehicle_name, vb.name as brand, vm.name as model,
        b.start_time, b.end_time
 FROM payments p
 JOIN bookings b ON p.booking_id = b.id
 JOIN users u ON b.user_id = u.id
 JOIN vehicles v ON b.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 WHERE p.status = 'pending'
 ORDER BY p.created_at ASC;
 
@@ -237,24 +252,29 @@ ORDER BY p.created_at DESC;
 -- ========================================
 
 -- 1. Get All Returned Vehicles
-SELECT vr.*, v.name as vehicle_name, v.brand, v.model, v.license_plate,
-       u.name as user_name,
+SELECT vr.*, b.vehicle_id, v.name as vehicle_name, vb.name as brand, vm.name as model, v.license_plate,
+       u.name as user_name, e.name as employee_name,
        b.start_time, b.end_time, br.name as return_branch
 FROM vehicle_returns vr
 JOIN bookings b ON vr.booking_id = b.id
 JOIN users u ON b.user_id = u.id
 JOIN vehicles v ON b.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 JOIN branches br ON vr.return_branch_id = br.id
+JOIN users e ON vr.employee_id = e.id
 ORDER BY vr.created_at DESC;
 
 -- 2. Get Vehicles with Damage Reports
-SELECT vr.*, v.name as vehicle_name, v.brand, v.model,
+SELECT vr.*, b.vehicle_id, v.name as vehicle_name, vb.name as brand, vm.name as model,
        u.name as user_name,
        b.total_price, vr.extra_fee
 FROM vehicle_returns vr
 JOIN bookings b ON vr.booking_id = b.id
 JOIN users u ON b.user_id = u.id
 JOIN vehicles v ON b.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 WHERE vr.condition_status IN ('damaged', 'fair')
 ORDER BY vr.created_at DESC;
 
@@ -266,14 +286,15 @@ WHERE extra_fee > 0
   AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY);
 
 -- 4. Get Return Summary by Vehicle
-SELECT v.id, v.name, v.brand, v.model, COUNT(vr.id) as return_count,
+SELECT v.id, v.name, vb.name as brand, vm.name as model, COUNT(vr.id) as return_count,
        SUM(vr.extra_fee) as total_fees,
        AVG(vr.extra_fee) as avg_fee
 FROM vehicles v
-LEFT JOIN bookings b ON v.id = b.vehicle_id
-LEFT JOIN vehicle_returns vr ON b.id = vr.booking_id
-WHERE vr.id IS NOT NULL
-GROUP BY v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
+JOIN bookings b ON v.id = b.vehicle_id
+JOIN vehicle_returns vr ON b.id = vr.booking_id
+GROUP BY v.id, v.name, vb.name, vm.name
 ORDER BY total_fees DESC;
 
 -- ========================================
@@ -337,23 +358,27 @@ ORDER BY cm.joined_at ASC;
 
 -- 1. Get All Reviews with Complete Info
 SELECT r.*, u.name as user_name, u.email,
-       v.name as vehicle_name, v.brand, v.model, v.license_plate,
+  v.name as vehicle_name, vb.name as brand, vm.name as model, v.license_plate,
        b.start_time, b.end_time
 FROM reviews r
 JOIN bookings b ON r.booking_id = b.id
 JOIN users u ON r.user_id = u.id
 JOIN vehicles v ON r.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 ORDER BY r.created_at DESC;
 
 -- 2. Get Average Rating by Vehicle
-SELECT v.id, v.name, v.brand, v.model, 
+SELECT v.id, v.name, vb.name as brand, vm.name as model, 
        ROUND(AVG(r.rating), 2) as avg_rating, 
        COUNT(r.id) as review_count,
        SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END) as five_star_count
 FROM vehicles v
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 LEFT JOIN bookings b ON v.id = b.vehicle_id
 LEFT JOIN reviews r ON b.id = r.booking_id
-GROUP BY v.id
+GROUP BY v.id, v.name, vb.name, vm.name
 HAVING COUNT(r.id) > 0
 ORDER BY avg_rating DESC;
 
@@ -366,11 +391,13 @@ WHERE r.rating = 5
 ORDER BY r.created_at DESC;
 
 -- 4. Get Low Ratings (1-2 stars)
-SELECT r.*, u.name as user_name, v.name as vehicle_name, v.brand, v.model
+SELECT r.*, u.name as user_name, v.name as vehicle_name, vb.name as brand, vm.name as model
 FROM reviews r
 JOIN bookings b ON r.booking_id = b.id
 JOIN users u ON r.user_id = u.id
 JOIN vehicles v ON r.vehicle_id = v.id
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 WHERE r.rating <= 2
 ORDER BY r.created_at DESC;
 
@@ -394,13 +421,13 @@ ORDER BY rating DESC;
 -- ========================================
 
 -- 1. Monthly Revenue Report
-SELECT DATE_TRUNC(MONTH, b.created_at) as month,
+SELECT DATE_FORMAT(b.created_at, '%Y-%m-01') as month,
        COUNT(b.id) as total_bookings,
        SUM(b.total_price) as monthly_revenue,
        AVG(b.total_price) as avg_booking_value
 FROM bookings b
 WHERE b.status = 'completed'
-GROUP BY DATE_TRUNC(MONTH, b.created_at)
+GROUP BY DATE_FORMAT(b.created_at, '%Y-%m-01')
 ORDER BY month DESC;
 
 -- 2. Revenue by Vehicle Type (fuel/electric)
@@ -420,31 +447,46 @@ SELECT u.id, u.name, u.email, u.phone,
        AVG(b.total_price) as avg_booking
 FROM users u
 LEFT JOIN bookings b ON u.id = b.user_id AND b.status = 'completed'
-GROUP BY u.id
+GROUP BY u.id, u.name, u.email, u.phone
 ORDER BY total_spent DESC
 LIMIT 10;
 
 -- 4. Vehicle Utilization Rate
-SELECT v.id, v.name, v.brand, v.model, v.vehicle_type,
+SELECT v.id, v.name, vb.name as brand, vm.name as model, v.vehicle_type,
        COUNT(CASE WHEN b.status = 'completed' THEN 1 END) as completed_bookings,
        COUNT(b.id) as total_bookings,
        ROUND((COUNT(CASE WHEN b.status = 'completed' THEN 1 END) / NULLIF(COUNT(b.id), 0) * 100), 2) as completion_rate
 FROM vehicles v
+JOIN vehicle_brands vb ON v.brand_id = vb.id
+JOIN vehicle_models vm ON v.model_id = vm.id
 LEFT JOIN bookings b ON v.id = b.vehicle_id
-GROUP BY v.id
+GROUP BY v.id, v.name, vb.name, vm.name, v.vehicle_type
 ORDER BY completion_rate DESC;
 
 -- 5. Branch Performance Analysis
-SELECT b.id, b.name, b.address,
-       COUNT(v.id) as total_vehicles,
-       COUNT(CASE WHEN v.status = 'available' THEN 1 END) as available,
+SELECT br.id, br.name, br.address,
+     COALESCE(vehicle_stats.total_vehicles, 0) as total_vehicles,
+     COALESCE(vehicle_stats.available, 0) as available,
+     COALESCE(booking_stats.total_bookings, 0) as total_bookings,
+     COALESCE(booking_stats.total_revenue, 0) as total_revenue,
+     COALESCE(booking_stats.avg_booking, 0) as avg_booking
+FROM branches br
+LEFT JOIN (
+  SELECT current_branch_id,
+       COUNT(*) as total_vehicles,
+       SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available
+  FROM vehicles
+  GROUP BY current_branch_id
+) vehicle_stats ON br.id = vehicle_stats.current_branch_id
+LEFT JOIN (
+  SELECT v.current_branch_id,
        COUNT(b2.id) as total_bookings,
        SUM(b2.total_price) as total_revenue,
        ROUND(AVG(b2.total_price), 2) as avg_booking
-FROM branches b
-LEFT JOIN vehicles v ON b.id = v.current_branch_id
-LEFT JOIN bookings b2 ON v.id = b2.vehicle_id AND b2.status = 'completed'
-GROUP BY b.id
+  FROM vehicles v
+  JOIN bookings b2 ON v.id = b2.vehicle_id AND b2.status = 'completed'
+  GROUP BY v.current_branch_id
+) booking_stats ON br.id = booking_stats.current_branch_id
 ORDER BY total_revenue DESC;
 
 -- 6. Daily Revenue Report (Last 30 Days)
@@ -518,7 +560,7 @@ ANALYZE TABLE users, branches, vehicles, bookings, payments,
 -- ========================================
 
 -- 1. Create Booking Transaction (Atomic Operation)
--- Creates booking, payment deposit, and updates vehicle status
+-- Creates booking, payment record, and updates vehicle status
 START TRANSACTION;
 
 -- Generate UUIDs: you should generate these in application code
@@ -528,14 +570,15 @@ SET @user_id = '550e8400-e29b-41d4-a716-446655440003';
 SET @vehicle_id = '550e8400-e29b-41d4-a716-446655440201';
 SET @pickup_branch_id = '550e8400-e29b-41d4-a716-446655440101';
 SET @return_branch_id = '550e8400-e29b-41d4-a716-446655440101';
+SET @branch_id = @pickup_branch_id;
 
 INSERT INTO bookings (id, user_id, vehicle_id, pickup_branch_id, return_branch_id, 
                      start_time, end_time, status, total_price)
 VALUES (@booking_id, @user_id, @vehicle_id, @pickup_branch_id, @return_branch_id,
         '2024-02-15 08:00:00', '2024-02-15 18:00:00', 'pending', 1500000);
 
-INSERT INTO payments (id, booking_id, amount, type, payment_method, status)
-VALUES (@payment_id, @booking_id, 300000, 'deposit', 'credit_card', 'pending');
+INSERT INTO payments (id, booking_id, amount, type, payment_method, status, branch_id)
+VALUES (@payment_id, @booking_id, 300000, 'rental', 'credit_card', 'pending', @branch_id);
 
 COMMIT;
 
@@ -546,15 +589,16 @@ START TRANSACTION;
 SET @booking_id = '550e8400-e29b-41d4-a716-446655440301';
 SET @vehicle_id = '550e8400-e29b-41d4-a716-446655440201';
 SET @return_branch_id = '550e8400-e29b-41d4-a716-446655440101';
+SET @employee_id = '550e8400-e29b-41d4-a716-446655440004';
 
 UPDATE bookings 
 SET status = 'completed', actual_return_time = NOW() 
 WHERE id = @booking_id;
 
-INSERT INTO vehicle_returns (id, booking_id, vehicle_id, return_branch_id, 
-                            condition_status, damage_description, extra_fee)
-VALUES (UUID(), @booking_id, @vehicle_id, @return_branch_id, 
-        'good', NULL, 0);
+INSERT INTO vehicle_returns (id, booking_id, return_branch_id, 
+          condition_status, damage_description, extra_fee, employee_id)
+VALUES (UUID(), @booking_id, @return_branch_id, 
+  'good', NULL, 0, @employee_id);
 
 UPDATE vehicles 
 SET current_branch_id = @return_branch_id, mileage = mileage + 150
@@ -583,6 +627,7 @@ START TRANSACTION;
 
 SET @booking_id = '550e8400-e29b-41d4-a716-446655440302';
 SET @vehicle_id = '550e8400-e29b-41d4-a716-446655440202';
+SET @branch_id = '550e8400-e29b-41d4-a716-446655440101';
 
 -- Update vehicle return with damage info
 UPDATE vehicle_returns
@@ -592,8 +637,8 @@ SET condition_status = 'fair',
 WHERE booking_id = @booking_id;
 
 -- Create additional payment for damage
-INSERT INTO payments (id, booking_id, amount, type, payment_method, status)
-VALUES (UUID(), @booking_id, 200000, 'rental', 'credit_card', 'pending');
+INSERT INTO payments (id, booking_id, amount, type, payment_method, status, branch_id)
+VALUES (UUID(), @booking_id, 200000, 'extra_fee', 'credit_card', 'pending', @branch_id);
 
 COMMIT;
 
