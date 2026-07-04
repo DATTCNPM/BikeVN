@@ -319,6 +319,9 @@ importers:
       '@repo/constants':
         specifier: workspace:*
         version: link:../constants
+      '@repo/hooks':
+        specifier: workspace:*
+        version: link:../hooks
       '@repo/services':
         specifier: workspace:*
         version: link:../services

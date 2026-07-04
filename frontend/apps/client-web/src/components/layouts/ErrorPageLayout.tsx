@@ -12,7 +12,7 @@ interface ErrorPageLayoutProps {
   description: string;
 
   middleContent?: ReactNode;
-  actions: ReactNode;
+  actions?: ReactNode;
   footer: ReactNode;
 
   showGrid?: boolean;
