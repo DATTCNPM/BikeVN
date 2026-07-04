@@ -8,16 +8,29 @@ type Props = {
 };
 
 export default function MessageItem({ message, isCurrentUser }: Props) {
-  // Hàm format nhanh thời gian từ chuỗi ISO của Backend
-  const formatTime = (isoString: string) => {
+  // 🌟 KHẮC PHỤC LỖI 8:00 AM TẠI ĐÂY
+  const formatTime = (isoString: string | undefined | null) => {
     try {
-      const date = new Date(isoString);
+      // Nếu không có isoString hoặc chuỗi trống, lấy luôn thời gian hiện tại của client
+      const date = isoString ? new Date(isoString) : new Date();
+
+      // Kiểm tra xem Date có hợp lệ không (tránh trường hợp chuỗi lỗi)
+      if (isNaN(date.getTime())) {
+        return new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
       return date.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       });
     } catch {
-      return "";
+      return new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     }
   };
 
@@ -54,6 +67,7 @@ export default function MessageItem({ message, isCurrentUser }: Props) {
 
       {/* Thời gian + Trạng thái đã đọc */}
       <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground">
+        {/* Truyền giá trị vào hàm an toàn hơn */}
         <span>{formatTime(message.createdAt)}</span>
         {isCurrentUser && <span>• {message.isRead ? "Read" : "Sent"}</span>}
       </div>

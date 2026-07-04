@@ -15,6 +15,7 @@ import {
   useBooking,
   useVehicleReturnByBookingId,
 } from "@/features/bookings/queries"; // THÊM HOOK RETURN
+import ReturnSurchargeCard from "@/features/bookings/components/ReturnSurchargeCard";
 
 export default function BookingResultPage() {
   const { id = "" } = useParams();
@@ -39,6 +40,11 @@ export default function BookingResultPage() {
 
   const pickupBranch = branches.find((b) => b.id === booking?.pickupBranchId);
   const returnBranch = branches.find((b) => b.id === booking?.returnBranchId);
+
+  console.log(
+    "🚀 ~ file: BookingResultPage.tsx:38 ~ BookingResultPage ~ vehicleReturn:",
+    vehicleReturn,
+  );
 
   return (
     <main className="min-h-screen bg-background">
@@ -66,6 +72,7 @@ export default function BookingResultPage() {
           )}
 
           <BookingActions />
+          <ReturnSurchargeCard vehicleReturn={vehicleReturn} />
         </div>
       </div>
     </main>

@@ -21,6 +21,8 @@ type Props = {
   booking: Booking | null;
   selectedMethod: PaymentMethod;
   userProfile: User | undefined;
+  paymentType: "booking" | "surcharge";
+  surchargeAmount?: number; // 🌟 THÊM: Truyền số tiền phạt chuẩn từ API trang cha xuống (nếu có)
 };
 
 const formatVND = (value: number) => `${value.toLocaleString("vi-VN")}đ`;
@@ -29,6 +31,8 @@ export default function PaymentSummaryCard({
   booking,
   selectedMethod,
   userProfile,
+  paymentType,
+  surchargeAmount = 100000, // Fallback mặc định nếu không truyền
 }: Props) {
   const navigate = useNavigate();
   const { mutate: createPayment, isPending: isCreating } = useCreatePayment();
@@ -36,6 +40,11 @@ export default function PaymentSummaryCard({
 
   const [modalOpen, setModalOpen] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
+
+  // 🌟 Tính toán số tiền cuối cùng một cách an toàn
+  const finalPrice =
+    paymentType === "surcharge" ? surchargeAmount : booking?.totalPrice || 0;
+  const isLoading = isCreating || isGettingUrl;
 
   const handlePayment = () => {
     if (!booking) return;
@@ -52,7 +61,7 @@ export default function PaymentSummaryCard({
 
     const payload: PaymentCreationPayload = {
       bookingId: booking.id,
-      amount: booking.totalPrice || 0,
+      amount: finalPrice,
       idempotencyKey: crypto.randomUUID(),
       paymentMethod: selectedMethod,
     };
@@ -62,31 +71,35 @@ export default function PaymentSummaryCard({
         const paymentId = paymentData?.id;
         if (!paymentId) return;
 
-        // KIỂM TRA PHƯƠNG THỨC THANH TOÁN
         if (selectedMethod === "cash") {
-          // Luồng tiền mặt: Thông báo và chuyển hướng về trang lịch sử đặt xe
-          toast.success("Booking order created! Please pay at the counter.");
+          toast.success(
+            paymentType === "surcharge"
+              ? "Surcharge confirmed! Please pay at the counter."
+              : "Booking order created! Please pay at the counter.",
+          );
           navigate(`/booking-result/${booking.id}`);
         } else if (selectedMethod === "vnpay") {
-          // Luồng VNPay: Xin URL và redirect đi cổng thanh toán
-          const returnUrl = `${window.location.origin}/payment-result`;
+          const returnUrl = `${window.location.origin}/booking-result/${booking.id}?payment=success`;
           getVNPayUrl({ paymentId, returnUrl });
         }
       },
       onError: (error) => {
-        toast.error(`Has an error: ${error.message}`);
+        toast.error(`Error: ${error.message}`);
       },
     });
   };
 
-  const basePrice = booking?.totalPrice || 0;
-
-  const isLoading = isCreating || isGettingUrl;
-
+  // 🌟 SỬA ĐỔI: Hàm trả về text chuẩn theo từng loại Context thanh toán
   const getButtonText = () => {
-    if (isCreating) return "Creating...";
+    if (isCreating) return "Processing...";
     if (isGettingUrl) return "Redirecting to VNPay...";
-    return selectedMethod === "cash" ? "Confirm Booking" : "Pay Now"; // Tối ưu text theo phương thức
+
+    if (paymentType === "surcharge") {
+      return selectedMethod === "cash"
+        ? "Confirm Surcharge"
+        : "Pay Surcharge Now";
+    }
+    return selectedMethod === "cash" ? "Confirm Booking" : "Pay Now";
   };
 
   return (
@@ -105,18 +118,26 @@ export default function PaymentSummaryCard({
         </div>
 
         <div className="mt-8 space-y-5">
-          <SummaryItem label="Rental Price" value={basePrice} />
+          <SummaryItem
+            label={
+              paymentType === "surcharge"
+                ? "Return Surcharge Penalty"
+                : "Rental Price"
+            }
+            value={finalPrice}
+          />
 
           <div className="border-t border-dashed border-border pt-5">
             <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Total</p>
+              <p className="text-lg font-semibold">Total Due</p>
               <p className="text-3xl font-black tracking-tight text-primary">
-                {formatVND(basePrice)}
+                {formatVND(finalPrice)}
               </p>
             </div>
           </div>
         </div>
 
+        {/* 🌟 ĐƯA HÀM getButtonText() VÀO ĐÂY ĐỂ HIỂN THỊ CHUẨN */}
         <Button
           disabled={!booking || isLoading}
           onClick={handlePayment}

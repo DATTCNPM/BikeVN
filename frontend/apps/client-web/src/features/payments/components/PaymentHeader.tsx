@@ -1,25 +1,34 @@
 import { CreditCard } from "lucide-react";
 
-export default function PaymentHeader() {
+// Đổi cách nhận prop thành một object { type }
+type Props = {
+  type: "booking" | "surcharge";
+};
+
+export default function PaymentHeader({ type }: Props) {
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-8 shadow-sm">
-      <div className="absolute right-0 top-0 size-56 rounded-full bg-primary/10 blur-3xl" />
+    <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm">
+      {/* Background Glow */}
+      <div className="absolute right-0 top-0 size-24 rounded-full bg-primary/5 blur-2xl" />
 
-      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="text-sm font-medium uppercase tracking-wider text-primary">
-            Checkout
-          </p>
+      <div className="relative flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <CreditCard className="size-5" />
+          </div>
 
-          <h1 className="mt-2 text-4xl font-black tracking-tight">Payment</h1>
-
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            Complete the payment to confirm your booking and start your journey.
-          </p>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-primary/80">
+              Checkout
+            </p>
+            <h1 className="text-xl font-extrabold tracking-tight text-foreground">
+              {type === "booking" ? "Booking" : "Surcharge"} Payment
+            </h1>
+          </div>
         </div>
 
-        <div className="flex size-24 items-center justify-center rounded-3xl bg-primary text-primary-foreground shadow-lg">
-          <CreditCard className="size-10" />
+        <div className="text-xs font-medium text-muted-foreground hidden sm:block">
+          Secure Transaction
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { authStorageService } from "@repo/services";
 import { create } from "zustand";
 
 interface AuthStore {
@@ -7,7 +8,8 @@ interface AuthStore {
 
 export const useAuthStore = create<AuthStore>((set) => ({
   // Khởi tạo cờ từ sessionStorage để giữ trạng thái khi F5
-  isLogin: false, // Bạn có thể gắn logic kiểm tra token của bạn ở đây
+  isLogin:
+    typeof window !== "undefined" ? !!authStorageService.getToken() : false,
 
   setIsLogin: (value) => set({ isLogin: value }),
 }));

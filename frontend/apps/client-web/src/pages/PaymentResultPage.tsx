@@ -108,6 +108,15 @@ export default function PaymentResultPage() {
 
   const currentStatus = PAYMENT_STATUS_CONFIG[statusKey];
 
+  console.log(
+    "🚀 ~ file: PaymentResultPage.tsx:92 ~ PaymentResultPage ~ verifyResult:",
+    verifyResult,
+  );
+  console.log(
+    "🚀 ~ file: PaymentResultPage.tsx:93 ~ PaymentResultPage ~ statusKey:",
+    statusKey,
+  );
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <Card className="w-full max-w-lg rounded-[2.5rem] border-border p-8 shadow-sm bg-card">
@@ -174,7 +183,7 @@ export default function PaymentResultPage() {
           )}
 
           <Button
-            onClick={() => navigate("/bookings")}
+            onClick={() => navigate(`/my-bookings`)}
             className="w-full rounded-2xl h-12 font-bold shadow-sm"
           >
             My Bookings
