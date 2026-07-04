@@ -1,4 +1,3 @@
-// components/payment/PaymentBookingCard.tsx
 import { Card } from "@repo/ui/components/ui/card";
 import { CalendarDays, MapPinned } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
@@ -16,7 +15,7 @@ export default function PaymentBookingCard({ booking }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div className="flex h-48 items-center justify-center">
         <Spinner />
       </div>
     );
@@ -33,44 +32,37 @@ export default function PaymentBookingCard({ booking }: Props) {
         <p className="text-sm font-medium uppercase tracking-wider text-primary">
           Booking
         </p>
-        <h2 className="mt-2 text-2xl font-bold">Booking Information</h2>
+        <h2 className="mt-1 text-xl font-bold">Booking Information</h2>
       </div>
 
-      <div className="mt-8 grid gap-5 md:grid-cols-2">
-        {/* Khối thời gian thuê */}
-        <div className="rounded-2xl bg-muted/50 p-5">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        {/* Rental Time */}
+        <div className="rounded-2xl bg-muted/50 p-4">
           <div className="flex items-center gap-2 text-primary">
-            <CalendarDays className="size-5" />
+            <CalendarDays className="size-4" />
             <p className="text-sm font-medium">Rental Time</p>
           </div>
-
-          <div className="mt-4 space-y-2">
-            <p className="font-semibold">
-              Start: {formatDateTime(booking?.startTime || "")}
-            </p>
-            <p className="font-semibold">
-              End: {formatDateTime(booking?.endTime || "")}
-            </p>
-            <p className="text-muted-foreground">
-              Total Days: {totalDays !== null ? `${totalDays} ngày` : "N/A"}
+          <div className="mt-3 space-y-1 text-sm font-medium">
+            <p>Start: {formatDateTime(booking?.startTime || "")}</p>
+            <p>End: {formatDateTime(booking?.endTime || "")}</p>
+            <p className="text-muted-foreground text-xs mt-1">
+              Total Duration:{" "}
+              {totalDays !== null
+                ? `${totalDays} ${totalDays > 1 ? "days" : "day"}`
+                : "N/A"}
             </p>
           </div>
         </div>
 
-        {/* Khối chi nhánh */}
-        <div className="rounded-2xl bg-muted/50 p-5">
+        {/* Branches */}
+        <div className="rounded-2xl bg-muted/50 p-4">
           <div className="flex items-center gap-2 text-primary">
-            <MapPinned className="size-5" />
+            <MapPinned className="size-4" />
             <p className="text-sm font-medium">Branches</p>
           </div>
-
-          <div className="mt-4 space-y-2">
-            <p className="font-semibold">
-              Pickup: {getBranchName(booking?.pickupBranchId)}
-            </p>
-            <p className="font-semibold">
-              Return: {getBranchName(booking?.returnBranchId)}
-            </p>
+          <div className="mt-3 space-y-1 text-sm font-medium">
+            <p>Pickup: {getBranchName(booking?.pickupBranchId)}</p>
+            <p>Return: {getBranchName(booking?.returnBranchId)}</p>
           </div>
         </div>
       </div>

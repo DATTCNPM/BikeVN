@@ -17,10 +17,13 @@ import java.text.ParseException;
 public class AuthenticationController {
     AuthenticationService authenticationService;
     //TEST CONTROLLER
+    // Đổi từ /test thành /ping cho đồng bộ với useServerRecovery ở Frontend
     @GetMapping("/test")
-    public String test()
-    {
-        return "Test controller ok!";
+    public ApiResponse<String> ping() {
+        return ApiResponse.<String>builder()
+                .code(1000) // Đảm bảo trả về code 1000 chuẩn logic của bạn
+                .result("pong")
+                .build();
     }
     //LOGIN
     @PostMapping("/login")

@@ -13,31 +13,28 @@ export default function PaymentCustomerCard({
         <p className="text-sm font-medium uppercase tracking-wider text-primary">
           Customer
         </p>
-
-        <h2 className="mt-2 text-2xl font-bold">Customer Information</h2>
+        <h2 className="mt-1 text-xl font-bold">Customer Information</h2>
       </div>
 
-      <div className="mt-8 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2">
         <InfoItem
-          icon={<User2 className="size-5" />}
+          icon={<User2 className="size-4" />}
           label="Full Name"
           value={user?.name}
         />
-
         <InfoItem
-          icon={<Mail className="size-5" />}
-          label="Email"
+          icon={<Mail className="size-4" />}
+          label="Email Address"
           value={user?.email}
         />
-
         <InfoItem
-          icon={<Phone className="size-5" />}
-          label="Phone"
+          icon={<Phone className="size-4" />}
+          label="Phone Number"
           value={user?.phone || "N/A"}
         />
         <InfoItem
-          icon={<User2 className="size-5" />}
-          label="CCCD Number"
+          icon={<User2 className="size-4" />}
+          label="National ID (CCCD)"
           value={user?.cccdNumber || "N/A"}
         />
       </div>
@@ -55,13 +52,14 @@ function InfoItem({
   value: string | undefined;
 }) {
   return (
-    <div className="rounded-2xl bg-muted/50 p-5">
+    <div className="rounded-2xl bg-muted/50 p-4 flex items-center justify-between gap-4">
       <div className="flex items-center gap-2 text-primary">
         {icon}
-        <p className="text-sm font-medium">{label}</p>
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
       </div>
-
-      <p className="mt-4 font-semibold text-foreground">{value}</p>
+      <p className="font-semibold text-sm text-foreground text-right truncate max-w-[180px]">
+        {value}
+      </p>
     </div>
   );
 }

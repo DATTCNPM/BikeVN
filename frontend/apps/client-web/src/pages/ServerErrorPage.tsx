@@ -1,33 +1,20 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Wrench, Home } from "lucide-react";
+import { Wrench } from "lucide-react"; // Đã bỏ Home icon vì không dùng nút điều hướng nữa
 
-import { Button } from "@repo/ui/components/ui/button";
 import ErrorPageLayout from "@/components/layouts/ErrorPageLayout";
 import MovingEmoji from "@/components/common/MovingEmoji";
-
-import { useServerRecovery } from "@/features/auth/useServerRecovery";
-import { useAuthStore } from "@/features/auth/authStore";
 import { useCanvasBackground } from "@/hooks/useCanvasBackground";
 
 const COUNTDOWN_TIME = 15;
 
 export default function ServerErrorPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(COUNTDOWN_TIME);
 
-  // Kích hoạt vòng lặp ping hồi sinh 3s/lần
-  useServerRecovery();
-  const isServerDown = useAuthStore((state) => state.isServerDown);
-
-  // Tự động điều hướng về khi Interceptor hoặc Recovery báo Server đã online
-  useEffect(() => {
-    if (!isServerDown) {
-      navigate("/", { replace: true });
-    }
-  }, [isServerDown, navigate]);
+  // ✂️ ĐÃ XÓA: useServerRecovery() cũ
+  // ✂️ ĐÃ XÓA: useAuthStore() lắng nghe trạng thái cũ
+  // ✂️ ĐÃ XÓA: useEffect điều hướng navigate() cũ
 
   const handleGetColors = useCallback(
     (
@@ -107,24 +94,7 @@ export default function ServerErrorPage() {
           />
         </>
       }
-      actions={
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="mt-10 flex flex-col gap-4 sm:flex-row"
-        >
-          <Button
-            size="lg"
-            variant="secondary"
-            className="h-12 rounded-2xl px-6 text-base"
-            onClick={() => navigate("/")}
-          >
-            <Home className="mr-2 size-4" />
-            Back to Home
-          </Button>
-        </motion.div>
-      }
+      // ✂️ ĐÃ XÓA: Phần actions chứa nút "Back to Home" cũ vì không cần thiết nữa
       footer={
         <motion.div
           initial={{ opacity: 0 }}

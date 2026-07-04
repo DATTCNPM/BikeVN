@@ -5,10 +5,7 @@ import { authStorageService, tokenService } from "@repo/services";
 
 interface AdminAuthState {
   isPortalLogin: boolean;
-  isServerDown: boolean; // ✨ ĐÃ THÊM
-
   setPortalLogin: (value: boolean) => void;
-  setIsServerDown: (value: boolean) => void; // ✨ ĐÃ THÊM
   logoutPortal: () => void;
   initializeAuth: () => void;
 }
@@ -23,26 +20,8 @@ export const usePortalAuth = create<AdminAuthState>()(
     (set) => ({
       isPortalLogin: !!authStorageService.getPortalToken(),
 
-      // ✨ ĐÃ THÊM: Đọc trạng thái ban đầu của server từ session
-      isServerDown:
-        typeof window !== "undefined"
-          ? sessionStorage.getItem("server_is_collapsed") === "true"
-          : false,
-
       setPortalLogin: (value) => {
         set({ isPortalLogin: value });
-      },
-
-      // ✨ ĐÃ THÊM: Hàm cập nhật và đồng bộ trạng thái server sập
-      setIsServerDown: (value) => {
-        if (typeof window !== "undefined") {
-          if (value) {
-            sessionStorage.setItem("server_is_collapsed", "true");
-          } else {
-            sessionStorage.removeItem("server_is_collapsed");
-          }
-        }
-        set({ isServerDown: value });
       },
 
       logoutPortal: () => {

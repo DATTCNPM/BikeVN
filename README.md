@@ -1,29 +1,66 @@
 # BikeVN
 
-A full-stack motorbike rental platform built with Spring Boot, React, TypeScript, MySQL, and Docker.
+<p align="center">
+    <img src="./docs/images/banner.png" alt="BikeVN Banner" width="100%">
+</p>
+
+<h1 align="center">🏍️ BikeVN</h1>
+
+<p align="center">
+A modern full-stack motorbike rental platform built with Spring Boot, React, TypeScript, MySQL, and Docker.
+</p>
+
+<p align="center">
+
+![Java](https://img.shields.io/badge/Java-21-red)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-brightgreen)
+![React](https://img.shields.io/badge/React-19-61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)
+![MySQL](https://img.shields.io/badge/MySQL-8-blue)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED)
+![License](https://img.shields.io/badge/License-Educational-lightgrey)
+
+</p>
 
 ---
 
-## Overview
+# 📖 Overview
 
-BikeVN is a motorbike rental management system that supports:
+BikeVN is a production-style motorbike rental platform that allows customers to browse vehicles, place bookings, complete payments, communicate with owners in real time, and manage the entire rental lifecycle.
 
-- Vehicle browsing and search
-- Online booking
-- Payment processing
-- Booking lifecycle management
-- Vehicle return workflow
-- Customer reviews
-- Real-time messaging
-- Administrative dashboard
-
-The project is designed using modern full-stack development practices with a clear separation between frontend and backend services.
+The project follows a modern full-stack architecture with a clear separation between frontend and backend services while emphasizing scalability, maintainability, and clean code practices.
 
 ---
 
-## Tech Stack
+# ✨ Key Features
 
-### Frontend
+### 👤 Customer
+
+- 🔍 Search and filter vehicles
+- 📄 Vehicle detail page
+- 📅 Online booking
+- 💳 Payment processing
+- 📦 Booking management
+- ↩️ Vehicle return workflow
+- ⭐ Customer reviews
+- 💬 Real-time messaging
+- 👤 Profile management
+
+### 🛠 Administrator
+
+- 📊 Dashboard
+- 👥 User management
+- 🏍 Vehicle management
+- 📅 Booking management
+- 💳 Payment monitoring
+- ⭐ Review moderation
+- 📈 Reports & statistics
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
 
 - React
 - TypeScript
@@ -34,42 +71,147 @@ The project is designed using modern full-stack development practices with a cle
 - Tailwind CSS
 - Shadcn UI
 
-### Backend
+## Backend
 
 - Java 21
 - Spring Boot
 - Spring Security
 - Spring Data JPA
 - Hibernate
+- WebSocket (STOMP)
 
-### Database
+## Database
 
 - MySQL
 
-### DevOps
+## DevOps
 
 - Docker
 - Docker Compose
 
 ---
 
-## Project Structure
+# 🏗 System Architecture
 
 ```text
-BikeVN/
+                +----------------------+
+                |      React App       |
+                +----------+-----------+
+                           |
+                REST API / WebSocket
+                           |
+                +----------v-----------+
+                |    Spring Boot API   |
+                +----------+-----------+
+                           |
+                     Spring Data JPA
+                           |
+                +----------v-----------+
+                |        MySQL         |
+                +----------------------+
+```
+
+---
+
+# 📷 Screenshots
+
+## 🏠 Home Page
+
+![Home](docs/images/screenshots/home.png)
+
+---
+
+## 🔍 Vehicle Listing
+
+![Vehicle List](docs/images/screenshots/vehicle-list.png)
+
+---
+
+## 📄 Vehicle Details
+
+![Vehicle Detail](docs/images/screenshots/vehicle-detail.png)
+
+---
+
+## 📅 Booking Page
+
+![Booking](docs/images/screenshots/booking.png)
+
+---
+
+## 💳 Payment
+
+![Payment](docs/images/screenshots/payment.png)
+
+---
+
+## 💬 Real-time Chat
+
+![Chat](docs/images/screenshots/chat.png)
+
+---
+
+## ⭐ Customer Reviews
+
+![Review](docs/images/screenshots/review.png)
+
+---
+
+## 👤 Customer Dashboard
+
+![Customer Dashboard](docs/images/screenshots/customer-dashboard.png)
+
+---
+
+## 🛠 Admin Dashboard
+
+![Admin Dashboard](docs/images/screenshots/admin-dashboard.png)
+
+---
+
+## 📈 Statistics
+
+![Statistics](docs/images/screenshots/statistics.png)
+
+---
+
+# 🎥 Demo
+
+## Client
+
+Coming Soon
+
+---
+
+## Admin
+
+Coming Soon
+
+---
+
+## API Documentation
+
+Coming Soon
+
+---
+
+# 📂 Project Structure
+
+```text
+BikeVN
 │
-├── backend/
+├── backend/                  Spring Boot REST API
 │
 ├── frontend/
 │   ├── apps/
-│   │   ├── admin/
-│   │   └── client-web/
+│   │   ├── admin/            Admin Dashboard
+│   │   └── client-web/       Customer Website
 │   │
-│   └── packages/
+│   └── packages/             Shared packages
 │
-├── database/
+├── database/                 SQL scripts
 │
-├── docker/
+├── docker/                   Docker configuration
 │
 ├── docs/
 │   ├── architecture.md
@@ -78,7 +220,6 @@ BikeVN/
 │   ├── backend.md
 │   ├── frontend.md
 │   ├── deployment.md
-│   │
 │   └── decisions/
 │
 ├── README.md
@@ -87,9 +228,9 @@ BikeVN/
 
 ---
 
-## Quick Start
+# 🚀 Quick Start
 
-### Prerequisites
+## Prerequisites
 
 Install:
 
@@ -100,15 +241,15 @@ Install:
 
 ---
 
-### Start Infrastructure
+## Start Infrastructure
 
-Windows
+### Windows
 
 ```powershell
 .\setup-env.ps1 up
 ```
 
-Linux / macOS
+### Linux / macOS
 
 ```bash
 ./setup-env.sh up
@@ -116,7 +257,7 @@ Linux / macOS
 
 ---
 
-### Verify Services
+## Verify Services
 
 | Service    | URL                   |
 | ---------- | --------------------- |
@@ -125,64 +266,114 @@ Linux / macOS
 
 ---
 
-### Database
+## Database
+
+| Property | Value       |
+| -------- | ----------- |
+| Host     | localhost   |
+| Port     | 3307        |
+| Database | bikevn_db   |
+| Username | bikevn_user |
+| Password | bikevn_pass |
+
+---
+
+# 📚 Documentation
+
+| Document        | Description                 |
+| --------------- | --------------------------- |
+| architecture.md | Overall system architecture |
+| erd.md          | Database ERD                |
+| api.md          | REST API documentation      |
+| backend.md      | Backend guide               |
+| frontend.md     | Frontend guide              |
+| deployment.md   | Deployment guide            |
+
+---
+
+# ⚙ Engineering Decisions
+
+- Concurrent Booking Control
+- Duplicate Payment Prevention
+- Vehicle Return Duplicate Prevention
+
+---
+
+# 🔄 Development Workflow
 
 ```text
-Host: localhost
-Port: 3307
-
-Database: bikevn_db
-
-Username: bikevn_user
-Password: bikevn_pass
+Pull Latest Code
+        │
+        ▼
+Start Docker
+        │
+        ▼
+Run Backend
+        │
+        ▼
+Run Frontend
+        │
+        ▼
+Develop Feature
+        │
+        ▼
+Commit Changes
+        │
+        ▼
+Create Pull Request
 ```
 
 ---
 
-## Documentation
+# ⭐ Highlights
 
-### Architecture
-
-- docs/architecture.md
-- docs/erd.md
-
-### API
-
-- docs/api.md
-
-### Backend
-
-- docs/backend.md
-
-### Frontend
-
-- docs/frontend.md
-
-### Deployment
-
-- docs/deployment.md
-
-### Engineering Decisions
-
-- docs/decisions/ConcurrentBookingControl.md
-- docs/decisions/DuplicatePaymentPrevention.md
-- docs/decisions/VehicleReturnDuplicatePrevention.md
+- JWT Authentication
+- Role-based Authorization
+- RESTful API
+- WebSocket Messaging
+- Responsive UI
+- Dockerized Development Environment
+- Clean Architecture
+- Repository Pattern
+- DTO Mapping
+- Pagination
+- Validation
+- Global Exception Handling
 
 ---
 
-## Development Workflow
+# 🛣 Roadmap
 
-1. Pull latest changes
-2. Start Docker services
-3. Run backend
-4. Run frontend
-5. Implement feature
-6. Create Pull Request
-
-See CONTRIBUTING.md for development standards.
+- [x] Authentication
+- [x] Booking System
+- [x] Payment
+- [x] Reviews
+- [x] Chat
+- [x] Admin Dashboard
+- [ ] Notification Service
+- [ ] Email Verification
+- [ ] CI/CD Pipeline
+- [ ] Mobile Application
+- [ ] Monitoring & Logging
 
 ---
 
-## License
+# 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome.
+
+Please read **CONTRIBUTING.md** before submitting a Pull Request.
+
+---
+
+# 📄 License
 
 This project is intended for educational and portfolio purposes.
+
+---
+
+# ⭐ Support
+
+If you find this project useful, consider giving it a ⭐ on GitHub.
+
+Made with ❤️ using Spring Boot + React.

@@ -1,54 +1,7 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { Motorbike } from "lucide-react";
-import { usePingQuery } from "@/features/auth/usePingQuery";
-import { usePortalAuth } from "@/features/auth/usePortalAuth";
-import { authStorageService, tokenService } from "@repo/services";
-import { ROLES } from "@repo/constants";
 
 export const ServerErrorPage: React.FC = () => {
-  const navigate = useNavigate();
-  const setIsServerDown = usePortalAuth((state) => state.setIsServerDown);
-  const { isLoading, data, refetch } = usePingQuery();
-
-  // ✨ ĐÃ SỬA: Hàm tự động nhận diện phân quyền và điều hướng trả về hợp lệ
-  const handleRedirectBack = React.useCallback(() => {
-    setIsServerDown(false);
-
-    const token = authStorageService.getPortalToken();
-    if (!token) {
-      navigate("/login", { replace: true });
-      return;
-    }
-
-    const roles = tokenService.getRoles(token);
-    if (roles.includes(ROLES.ADMIN)) {
-      navigate("/admin", { replace: true });
-    } else if (roles.includes(ROLES.EMPLOYEE)) {
-      navigate("/employee", { replace: true });
-    } else {
-      navigate("/login", { replace: true });
-    }
-  }, [navigate, setIsServerDown]);
-
-  // ✨ ĐÃ SỬA: Theo dõi kết quả trả về của usePingQuery để tự động kích hoạt hồi phục
-  useEffect(() => {
-    if (
-      data &&
-      (data.code === 1000 || (data as any).status === "success" || data)
-    ) {
-      handleRedirectBack();
-    }
-  }, [data, handleRedirectBack]);
-
-  // ✨ ĐÃ SỬA: Thiết lập vòng lặp ping tự động cập nhật trạng thái liên tục
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [refetch]);
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-sans p-6 text-center select-none">
       <style>{`
@@ -96,36 +49,10 @@ export const ServerErrorPage: React.FC = () => {
       </p>
 
       <button
-        onClick={() => refetch()}
-        disabled={isLoading}
-        className="px-6 py-3 font-semibold text-white bg-red-500 hover:bg-red-600 active:scale-95 transition-all rounded-xl shadow-lg shadow-red-200 disabled:bg-slate-300 disabled:shadow-none flex items-center gap-2"
+        onClick={() => window.location.reload()}
+        className="px-6 py-3 font-semibold text-white bg-red-500 hover:bg-red-600 active:scale-95 transition-all rounded-xl shadow-lg shadow-red-200 flex items-center gap-2"
       >
-        {isLoading ? (
-          <>
-            <svg
-              className="animate-spin h-5 w-5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            I'm kick-starting it to try again....
-          </>
-        ) : (
-          "Try Again"
-        )}
+        Reload Page
       </button>
     </div>
   );

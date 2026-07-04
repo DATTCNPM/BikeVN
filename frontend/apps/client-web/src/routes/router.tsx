@@ -17,7 +17,6 @@ const BookingResultPage = lazy(() => import("@/pages/BookingResultPage"));
 const PaymentPage = lazy(() => import("@/pages/PaymentPage"));
 const NotificationPage = lazy(() => import("@/pages/NotificationPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
-const ServerErrorPage = lazy(() => import("@/pages/ServerErrorPage"));
 const PaymentResultPage = lazy(() => import("@/pages/PaymentResultPage"));
 const MyBookingPage = lazy(() => import("@/pages/MyBookingPage"));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
@@ -62,7 +61,7 @@ const router = createBrowserRouter([
     element: <GlobalRootLayout />,
     children: [
       { index: true, element: <Landing /> },
-      { path: "server-error", element: <ServerErrorPage /> },
+
       { path: "*", element: <NotFoundPage /> },
       {
         element: <AuthLayout />,

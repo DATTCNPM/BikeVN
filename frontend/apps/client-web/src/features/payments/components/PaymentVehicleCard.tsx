@@ -10,69 +10,63 @@ export default function PaymentVehicleCard({
   vehicle: Vehicle | null;
 }) {
   return (
-    <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm">
-      <div className="grid lg:grid-cols-2">
+    <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm p-4">
+      <div className="flex flex-col sm:flex-row gap-5 items-center">
+        {/* Ảnh thu gọn lại */}
         <img
           src={filterImagePrimary(vehicle?.images || []) || imageMock}
           alt={vehicle?.name}
-          className="h-full min-h-[240px] w-full object-fit"
+          className="h-32 w-full sm:w-44 rounded-2xl object-cover flex-shrink-0"
         />
 
-        <div className="p-6">
-          <p className="text-sm font-medium uppercase tracking-wider text-primary">
-            Vehicle
+        <div className="w-full">
+          <p className="text-xs font-medium uppercase tracking-wider text-primary">
+            Vehicle Details
           </p>
-
-          <h2 className="mt-2 text-3xl font-black tracking-tight">
+          <h2 className="text-xl font-black tracking-tight mt-0.5">
             {vehicle?.name}
           </h2>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <VehicleInfo
-              icon={<MapPin className="size-5" />}
-              label="Branch"
-              value={vehicle?.currentBranchName || "Unknown Branch"}
-            />
-            <VehicleInfo
-              icon={<Motorbike className="size-5" />}
-              label="Vehicle Type"
-              value={vehicle?.vehicleType || "Unknown Type"}
-            />
-
-            <VehicleInfo
-              icon={<Motorbike className="size-5" />}
-              label="Vehicle Model"
-              value={vehicle?.modelName || "Unknown Model"}
-            />
-            <VehicleInfo
-              icon={<Motorbike className="size-5" />}
-              label="Vehicle Brand"
-              value={vehicle?.brandName || "Unknown Brand"}
-            />
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-xl">
+              <MapPin className="size-3.5 text-primary" />
+              <div>
+                <p className="text-[10px] text-muted-foreground">Branch</p>
+                <p className="font-semibold truncate max-w-[100px]">
+                  {vehicle?.currentBranchName || "Unknown"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-xl">
+              <Motorbike className="size-3.5 text-primary" />
+              <div>
+                <p className="text-[10px] text-muted-foreground">Type</p>
+                <p className="font-semibold truncate max-w-[100px]">
+                  {vehicle?.vehicleType || "Unknown"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-xl">
+              <Motorbike className="size-3.5 text-primary" />
+              <div>
+                <p className="text-[10px] text-muted-foreground">Model</p>
+                <p className="font-semibold truncate max-w-[100px]">
+                  {vehicle?.modelName || "Unknown"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-xl">
+              <Motorbike className="size-3.5 text-primary" />
+              <div>
+                <p className="text-[10px] text-muted-foreground">Brand</p>
+                <p className="font-semibold truncate max-w-[100px]">
+                  {vehicle?.brandName || "Unknown"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </Card>
-  );
-}
-
-function VehicleInfo({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-2xl bg-muted/50 p-4">
-      <div className="flex items-center gap-2 text-primary">
-        {icon}
-        <p className="text-sm font-medium">{label}</p>
-      </div>
-
-      <p className="mt-3 font-semibold">{value}</p>
-    </div>
   );
 }

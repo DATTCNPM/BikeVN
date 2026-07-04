@@ -2,36 +2,37 @@ import { TOKEN_KEYS } from "@repo/constants";
 import { createAxiosAuth } from "./createAxiosAuth";
 import axios from "axios";
 
+// Tạo một instance phụ riêng biệt CHỈ dành cho việc refresh, tránh loop interceptor
+const refreshAxios = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "https://bikevn.onrender.com",
+  timeout: 10000,
+});
+
 export default createAxiosAuth({
   tokenKey: TOKEN_KEYS.CLIENT_ACCESS,
   refreshTokenKey: TOKEN_KEYS.CLIENT_REFRESH,
   loginPath: "/login",
   onRefreshToken: async (token) => {
-    try {
-      const res = await axios.post("https://bikevn.onrender.com/auth/refresh", {
-        refreshToken: token,
-      });
+    // Gọi bằng refreshAxios biệt lập
+    const res = await refreshAxios.post("/auth/refresh", {
+      refreshToken: token,
+    });
 
-      // 1. Kiểm tra mã lỗi logic của hệ thống bạn (Ví dụ: 1000 là thành công)
-      if (res.data?.code !== 1000 || !res.data?.result) {
-        throw new Error(
-          res.data?.message || "Refresh token không hợp lệ hoặc đã hết hạn",
-        );
-      }
+    // Lúc này res là response gốc của Axios, data sẽ là cục JSON trả về từ backend
+    const apiData = res.data;
 
-      const data = res.data.result;
-      const accessToken = data.token || data.accessToken;
-      const refreshToken = data.refreshToken;
-
-      // 2. Bắt buộc phải có đủ 2 token mới cho đi tiếp
-      if (!accessToken || !refreshToken) {
-        throw new Error("Backend trả về thiếu accessToken hoặc refreshToken");
-      }
-
-      return { accessToken, refreshToken };
-    } catch (error) {
-      // Ném lỗi ra ngoài để handleTokenRefresh nhảy vào block catch và chạy handleUnauthorized
-      throw error;
+    if (apiData?.code !== 1000 || !apiData?.result) {
+      throw new Error(apiData?.message || "Refresh token không hợp lệ");
     }
+
+    const data = apiData.result;
+    const accessToken = data.token || data.accessToken;
+    const refreshToken = data.refreshToken;
+
+    if (!accessToken || !refreshToken) {
+      throw new Error("Backend trả về thiếu token");
+    }
+
+    return { accessToken, refreshToken };
   },
 });

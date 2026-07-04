@@ -2,6 +2,7 @@ import axios from "axios";
 import { ApiError } from "../error/ApiError";
 import type { ApiResponse } from "@repo/types";
 import type { AxiosInstance } from "axios";
+import { useAuthStore } from "@repo/hooks"; // Import store quản lý trạng thái server
 
 type CreateAxiosAuthOptions = {
   tokenKey: string;
@@ -24,20 +25,15 @@ export function createAxiosAuth({
   });
 
   let isRefreshing = false;
-  // ✨ SỬA: failedQueue chứa các callback nhận vào token
   let failedQueue: Array<{
     resolve: (token: string) => void;
     reject: (error: any) => void;
   }> = [];
 
-  // ✨ SỬA: Hàm xử lý queue chuẩn
   const processQueue = (error: any, token: string | null = null) => {
     failedQueue.forEach((prom) => {
-      if (error) {
-        prom.reject(error);
-      } else if (token) {
-        prom.resolve(token);
-      }
+      if (error) prom.reject(error);
+      else if (token) prom.resolve(token);
     });
     failedQueue = [];
   };
@@ -58,23 +54,29 @@ export function createAxiosAuth({
       const config = response.config as any;
       const data = response.data as ApiResponse<any>;
 
+      // 1. Kiểm tra mã lỗi hết hạn token TRƯỚC (Ví dụ backend quy định code 5555 là expired)
+      if (data?.code === 5555 && !config?._retry && !config?.skipAuthCheck) {
+        // Nếu chính request refresh mà cũng trả về 5555 thì không refresh nữa, tránh lặp vô hạn
+        if (config.url?.includes("/auth/refresh")) {
+          throw new ApiError(data.code, "Refresh token đã hết hạn");
+        }
+        config._retry = true;
+        return handleTokenRefresh(config);
+      }
+
+      // 2. Xử lý riêng cho các request đặc thù auth/refresh hoặc login
       if (
         config.url?.includes("/auth/refresh") ||
         config.url?.includes("/login")
       ) {
-        if (data?.code === 1000) return data.result;
+        if (data?.code === 1000) return data.result; // Trả về result thô để hàm onRefreshToken nhận đúng cấu trúc
         if (typeof data?.code === "number") {
           throw new ApiError(data.code, data.message || "Auth Logic Error");
         }
         return data;
       }
 
-      // 💡 Nếu backend trả về code hết hạn qua response body thành công (200 OK)
-      if (data?.code === 5555 && !config?._retry && !config?.skipAuthCheck) {
-        config._retry = true;
-        return handleTokenRefresh(config);
-      }
-
+      // 3. Xử lý thành công chuẩn cho các API thông thường
       if (data?.code === 1000) return data.result;
 
       if (typeof data?.code === "number") {
@@ -86,22 +88,19 @@ export function createAxiosAuth({
     async (error) => {
       const config = error.config as any;
 
-      if (
-        typeof window !== "undefined" &&
-        (!error.response || error.response.status >= 500)
-      ) {
-        if (window.location.pathname !== "/server-error") {
-          sessionStorage.setItem("server_is_collapsed", "true");
-          window.location.href = "/server-error";
-          return Promise.reject(error);
-        }
+      const isServerSleep =
+        !error.response || [502, 503, 504].includes(error.response?.status);
+      if (typeof window !== "undefined" && isServerSleep) {
+        useAuthStore.getState().setIsServerDown(true);
+        return Promise.reject(error);
       }
 
+      // Nếu API /auth/refresh bị lỗi HTTP (Ví dụ 401, 403, 400), ném lỗi thẳng ra để đá về login
       if (config.url?.includes("/auth/refresh")) {
         return Promise.reject(error);
       }
 
-      // 💡 Nếu backend trả về lỗi 401 Unauthorized chuẩn HTTP
+      // Xử lý lỗi 401 chuẩn HTTP thông thường cho access token hết hạn
       if (
         error.response?.status === 401 &&
         !config?._retry &&
@@ -116,14 +115,12 @@ export function createAxiosAuth({
   );
 
   async function handleTokenRefresh(originalRequest: any) {
-    // ✨ SỬA: Nếu đang refresh, chặn request lại và đưa vào hàng đợi
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       })
         .then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token}`;
-          // Gọi lại chính request này với token mới
           return instance(originalRequest);
         })
         .catch((err) => Promise.reject(err));
@@ -135,37 +132,25 @@ export function createAxiosAuth({
       const refreshToken = localStorage.getItem(refreshTokenKey);
       if (!refreshToken) throw new Error("No refresh token available");
 
-      // Gọi hàm refresh token bên ngoài truyền vào
       const res = await onRefreshToken(refreshToken);
-
       const newAccessToken = res.accessToken;
       const newRefreshToken = res.refreshToken;
 
       localStorage.setItem(tokenKey, newAccessToken);
       localStorage.setItem(refreshTokenKey, newRefreshToken);
 
-      // Cập nhật token cho instance chung phòng trường hợp có request mới tạo hoàn toàn
       instance.defaults.headers.common["Authorization"] =
         `Bearer ${newAccessToken}`;
-
-      // Cập nhật token cho request hiện tại đang bị lỗi
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-      // ✨ Kích hoạt giải phóng hàng đợi với token mới
       processQueue(null, newAccessToken);
-
-      // Thực thi lại request gốc ban đầu
       return instance(originalRequest);
     } catch (refreshError: any) {
-      // Nếu refresh lỗi, hủy toàn bộ hàng đợi
       processQueue(refreshError, null);
 
-      if (
-        typeof window !== "undefined" &&
-        (!refreshError.response || refreshError.response.status >= 500)
-      ) {
-        sessionStorage.setItem("server_is_collapsed", "true");
-        window.location.href = "/server-error";
+      // Nếu refresh token dính lỗi mạng khi gọi, báo sập server, ngược lại đá về login
+      if (!refreshError.response || refreshError.response.status >= 500) {
+        useAuthStore.getState().setIsServerDown(true);
       } else {
         handleUnauthorized(tokenKey, refreshTokenKey, loginPath);
       }
@@ -185,10 +170,8 @@ function handleUnauthorized(
   loginPath: string,
 ) {
   if (typeof window === "undefined") return;
-
   localStorage.removeItem(tokenKey);
   localStorage.removeItem(refreshTokenKey);
-
   if (!window.location.pathname.startsWith(loginPath)) {
     window.location.href = loginPath;
   }

@@ -348,9 +348,15 @@ importers:
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.17
+      axios:
+        specifier: ^1.16.0
+        version: 1.18.0
       react:
         specifier: ^19.2.5
         version: 19.2.7
+      zustand:
+        specifier: ^5.0.13
+        version: 5.0.14(@types/react@19.2.17)(immer@11.1.8)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))
 
   packages/providers:
     dependencies:
