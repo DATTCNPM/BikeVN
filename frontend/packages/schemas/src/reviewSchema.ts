@@ -23,3 +23,12 @@ export const publicReviewSchema = z.object({
   comment: z.string().optional(),
   createdAt: z.string(),
 });
+
+export const reviewQueryParamsSchema = z.object({
+  bookingId: z.string().optional(),
+  vehicleId: z.string().optional(),
+  userId: z.string().optional(),
+  rating: z.number().int().min(1).max(5).optional(),
+  page: z.number().default(1),
+  size: z.number().default(10),
+});

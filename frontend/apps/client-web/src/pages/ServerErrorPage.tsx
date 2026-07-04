@@ -18,16 +18,17 @@ export default function ServerErrorPage() {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(COUNTDOWN_TIME);
 
+  // Kích hoạt vòng lặp ping hồi sinh 3s/lần
   useServerRecovery();
   const isServerDown = useAuthStore((state) => state.isServerDown);
 
+  // Tự động điều hướng về khi Interceptor hoặc Recovery báo Server đã online
   useEffect(() => {
     if (!isServerDown) {
-      navigate("/");
+      navigate("/", { replace: true });
     }
   }, [isServerDown, navigate]);
 
-  // Memoize canvas rendering to lock dependencies and protect client performance
   const handleGetColors = useCallback(
     (
       isDark: boolean,
@@ -44,7 +45,6 @@ export default function ServerErrorPage() {
       }
       return {
         background: gradient,
-        // Using the exact required format from your custom useCanvasBackground hook
         particleRawColor: isDark ? "239, 68, 68" : "220, 38, 38",
       };
     },
@@ -55,16 +55,15 @@ export default function ServerErrorPage() {
     particleCount: 40,
     baseRadius: 1.5,
     speedRange: [0.05, 0.25],
-    direction: "down", // Matrix-like falling effect signaling system downtime
+    direction: "down",
     getColors: handleGetColors,
   });
 
-  // Smooth operational UI countdown logic loop
+  // Đếm ngược UI thuần túy để tạo trải nghiệm động cho người dùng
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev <= 1 ? COUNTDOWN_TIME : prev - 1));
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
@@ -94,7 +93,6 @@ export default function ServerErrorPage() {
                 {timeLeft} Seconds
               </span>
             </div>
-
             <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
               <div
                 className="h-full bg-gradient-to-r from-orange-500 to-destructive transition-all duration-1000 ease-linear"
@@ -102,7 +100,6 @@ export default function ServerErrorPage() {
               />
             </div>
           </motion.div>
-
           <MovingEmoji
             emoji="🛠️"
             duration={5}

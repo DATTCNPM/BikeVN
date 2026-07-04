@@ -1,3 +1,5 @@
+import type { ReviewQueryParams } from "@repo/types";
+
 export const reviewKeys = {
   all: ["reviews"] as const,
 
@@ -9,41 +11,10 @@ export const reviewKeys = {
   branch: (branchId: string, page: number, size: number) =>
     [...reviewKeys.lists(), "branch", branchId, page, size] as const,
 
-  publicFilter: (
-    vehicleId: string | undefined,
-    rating: number | undefined,
-    page: number,
-    size: number,
-  ) =>
-    [
-      ...reviewKeys.lists(),
-      "public-filter",
-      {
-        vehicleId,
-        rating,
-        page,
-        size,
-      },
-    ] as const,
+  // Chỉ cần truyền cụ thể param object vào đây
+  publicFilter: (params: ReviewQueryParams) =>
+    [...reviewKeys.lists(), "public-filter", params] as const,
 
-  adminFilter: (
-    bookingId: string | undefined,
-    vehicleId: string | undefined,
-    userId: string | undefined,
-    rating: number | undefined,
-    page: number,
-    size: number,
-  ) =>
-    [
-      ...reviewKeys.lists(),
-      "admin-filter",
-      {
-        bookingId,
-        vehicleId,
-        userId,
-        rating,
-        page,
-        size,
-      },
-    ] as const,
+  adminFilter: (params: ReviewQueryParams) =>
+    [...reviewKeys.lists(), "admin-filter", params] as const,
 };

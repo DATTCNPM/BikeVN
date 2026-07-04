@@ -50,8 +50,8 @@ const defaultValues: VehicleCreationRequest = {
 export default function VehicleCreate({ open, onOpenChange }: Props) {
   const { mutateAsync, isPending } = useCreateVehicle();
   const { data: branches = [] } = useBranches();
-  const { data: brands } = useVehicleBrands();
-  const { data: models } = useVehicleModels();
+  const { data: brands } = useVehicleBrands(1, 100);
+  const { data: models } = useVehicleModels(1, 100);
 
   const {
     register,

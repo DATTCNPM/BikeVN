@@ -71,6 +71,7 @@ export default function RoleManagementPage() {
   return (
     <div>
       <DataTableToolbar
+        showCreate={true}
         search={search}
         onSearchChange={setSearch}
         onCreateOpen={() => setOpenCreateDialog(true)}

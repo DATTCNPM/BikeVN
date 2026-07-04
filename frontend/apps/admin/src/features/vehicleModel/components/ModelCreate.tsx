@@ -24,10 +24,9 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateVehicleModel } from "@/features/vehicleModel/mutationVehicleModel";
 
-import { useVehicleBrands } from "@repo/hooks";
-
 import { vehicleModelCreationSchema } from "@repo/schemas";
 import type { VehicleModelCreationRequest } from "@repo/types";
+import { useVehicleBrands } from "@repo/hooks";
 
 type Props = {
   open: boolean;
@@ -44,8 +43,7 @@ const defaultValues: VehicleModelCreationRequest = {
 
 export default function ModelCreate({ open, onOpenChange }: Props) {
   const { mutateAsync, isPending } = useCreateVehicleModel();
-
-  const { data: brands } = useVehicleBrands();
+  const { data: brands } = useVehicleBrands(1, 100);
 
   const {
     register,
@@ -110,7 +108,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {brands?.data?.map((brand) => (
+                    {brands?.data.map((brand) => (
                       <SelectItem key={brand.id} value={brand.id.toString()}>
                         {brand.name}
                       </SelectItem>

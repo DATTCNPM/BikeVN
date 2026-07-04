@@ -5,11 +5,11 @@ import type { AxiosInstance } from "axios";
 
 type CreateAxiosAuthOptions = {
   tokenKey: string;
-  refreshTokenKey: string; // Thêm key để lấy refresh token từ localStorage
+  refreshTokenKey: string;
   loginPath: string;
   onRefreshToken: (
     refreshToken: string,
-  ) => Promise<{ accessToken: string; refreshToken: string }>; // Hàm gọi API refresh
+  ) => Promise<{ accessToken: string; refreshToken: string }>;
 };
 
 export function createAxiosAuth({
@@ -81,7 +81,21 @@ export function createAxiosAuth({
     async (error) => {
       const config = error.config as any;
 
-      // 1. Nếu bản thân request refresh token bị lỗi HTTP (401, 403, 500...), ném lỗi ra ngay
+      // ✨ ĐÃ SỬA: Kiểm tra sập nguồn hệ thống toàn cục (Lỗi kết nối mạng hoặc lỗi Gateway 5xx)
+      if (
+        typeof window !== "undefined" &&
+        (!error.response || error.response.status >= 500)
+      ) {
+        // Tránh loop vô hạn nếu bản thân trình duyệt đang cố tải trang server-error
+        if (window.location.pathname !== "/server-error") {
+          // Ghi nhớ trạng thái sập vào sessionStorage trước khi chuyển trang (F5)
+          sessionStorage.setItem("server_is_collapsed", "true");
+          window.location.href = "/server-error";
+          return Promise.reject(error);
+        }
+      }
+
+      // 1. Nếu bản thân request refresh token bị lỗi HTTP (401, 403...), ném lỗi ra ngay
       if (config.url?.includes("/auth/refresh")) {
         return Promise.reject(error);
       }
@@ -132,9 +146,21 @@ export function createAxiosAuth({
 
       processQueue(null, newAccessToken);
       return instance(originalRequest);
-    } catch (refreshError) {
+    } catch (refreshError: any) {
       processQueue(refreshError, null);
-      handleUnauthorized(tokenKey, refreshTokenKey, loginPath);
+
+      // ✨ ĐÃ SỬA: Nếu quá trình refresh thất bại do sập mạng (chứ không phải do token hết hạn)
+      if (
+        typeof window !== "undefined" &&
+        (!refreshError.response || refreshError.response.status >= 500)
+      ) {
+        sessionStorage.setItem("server_is_collapsed", "true");
+        window.location.href = "/server-error";
+      } else {
+        // Nếu thực sự refresh token đã chết hoàn toàn -> đá về login
+        handleUnauthorized(tokenKey, refreshTokenKey, loginPath);
+      }
+
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
@@ -151,11 +177,9 @@ function handleUnauthorized(
 ) {
   if (typeof window === "undefined") return;
 
-  // Sửa từ xóa đơn lẻ sang xóa sạch sẽ theo Key hệ thống
   localStorage.removeItem(tokenKey);
   localStorage.removeItem(refreshTokenKey);
 
-  // Chỉ chuyển hướng nếu user đang KHÔNG ở trang login
   if (!window.location.pathname.startsWith(loginPath)) {
     window.location.href = loginPath;
   }

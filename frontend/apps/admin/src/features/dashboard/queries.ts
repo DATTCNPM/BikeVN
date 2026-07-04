@@ -1,11 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
+import { statisticAdminApi } from "@repo/api";
+import { statisticKeys } from "./statisticKeys";
+import type { MonthlyRevenueParams } from "@repo/types";
 
-import { dashboardApi } from "@repo/api";
-
-export const useDashboardOverview = () => {
-  return useQuery({
-    queryKey: ["dashboard-overview"],
-
-    queryFn: () => dashboardApi.getDashboardOverview(),
+// 1. Hook lấy số liệu tổng quan statistic
+export const useAdminGeneralStats = () =>
+  useQuery({
+    queryKey: statisticKeys.general(),
+    queryFn: () => statisticAdminApi.getGeneralStats(),
   });
-};
+
+// 2. Hook lấy dữ liệu doanh thu theo tháng (truyền object { year: 2026 } nếu cần)
+export const useMonthlyRevenueChart = (params?: MonthlyRevenueParams) =>
+  useQuery({
+    queryKey: statisticKeys.monthlyRevenue(params),
+    queryFn: () => statisticAdminApi.getMonthlyRevenue(params),
+  });
+
+// 3. Hook lấy dữ liệu doanh thu theo từng chi nhánh
+export const useRevenueByBranchChart = () =>
+  useQuery({
+    queryKey: statisticKeys.revenueByBranch(),
+    queryFn: () => statisticAdminApi.getRevenueByBranch(),
+  });
+
+// 4. Hook lấy dữ liệu danh sách xe phổ biến/thuê nhiều nhất
+export const usePopularVehiclesChart = () =>
+  useQuery({
+    queryKey: statisticKeys.popularVehicles(),
+    queryFn: () => statisticAdminApi.getPopularVehicles(),
+  });

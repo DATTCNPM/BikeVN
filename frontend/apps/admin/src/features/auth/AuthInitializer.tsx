@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-
 import { usePortalAuth } from "./usePortalAuth";
 
 export function AuthInitializer() {

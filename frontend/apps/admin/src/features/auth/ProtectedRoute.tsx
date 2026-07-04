@@ -10,16 +10,19 @@ export default function ProtectedRoute({
   children: React.ReactNode;
 }) {
   const { isPortalLogin } = usePortalAuth();
-  const { data: portalProfile } = usePortalProfile();
+  const { data: portalProfile, isLoading: isProfileLoading } =
+    usePortalProfile();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isPortalLogin) {
-      void navigate("/login");
+    // Chỉ điều hướng ra ngoài khi chắc chắn hệ thống đã kiểm tra xong (không còn loading profile) và trạng thái là false
+    if (!isProfileLoading && !isPortalLogin) {
+      void navigate("/login", { replace: true });
     }
-  }, [isPortalLogin, navigate]);
+  }, [isPortalLogin, isProfileLoading, navigate]);
 
-  if (!portalProfile) {
+  // Đang kiểm tra thông tin hoặc chưa có profile thì hiện Spinner
+  if (isProfileLoading || !portalProfile) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950">
         <Spinner className="h-8 w-8" />

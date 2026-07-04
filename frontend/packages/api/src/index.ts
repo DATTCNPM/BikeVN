@@ -5,7 +5,6 @@ export * from "./client/reviewClientApi";
 export * from "./client/userClientApi";
 export * from "./client/chatClientApi";
 
-export * from "./admin/dashboardApi";
 export * from "./admin/userAdminApi";
 export * from "./admin/roleApi";
 export * from "./admin/permissionApi";
@@ -21,6 +20,7 @@ export * from "./admin/vehicleReturnAdminApi";
 export * from "./admin/reviewAdminApi";
 export * from "./admin/userAdminApi";
 export * from "./admin/chatAdminApi";
+export * from "./admin/statisticAdminApi";
 
 export * from "./common/chatApi";
 export * from "./common/notificationApi";

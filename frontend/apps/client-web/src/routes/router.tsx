@@ -1,6 +1,5 @@
 import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
-import { useInitialServerCheck } from "@/features/auth/useInitialServerCheck";
 import { useAuthStore } from "@/features/auth/authStore";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
@@ -21,8 +20,6 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const ServerErrorPage = lazy(() => import("@/pages/ServerErrorPage"));
 const PaymentResultPage = lazy(() => import("@/pages/PaymentResultPage"));
 const MyBookingPage = lazy(() => import("@/pages/MyBookingPage"));
-
-// Lazy loading profile sections (Sẽ gom cụm lại ở Phase 3)
 const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 
 function PageLoader() {
@@ -33,17 +30,8 @@ function PageLoader() {
   );
 }
 
+// GỌN GÀNG: Không check, không sub store ở đây. Cứ để app chạy tự nhiên, sập nguồn Axios sẽ ép nhảy trang.
 function GlobalRootLayout() {
-  const navigate = useNavigate();
-  useInitialServerCheck();
-  const isServerDown = useAuthStore((state) => state.isServerDown);
-
-  useEffect(() => {
-    if (isServerDown) {
-      navigate("/server-error");
-    }
-  }, [isServerDown, navigate]);
-
   return (
     <Suspense fallback={<PageLoader />}>
       <Outlet />
@@ -57,9 +45,9 @@ function ProtectedRoute() {
 
   useEffect(() => {
     if (!isLogin) {
-      navigate("/login");
+      navigate("/login", { replace: true });
     }
-  }, [isLogin]);
+  }, [isLogin, navigate]);
 
   return (
     <Suspense fallback={<PageLoader />}>
@@ -74,8 +62,8 @@ const router = createBrowserRouter([
     element: <GlobalRootLayout />,
     children: [
       { index: true, element: <Landing /> },
-      { path: "*", element: <NotFoundPage /> },
       { path: "server-error", element: <ServerErrorPage /> },
+      { path: "*", element: <NotFoundPage /> },
       {
         element: <AuthLayout />,
         children: [
@@ -83,22 +71,16 @@ const router = createBrowserRouter([
           { path: "register", element: <Register /> },
         ],
       },
-      // 🌟 TẤT CẢ TẬP TRUNG TẠI MAIN LAYOUT DUY NHẤT
       {
         element: <MainLayout />,
         children: [
           { path: "home", element: <HomePage /> },
           { path: "vehicles/:id", element: <VehicleDetail /> },
-
-          // Các route bắt buộc Đăng nhập
           {
             element: <ProtectedRoute />,
             children: [
               { path: "chat", element: <ChatPage /> },
-
-              // Cấu trúc phẳng cho Profile (Không lồng thêm Layout)
               { path: "profile", element: <ProfilePage /> },
-
               { path: "booking-result/:id", element: <BookingResultPage /> },
               { path: "payment/:id", element: <PaymentPage /> },
               { path: "payment-result", element: <PaymentResultPage /> },

@@ -67,6 +67,7 @@ export default function PermissionManagementPage() {
   return (
     <div>
       <DataTableToolbar
+        showCreate={true}
         search={search}
         onSearchChange={setSearch}
         onCreateOpen={() => setOpenCreateDialog(true)}
