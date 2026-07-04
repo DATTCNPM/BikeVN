@@ -1,9 +1,10 @@
-import Logo from "@/assets/icons/Logo_yellow.svg";
+import Logo from "@repo/ui/components/wrapper/Logo";
 import {
   Home,
   MessageCircle,
   CircleUserRound,
   CalendarDays,
+  LogIn,
 } from "lucide-react";
 import { NavLink, Link } from "react-router-dom";
 import { Button } from "@repo/ui/components/ui/button";
@@ -30,14 +31,12 @@ export default function Header() {
         {/* Brand Logo */}
         <Link
           to="/home"
-          className="flex items-center gap-2.5 active:scale-95 transition-transform"
+          className="group flex items-center gap-2.5 active:scale-95 transition-transform select-none"
         >
-          <img
-            src={Logo}
-            alt="BikeVN Logo"
-            className="w-9 h-9 object-contain"
-          />
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-neutral-950 text-amber-400 p-1.5 shadow-sm border border-neutral-800 transition-all duration-300 group-hover:scale-105 group-hover:border-neutral-700">
+            <Logo className="size-full" />
+          </div>
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent transition-colors group-hover:text-foreground">
             BikeVN
           </span>
         </Link>
@@ -58,81 +57,103 @@ export default function Header() {
             <span className="hidden sm:inline">Home</span>
           </NavLink>
 
-          <NavLink
-            to="/chat"
-            className={({ isActive }) =>
-              `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? "text-foreground bg-secondary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              }`
-            }
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span className="hidden sm:inline">Chat</span>
-          </NavLink>
+          {userProfile && (
+            <>
+              <NavLink
+                to="/chat"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
+                }
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Chat</span>
+              </NavLink>
 
-          <NavLink
-            to="/my-bookings"
-            className={({ isActive }) =>
-              `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? "text-foreground bg-secondary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              }`
-            }
-          >
-            <CalendarDays className="w-4 h-4" />
-            <span className="hidden sm:inline">My Bookings</span>
-          </NavLink>
+              <NavLink
+                to="/my-bookings"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`
+                }
+              >
+                <CalendarDays className="w-4 h-4" />
+                <span className="hidden sm:inline">My Bookings</span>
+              </NavLink>
+            </>
+          )}
         </nav>
 
         {/* Action Widgets */}
         <div className="flex items-center gap-4">
-          <NotificationPopover />
+          {userProfile ? (
+            <>
+              {/* Chỉ hiện Widget Thông báo khi đã có userProfile */}
+              <NotificationPopover />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="rounded-full pl-2 pr-4 h-9 border border-border/60 hover:bg-secondary flex items-center gap-2"
-              >
-                <CircleUserRound className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs font-semibold text-foreground max-w-[80px] truncate">
-                  {userProfile?.name || "User"}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
+              {/* Chỉ hiện Menu Profile khi đã có userProfile */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="rounded-full pl-2 pr-4 h-9 border border-border/60 hover:bg-secondary flex items-center gap-2 select-none"
+                  >
+                    <CircleUserRound className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-xs font-semibold text-foreground max-w-[80px] truncate">
+                      {userProfile.name}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              align="end"
-              className="w-56 mt-2 rounded-2xl shadow-xl border border-border/50 animate-in fade-in-50 zoom-in-95 duration-200"
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 mt-2 rounded-2xl shadow-xl border border-border/50 animate-in fade-in-50 zoom-in-95 duration-200"
+                >
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-xs text-muted-foreground uppercase tracking-wider">
+                      My Account
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      asChild
+                      className="rounded-lg focus:bg-secondary py-2 cursor-pointer"
+                    >
+                      <Link to="/profile" className="w-full">
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="bg-border/60" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => logout()}
+                      className="rounded-lg py-2 focus:bg-destructive/10 focus:text-destructive font-medium cursor-pointer"
+                    >
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            /* THAY THẾ: Hiển thị nút Đăng nhập nếu chưa có userProfile */
+            <Button
+              asChild
+              variant="default"
+              className="rounded-full h-9 px-4 text-xs font-semibold shadow-sm bg-neutral-950 text-white hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-neutral-100 flex items-center gap-1.5 transition-all active:scale-95"
             >
-              <DropdownMenuGroup>
-                <DropdownMenuLabel className="text-xs text-muted-foreground uppercase tracking-wider">
-                  My Account
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  asChild
-                  className="rounded-lg focus:bg-secondary py-2 cursor-pointer"
-                >
-                  <Link to="/profile" className="w-full">
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator className="bg-border/60" />
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => logout()}
-                  className="rounded-lg py-2 focus:bg-destructive/10 focus:text-destructive font-medium cursor-pointer"
-                >
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <Link to="/login">
+                <LogIn className="size-3.5" />
+                Sign In
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>

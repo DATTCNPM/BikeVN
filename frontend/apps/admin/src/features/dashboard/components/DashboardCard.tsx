@@ -7,6 +7,7 @@ type Props = {
   value: string | number;
   description?: string;
   icon?: ReactNode;
+  className?: string;
 };
 
 export default function DashboardCard({
@@ -14,9 +15,12 @@ export default function DashboardCard({
   value,
   description,
   icon,
+  className,
 }: Props) {
   return (
-    <Card className="rounded-3xl border-border/50 bg-card/80 shadow-sm backdrop-blur">
+    <Card
+      className={`rounded-3xl border-border/50 bg-card/80 shadow-sm backdrop-blur ${className}`}
+    >
       <CardContent className="flex items-start justify-between p-6">
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">{title}</p>

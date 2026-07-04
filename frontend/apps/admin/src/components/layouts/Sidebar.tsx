@@ -15,6 +15,7 @@ import {
   KeyRound,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import Logo from "@repo/ui/components/wrapper/Logo";
 
 import {
   Sidebar,
@@ -31,8 +32,6 @@ import {
 
 import { ROLES } from "@repo/constants";
 import { authStorageService, tokenService } from "@repo/services";
-
-import Logo from "@/assets/icons/Logo_yellow.svg";
 
 // Danh sách Menu được cấu trúc lại theo từng nhóm hợp lý
 const menuGroups = [
@@ -152,15 +151,20 @@ export default function AppSidebar() {
   return (
     <Sidebar className="border-none">
       <SidebarHeader className="border-b px-6 py-5">
-        <div className="flex items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-2xl text-primary-foreground">
-            <img src={Logo} alt="Logo" />
+        <div className="flex items-center gap-3 select-none">
+          {/* Khung bọc logo nhỏ gọn, bo góc công nghệ */}
+          <div className="flex size-10 items-center justify-center rounded-xl bg-neutral-950 text-amber-400 p-2 shadow-md shadow-neutral-950/20 border border-neutral-800 transition-transform duration-300 hover:scale-105">
+            <Logo className="size-full animate-pulse [animation-duration:4s]" />
           </div>
+
           <div>
-            <h2 className="text-lg font-bold tracking-tight">
-              MotoRent Portal
+            <h2 className="text-[15px] font-bold tracking-tight text-foreground leading-tight">
+              MotoRent{" "}
+              <span className="text-amber-500 font-extrabold">Portal</span>
             </h2>
-            <p className="text-sm text-muted-foreground">Motorcycle Rental</p>
+            <p className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wider">
+              Motorcycle Rental
+            </p>
           </div>
         </div>
       </SidebarHeader>

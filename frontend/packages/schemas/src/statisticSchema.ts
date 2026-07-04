@@ -18,6 +18,7 @@ export const chartDataResponseSchema = z.object({
 export const adminGeneralStatResponseSchema = z.object({
   totalRevenue: z.number(),
   totalBookings: z.number(),
-  totalUsers: z.number(),
+  totalCustomers: z.number(),
   totalVehicles: z.number(),
+  totalEmployees: z.number(),
 });
