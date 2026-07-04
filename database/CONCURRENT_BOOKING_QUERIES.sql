@@ -39,7 +39,7 @@ SELECT
     bl.end_time,
     bl.lock_expires_at,
     bl.status,
-    TIMEDIFF(bl.lock_expires_at, NOW()) as remaining_time
+  SEC_TO_TIME(GREATEST(TIMESTAMPDIFF(SECOND, NOW(), bl.lock_expires_at), 0)) as remaining_time
 FROM booking_locks bl
 WHERE bl.vehicle_id = '<<VEHICLE_ID>>'
   AND bl.status = 'active'
@@ -89,10 +89,10 @@ SELECT
     bl.lock_acquired_at,
     bl.lock_expires_at,
     bl.status,
-    TIMEDIFF(bl.lock_expires_at, NOW()) as remaining_time,
+  SEC_TO_TIME(GREATEST(TIMESTAMPDIFF(SECOND, NOW(), bl.lock_expires_at), 0)) as remaining_time,
     CASE 
         WHEN bl.lock_expires_at < NOW() THEN 'EXPIRED'
-        WHEN TIMEDIFF(bl.lock_expires_at, NOW()) < '00:01:00' THEN 'EXPIRING SOON'
+    WHEN TIMESTAMPDIFF(SECOND, NOW(), bl.lock_expires_at) < 60 THEN 'EXPIRING SOON'
         ELSE 'ACTIVE'
     END as urgency
 FROM booking_locks bl
@@ -109,7 +109,7 @@ SELECT
     bl.end_time,
     bl.lock_expires_at,
     bl.status,
-    TIMEDIFF(bl.lock_expires_at, NOW()) as time_left
+    SEC_TO_TIME(GREATEST(TIMESTAMPDIFF(SECOND, NOW(), bl.lock_expires_at), 0)) as time_left
 FROM booking_locks bl
 WHERE bl.user_id = '<<USER_ID>>'
   AND bl.status = 'active'
@@ -165,10 +165,11 @@ SELECT
     b2.start_time as booking_2_start,
     b2.end_time as booking_2_end,
     b2.status as status_2,
-    TIMEDIFF(
-        LEAST(b1.end_time, b2.end_time),
-        GREATEST(b1.start_time, b2.start_time)
-    ) as overlap_duration
+    TIMESTAMPDIFF(
+      SECOND,
+      GREATEST(b1.start_time, b2.start_time),
+      LEAST(b1.end_time, b2.end_time)
+    ) as overlap_duration_seconds
 FROM bookings b1
 INNER JOIN bookings b2 ON b1.vehicle_id = b2.vehicle_id
 WHERE b1.id < b2.id  -- Avoid duplicate pairs
@@ -262,9 +263,9 @@ ORDER BY booking_hour;
 
 -- Query 4e: LOCK RELEASE TIME (how long users keep locks)
 SELECT 
-    ROUND(AVG(TIMEDIFF(bl.updated_at, bl.lock_acquired_at))) as avg_lock_duration,
-    ROUND(MIN(TIMEDIFF(bl.updated_at, bl.lock_acquired_at))) as min_lock_duration,
-    ROUND(MAX(TIMEDIFF(bl.updated_at, bl.lock_acquired_at))) as max_lock_duration,
+  ROUND(AVG(TIMESTAMPDIFF(SECOND, bl.lock_acquired_at, bl.updated_at)), 0) as avg_lock_duration_seconds,
+  MIN(TIMESTAMPDIFF(SECOND, bl.lock_acquired_at, bl.updated_at)) as min_lock_duration_seconds,
+  MAX(TIMESTAMPDIFF(SECOND, bl.lock_acquired_at, bl.updated_at)) as max_lock_duration_seconds,
     COUNT(*) as total_released_locks
 FROM booking_locks bl
 WHERE bl.status IN ('released', 'expired')
@@ -361,15 +362,19 @@ WHERE status = 'completed'
 SELECT 
     v.id,
     v.name,
-    ROUND(
-        SUM(
-            TIMEDIFF(
-                LEAST(b.end_time, DATE_ADD(NOW(), INTERVAL 7 DAY)),
-                GREATEST(b.start_time, NOW())
-            )
-        ) / (7 * 24 * 60 * 60) * 100,
-        2
-    ) as utilization_percent_7days
+  ROUND(
+    COALESCE(
+      SUM(
+        TIMESTAMPDIFF(
+          SECOND,
+          GREATEST(b.start_time, NOW()),
+          LEAST(b.end_time, DATE_ADD(NOW(), INTERVAL 7 DAY))
+        )
+      ),
+      0
+    ) / (7 * 24 * 60 * 60) * 100,
+    2
+  ) as utilization_percent_7days
 FROM vehicles v
 LEFT JOIN bookings b ON v.id = b.vehicle_id 
   AND b.status IN ('pending', 'approved', 'completed')

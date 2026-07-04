@@ -61,10 +61,10 @@ SELECT
     b.user_id,
     b.status as booking_status,
     b.total_price,
-    MAX(CASE WHEN p.type = 'deposit' THEN p.status ELSE NULL END) as deposit_status,
-    MAX(CASE WHEN p.type = 'deposit' THEN p.amount ELSE NULL END) as deposit_amount,
     MAX(CASE WHEN p.type = 'rental' THEN p.status ELSE NULL END) as rental_status,
     MAX(CASE WHEN p.type = 'rental' THEN p.amount ELSE NULL END) as rental_amount,
+    MAX(CASE WHEN p.type = 'extra_fee' THEN p.status ELSE NULL END) as extra_fee_status,
+    MAX(CASE WHEN p.type = 'extra_fee' THEN p.amount ELSE NULL END) as extra_fee_amount,
     COUNT(p.id) as payment_count,
     b.created_at
 FROM bookings b
@@ -159,8 +159,14 @@ WHERE idempotency_key IS NULL
 UNION ALL
 SELECT 
     'Duplicate idempotency keys',
-    COUNT(DISTINCT idempotency_key) - COUNT(DISTINCT idempotency_key)
-FROM payments;
+    COUNT(*)
+FROM (
+    SELECT idempotency_key
+    FROM payments
+    WHERE idempotency_key IS NOT NULL
+    GROUP BY idempotency_key
+    HAVING COUNT(*) > 1
+) duplicate_idempotency_keys;
 
 -- ========================================
 -- 6. TRANSACTION CODE ANALYSIS
@@ -409,18 +415,18 @@ WHERE TABLE_SCHEMA = 'bikevn_db'
 -- ========================================
 
 -- Test duplicate transaction code (should FAIL)
--- INSERT INTO payments (id, booking_id, amount, type, payment_method, transaction_code, status)
--- VALUES (UUID(), 'existing-booking-id', 500000, 'deposit', 'credit_card', 'TXN001', 'pending');
+-- INSERT INTO payments (id, booking_id, amount, type, payment_method, branch_id, transaction_code, status)
+-- VALUES (UUID(), 'existing-booking-id', 500000, 'rental', 'credit_card', 'existing-branch-id', 'TXN001', 'pending');
 -- Expected: Duplicate entry for key 'unique_transaction_code'
 
 -- Test duplicate booking_type (should FAIL)
--- INSERT INTO payments (id, booking_id, amount, type, payment_method, status, idempotency_key)
--- VALUES (UUID(), 'existing-booking-id', 500000, 'deposit', 'credit_card', 'pending', UUID());
+-- INSERT INTO payments (id, booking_id, amount, type, payment_method, branch_id, status, idempotency_key)
+-- VALUES (UUID(), 'existing-booking-id', 500000, 'rental', 'credit_card', 'existing-branch-id', 'pending', UUID());
 -- Expected: Duplicate entry for key 'unique_booking_type'
 
 -- Test duplicate idempotency_key (should FAIL)
--- INSERT INTO payments (id, booking_id, amount, type, payment_method, status, idempotency_key)
--- VALUES (UUID(), 'different-booking', 500000, 'deposit', 'credit_card', 'pending', 'existing-idem-key');
+-- INSERT INTO payments (id, booking_id, amount, type, payment_method, branch_id, status, idempotency_key)
+-- VALUES (UUID(), 'different-booking', 500000, 'rental', 'credit_card', 'existing-branch-id', 'pending', 'existing-idem-key');
 -- Expected: Duplicate entry for key 'unique_idempotency_key'
 
 -- ========================================
