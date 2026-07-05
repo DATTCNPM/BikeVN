@@ -1,7 +1,7 @@
 # BikeVN
 
 <p align="center">
-    <img src="./docs/images/banner.png" alt="BikeVN Banner" width="100%">
+    <img src="./screenshot/landing.png" alt="BikeVN Banner" width="100%">
 </p>
 
 <h1 align="center">🏍️ BikeVN</h1>
@@ -117,61 +117,49 @@ The project follows a modern full-stack architecture with a clear separation bet
 
 ## 🏠 Home Page
 
-![Home](docs/images/screenshots/home.png)
+![Home](/screenshot/landing.png)
 
 ---
 
 ## 🔍 Vehicle Listing
 
-![Vehicle List](docs/images/screenshots/vehicle-list.png)
+![Vehicle List](/screenshot/home.png)
 
 ---
 
 ## 📄 Vehicle Details
 
-![Vehicle Detail](docs/images/screenshots/vehicle-detail.png)
+![Vehicle Detail](/screenshot/detail.png)
 
 ---
 
 ## 📅 Booking Page
 
-![Booking](docs/images/screenshots/booking.png)
+![Booking](/screenshot/booking.png)
 
 ---
 
-## 💳 Payment
+## 💳 Booking result
 
-![Payment](docs/images/screenshots/payment.png)
+![Booking Result](/screenshot/booking-result.png)
 
 ---
 
 ## 💬 Real-time Chat
 
-![Chat](docs/images/screenshots/chat.png)
-
----
-
-## ⭐ Customer Reviews
-
-![Review](docs/images/screenshots/review.png)
+![Chat](/screenshot/chat.png)
 
 ---
 
 ## 👤 Customer Dashboard
 
-![Customer Dashboard](docs/images/screenshots/customer-dashboard.png)
+![Customer Dashboard](/screenshot/profile.png)
 
 ---
 
 ## 🛠 Admin Dashboard
 
-![Admin Dashboard](docs/images/screenshots/admin-dashboard.png)
-
----
-
-## 📈 Statistics
-
-![Statistics](docs/images/screenshots/statistics.png)
+![Admin Dashboard](/screenshot/dashboard.png)
 
 ---
 
@@ -179,19 +167,13 @@ The project follows a modern full-stack architecture with a clear separation bet
 
 ## Client
 
-Coming Soon
+[client demo](https://bike-vn.vercel.app/)
 
 ---
 
 ## Admin
 
-Coming Soon
-
----
-
-## API Documentation
-
-Coming Soon
+[admin demo](https://bike-vn-admin.vercel.app/)
 
 ---
 
