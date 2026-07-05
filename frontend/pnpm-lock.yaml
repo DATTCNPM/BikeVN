@@ -319,9 +319,6 @@ importers:
       '@repo/constants':
         specifier: workspace:*
         version: link:../constants
-      '@repo/hooks':
-        specifier: workspace:*
-        version: link:../hooks
       '@repo/services':
         specifier: workspace:*
         version: link:../services
@@ -411,9 +408,6 @@ importers:
       '@base-ui/react':
         specifier: ^1.4.1
         version: 1.5.0(@date-fns/tz@1.5.0)(@types/react@19.2.17)(date-fns@4.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@repo/hooks':
-        specifier: workspace:*
-        version: link:../hooks
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

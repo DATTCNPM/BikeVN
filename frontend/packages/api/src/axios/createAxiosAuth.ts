@@ -2,7 +2,6 @@ import axios from "axios";
 import { ApiError } from "../error/ApiError";
 import type { ApiResponse } from "@repo/types";
 import type { AxiosInstance } from "axios";
-import { useAuthStore } from "@repo/hooks"; // Import store quản lý trạng thái server
 
 type CreateAxiosAuthOptions = {
   tokenKey: string;
@@ -12,6 +11,11 @@ type CreateAxiosAuthOptions = {
     refreshToken: string,
   ) => Promise<{ accessToken: string; refreshToken: string }>;
 };
+let serverDownCallback: (() => void) | null = null;
+
+export function setServerDownCallback(cb: () => void) {
+  serverDownCallback = cb;
+}
 
 export function createAxiosAuth({
   tokenKey,
@@ -91,7 +95,7 @@ export function createAxiosAuth({
       const isServerSleep =
         !error.response || [502, 503, 504].includes(error.response?.status);
       if (typeof window !== "undefined" && isServerSleep) {
-        useAuthStore.getState().setIsServerDown(true);
+        serverDownCallback?.();
         return Promise.reject(error);
       }
 
@@ -150,7 +154,7 @@ export function createAxiosAuth({
 
       // Nếu refresh token dính lỗi mạng khi gọi, báo sập server, ngược lại đá về login
       if (!refreshError.response || refreshError.response.status >= 500) {
-        useAuthStore.getState().setIsServerDown(true);
+        serverDownCallback?.();
       } else {
         handleUnauthorized(tokenKey, refreshTokenKey, loginPath);
       }

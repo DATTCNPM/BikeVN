@@ -35,3 +35,5 @@ export * from "./common/createPaymentCommonApi";
 export * from "./common/reviewPublicApi";
 
 export * from "./error/ApiError";
+
+export { setServerDownCallback } from "./axios/createAxiosAuth";
