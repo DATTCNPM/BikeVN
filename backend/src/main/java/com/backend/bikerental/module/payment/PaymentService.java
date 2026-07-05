@@ -64,7 +64,7 @@ public class PaymentService {
         if (booking.getStatus() == BookingStatus.completed) {
             throw new AppException(ErrorCode.BOOKING_ALREADY_COMPLETED);
         }
-        if(booking.getExpiresAt() != null && booking.getExpiresAt().isBefore(LocalDateTime.now()))
+        if (booking.getStatus() == BookingStatus.pending && booking.getExpiresAt() != null && booking.getExpiresAt().isBefore(LocalDateTime.now()))
         {
             throw new AppException(ErrorCode.BOOKING_EXPIRED);
         }
@@ -123,6 +123,7 @@ public class PaymentService {
         if (fee.totalFee().compareTo(BigDecimal.ZERO) <= 0)
         {
             booking.setStatus(BookingStatus.completed);
+            booking.setExpiresAt(null);
             booking.setActualReturnTime(now);
             bookingRepository.save(booking);
             return null;
@@ -179,6 +180,7 @@ public class PaymentService {
         if(PaymentType.rental.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.approved);
+            booking.setExpiresAt(null);
 
             Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
                     .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
@@ -190,6 +192,7 @@ public class PaymentService {
         else if(PaymentType.extra_fee.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.completed);
+            booking.setExpiresAt(null);
         }
 
         paymentRepository.save(payment);
@@ -366,6 +369,7 @@ public class PaymentService {
 
         if(payment.getType() == PaymentType.rental) {
             booking.setStatus(BookingStatus.approved);
+            booking.setExpiresAt(null);
 
             Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
                     .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
@@ -375,6 +379,7 @@ public class PaymentService {
             bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
         } else if (payment.getType() == PaymentType.extra_fee) {
             booking.setStatus(BookingStatus.completed);
+            booking.setExpiresAt(null);
         }
 
         paymentRepository.save(payment);
@@ -417,6 +422,7 @@ public class PaymentService {
 
         payment.setUpdatedAt(LocalDateTime.now());
         booking.setStatus(BookingStatus.cancelled);
+        booking.setExpiresAt(null);
         booking.setUpdatedAt(LocalDateTime.now());
 
         paymentRepository.save(payment);
