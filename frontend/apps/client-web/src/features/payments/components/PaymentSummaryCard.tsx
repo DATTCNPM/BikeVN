@@ -14,25 +14,28 @@ import type {
   PaymentCreationPayload,
   PaymentMethod,
   User,
+  VehicleReturn,
 } from "@repo/types";
 import { toast } from "@repo/ui/components/ui/sonner";
 
 type Props = {
   booking: Booking | null;
+  vehicleReturn?: VehicleReturn | null; // 🌟 Nhận dữ liệu biên bản trả xe
   selectedMethod: PaymentMethod;
   userProfile: User | undefined;
   paymentType: "booking" | "surcharge";
-  surchargeAmount?: number; // 🌟 THÊM: Truyền số tiền phạt chuẩn từ API trang cha xuống (nếu có)
+  surchargeAmount?: number; // Có thể dùng prop này hoặc đọc trực tiếp từ vehicleReturn
 };
 
 const formatVND = (value: number) => `${value.toLocaleString("vi-VN")}đ`;
 
 export default function PaymentSummaryCard({
   booking,
+  vehicleReturn,
   selectedMethod,
   userProfile,
   paymentType,
-  surchargeAmount = 100000, // Fallback mặc định nếu không truyền
+  surchargeAmount,
 }: Props) {
   const navigate = useNavigate();
   const { mutate: createPayment, isPending: isCreating } = useCreatePayment();
@@ -41,10 +44,17 @@ export default function PaymentSummaryCard({
   const [modalOpen, setModalOpen] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
 
-  // 🌟 Tính toán số tiền cuối cùng một cách an toàn
+  // 🌟 KHẮC PHỤC LỖI BIẾN 'data': Xác định nguồn tiền chuẩn xác
+  // Ưu tiên lấy từ surchargeAmount (trang cha tính toán), nếu ko có thì tự lấy từ vehicleReturn?.extraFee
   const finalPrice =
-    paymentType === "surcharge" ? surchargeAmount : booking?.totalPrice || 0;
+    paymentType === "surcharge"
+      ? (surchargeAmount ?? vehicleReturn?.extraFee ?? 0)
+      : booking?.totalPrice || 0;
+
   const isLoading = isCreating || isGettingUrl;
+
+  // Kiểm tra xem đã có đủ dữ liệu gốc để tiến hành thanh toán chưa
+  const hasRequiredData = booking !== null;
 
   const handlePayment = () => {
     if (!booking) return;
@@ -60,7 +70,7 @@ export default function PaymentSummaryCard({
     }
 
     const payload: PaymentCreationPayload = {
-      bookingId: booking.id,
+      bookingId: booking.id, // 🌟 Sửa từ data.id thành booking.id
       amount: finalPrice,
       idempotencyKey: crypto.randomUUID(),
       paymentMethod: selectedMethod,
@@ -77,9 +87,13 @@ export default function PaymentSummaryCard({
               ? "Surcharge confirmed! Please pay at the counter."
               : "Booking order created! Please pay at the counter.",
           );
-          navigate(`/booking-result/${booking.id}`);
+          navigate(`/booking-result/${booking.id}`); // 🌟 Sửa từ data.id thành booking.id
         } else if (selectedMethod === "vnpay") {
-          const returnUrl = `${window.location.origin}/booking-result/${booking.id}?payment=success`;
+          const bookingId =
+            paymentType === "surcharge"
+              ? vehicleReturn?.payment?.bookingId
+              : booking.id;
+          const returnUrl = `${window.location.origin}/booking-result/${bookingId}?payment=success`; // 🌟 Sửa từ data.id thành booking.id
           getVNPayUrl({ paymentId, returnUrl });
         }
       },
@@ -89,7 +103,6 @@ export default function PaymentSummaryCard({
     });
   };
 
-  // 🌟 SỬA ĐỔI: Hàm trả về text chuẩn theo từng loại Context thanh toán
   const getButtonText = () => {
     if (isCreating) return "Processing...";
     if (isGettingUrl) return "Redirecting to VNPay...";
@@ -102,6 +115,10 @@ export default function PaymentSummaryCard({
     return selectedMethod === "cash" ? "Confirm Booking" : "Pay Now";
   };
 
+  console.log("booking in PaymentSummaryCard:", booking);
+  console.log("vehicleReturn in PaymentSummaryCard:", vehicleReturn);
+  console.log("finalPrice in PaymentSummaryCard:", finalPrice);
+
   return (
     <>
       <Card className="sticky top-6 rounded-[2rem] border-border p-6 shadow-sm">
@@ -113,7 +130,11 @@ export default function PaymentSummaryCard({
             <p className="text-sm font-medium uppercase tracking-wider text-primary">
               Payment Summary
             </p>
-            <h2 className="text-2xl font-bold">Payment Details</h2>
+            <h2 className="text-2xl font-bold">
+              {paymentType === "surcharge"
+                ? "Surcharge Details"
+                : "Payment Details"}
+            </h2>
           </div>
         </div>
 
@@ -137,9 +158,8 @@ export default function PaymentSummaryCard({
           </div>
         </div>
 
-        {/* 🌟 ĐƯA HÀM getButtonText() VÀO ĐÂY ĐỂ HIỂN THỊ CHUẨN */}
         <Button
-          disabled={!booking || isLoading}
+          disabled={!hasRequiredData || isLoading} // 🌟 Sửa logic disabled dựa trên booking trạng thái
           onClick={handlePayment}
           className="mt-8 h-14 w-full rounded-2xl text-base font-bold"
         >

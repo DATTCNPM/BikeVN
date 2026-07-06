@@ -17,6 +17,10 @@ type Props = {
 };
 
 export default function PaymentInfoPopover({ payment }: Props) {
+  console.log(
+    "🚀 ~ file: PaymentInfoPopover.tsx:22 ~ PaymentInfoPopover ~ payment:",
+    payment,
+  );
   return (
     <InfoPopover
       title="Payment Information"

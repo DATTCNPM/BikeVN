@@ -9,7 +9,10 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useProfile } from "@/features/profile/useProfile";
 import { useVehicle } from "@repo/hooks";
-import { useBooking } from "@/features/bookings/queries";
+import {
+  useBooking,
+  useVehicleReturnByBookingId,
+} from "@/features/bookings/queries";
 
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -25,6 +28,9 @@ export default function PaymentPage() {
 
   const { data: userProfile, isLoading: profileLoading } = useProfile();
   const { data: booking = null, isLoading } = useBooking(id!);
+  const { data: vehicleReturn = null, isLoading: vehicleReturnLoading } =
+    useVehicleReturnByBookingId(id!);
+
   const { data: vehicle = null, isLoading: vehicleLoading } = useVehicle(
     booking?.vehicleId || "",
   );
@@ -34,7 +40,13 @@ export default function PaymentPage() {
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("vnpay");
 
-  if (isLoading || vehicleLoading || profileLoading) {
+  const isPageLoading =
+    profileLoading ||
+    isLoading ||
+    vehicleLoading ||
+    (paymentType === "surcharge" && vehicleReturnLoading);
+
+  if (isPageLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
@@ -76,6 +88,7 @@ export default function PaymentPage() {
               selectedMethod={selectedMethod}
               userProfile={userProfile}
               paymentType={paymentType} // <--- Thêm ở đây
+              vehicleReturn={vehicleReturn || null} // <--- Thêm ở đây nếu cần
             />
           </div>
         </div>

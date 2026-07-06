@@ -190,11 +190,16 @@ export default function PaymentManagementPage() {
           const payment = row.original;
 
           // Nếu đã hoàn tiền hoặc giao dịch thất bại thì không cần làm gì nữa
-          if (payment.status === "refunded" || payment.status === "failed")
+          if (
+            payment.status === "completed" ||
+            payment.status === "failed" ||
+            payment.status === "refunded"
+          ) {
             return null;
+          }
 
           // Nếu đã thanh toán thành công, Admin chỉ có quyền kích hoạt Hoàn tiền (Refund)
-          if (payment.status === "completed") {
+          if (payment.status === "processing_refund") {
             return (
               <PaymentActionDropdown
                 onRefund={() => {

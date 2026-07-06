@@ -174,8 +174,17 @@ function handleUnauthorized(
   loginPath: string,
 ) {
   if (typeof window === "undefined") return;
+  console.log(
+    "🚀 ~ file: createAxiosAuth.ts:174 ~ handleUnauthorized ~ Logging out user",
+  );
+  console.log(
+    "🚀 ~ file: createAxiosAuth.ts:175 ~ handleUnauthorized ~ Clearing tokens and redirecting to login",
+  );
   localStorage.removeItem(tokenKey);
   localStorage.removeItem(refreshTokenKey);
+  console.log(
+    "🚀 ~ file: createAxiosAuth.ts:176 ~ handleUnauthorized ~ Redirecting to login",
+  );
   if (!window.location.pathname.startsWith(loginPath)) {
     window.location.href = loginPath;
   }

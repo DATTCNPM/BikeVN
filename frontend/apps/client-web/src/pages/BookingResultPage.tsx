@@ -72,7 +72,10 @@ export default function BookingResultPage() {
           )}
 
           <BookingActions />
-          <ReturnSurchargeCard vehicleReturn={vehicleReturn} />
+          {/* Chỉ hiển thị khi có dữ liệu trả xe */}
+          {vehicleReturn && (
+            <ReturnSurchargeCard vehicleReturn={vehicleReturn} />
+          )}
         </div>
       </div>
     </main>

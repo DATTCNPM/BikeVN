@@ -9,6 +9,7 @@ import type { DateRange } from "react-day-picker";
 
 import { Button } from "@repo/ui/components/ui/button";
 import { Calendar } from "@repo/ui/components/ui/calendar";
+
 import {
   Card,
   CardContent,
@@ -44,6 +45,7 @@ import { useProfile } from "@/features/profile/useProfile";
 import { bookingFormSchema } from "@repo/schemas";
 import type { Branch, Vehicle, BookingFormValues } from "@repo/types";
 import { calculateTotalDays, calculateTotalPrice } from "@repo/utils";
+import { toast } from "@repo/ui/components/ui/sonner";
 
 type Props = {
   vehicle: Vehicle;
@@ -131,6 +133,16 @@ export default function BookingCard({ vehicle, branches }: Props) {
     createBooking(payload, {
       onSuccess: (booking) => {
         navigate(`/payment/${booking.id}`);
+      },
+      onError: (error: any) => {
+        // Type as any or your custom API error type
+        if (error?.response?.status === 403) {
+          toast.error(
+            "You have an unpaid booking. Please complete the payment for your previous booking before making a new one.",
+          );
+        } else {
+          toast.error("Failed to create booking. Please try again.");
+        }
       },
     });
   };
