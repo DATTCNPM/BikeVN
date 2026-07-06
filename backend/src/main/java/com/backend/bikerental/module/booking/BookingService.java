@@ -1,20 +1,20 @@
 package com.backend.bikerental.module.booking;
 
 import com.backend.bikerental.core.component.PricingCalculator;
-import com.backend.bikerental.module.booking.dto.BookingCreationRequest;
-import com.backend.bikerental.module.booking.dto.BookingResponse;
 import com.backend.bikerental.core.dto.PageResponse;
-import com.backend.bikerental.module.payment.PaymentRepository;
-import com.backend.bikerental.module.user.User;
-import com.backend.bikerental.module.vehicle.Vehicle;
-import com.backend.bikerental.module.booking.enums.BookingStatus;
-import com.backend.bikerental.module.payment.enums.PaymentStatus;
-import com.backend.bikerental.module.vehicle.enums.StatusVehicleEnum;
 import com.backend.bikerental.core.exception.AppException;
 import com.backend.bikerental.core.exception.ErrorCode;
+import com.backend.bikerental.module.booking.dto.BookingCreationRequest;
+import com.backend.bikerental.module.booking.dto.BookingResponse;
+import com.backend.bikerental.module.booking.enums.BookingStatus;
 import com.backend.bikerental.module.branch.BranchRepository;
+import com.backend.bikerental.module.payment.PaymentRepository;
+import com.backend.bikerental.module.payment.enums.PaymentStatus;
+import com.backend.bikerental.module.user.User;
 import com.backend.bikerental.module.user.UserRepository;
+import com.backend.bikerental.module.vehicle.Vehicle;
 import com.backend.bikerental.module.vehicle.VehicleRepository;
+import com.backend.bikerental.module.vehicle.enums.StatusVehicleEnum;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +47,10 @@ public class BookingService {
     BookingLockService bookingLockService;
     PaymentRepository paymentRepository;
     PricingCalculator pricingCalculator;
+    VehicleReturnRepository vehicleReturnRepository;
+    VehicleReturnMapper vehicleReturnMapper;
     private static final int EXPIRE_MINUTES = 20;
-    private final BookingLockRepository bookingLockRepository;
+    BookingLockRepository bookingLockRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @PreAuthorize("isAuthenticated()")
@@ -101,8 +105,8 @@ public class BookingService {
         Booking booking = bookingMapper.toBooking(request);
         enrichBooking(booking, vehicle);
 
-        return bookingMapper.toBookingResponse(bookingRepository.save(booking)
-        );
+        Booking savedBooking = bookingRepository.save(booking);
+        return mapToBookingResponseWithDetails(savedBooking);
     }
 
     @Transactional(readOnly = true)
@@ -123,7 +127,7 @@ public class BookingService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        return bookingMapper.toBookingResponse(booking);
+        return mapToBookingResponseWithDetails(booking);
     }
 
     @Transactional(readOnly = true)
@@ -133,9 +137,7 @@ public class BookingService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Booking> pageData = bookingRepository.findAll(pageable);
 
-        var bookingResponses = pageData.getContent().stream()
-                .map(bookingMapper::toBookingResponse)
-                .toList();
+        var bookingResponses = mapToBookingResponsesWithDetails(pageData.getContent());
 
         return PageResponse.<BookingResponse>builder()
                 .currentPage(page)
@@ -164,9 +166,7 @@ public class BookingService {
         Page<Booking> pageData = bookingRepository
                 .findByPickupBranchIdOrReturnBranchId(branchId, branchId, pageable);
 
-        var bookingResponses = pageData.getContent().stream()
-                .map(bookingMapper::toBookingResponse)
-                .toList();
+        var bookingResponses = mapToBookingResponsesWithDetails(pageData.getContent());
 
         return PageResponse.<BookingResponse>builder()
                 .currentPage(page)
@@ -190,10 +190,7 @@ public class BookingService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        return bookingRepository.findByUserId(userId)
-                .stream()
-                .map(bookingMapper::toBookingResponse)
-                .toList();
+        return mapToBookingResponsesWithDetails(bookingRepository.findByUserId(userId));
     }
 
     @Transactional
@@ -217,6 +214,7 @@ public class BookingService {
             throw new AppException(ErrorCode.BOOKING_ALREADY_COMPLETED);
         }
         booking.setStatus(BookingStatus.cancelled);
+        booking.setExpiresAt(null);
         booking.setUpdatedAt(LocalDateTime.now());
 
         bookingRepository.save(booking);
@@ -232,6 +230,7 @@ public class BookingService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         booking.setStatus(BookingStatus.approved);
+        booking.setExpiresAt(null);
         booking.setUpdatedAt(LocalDateTime.now());
 
         bookingRepository.save(booking);
@@ -251,6 +250,7 @@ public class BookingService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         booking.setStatus(BookingStatus.rejected);
+        booking.setExpiresAt(null);
         booking.setUpdatedAt(LocalDateTime.now());
 
         bookingRepository.save(booking);
@@ -267,6 +267,7 @@ public class BookingService {
         for (Booking b : bookings) {
             if (b.getExpiresAt() != null && b.getExpiresAt().isBefore(now)) {
                 b.setStatus(BookingStatus.cancelled);
+                b.setExpiresAt(null);
                 b.setUpdatedAt(now);
 
                 bookingLockService.releaseLockByVehicleAndUser(b.getVehicleId(), b.getUserId());
@@ -335,9 +336,7 @@ public class BookingService {
 
         Page<Booking> pageData = bookingRepository.findAll(spec, pageable);
 
-        var bookingResponses = pageData.getContent().stream()
-                .map(bookingMapper::toBookingResponse)
-                .toList();
+        var bookingResponses = mapToBookingResponsesWithDetails(pageData.getContent());
 
         return PageResponse.<BookingResponse>builder()
                 .currentPage(page)
@@ -346,6 +345,56 @@ public class BookingService {
                 .totalElements(pageData.getTotalElements())
                 .data(bookingResponses)
                 .build();
+    }
+
+    private List<BookingResponse> mapToBookingResponsesWithDetails(List<Booking> bookings) {
+        if (bookings == null || bookings.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> bookingIds = bookings.stream().map(Booking::getId).toList();
+
+        // Batch load payments
+        List<com.backend.bikerental.module.payment.Payment> allPayments = paymentRepository.findByBookingIdIn(bookingIds);
+        Map<String, List<com.backend.bikerental.module.payment.Payment>> paymentsByBookingId = allPayments == null ? Map.of() :
+                allPayments.stream().collect(Collectors.groupingBy(com.backend.bikerental.module.payment.Payment::getBookingId));
+
+        // Batch load returns
+        List<VehicleReturn> allReturns = vehicleReturnRepository.findByBookingIdIn(bookingIds);
+        Map<String, VehicleReturn> returnsByBookingId = allReturns == null ? Map.of() :
+                allReturns.stream().collect(Collectors.toMap(VehicleReturn::getBookingId, vr -> vr));
+
+        return bookings.stream().map(booking -> {
+            BookingResponse response = bookingMapper.toBookingResponse(booking);
+
+            List<com.backend.bikerental.module.payment.Payment> payments = paymentsByBookingId.get(booking.getId());
+            if (payments != null && !payments.isEmpty()) {
+                response.setPayments(payments.stream()
+                        .map(p -> com.backend.bikerental.module.payment.dto.PaymentResponse.builder()
+                                .id(p.getId())
+                                .bookingId(p.getBookingId())
+                                .branchId(p.getBranchId())
+                                .amount(p.getAmount())
+                                .type(p.getType().name())
+                                .paymentMethod(p.getPaymentMethod())
+                                .status(p.getStatus())
+                                .createdAt(p.getCreatedAt())
+                                .build())
+                        .toList());
+            }
+
+            VehicleReturn vr = returnsByBookingId.get(booking.getId());
+            if (vr != null) {
+                response.setVehicleReturn(vehicleReturnMapper.toVehicleReturnResponse(vr));
+            }
+
+            return response;
+        }).toList();
+    }
+
+    private BookingResponse mapToBookingResponseWithDetails(Booking booking) {
+        if (booking == null) return null;
+        return mapToBookingResponsesWithDetails(List.of(booking)).stream().findFirst().orElse(null);
     }
 
 }

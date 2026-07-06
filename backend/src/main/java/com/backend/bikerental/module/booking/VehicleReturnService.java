@@ -3,8 +3,10 @@ package com.backend.bikerental.module.booking;
 import com.backend.bikerental.core.component.PricingCalculator;
 import com.backend.bikerental.module.booking.dto.VehicleReturnRequest;
 import com.backend.bikerental.core.dto.PageResponse;
+import com.backend.bikerental.module.payment.Payment;
 import com.backend.bikerental.module.payment.dto.PaymentResponse;
 import com.backend.bikerental.module.booking.dto.VehicleReturnResponse;
+import com.backend.bikerental.module.payment.enums.PaymentType;
 import com.backend.bikerental.module.user.User;
 import com.backend.bikerental.module.vehicle.enums.StatusVehicleEnum;
 import com.backend.bikerental.module.vehicle.enums.VehicleConditionStatus;
@@ -17,6 +19,8 @@ import com.backend.bikerental.module.vehicle.Vehicle;
 import com.backend.bikerental.module.vehicle.VehicleRepository;
 import com.backend.bikerental.core.component.FileStorageService;
 import com.backend.bikerental.module.payment.PaymentService;
+import com.backend.bikerental.module.payment.PaymentRepository;
+import com.backend.bikerental.module.payment.PaymentMapper;
 import com.backend.bikerental.module.branch.BranchSecurityUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +50,8 @@ public class VehicleReturnService {
     VehicleReturnMapper vehicleReturnMapper;
     FileStorageService fileStorageService;
     PaymentService paymentService;
+    PaymentRepository paymentRepository;
+    PaymentMapper paymentMapper;
     BranchSecurityUtil branchSecurityUtil;
     PricingCalculator pricingCalculator;
     BookingRepository bookingRepository;
@@ -131,9 +139,7 @@ public class VehicleReturnService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<VehicleReturn> pageData = vehicleReturnRepository.findAll(pageable);
 
-        var returnResponses = pageData.getContent().stream()
-                .map(vehicleReturnMapper::toVehicleReturnResponse)
-                .toList();
+        var returnResponses = mapToVehicleReturnResponsesWithPayments(pageData.getContent());
 
         return PageResponse.<VehicleReturnResponse>builder()
                 .currentPage(page)
@@ -160,9 +166,7 @@ public class VehicleReturnService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<VehicleReturn> pageData = vehicleReturnRepository.findByReturnBranchId(tokenBranchId, pageable);
 
-        var returnResponses = pageData.getContent().stream()
-                .map(vehicleReturnMapper::toVehicleReturnResponse)
-                .toList();
+        var returnResponses = mapToVehicleReturnResponsesWithPayments(pageData.getContent());
 
         return PageResponse.<VehicleReturnResponse>builder()
                 .currentPage(page)
@@ -196,7 +200,7 @@ public class VehicleReturnService {
                 throw new AppException(ErrorCode.UNAUTHORIZED);
             }
         }
-        return vehicleReturnMapper.toVehicleReturnResponse(vehicleReturn);
+        return mapToVehicleReturnResponseWithPayment(vehicleReturn);
     }
 
     //FILTER
@@ -224,9 +228,7 @@ public class VehicleReturnService {
 
         Page<VehicleReturn> pageData = vehicleReturnRepository.findAll(spec, pageable);
 
-        var returnResponses = pageData.getContent().stream()
-                .map(vehicleReturnMapper::toVehicleReturnResponse)
-                .toList();
+        var returnResponses = mapToVehicleReturnResponsesWithPayments(pageData.getContent());
 
         return PageResponse.<VehicleReturnResponse>builder()
                 .currentPage(page)
@@ -235,5 +237,35 @@ public class VehicleReturnService {
                 .totalElements(pageData.getTotalElements())
                 .data(returnResponses)
                 .build();
+    }
+
+    private List<VehicleReturnResponse> mapToVehicleReturnResponsesWithPayments(List<VehicleReturn> returns) {
+        if (returns == null || returns.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> bookingIds = returns.stream().map(VehicleReturn::getBookingId).toList();
+
+        // Batch load payments
+        List<Payment> allPayments = paymentRepository.findByBookingIdIn(bookingIds);
+        Map<String, List<Payment>> paymentsByBookingId = allPayments == null ? Map.of() :
+                allPayments.stream().collect(Collectors.groupingBy(Payment::getBookingId));
+
+        return returns.stream().map(vr -> {
+            VehicleReturnResponse response = vehicleReturnMapper.toVehicleReturnResponse(vr);
+            List<com.backend.bikerental.module.payment.Payment> payments = paymentsByBookingId.get(vr.getBookingId());
+            if (payments != null) {
+                payments.stream()
+                        .filter(p -> PaymentType.extra_fee.equals(p.getType()))
+                        .findFirst()
+                        .ifPresent(p -> response.setPayment(paymentMapper.toPaymentResponse(p)));
+            }
+            return response;
+        }).toList();
+    }
+
+    private VehicleReturnResponse mapToVehicleReturnResponseWithPayment(VehicleReturn vr) {
+        if (vr == null) return null;
+        return mapToVehicleReturnResponsesWithPayments(List.of(vr)).stream().findFirst().orElse(null);
     }
 }
