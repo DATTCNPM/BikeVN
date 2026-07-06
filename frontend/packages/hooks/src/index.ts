@@ -1,3 +1,10 @@
+import { setServerDownCallback } from "@repo/api";
+import { useAuthStore } from "./store/authStore";
+
+setServerDownCallback(() => {
+  useAuthStore.getState().setIsServerDown(true);
+});
+
 export * from "./queries/queriesVehicle";
 export * from "./queries/queriesBranches";
 export * from "./queries/queriesVehicleBrand";
@@ -20,6 +27,5 @@ export * from "./queryKeys/reviewKeys";
 
 export * from "./store/authStore";
 
-export * from "./use-mobile";
 export * from "./useGeolocation";
 export * from "./useDebounce";
