@@ -17,20 +17,12 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, String>, JpaSpecificationExecutor<Payment> {
     List<Payment> findByBookingId(String bookingId);
-    List<Payment> findByBookingIdAndStatus(String bookingId, PaymentStatus status);
-    List<Payment> findByBookingIdAndTypeAndStatus(
-            String bookingId,
-            PaymentType type,
-            PaymentStatus status
-    );
+    List<Payment> findByBookingIdIn(List<String> bookingIds);
     List<Payment> findByStatus(PaymentStatus status);
     Optional<Payment> findByIdempotencyKey(String idempotencyKey);
-    Optional<Payment> findByBranchId(String branchId);
     Optional<Payment> findFirstByBookingIdAndStatus(String bookingId, PaymentStatus status);
-    Page<Payment> findByBookingIdIn(List<String> bookingIds, Pageable pageable);
     @Query("SELECT p FROM Payment p WHERE p.status = 'PENDING' ORDER BY p.createdAt DESC")
     List<Payment> findPendingPayments();
-    long countByBookingIdAndStatus(String bookingId, PaymentStatus status);
     Page<Payment> findByBranchId(String branchId, Pageable pageable);
     @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.status = :status")
     BigDecimal calculateTotalRevenue(@Param("status") PaymentStatus status);
