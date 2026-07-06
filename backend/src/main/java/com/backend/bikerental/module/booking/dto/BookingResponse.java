@@ -1,12 +1,12 @@
 package com.backend.bikerental.module.booking.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.backend.bikerental.module.payment.dto.PaymentResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
@@ -27,4 +27,7 @@ public class BookingResponse {
     String status;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+    List<PaymentResponse> payments;
+    VehicleReturnResponse vehicleReturn;
 }
+

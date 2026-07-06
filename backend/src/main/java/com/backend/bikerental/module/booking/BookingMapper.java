@@ -11,6 +11,8 @@ import java.util.List;
 public interface BookingMapper {
     Booking toBooking(BookingCreationRequest request);
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "payments", ignore = true)
+    @Mapping(target = "vehicleReturn", ignore = true)
     BookingResponse toBookingResponse(Booking booking);
     List<BookingResponse> toListBookingResponse(List<Booking> bookings);
 }
