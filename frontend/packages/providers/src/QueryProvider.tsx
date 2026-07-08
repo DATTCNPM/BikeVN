@@ -1,5 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { QueryCache, MutationCache } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryCache,
+  MutationCache,
+} from "@tanstack/react-query";
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { ReactNode } from "react";
 
@@ -10,37 +14,56 @@ function getErrorMessage(error: unknown): string {
   if (error instanceof ApiError) {
     return ERROR_MESSAGES[error.code] ?? error.message;
   }
-
   if (error instanceof Error) {
     return error.message;
   }
-
-  return "Đã xảy ra lỗi";
+  return "Unknown error";
 }
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 1, // 1 minute
-      gcTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 1,
+      gcTime: 1000 * 60 * 5,
       refetchOnWindowFocus: false,
       retry: (failureCount, error: any) => {
-        if (error?.response?.status >= 400 && error?.response?.status < 500) {
+        // Không retry với các lỗi client side
+        if (error?.code >= 1000 && error?.code < 2000) return false;
+        if (error?.response?.status >= 400 && error?.response?.status < 500)
           return false;
-        }
         return failureCount < 1;
       },
     },
   },
   queryCache: new QueryCache({
-    onError: (error: any) => {
-      if (error?.response?.status === 401) return;
+    onError: (error: any, query) => {
+      // 🌟 TỐI ƯU 1: Cho phép tắt toast thông qua meta dữ liệu của Query
+      if (query.meta?.showToast === false) return;
+
+      // Không hiện toast lỗi query nếu chưa đăng nhập hoặc token hết hạn ngầm
+      if (error?.code === 5555 || error?.response?.status === 401) return;
+
       const message = getErrorMessage(error);
-      toast.error(`Query Error: ${message}`);
+      toast.error(message);
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error: any, _variables, _context, mutation) => {
+      // 🌟 TỐI ƯU 2: Cho phép tắt toast toàn cục cho các action cụ thể (ví dụ: submit form)
+      if (mutation.meta?.showToast === false) return;
+
+      // Xử lý mã lỗi tập trung ví dụ Session Expired -> Redirect về login thay vì hiện toast
+      if (error instanceof ApiError && error.code === 5555) {
+        // window.location.href = "/login";
+        return;
+      }
+
+      // 🌟 TỐI ƯU 3: Lọc bớt các lỗi nghiệp vụ thuộc về Form Validation không nên hiện toast
+      const silentErrorCodes = [1002, 1003, 1004]; // Trùng email, sai pass, không tồn tại acc
+      if (error instanceof ApiError && silentErrorCodes.includes(error.code)) {
+        return; // Để component tự bắt qua khối catch hoặc onError cục bộ nhằm hiện chữ đỏ dưới input
+      }
+
       toast.error(getErrorMessage(error));
     },
   }),

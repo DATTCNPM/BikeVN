@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
@@ -13,12 +13,21 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateBranch } from "@/features/branches/mutations";
 import { createBranchSchema } from "@repo/schemas";
-import type { CreateBranchPayload } from "@repo/types";
+import type { CreateBranchPayload, BranchStatus } from "@repo/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/components/ui/select";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
+
+const StatusOptions: BranchStatus[] = ["active", "inactive"];
 
 const defaultValues: CreateBranchPayload = {
   name: "",
@@ -36,6 +45,7 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
   const { mutateAsync, isPending } = useCreateBranch();
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -101,7 +111,24 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
 
           <Field>
             <FieldLabel>Status</FieldLabel>
-            <Input {...register("status")} placeholder="active" />
+            <Controller
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {StatusOptions.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.status && <FieldError>{errors.status.message}</FieldError>}
           </Field>
         </FieldGroup>

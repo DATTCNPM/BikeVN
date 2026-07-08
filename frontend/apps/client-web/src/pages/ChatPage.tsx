@@ -48,7 +48,7 @@ export default function ChatPage() {
 
   return (
     // Sử dụng h-[calc(100vh-theme(spacing.16)-padding)] để không bị lố chiều cao layout tổng
-    <div className="flex h-[calc(100vh-4rem)] gap-6 overflow-hidden items-start antialiased">
+    <div className="flex h-[calc(100vh-14rem)] gap-6 overflow-hidden items-start antialiased">
       <ChatSidebar
         loading={conversationsLoading}
         conversations={conversations}

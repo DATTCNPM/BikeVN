@@ -92,6 +92,22 @@ export function createAxiosAuth({
     async (error) => {
       const config = error.config as any;
 
+      // 🌟 BƯỚC SỬA ĐỔI: Bóc tách data từ response lỗi (nếu có)
+      const errorData = error.response?.data as ApiResponse<any> | undefined;
+
+      // Nếu backend trả về status 400/404... nhưng có chứa cấu trúc code logic của hệ thống
+      if (
+        errorData &&
+        typeof errorData.code === "number" &&
+        errorData.code !== 1000
+      ) {
+        // Ép nó thành ApiError giống hệt như lúc xử lý ở block success
+        return Promise.reject(
+          new ApiError(errorData.code, errorData.message || "Logic error"),
+        );
+      }
+
+      // Xử lý server sập/sleep
       const isServerSleep =
         !error.response || [502, 503, 504].includes(error.response?.status);
       if (typeof window !== "undefined" && isServerSleep) {
@@ -99,7 +115,6 @@ export function createAxiosAuth({
         return Promise.reject(error);
       }
 
-      // Nếu API /auth/refresh bị lỗi HTTP (Ví dụ 401, 403, 400), ném lỗi thẳng ra để đá về login
       if (config.url?.includes("/auth/refresh")) {
         return Promise.reject(error);
       }
@@ -150,6 +165,10 @@ export function createAxiosAuth({
       processQueue(null, newAccessToken);
       return instance(originalRequest);
     } catch (refreshError: any) {
+      console.log(refreshError);
+      console.log(refreshError.response?.status);
+      console.log(refreshError.response?.data);
+
       processQueue(refreshError, null);
 
       // Nếu refresh token dính lỗi mạng khi gọi, báo sập server, ngược lại đá về login

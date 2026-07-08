@@ -16,7 +16,6 @@ import { formatDateTime } from "@repo/utils";
 import type { Booking } from "@repo/types";
 import imageMock from "@/assets/images/motorbike1.png";
 
-// Import các component trạng thái vừa tạo
 import {
   BookingSkeleton,
   BookingEmptyState,
@@ -64,18 +63,14 @@ export default function MyBookingPage() {
     user?.id || "",
   );
 
-  // 1. Xử lý trạng thái Loading mượt mà bằng Skeleton giả lập
-  if (bookingsLoading) {
-    return <BookingSkeleton />;
-  }
-
-  // 2. Xử lý trạng thái Không có dữ liệu với Giao diện rỗng cao cấp
+  if (bookingsLoading) return <BookingSkeleton />;
   if (bookings.length === 0) {
     return <BookingEmptyState onExplore={() => navigate("/home")} />;
   }
 
   return (
-    <div className="space-y-4 select-none">
+    // 🌟 THAY ĐỔI CHÍNH: Chuyển flex-col thành dạng lưới ô cờ linh hoạt theo độ rộng màn hình
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 select-none w-full max-w-7xl mx-auto p-1">
       {(bookings as BookingWithVehicle[]).map((booking) => {
         const status = statusConfig[booking.status] || statusConfig.pending;
         const StatusIcon = status.icon;
@@ -84,69 +79,68 @@ export default function MyBookingPage() {
           <Card
             key={booking.id}
             onClick={() => navigate(`/booking-result/${booking.id}`)}
-            className="group cursor-pointer overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-card hover:shadow-lg hover:shadow-primary/5 flex flex-col sm:flex-row"
+            className="group cursor-pointer overflow-hidden rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:bg-card hover:shadow-md flex flex-col h-full justify-between"
           >
-            {/* KHU VỰC ẢNH XE */}
-            <div className="relative h-44 sm:h-auto sm:w-[220px] shrink-0 overflow-hidden bg-muted/30">
+            {/* 📸 KHU VỰC ẢNH XE (Đặt phía trên, cố định chiều cao) */}
+            <div className="relative h-40 w-full shrink-0 overflow-hidden bg-muted/20 border-b border-border/40">
               <img
                 src={booking.vehicleImage || imageMock}
                 alt={booking.vehicleName || "Vehicle"}
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-103"
               />
-              {/* Badge tên xe lơ lửng trên ảnh cực nghệ */}
-              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md ring-1 ring-white/10 shadow-sm">
-                <Bike className="size-3.5 text-amber-400" />
+              {/* Badge Tên Xe lơ lửng góc trái ảnh */}
+              <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                <Bike className="size-3 text-amber-400" />
                 {booking.vehicleName || "Vehicle"}
               </div>
             </div>
 
-            {/* KHU VỰC THÔNG TIN */}
-            <div className="flex flex-1 flex-col justify-between p-5 sm:p-6">
-              {/* Top: ID & Thời gian & Badge Trạng thái */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="space-y-1.5">
-                  <span className="inline-block text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted px-2 py-0.5 rounded-md">
-                    ID: #{booking.id.slice(-8)}{" "}
-                    {/* Rút gọn nếu ID quá dài để tránh vỡ khuôn */}
-                  </span>
-
-                  <div className="flex items-center gap-2 text-sm font-medium text-foreground/80">
-                    <CalendarDays className="size-4 text-primary shrink-0" />
-                    <span className="tracking-tight">
-                      {formatDateTime(booking.startTime)} →{" "}
-                      {formatDateTime(booking.endTime)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Badge trạng thái bo gọn */}
+            {/* 📝 KHU VỰC THÔNG TIN (Gọn gàng bên dưới) */}
+            <div className="flex flex-1 flex-col justify-between p-3.5">
+              {/* Vùng 1: ID & Badge Trạng thái */}
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted/80 px-1.5 py-0.5 rounded">
+                  #{booking.id.slice(-8)}
+                </span>
                 <Badge
-                  className={`flex h-7 items-center gap-1 rounded-full border px-2.5 text-[11px] font-semibold shadow-none self-start sm:self-auto ${status.className}`}
+                  className={`flex h-5 items-center gap-0.5 rounded-full border px-2 text-[10px] font-medium shadow-none ${status.className}`}
                 >
-                  <StatusIcon className="size-3.5 stroke-[2.2]" />
+                  <StatusIcon className="size-3 stroke-[2.5]" />
                   {status.label}
                 </Badge>
               </div>
 
-              {/* Bottom: Giá tiền & Nút hành động */}
-              <div className="mt-5 flex items-end justify-between pt-3 border-t border-dashed border-border/80">
+              {/* Vùng 2: Thời gian thuê (Thu gọn cỡ chữ thành text-[11px] để không bị vỡ dòng) */}
+              <div className="my-3 space-y-0.5 text-[11px] font-medium text-foreground/80 bg-muted/30 rounded-lg p-2 border border-border/20">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <CalendarDays className="size-3 text-primary/70" />
+                  <span>Rental Period:</span>
+                </div>
+                <div className="pl-4.5 font-semibold text-foreground/90 tracking-tight">
+                  {formatDateTime(booking.startTime)} &rarr;{" "}
+                  {formatDateTime(booking.endTime)}
+                </div>
+              </div>
+
+              {/* Vùng 3: Tổng tiền & Nút bấm */}
+              <div className="flex items-center justify-between pt-2 border-t border-dashed border-border/60 mt-auto">
                 <div>
-                  <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                  <span className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider block">
                     Total Price
-                  </p>
-                  <p className="text-xl font-black text-primary tracking-tight mt-0.5">
+                  </span>
+                  <p className="text-sm font-bold text-primary tracking-tight">
                     {booking.totalPrice?.toLocaleString("vi-VN")}
-                    <span className="text-xs font-semibold ml-0.5">đ</span>
+                    <span className="text-[11px] font-semibold ml-0.5">đ</span>
                   </p>
                 </div>
 
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="rounded-full gap-1 text-xs font-semibold h-8 border-border/80 hover:bg-primary hover:text-primary-foreground group-hover:border-primary/20 transition-all"
+                  className="rounded-full gap-0.5 text-[11px] font-medium h-7 px-2 text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all"
                 >
                   Details
-                  <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRight className="size-3 transition-transform group-hover:translate-x-0.5" />
                 </Button>
               </div>
             </div>

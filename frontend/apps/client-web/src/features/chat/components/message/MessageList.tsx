@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { ChatMessageResponse } from "@repo/types";
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import { Spinner } from "@repo/ui/components/ui/spinner";
+import { MessageItemSkeleton } from "@/features/chat/components/skeleton/ChatSkeleton";
 import MessageItem from "./MessageItem";
 
 type Props = {
@@ -37,8 +37,12 @@ export default function MessageList({
     <ScrollArea className="h-full w-full bg-muted/30">
       <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4">
         {loading ? (
-          <div className="flex justify-center p-4">
-            <Spinner />
+          <div className="space-y-4 p-4 h-full overflow-hidden flex flex-col justify-end">
+            {/* Giả lập luồng hội thoại đan xen trái phải */}
+            <MessageItemSkeleton isRight={false} />
+            <MessageItemSkeleton isRight={true} />
+            <MessageItemSkeleton isRight={false} />
+            <MessageItemSkeleton isRight={true} />
           </div>
         ) : (
           // 🌟 Thay 'messages.map' bằng 'orderedMessages.map'
