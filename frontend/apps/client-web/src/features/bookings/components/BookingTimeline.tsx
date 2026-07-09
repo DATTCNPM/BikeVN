@@ -1,7 +1,7 @@
 import { CheckCircle2, Circle, XCircle } from "lucide-react"; // Import thêm XCircle
 
 type Props = {
-  status: string | null;
+  status: string | null | undefined;
 };
 
 const STEPS = ["Booking Created", "Approved", "Completed"]; // Gộp "Booking Created" và "Pending Approval" cho gọn và khớp với logic BE

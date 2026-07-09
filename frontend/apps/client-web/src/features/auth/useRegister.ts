@@ -10,24 +10,19 @@ export const useRegister = () => {
   const setIsLogin = useAuthStore((state) => state.setIsLogin);
 
   return useMutation({
-    // 1. mutationFn: CHỈ gọi API và return data
     mutationFn: (userData: RegisterPayload) => authApi.register(userData),
 
-    // 2. onSuccess: Xử lý toàn bộ side-effects sau khi API thành công
+    // 🌟 BỔ SUNG TẠI ĐÂY: Ẩn Toast lỗi trùng email để component xử lý dưới ô input
+    meta: {
+      silentErrorCodes: [1002],
+    },
+
     onSuccess: async (response) => {
-      // Lưu token vào localStorage/cookie
       authStorageService.setTokens(response.token, response.refreshToken);
-
-      // Cập nhật state Zustand
       setIsLogin(true);
-
-      // Kích hoạt fetch lại profile mới (vì đã có token hợp lệ)
       await queryClient.invalidateQueries({
         queryKey: authKeys.profile(),
       });
-
-      // Bạn có thể thêm logic navigate về Home ở đây nếu muốn,
-      // hoặc xử lý navigate ở phía Component gọi hook này đều được.
     },
   });
 };

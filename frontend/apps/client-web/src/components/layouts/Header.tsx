@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Logo from "@repo/ui/components/wrapper/Logo";
 import {
   Home,
@@ -21,9 +22,12 @@ import { NotificationPopover } from "@/features/notifications/components/notific
 import { useProfile } from "@/features/profile/useProfile";
 import { useLogout } from "@/features/auth/useLogout";
 
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
+
 export default function Header() {
   const { data: userProfile } = useProfile();
   const { mutateAsync: logout } = useLogout();
+  const [openLogout, setOpenLogout] = useState(false);
 
   return (
     <header className="h-16 w-full fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl transition-all duration-300">
@@ -132,7 +136,7 @@ export default function Header() {
                   <DropdownMenuGroup>
                     <DropdownMenuItem
                       variant="destructive"
-                      onClick={() => logout()}
+                      onClick={() => setOpenLogout(true)}
                       className="rounded-lg py-2 focus:bg-destructive/10 focus:text-destructive font-medium cursor-pointer"
                     >
                       Sign Out
@@ -156,6 +160,17 @@ export default function Header() {
           )}
         </div>
       </div>
+      <UniversalDialog
+        type="confirm"
+        variant="destructive"
+        submitLabel="Logout"
+        trigger={null}
+        title="Confirm Logout"
+        description="Are you sure you want to logout?"
+        onSubmit={() => logout()}
+        open={openLogout}
+        onOpenChange={setOpenLogout}
+      />
     </header>
   );
 }

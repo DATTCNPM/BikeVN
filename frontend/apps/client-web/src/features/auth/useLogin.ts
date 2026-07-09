@@ -1,4 +1,3 @@
-// @/features/auth/useLogin.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@repo/api";
 import { authStorageService } from "@repo/services";
@@ -13,10 +12,11 @@ export const useLogin = () => {
     mutationFn: (credentials: { email: string; password: string }) =>
       authApi.login(credentials),
 
-    // 🌟 ĐÃ THÊM TỪ TRƯỚC: Chặn không cho Global Cache (QueryProvider) bắn toast lỗi lên màn hình
-    meta: { showToast: false },
+    // 🌟 KHAI BÁO ĐỘNG TẠI ĐÂY: Ẩn các mã lỗi validation của Form, các lỗi khác (ví dụ: 500, 9999) vẫn bắn Toast bth
+    meta: {
+      silentErrorCodes: [1002, 1003, 1004],
+    },
 
-    // 🌟 CHỈ LÀM SIDE-EFFECTS HỆ THỐNG TẠI ĐÂY
     onSuccess: async (auth) => {
       authStorageService.setTokens(auth.token, auth.refreshToken);
       setIsLogin(true);

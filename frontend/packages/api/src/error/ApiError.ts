@@ -11,10 +11,14 @@ export class ApiError extends Error {
   }
 }
 
-export function isApiError(error: any): error is ApiError {
+export function isApiError(error: unknown): error is ApiError {
   return (
     error instanceof ApiError ||
-    (error && typeof error === "object" && error.name === "ApiError" && typeof error.code === "number")
+    (error !== null &&
+      typeof error === "object" &&
+      "name" in error &&
+      error.name === "ApiError" &&
+      "code" in error &&
+      typeof (error as any).code === "number")
   );
 }
-

@@ -13,7 +13,7 @@ export default function HomePage() {
     <div className="w-full space-y-6">
       <Tabs defaultValue="list" className="w-full">
         {/* Header ẩn của trang chủ: Chứa tiêu đề và nút chuyển List/Map song song */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 ">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Welcome to BikeVN
@@ -41,11 +41,11 @@ export default function HomePage() {
           </TabsList>
         </div>
 
-        <TabsContent value="list" className="mt-6 focus-visible:outline-none">
+        <TabsContent value="list" className="mt-2 focus-visible:outline-none">
           <ListVehicle />
         </TabsContent>
 
-        <TabsContent value="map" className="mt-6 focus-visible:outline-none">
+        <TabsContent value="map" className="focus-visible:outline-none">
           <MapVehicle />
         </TabsContent>
       </Tabs>

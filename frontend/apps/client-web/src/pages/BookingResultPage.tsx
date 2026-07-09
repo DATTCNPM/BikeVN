@@ -1,21 +1,18 @@
-// pages/BookingResultPage.tsx
 import { useParams } from "react-router-dom";
-
 import BookingActions from "@/features/bookings/components/BookingActions";
-import BookingInfoCard from "@/features/bookings/components/BookingInfoCard";
 import BookingStatusHero from "@/features/bookings/components/BookingStatusHero";
 import BookingTimeline from "@/features/bookings/components/BookingTimeline";
 import BookingVehicleCard from "@/features/bookings/components/BookingVehicleCard";
-import ExtraFeeReminder from "@/features/bookings/components/ExtraFeeReminder"; // THÊM MỚI
-
+import ExtraFeeReminder from "@/features/bookings/components/ExtraFeeReminder";
 import CreateReviewSection from "@/features/reviews/components/CreateReviewSection";
+import ReturnSurchargeCard from "@/features/bookings/components/ReturnSurchargeCard";
+
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useVehicle, useBranches } from "@repo/hooks";
 import {
   useBooking,
   useVehicleReturnByBookingId,
-} from "@/features/bookings/queries"; // THÊM HOOK RETURN
-import ReturnSurchargeCard from "@/features/bookings/components/ReturnSurchargeCard";
+} from "@/features/bookings/queries";
 
 export default function BookingResultPage() {
   const { id = "" } = useParams();
@@ -25,8 +22,6 @@ export default function BookingResultPage() {
     booking?.vehicleId || "",
   );
   const { data: branches = [], isLoading: branchesLoading } = useBranches();
-
-  // 🟢 THÊM MỚI: Gọi API kiểm tra biên bản trả xe (và nuốt lỗi 404 nếu chưa có nhờ xử lý trước đó)
   const { data: vehicleReturn, isLoading: returnLoading } =
     useVehicleReturnByBookingId(id);
 
@@ -41,41 +36,37 @@ export default function BookingResultPage() {
   const pickupBranch = branches.find((b) => b.id === booking?.pickupBranchId);
   const returnBranch = branches.find((b) => b.id === booking?.returnBranchId);
 
-  console.log(
-    "🚀 ~ file: BookingResultPage.tsx:38 ~ BookingResultPage ~ vehicleReturn:",
-    vehicleReturn,
-  );
-
   return (
     <main className="min-h-screen bg-background">
-      <div className="container mx-auto max-w-5xl space-y-8 px-4 py-10">
-        {/* 🟢 TỰ ĐỘNG BẬT KHI CÓ KHOẢN PHẠT PENDING */}
-        <ExtraFeeReminder vehicleReturn={vehicleReturn} />
+      <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
+        <ExtraFeeReminder vehicleReturnData={vehicleReturn} />
+        <BookingStatusHero status={booking?.status} />
 
-        <BookingStatusHero status={booking?.status || null} />
-
+        {/* Tích hợp toàn bộ thông tin Xe + Thông tin ID/Giá tiền tại đây */}
         <BookingVehicleCard
-          booking={booking || null}
-          vehicle={vehicle || null}
+          booking={booking}
+          vehicle={vehicle}
           pickupBranch={pickupBranch}
           returnBranch={returnBranch}
         />
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_320px] items-start">
+          {/* CỘT TRÁI: CHỈ CÒN DUY NHẤT TIMELINE RÕ RÀNG */}
           <div className="space-y-6">
-            <BookingInfoCard booking={booking || null} />
-            <BookingTimeline status={booking?.status || null} />
+            <BookingTimeline status={booking?.status} />
+            {booking?.status === "completed" && (
+              <CreateReviewSection bookingId={booking.id} />
+            )}
           </div>
 
-          {booking?.status === "completed" && (
-            <CreateReviewSection bookingId={booking.id} />
-          )}
+          {/* CỘT PHẢI: SIDEBAR HÀNH ĐỘNG CỐ ĐỊNH NHỎ GỌN */}
+          <div className="space-y-6 lg:sticky lg:top-6">
+            <BookingActions />
 
-          <BookingActions />
-          {/* Chỉ hiển thị khi có dữ liệu trả xe */}
-          {vehicleReturn && (
-            <ReturnSurchargeCard vehicleReturn={vehicleReturn} />
-          )}
+            {vehicleReturn && (
+              <ReturnSurchargeCard vehicleReturn={vehicleReturn} />
+            )}
+          </div>
         </div>
       </div>
     </main>

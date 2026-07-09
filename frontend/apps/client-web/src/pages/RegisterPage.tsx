@@ -1,4 +1,3 @@
-// @/pages/Register.tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@repo/schemas";
@@ -22,14 +21,13 @@ import { isApiError } from "@repo/api";
 
 export default function Register() {
   const navigate = useNavigate();
-  // 🌟 Đồng bộ hóa: sử dụng mutate & đặt tên isPending giống bên Login
   const { mutate: registerUser, isPending } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
-    setError, // 🌟 Lấy hàm setError để map lỗi backend vào ô input
+    setError,
     formState: { errors },
   } = useForm<RegisterPayload>({
     resolver: zodResolver(registerSchema),
@@ -43,32 +41,32 @@ export default function Register() {
 
   const onSubmit = (data: RegisterPayload) => {
     registerUser(data, {
-      // 🌟 XỬ LÝ KHI ĐĂNG KÝ THÀNH CÔNG
       onSuccess: () => {
         navigate("/home");
       },
-      // 🌟 XỬ LÝ KHI GẶP LỖI (Map lỗi backend tương tự Login)
-      onError: (error: any) => {
-        console.log("Register error:", error); // Log lỗi để debug
+      onError: (error: unknown) => {
+        // 🌟 SỬA ĐỔI: Thay any bằng unknown
+        console.log("Register error:", error);
 
         if (isApiError(error)) {
           switch (error.code) {
-            case 1001: // Giả định: Email already exists (Tùy thuộc backend code của bạn)
+            case 1002: // 🌟 SỬA ĐỔI: Đồng bộ đúng mã 1002 (Email đã tồn tại)
               setError("email", {
                 type: "server",
-                message: "Email này đã được sử dụng. Vui lòng chọn email khác.",
+                message: "Email already exists. Please use a different email.",
               });
               break;
             default:
               setError("root", {
                 message:
                   error.message ||
-                  "Đã xảy ra lỗi hệ thống khi đăng ký, vui lòng thử lại sau.",
+                  "An error occurred while registering. Please try again later.",
               });
           }
         } else {
+          const err = error as Error;
           setError("root", {
-            message: error.message || "Không thể kết nối đến máy chủ.",
+            message: err.message || "Unable to connect to the server.",
           });
         }
       },
@@ -120,7 +118,7 @@ export default function Register() {
               id="password"
               placeholder="********"
               {...register("passwordHash")}
-              className="pr-10" // Thêm padding phải tương tự Login để tránh text đè icon
+              className="pr-10"
             />
             <Button
               type="button"
@@ -150,7 +148,7 @@ export default function Register() {
               id="confirmPassword"
               placeholder="********"
               {...register("confirmPassword")}
-              className="pr-10" // Thêm padding phải tương tự Login
+              className="pr-10"
             />
             <Button
               type="button"
@@ -176,7 +174,7 @@ export default function Register() {
           {isPending ? "Registering..." : "Register"}
         </Button>
 
-        {/* 🌟 Hiển thị lỗi chung hệ thống (nếu có) tương tự form Login */}
+        {/* Hiển thị lỗi chung hệ thống */}
         {errors.root && (
           <div className="p-3 text-xs font-medium text-destructive bg-destructive/10 rounded-xl border border-destructive/20 text-center">
             {errors.root.message}

@@ -1,6 +1,5 @@
-// features/bookings/components/ReturnSurchargeCard.tsx
 import { Card } from "@repo/ui/components/ui/card";
-import { ReceiptText } from "lucide-react";
+import { ReceiptText, CheckCircle2 } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
 import type { VehicleReturn } from "@repo/types";
 import { useNavigate } from "react-router-dom";
@@ -9,12 +8,12 @@ type Props = {
   vehicleReturn: VehicleReturn | null | undefined;
 };
 
-const formatVND = (value: number) => `${value.toLocaleString("vi-VN")}đ`;
-
 export default function ReturnSurchargeCard({ vehicleReturn }: Props) {
   const navigate = useNavigate();
-  // Nếu không có biên bản trả xe hoặc không phát sinh phí (extraFee = 0), không hiển thị gì cả
-  if (!vehicleReturn || !vehicleReturn.extraFee) return null;
+
+  if (!vehicleReturn?.extraFee) return null;
+
+  const isPaid = vehicleReturn.payment?.status === "completed";
 
   return (
     <Card className="rounded-[2rem] border-amber-500/30 bg-amber-500/5 p-5 shadow-sm space-y-4 animate-fade-in">
@@ -55,26 +54,34 @@ export default function ReturnSurchargeCard({ vehicleReturn }: Props) {
       </div>
 
       {/* Pricing Summary */}
-      <div className="pt-2 border-t border-dashed border-amber-500/20">
-        <div className="flex items-baseline justify-between">
-          <span className="text-sm font-medium text-amber-900">
-            Additional Due:
-          </span>
-          <span className="text-2xl font-black tracking-tight text-amber-600">
-            {formatVND(vehicleReturn.extraFee)}
-          </span>
-        </div>
+      <div className="pt-2 border-t border-dashed border-amber-500/20 flex items-baseline justify-between">
+        <span className="text-sm font-medium text-amber-900">
+          Additional Due:
+        </span>
+        <span className="text-2xl font-black tracking-tight text-amber-600">
+          {vehicleReturn.extraFee.toLocaleString("vi-VN")}đ
+        </span>
       </div>
 
-      {/* Action Button (Nếu có luồng thanh toán phạt online, hoặc hướng dẫn nộp tại quầy) */}
+      {/* Action Button */}
       <Button
-        className="w-full h-11 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-600/10"
-        onClick={() => {
-          // Handle surcharge payment logic here
-          navigate(`/payment/${vehicleReturn.bookingId}?type=surcharge`);
-        }}
+        className={`w-full h-11 rounded-xl text-xs font-bold shadow-md transition-all ${
+          isPaid
+            ? "bg-emerald-600 hover:bg-emerald-600 text-white cursor-default"
+            : "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/10"
+        }`}
+        disabled={isPaid}
+        onClick={() =>
+          navigate(`/payment/${vehicleReturn.bookingId}?type=surcharge`)
+        }
       >
-        Pay Surcharge Now
+        {isPaid ? (
+          <span className="flex items-center gap-1">
+            <CheckCircle2 className="size-4" /> Surcharge Paid
+          </span>
+        ) : (
+          "Pay Surcharge Now"
+        )}
       </Button>
     </Card>
   );

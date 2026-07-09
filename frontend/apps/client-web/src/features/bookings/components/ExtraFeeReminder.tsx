@@ -17,16 +17,20 @@ import {
 } from "@repo/ui/components/ui/alert";
 import { useGetVNPayUrl } from "@/features/payments/mutations"; // Sử dụng mutation lấy URL VNPay cũ
 import { toast } from "@repo/ui/components/ui/sonner";
+import type { VehicleReturn } from "@repo/types"; // Import đúng kiểu VehicleReturn
 
 type Props = {
-  vehicleReturn: any; // Type VehicleReturn chúng ta vừa update Schema ở câu trước
+  vehicleReturnData: VehicleReturn | null | undefined; // Type VehicleReturn chúng ta vừa update Schema ở câu trước
 };
 
-export default function ExtraFeeReminder({ vehicleReturn }: Props) {
+export default function ExtraFeeReminder({ vehicleReturnData }: Props) {
   // Chỉ kích hoạt nếu có thông tin phạt và trạng thái payment đi kèm là 'pending'
   const pendingPayment =
-    vehicleReturn?.payment?.status === "pending" ? vehicleReturn.payment : null;
-  const extraFeeAmount = vehicleReturn?.extraFee || pendingPayment?.amount || 0;
+    vehicleReturnData?.payment?.status === "pending"
+      ? vehicleReturnData.payment
+      : null;
+  const extraFeeAmount =
+    vehicleReturnData?.extraFee || pendingPayment?.amount || 0;
 
   const [showDialog, setShowDialog] = useState(false);
   const [showBanner, setShowBanner] = useState(false);

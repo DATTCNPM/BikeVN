@@ -135,15 +135,32 @@ export default function BookingCard({ vehicle, branches }: Props) {
       onSuccess: (booking) => {
         navigate(`/payment/${booking.id}`);
       },
-      onError: (error: any) => {
-        const status = isApiError(error) ? error.status : error?.response?.status;
+      onError: (error: unknown) => {
+        // 🌟 SỬA ĐỔI: Thay any bằng unknown
+        // 🌟 SỬA ĐỔI: Đọc type-safe cho HTTP Status
+        const status = isApiError(error)
+          ? error.status
+          : (error as any)?.response?.status;
+
         if (status === 403) {
           toast.error(
             "You have an unpaid booking. Please complete the payment for your previous booking before making a new one.",
           );
+          return;
+        }
+
+        // 🌟 SỬA ĐỔI: Bắt gọn các mã lỗi nghiệp vụ im lặng đã cấu hình trong hook (1017, 1018, 1020)
+        if (isApiError(error)) {
+          if ([1017, 1018, 1020].includes(error.code)) {
+            toast.error(`Booking Failed: ${error.message}`);
+            return;
+          }
+          toast.error(error.message);
         } else {
-          const message = isApiError(error) ? error.message : "Failed to create booking. Please try again.";
-          toast.error(message);
+          const err = error as Error;
+          toast.error(
+            err.message || "Failed to create booking. Please try again.",
+          );
         }
       },
     });

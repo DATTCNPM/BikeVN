@@ -49,33 +49,38 @@ export default function Login() {
           navigate("/home");
         }
       },
-      onError: (error: any) => {
-        console.log("Login error:", error); // Log lỗi để debug
+      onError: (error: unknown) => {
+        // 🌟 Sử dụng kiểu dữ liệu unknown (Type-safe)
+        console.log("Login error:", error);
 
         if (isApiError(error)) {
+          // TypeScript hiểu rõ biến error lúc này có thuộc tính .code và .message
           switch (error.code) {
-            case 1003: // Account does not exist
+            case 1003:
               setError("email", {
                 type: "server",
-                message: "Tài khoản email này không tồn tại trên hệ thống.",
+                message: "Email don't exist. Please check and try again.",
               });
               break;
-            case 1004: // Incorrect password
+            case 1004:
               setError("password", {
                 type: "server",
-                message: "Mật khẩu không chính xác. Vui lòng kiểm tra lại.",
+                message: "Password is incorrect. Please check and try again.",
               });
               break;
             default:
               setError("root", {
                 message:
                   error.message ||
-                  "Đã xảy ra lỗi hệ thống, vui lòng thử lại sau.",
+                  "An unexpected error occurred. Please try again later.",
               });
           }
         } else {
+          const err = error as Error;
           setError("root", {
-            message: error.message || "Không thể kết nối đến máy chủ.",
+            message:
+              err.message ||
+              "An unexpected error occurred. Please try again later.",
           });
         }
       },

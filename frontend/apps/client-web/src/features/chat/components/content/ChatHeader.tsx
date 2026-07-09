@@ -15,41 +15,41 @@ type Props = {
 
 export default function ChatHeader({ conversation }: Props) {
   return (
-    <header className="flex h-20 items-center justify-between border-b px-6">
-      <div className="flex items-center gap-4">
-        <Avatar className="size-12">
-          <AvatarFallback className="bg-primary/15 text-primary">
+    // 🌟 SỬA: Giảm chiều cao h-20 -> h-14, giảm padding px-6 -> px-4
+    <header className="flex h-14 items-center justify-between px-4">
+      <div className="flex items-center gap-3">
+        {/* 🌟 SỬA: Giảm size avatar từ size-12 -> size-10 cho cân đối với header mới */}
+        <Avatar className="size-10">
+          <AvatarFallback className="bg-primary/15 text-primary text-xs font-medium">
             {conversation?.title?.substring(0, 2).toUpperCase() || "CN"}
           </AvatarFallback>
         </Avatar>
 
-        <div>
-          <h2 className="font-semibold">
+        <div className="min-w-0">
+          <h2 className="font-semibold text-sm truncate max-w-[180px] sm:max-w-[300px]">
             {conversation?.title || "Chi nhánh"}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            {/* Mặc định hiển thị Trạng thái phòng chat */}
+          <p className="text-[11px] text-muted-foreground leading-none mt-0.5">
             Support Manager
           </p>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon">
-          <Phone className="size-5" />
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" className="size-8">
+          <Phone className="size-4" />
         </Button>
 
-        <Button variant="ghost" size="icon">
-          <Video className="size-5" />
+        <Button variant="ghost" size="icon" className="size-8">
+          <Video className="size-4" />
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="size-5" />
+            <Button variant="ghost" size="icon" className="size-8">
+              <MoreVertical className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-
           <DropdownMenuContent align="end">
             <DropdownMenuItem>View Information</DropdownMenuItem>
             <DropdownMenuItem>Mark as Read</DropdownMenuItem>
