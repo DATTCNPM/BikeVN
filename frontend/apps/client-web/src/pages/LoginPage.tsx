@@ -18,6 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "@/features/auth/useLogin";
 import AuthCard from "@/features/auth/components/AuthCard";
+import { isApiError } from "@repo/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -51,12 +52,7 @@ export default function Login() {
       onError: (error: any) => {
         console.log("Login error:", error); // Log lỗi để debug
 
-        // 🌟 THAY ĐỔI TẠI ĐÂY: Check thuộc tính thay vì instanceof
-        const isApiError =
-          error &&
-          (error.name === "ApiError" || typeof error.code === "number");
-
-        if (isApiError) {
+        if (isApiError(error)) {
           switch (error.code) {
             case 1003: // Account does not exist
               setError("email", {
@@ -78,10 +74,9 @@ export default function Login() {
               });
           }
         } else {
-          // Nếu là AxiosError thuần chưa qua xử lý hoặc lỗi mất mạng
-          const fallbackMessage =
-            error?.response?.data?.message || "Không thể kết nối đến máy chủ.";
-          setError("root", { message: fallbackMessage });
+          setError("root", {
+            message: error.message || "Không thể kết nối đến máy chủ.",
+          });
         }
       },
     });

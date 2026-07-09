@@ -62,7 +62,7 @@ export function createAxiosAuth({
       if (data?.code === 5555 && !config?._retry && !config?.skipAuthCheck) {
         // Nếu chính request refresh mà cũng trả về 5555 thì không refresh nữa, tránh lặp vô hạn
         if (config.url?.includes("/auth/refresh")) {
-          throw new ApiError(data.code, "Refresh token đã hết hạn");
+          throw new ApiError(data.code, "Refresh token đã hết hạn", response.status);
         }
         config._retry = true;
         return handleTokenRefresh(config);
@@ -75,7 +75,7 @@ export function createAxiosAuth({
       ) {
         if (data?.code === 1000) return data.result; // Trả về result thô để hàm onRefreshToken nhận đúng cấu trúc
         if (typeof data?.code === "number") {
-          throw new ApiError(data.code, data.message || "Auth Logic Error");
+          throw new ApiError(data.code, data.message || "Auth Logic Error", response.status);
         }
         return data;
       }
@@ -84,7 +84,7 @@ export function createAxiosAuth({
       if (data?.code === 1000) return data.result;
 
       if (typeof data?.code === "number") {
-        throw new ApiError(data.code, data.message || "Logic error");
+        throw new ApiError(data.code, data.message || "Logic error", response.status);
       }
 
       return data;
@@ -103,7 +103,7 @@ export function createAxiosAuth({
       ) {
         // Ép nó thành ApiError giống hệt như lúc xử lý ở block success
         return Promise.reject(
-          new ApiError(errorData.code, errorData.message || "Logic error"),
+          new ApiError(errorData.code, errorData.message || "Logic error", error.response?.status),
         );
       }
 

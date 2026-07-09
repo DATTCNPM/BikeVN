@@ -7,11 +7,11 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { ReactNode } from "react";
 
-import { ApiError } from "@repo/api";
+import { isApiError } from "@repo/api";
 import { ERROR_MESSAGES } from "./errorMessages";
 
 function getErrorMessage(error: unknown): string {
-  if (error instanceof ApiError) {
+  if (isApiError(error)) {
     return ERROR_MESSAGES[error.code] ?? error.message;
   }
   if (error instanceof Error) {
@@ -29,7 +29,9 @@ const queryClient = new QueryClient({
       retry: (failureCount, error: any) => {
         // Không retry với các lỗi client side
         if (error?.code >= 1000 && error?.code < 2000) return false;
-        if (error?.response?.status >= 400 && error?.response?.status < 500)
+        // Sử dụng cả error.status hoặc error.response.status
+        const status = error?.status ?? error?.response?.status;
+        if (status >= 400 && status < 500)
           return false;
         return failureCount < 1;
       },
@@ -41,7 +43,8 @@ const queryClient = new QueryClient({
       if (query.meta?.showToast === false) return;
 
       // Không hiện toast lỗi query nếu chưa đăng nhập hoặc token hết hạn ngầm
-      if (error?.code === 5555 || error?.response?.status === 401) return;
+      const status = error?.status ?? error?.response?.status;
+      if (error?.code === 5555 || status === 401) return;
 
       const message = getErrorMessage(error);
       toast.error(message);
@@ -53,14 +56,14 @@ const queryClient = new QueryClient({
       if (mutation.meta?.showToast === false) return;
 
       // Xử lý mã lỗi tập trung ví dụ Session Expired -> Redirect về login thay vì hiện toast
-      if (error instanceof ApiError && error.code === 5555) {
+      if (isApiError(error) && error.code === 5555) {
         // window.location.href = "/login";
         return;
       }
 
       // 🌟 TỐI ƯU 3: Lọc bớt các lỗi nghiệp vụ thuộc về Form Validation không nên hiện toast
       const silentErrorCodes = [1002, 1003, 1004]; // Trùng email, sai pass, không tồn tại acc
-      if (error instanceof ApiError && silentErrorCodes.includes(error.code)) {
+      if (isApiError(error) && silentErrorCodes.includes(error.code)) {
         return; // Để component tự bắt qua khối catch hoặc onError cục bộ nhằm hiện chữ đỏ dưới input
       }
 

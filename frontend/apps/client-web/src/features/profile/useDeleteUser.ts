@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { authStorageService } from "@repo/services";
 
-import { userApi } from "@repo/api";
+import { userApi, isApiError } from "@repo/api";
 // Giả định bạn có userKeys quản lý cache key giống authKeys, nếu không có bạn có thể thay bằng ["users"]
 import { userKeys } from "./userKeys";
 
@@ -37,8 +37,10 @@ export const useDeleteUser = () => {
     onError: (error: any) => {
       console.error("Delete user failed:", error);
 
-      // Lấy message lỗi từ Server trả về thông qua Axios (nếu có)
-      const serverMessage = error?.response?.data?.message;
+      // Lấy message lỗi từ ApiError hoặc Server trả về (nếu có)
+      const serverMessage = isApiError(error)
+        ? error.message
+        : error?.response?.data?.message;
       toast.error(
         serverMessage || "Xóa người dùng thất bại. Vui lòng thử lại!",
       );

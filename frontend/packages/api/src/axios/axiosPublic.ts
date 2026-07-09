@@ -13,11 +13,27 @@ instance.interceptors.response.use(
     const data = response.data;
     if (data?.code === 1000) return data.result; // Trả về kết quả thô, không còn AxiosResponse
     if (typeof data?.code === "number") {
-      throw new ApiError(data.code, data.message || "Logic error");
+      throw new ApiError(data.code, data.message || "Logic error", response.status);
     }
     return data;
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    const errorData = error.response?.data;
+    if (
+      errorData &&
+      typeof errorData.code === "number" &&
+      errorData.code !== 1000
+    ) {
+      return Promise.reject(
+        new ApiError(
+          errorData.code,
+          errorData.message || "Logic error",
+          error.response?.status,
+        ),
+      );
+    }
+    return Promise.reject(error);
+  },
 );
 
 // 2. Định nghĩa lại các hàm gọi để trả về T thay vì AxiosResponse<T>
