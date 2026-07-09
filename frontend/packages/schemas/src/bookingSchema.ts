@@ -49,7 +49,7 @@ export const bookingSchema = bookingCreationSchema.extend({
 
 // Tạo kiểu TypeScript từ schema
 export const bookingFormSchema = z.object({
-  returnBranchId: z.string().min(1),
+  returnBranchId: z.string().min(1, "Return branch is required"),
 
   dateRange: z
     .object({

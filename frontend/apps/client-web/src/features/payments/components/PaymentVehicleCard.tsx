@@ -7,7 +7,7 @@ import imageMock from "@/assets/images/motorbike1.png";
 export default function PaymentVehicleCard({
   vehicle,
 }: {
-  vehicle: Vehicle | null;
+  vehicle: Vehicle | null | undefined;
 }) {
   return (
     <Card className="overflow-hidden rounded-[2rem] border-border shadow-sm p-4">

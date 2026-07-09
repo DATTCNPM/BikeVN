@@ -27,11 +27,9 @@ export default function ChatContent({
   onBack,
 }: Props) {
   const handleSend = (data: SendMessagePayload) => {
-    console.log("🚀 ~ file: ChatContent.tsx:30 ~ handleSend ~ data:", data);
     onSendMessage(data.content ? data.content : "");
   };
 
-  // ✨ ĐỔI MỚI: Giao diện Empty State nghệ thuật khi chưa chọn cuộc trò chuyện
   if (!conversation) {
     return (
       <section className="hidden md:flex flex-1 h-full flex-col items-center justify-center bg-card/40 border border-dashed border-border/80 rounded-2xl p-8 text-center animate-fade-in">
@@ -43,16 +41,11 @@ export default function ChatContent({
         </h3>
         <p className="text-xs text-muted-foreground max-w-[280px] mt-1 leading-relaxed">
           Please select a conversation from the list or choose a Branch on the
-          left to start chatting with the manager.
+          left to start chatting.
         </p>
       </section>
     );
   }
-
-  console.log(
-    "🚀 ~ file: ChatContent.tsx:43 ~ ChatContent ~ messages:",
-    messages,
-  );
 
   return (
     <section
@@ -62,7 +55,7 @@ export default function ChatContent({
       `}
     >
       {/* Thanh Header của Box Chat */}
-      <div className="flex items-center border-b border-border/40 pr-4 bg-card">
+      <div className="flex items-center border-b border-border/40 pr-4 bg-card shrink-0">
         <Button
           variant="ghost"
           size="icon"
@@ -76,8 +69,8 @@ export default function ChatContent({
         </div>
       </div>
 
-      {/* Danh sách tin nhắn */}
-      <div className="flex-1 h-0 min-h-0 overflow-hidden bg-muted/5">
+      {/* 🌟 SỬA: Danh sách tin nhắn - Sử dụng flex-1 min-h-0 để tận dụng tối đa chiều cao còn lại */}
+      <div className="flex-1 min-h-0 bg-muted/5 relative">
         <MessageList
           loading={loading}
           messages={messages}
@@ -85,8 +78,8 @@ export default function ChatContent({
         />
       </div>
 
-      {/* Ô nhập liệu */}
-      <div className="p-4 bg-card border-t border-border/40">
+      {/* 🌟 SỬA: Ô nhập liệu - Xóa bỏ div bọc ngoài có padding thừa, chuyển padding vào trong ChatInput */}
+      <div className="shrink-0 bg-card">
         <ChatInput onSend={handleSend} />
       </div>
     </section>

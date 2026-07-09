@@ -4,7 +4,7 @@ import type { Booking } from "@repo/types";
 import { formatDateTime } from "@repo/utils";
 
 type Props = {
-  booking: Booking | null;
+  booking: Booking | null | undefined;
 };
 
 const formatVND = (value: number | undefined) =>

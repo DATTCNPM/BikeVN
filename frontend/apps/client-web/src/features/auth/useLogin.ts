@@ -9,19 +9,17 @@ export const useLogin = () => {
   const setIsLogin = useAuthStore((state) => state.setIsLogin);
 
   return useMutation({
-    // 1. mutationFn chỉ lo việc gọi API
     mutationFn: (credentials: { email: string; password: string }) =>
       authApi.login(credentials),
 
-    // 2. onSuccess lo toàn bộ side-effects sau khi có data thành công
+    // 🌟 KHAI BÁO ĐỘNG TẠI ĐÂY: Ẩn các mã lỗi validation của Form, các lỗi khác (ví dụ: 500, 9999) vẫn bắn Toast bth
+    meta: {
+      silentErrorCodes: [1002, 1003, 1004],
+    },
+
     onSuccess: async (auth) => {
-      // Lưu token vào storage
       authStorageService.setTokens(auth.token, auth.refreshToken);
-
-      // Cập nhật trạng thái đăng nhập vào Zustand
       setIsLogin(true);
-
-      // Khởi động lại query lấy thông tin profile (vì đã có token mới)
       await queryClient.invalidateQueries({
         queryKey: authKeys.profile(),
       });

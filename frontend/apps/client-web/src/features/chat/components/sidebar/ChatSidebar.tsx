@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { ConversationResponse } from "@repo/types";
 import { Button } from "@repo/ui/components/ui/button";
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
-import { Spinner } from "@repo/ui/components/ui/spinner";
+import { ConversationItemSkeleton } from "@/features/chat/components/skeleton/ChatSkeleton";
 import {
   Select,
   SelectContent,
@@ -114,12 +114,9 @@ export default function ChatSidebar({
       <ScrollArea className="flex-1">
         <div className="space-y-1.5 p-3">
           {loading ? (
-            <div className="flex flex-col items-center justify-center p-8 text-muted-foreground">
-              <Spinner className="size-5" />
-              <p className="text-xs mt-2 opacity-80">
-                Loading chat messages...
-              </p>
-            </div>
+            Array.from({ length: 5 }).map((_, i) => (
+              <ConversationItemSkeleton key={i} />
+            ))
           ) : conversations.length === 0 ? (
             <p className="text-center text-xs text-muted-foreground p-6">
               No conversations found.

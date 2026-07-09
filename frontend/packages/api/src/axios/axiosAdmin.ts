@@ -11,7 +11,6 @@ const refreshAxios = axios.create({
 export default createAxiosAuth({
   tokenKey: TOKEN_KEYS.PORTAL_ACCESS,
   refreshTokenKey: TOKEN_KEYS.PORTAL_REFRESH,
-  loginPath: "/login",
   onRefreshToken: async (token) => {
     // Gọi bằng refreshAxios biệt lập
     const res = await refreshAxios.post("/auth/refresh", {

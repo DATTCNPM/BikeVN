@@ -7,6 +7,8 @@ import ProtectedRoute from "@/features/auth/ProtectedRoute";
 import AuthRedirectRoute from "@/features/auth/AuthRedirectRoute";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
+import { AuthListenerProvider } from "@repo/providers";
+
 // 💤 Lazy Loading các trang cũ
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const VehicleManagementPage = lazy(
@@ -62,14 +64,16 @@ function AdminPageLoader() {
 // 🛡️ Wrapper Layout đảm nhiệm việc bắt trạng thái Suspense cho toàn bộ Route con
 function AdminDashboardLayout() {
   return (
-    <ProtectedRoute>
-      {/* Bọc Suspense ở đây để khi bấm menu chuyển giữa các trang Lazy load, 
-        nó sẽ hiển thị AdminPageLoader thay vì làm crash ứng dụng.
-      */}
-      <Suspense fallback={<AdminPageLoader />}>
-        <MainLayout />
-      </Suspense>
-    </ProtectedRoute>
+    <AuthListenerProvider loginPath="/login">
+      <ProtectedRoute>
+        {/* Bọc Suspense ở đây để khi bấm menu chuyển giữa các trang Lazy load, 
+          nó sẽ hiển thị AdminPageLoader thay vì làm crash ứng dụng.
+        */}
+        <Suspense fallback={<AdminPageLoader />}>
+          <MainLayout />
+        </Suspense>
+      </ProtectedRoute>
+    </AuthListenerProvider>
   );
 }
 

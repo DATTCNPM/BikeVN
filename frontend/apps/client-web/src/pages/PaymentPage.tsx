@@ -9,7 +9,10 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useProfile } from "@/features/profile/useProfile";
 import { useVehicle } from "@repo/hooks";
-import { useBooking } from "@/features/bookings/queries";
+import {
+  useBooking,
+  useVehicleReturnByBookingId,
+} from "@/features/bookings/queries";
 
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -18,23 +21,28 @@ import type { PaymentMethod } from "@repo/types";
 export default function PaymentPage() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-
-  // 🌟 LẤY LOẠI THANH TOÁN: "booking" (mặc định) hoặc "surcharge"
   const paymentType =
     searchParams.get("type") === "surcharge" ? "surcharge" : "booking";
 
+  // Các Hook lấy dữ liệu nguồn
   const { data: userProfile, isLoading: profileLoading } = useProfile();
-  const { data: booking = null, isLoading } = useBooking(id!);
-  const { data: vehicle = null, isLoading: vehicleLoading } = useVehicle(
+  const { data: booking, isLoading: bookingLoading } = useBooking(id!);
+  const { data: vehicleReturn, isLoading: returnLoading } =
+    useVehicleReturnByBookingId(id!);
+  const { data: vehicle, isLoading: vehicleLoading } = useVehicle(
     booking?.vehicleId || "",
   );
 
-  // 🟢 THÊM: Nếu là surcharge, có thể bạn cần fetch thêm data của biên bản trả xe để lấy giá tiền phạt chính xác
-  // const { data: vehicleReturn } = useVehicleReturnByBookingId(id!);
-
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("vnpay");
 
-  if (isLoading || vehicleLoading || profileLoading) {
+  // Gộp nhóm kiểm tra trạng thái Loading sạch sẽ
+  const isPageLoading =
+    profileLoading ||
+    bookingLoading ||
+    (booking && vehicleLoading) ||
+    (paymentType === "surcharge" && returnLoading);
+
+  if (isPageLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
@@ -42,26 +50,25 @@ export default function PaymentPage() {
     );
   }
 
-  console.log(
-    "🚀 ~ file: PaymentPage.tsx:38 ~ PaymentPage ~ booking:",
-    booking,
-  );
-  console.log(
-    "🚀 ~ file: PaymentPage.tsx:39 ~ PaymentPage ~ paymentType:",
-    paymentType,
-  );
+  // Chặn rách giao diện (UI Break) khi sai ID đơn hàng
+  if (!booking) {
+    return (
+      <div className="flex h-64 flex-col items-center justify-center text-sm font-medium text-muted-foreground">
+        Booking information could not be found.
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background pb-20">
       <div className="container mx-auto max-w-7xl px-4 py-10">
-        {/* Truyền paymentType xuống để đổi chữ tiêu đề nếu cần */}
         <PaymentHeader type={paymentType} />
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_420px]">
           <div className="space-y-6">
             <PaymentCustomerCard user={userProfile} />
-            <PaymentVehicleCard vehicle={vehicle || null} />
-            <PaymentBookingCard booking={booking || null} />
+            <PaymentVehicleCard vehicle={vehicle} />
+            <PaymentBookingCard booking={booking} />
             <PaymentMethodCard
               selectedMethod={selectedMethod}
               onMethodSelect={setSelectedMethod}
@@ -70,12 +77,12 @@ export default function PaymentPage() {
           </div>
 
           <div>
-            {/* 🌟 TRUYỀN THÊM LOẠI THANH TOÁN XUỐNG SUMMARY CARD */}
             <PaymentSummaryCard
-              booking={booking || null}
+              booking={booking}
               selectedMethod={selectedMethod}
               userProfile={userProfile}
-              paymentType={paymentType} // <--- Thêm ở đây
+              paymentType={paymentType}
+              vehicleReturn={vehicleReturn}
             />
           </div>
         </div>

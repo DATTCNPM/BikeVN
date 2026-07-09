@@ -17,7 +17,7 @@ export default function BookingActions() {
         <Button
           size="lg"
           className="h-12 rounded-2xl"
-          onClick={() => navigate("/profile/bookings")}
+          onClick={() => navigate("/my-bookings")}
         >
           <ClipboardList className="mr-2 size-5" />
           My Booking

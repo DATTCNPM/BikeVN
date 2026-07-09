@@ -1,4 +1,3 @@
-import AuthCard from "@/features/auth/components/AuthCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@repo/schemas";
@@ -7,8 +6,6 @@ import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
 import {
   Field,
   FieldContent,
@@ -17,17 +14,22 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 
+import { useNavigate } from "react-router-dom";
 import { useRegister } from "@/features/auth/useRegister";
+import AuthCard from "@/features/auth/components/AuthCard";
+import { isApiError } from "@repo/api";
 
 export default function Register() {
   const navigate = useNavigate();
-  const {
-    mutateAsync: registerUser,
-    error,
-    isPending: loading,
-  } = useRegister();
+  const { mutate: registerUser, isPending } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
-  const methods = useForm<RegisterPayload>({
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<RegisterPayload>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -36,16 +38,39 @@ export default function Register() {
       confirmPassword: "",
     },
   });
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = methods;
-  const onSubmit = async (data: RegisterPayload) => {
-    const success = await registerUser(data);
-    if (success) {
-      navigate("/home");
-    }
+
+  const onSubmit = (data: RegisterPayload) => {
+    registerUser(data, {
+      onSuccess: () => {
+        navigate("/home");
+      },
+      onError: (error: unknown) => {
+        // 🌟 SỬA ĐỔI: Thay any bằng unknown
+        console.log("Register error:", error);
+
+        if (isApiError(error)) {
+          switch (error.code) {
+            case 1002: // 🌟 SỬA ĐỔI: Đồng bộ đúng mã 1002 (Email đã tồn tại)
+              setError("email", {
+                type: "server",
+                message: "Email already exists. Please use a different email.",
+              });
+              break;
+            default:
+              setError("root", {
+                message:
+                  error.message ||
+                  "An error occurred while registering. Please try again later.",
+              });
+          }
+        } else {
+          const err = error as Error;
+          setError("root", {
+            message: err.message || "Unable to connect to the server.",
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -53,10 +78,10 @@ export default function Register() {
       title="Register"
       description="Create your account"
       action="register"
-      error={error}
       onSubmit={handleSubmit(onSubmit)}
     >
       <FieldGroup>
+        {/* Name Input */}
         <Field>
           <FieldLabel htmlFor="name">Name</FieldLabel>
           <FieldContent>
@@ -69,6 +94,8 @@ export default function Register() {
           </FieldContent>
           {errors.name && <FieldError>{errors.name.message}</FieldError>}
         </Field>
+
+        {/* Email Input */}
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <FieldContent>
@@ -81,6 +108,8 @@ export default function Register() {
           </FieldContent>
           {errors.email && <FieldError>{errors.email.message}</FieldError>}
         </Field>
+
+        {/* Password Input */}
         <Field className="relative">
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <FieldContent>
@@ -89,21 +118,28 @@ export default function Register() {
               id="password"
               placeholder="********"
               {...register("passwordHash")}
+              className="pr-10"
             />
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute top-7 right-1"
+              className="absolute top-7 right-1 h-8 w-8 p-0 hover:bg-transparent"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeOff /> : <Eye />}
+              {showPassword ? (
+                <EyeOff className="size-4 text-muted-foreground" />
+              ) : (
+                <Eye className="size-4 text-muted-foreground" />
+              )}
             </Button>
           </FieldContent>
           {errors.passwordHash && (
             <FieldError>{errors.passwordHash.message}</FieldError>
           )}
         </Field>
+
+        {/* Confirm Password Input */}
         <Field className="relative">
           <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
           <FieldContent>
@@ -112,28 +148,38 @@ export default function Register() {
               id="confirmPassword"
               placeholder="********"
               {...register("confirmPassword")}
+              className="pr-10"
             />
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute top-7 right-1"
+              className="absolute top-7 right-1 h-8 w-8 p-0 hover:bg-transparent"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeOff /> : <Eye />}
+              {showPassword ? (
+                <EyeOff className="size-4 text-muted-foreground" />
+              ) : (
+                <Eye className="size-4 text-muted-foreground" />
+              )}
             </Button>
           </FieldContent>
           {errors.confirmPassword && (
             <FieldError>{errors.confirmPassword.message}</FieldError>
           )}
         </Field>
-        <Button type="submit" size="lg">
-          {loading ? (
-            <span className="flex items-center gap-2">Registering...</span>
-          ) : (
-            "Register"
-          )}
+
+        {/* Register Button */}
+        <Button type="submit" size="lg" className="w-full" disabled={isPending}>
+          {isPending ? "Registering..." : "Register"}
         </Button>
+
+        {/* Hiển thị lỗi chung hệ thống */}
+        {errors.root && (
+          <div className="p-3 text-xs font-medium text-destructive bg-destructive/10 rounded-xl border border-destructive/20 text-center">
+            {errors.root.message}
+          </div>
+        )}
       </FieldGroup>
     </AuthCard>
   );

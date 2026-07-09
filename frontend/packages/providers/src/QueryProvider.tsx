@@ -1,31 +1,45 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { QueryCache, MutationCache } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryCache,
+  MutationCache,
+} from "@tanstack/react-query";
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { ReactNode } from "react";
-
-import { ApiError } from "@repo/api";
+import { isApiError } from "@repo/api";
 import { ERROR_MESSAGES } from "./errorMessages";
 
 function getErrorMessage(error: unknown): string {
-  if (error instanceof ApiError) {
+  if (isApiError(error)) {
     return ERROR_MESSAGES[error.code] ?? error.message;
   }
-
   if (error instanceof Error) {
     return error.message;
   }
-
-  return "Đã xảy ra lỗi";
+  return "Unknown error";
 }
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 1, // 1 minute
-      gcTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 1,
+      gcTime: 1000 * 60 * 5,
       refetchOnWindowFocus: false,
-      retry: (failureCount, error: any) => {
-        if (error?.response?.status >= 400 && error?.response?.status < 500) {
+      retry: (failureCount, error: unknown) => {
+        // Lỗi nghiệp vụ logic từ backend trả về không retry
+        if (isApiError(error) && error.code >= 1000 && error.code < 2000)
+          return false;
+
+        const responseStatus =
+          (error as any)?.status ?? (error as any)?.response?.status;
+
+        // Chặn lỗi 4xx ngoại trừ 408 (Timeout) và 429 (Too many requests)
+        if (
+          responseStatus >= 400 &&
+          responseStatus < 500 &&
+          responseStatus !== 408 &&
+          responseStatus !== 429
+        ) {
           return false;
         }
         return failureCount < 1;
@@ -33,14 +47,30 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error: any) => {
-      if (error?.response?.status === 401) return;
-      const message = getErrorMessage(error);
-      toast.error(`Query Error: ${message}`);
+    onError: (error: unknown, query) => {
+      if (query.meta?.showToast === false) return;
+
+      const silentCodes = (query.meta?.silentErrorCodes as number[]) || [];
+      if (isApiError(error) && silentCodes.includes(error.code)) return;
+
+      const status = (error as any)?.status ?? (error as any)?.response?.status;
+      if ((isApiError(error) && error.code === 5555) || status === 401) return;
+
+      toast.error(getErrorMessage(error));
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error: unknown, _variables, _context, mutation) => {
+      if (mutation.meta?.showToast === false) return;
+
+      if (isApiError(error) && error.code === 5555) return;
+
+      // 🌟 LẤY ĐỘNG DANH SÁCH MÃ LỖI MUỐN ẨN TOAST TỪ TRONG HOOK GỌI API
+      const silentCodes = (mutation.meta?.silentErrorCodes as number[]) || [];
+      if (isApiError(error) && silentCodes.includes(error.code)) {
+        return;
+      }
+
       toast.error(getErrorMessage(error));
     },
   }),

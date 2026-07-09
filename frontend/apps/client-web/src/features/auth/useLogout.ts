@@ -31,7 +31,7 @@ export const useLogout = () => {
         queryKey: authKeys.profile(),
       });
 
-      toast.success("Đăng xuất thành công");
+      toast.success("Logout successful");
       navigate("/login");
     },
   });

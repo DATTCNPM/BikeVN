@@ -1,4 +1,4 @@
-import AuthCard from "@/features/auth/components/AuthCard";
+// @/pages/Login.tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@repo/schemas";
@@ -16,42 +16,75 @@ import {
 } from "@repo/ui/components/ui/field";
 
 import { useNavigate } from "react-router-dom";
-
 import { useLogin } from "@/features/auth/useLogin";
-import { useAuthStore } from "@/features/auth/authStore";
+import AuthCard from "@/features/auth/components/AuthCard";
+import { isApiError } from "@repo/api";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { mutateAsync: login, error, isPending } = useLogin();
-  const { setIsLogin } = useAuthStore();
+  const { mutate: login, isPending } = useLogin(); // Chuyển từ mutateAsync sang mutate
 
   const pendingBooking = localStorage.getItem("pending-booking");
-
   const booking = pendingBooking ? JSON.parse(pendingBooking) : null;
 
   const [showPassword, setShowPassword] = useState(false);
-  const methods = useForm<LoginPayload>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+
   const {
     register,
     handleSubmit,
+    setError, // 🌟 Lấy hàm setError để map lỗi backend vào ô input
     formState: { errors },
-  } = methods;
-  const onSubmit = async (data: LoginPayload) => {
-    const success = await login(data);
-    if (success && booking) {
-      navigate(`/vehicles/${booking.vehicleId}`);
-      return;
-    }
-    if (success) {
-      setIsLogin(true);
-      navigate("/home");
-    }
+  } = useForm<LoginPayload>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const onSubmit = (data: LoginPayload) => {
+    login(data, {
+      // 🌟 XỬ LÝ KHI THÀNH CÔNG (Điều hướng UI)
+      onSuccess: () => {
+        if (booking) {
+          navigate(`/vehicles/${booking.vehicleId}`);
+        } else {
+          navigate("/home");
+        }
+      },
+      onError: (error: unknown) => {
+        // 🌟 Sử dụng kiểu dữ liệu unknown (Type-safe)
+        console.log("Login error:", error);
+
+        if (isApiError(error)) {
+          // TypeScript hiểu rõ biến error lúc này có thuộc tính .code và .message
+          switch (error.code) {
+            case 1003:
+              setError("email", {
+                type: "server",
+                message: "Email don't exist. Please check and try again.",
+              });
+              break;
+            case 1004:
+              setError("password", {
+                type: "server",
+                message: "Password is incorrect. Please check and try again.",
+              });
+              break;
+            default:
+              setError("root", {
+                message:
+                  error.message ||
+                  "An unexpected error occurred. Please try again later.",
+              });
+          }
+        } else {
+          const err = error as Error;
+          setError("root", {
+            message:
+              err.message ||
+              "An unexpected error occurred. Please try again later.",
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -59,7 +92,6 @@ export default function Login() {
       title="Login"
       description="Login to your account"
       action="login"
-      error={error}
       onSubmit={handleSubmit(onSubmit)}
     >
       <FieldGroup>
@@ -75,6 +107,7 @@ export default function Login() {
           </FieldContent>
           {errors.email && <FieldError>{errors.email.message}</FieldError>}
         </Field>
+
         <Field className="relative">
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <FieldContent>
@@ -83,28 +116,36 @@ export default function Login() {
               id="password"
               placeholder="********"
               {...register("password")}
+              className="pr-10" // Thêm padding phải để chữ không đè lên nút eye
             />
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute top-7 right-1"
+              className="absolute top-7 right-1 h-8 w-8 p-0 hover:bg-transparent"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeOff /> : <Eye />}
+              {showPassword ? (
+                <EyeOff className="size-4 text-muted-foreground" />
+              ) : (
+                <Eye className="size-4 text-muted-foreground" />
+              )}
             </Button>
           </FieldContent>
           {errors.password && (
             <FieldError>{errors.password.message}</FieldError>
           )}
         </Field>
+
         <Button type="submit" size="lg" className="w-full" disabled={isPending}>
-          {isPending ? (
-            <span className="flex items-center gap-2">Logging in...</span>
-          ) : (
-            "Login"
-          )}
+          {isPending ? "Logging in..." : "Login"}
         </Button>
+        {/* Hiển thị lỗi chung hệ thống nếu có (lỗi code 9999 hoặc mất mạng) */}
+        {errors.root && (
+          <div className="p-3 text-xs font-medium text-destructive bg-destructive/10 rounded-xl border border-destructive/20 text-center">
+            {errors.root.message}
+          </div>
+        )}
       </FieldGroup>
     </AuthCard>
   );

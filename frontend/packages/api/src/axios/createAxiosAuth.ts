@@ -1,16 +1,16 @@
 import axios from "axios";
-import { ApiError } from "../error/ApiError";
+import type { AxiosInstance, AxiosError } from "axios";
 import type { ApiResponse } from "@repo/types";
-import type { AxiosInstance } from "axios";
+import { ApiError } from "../error/ApiError";
 
 type CreateAxiosAuthOptions = {
   tokenKey: string;
   refreshTokenKey: string;
-  loginPath: string;
   onRefreshToken: (
     refreshToken: string,
   ) => Promise<{ accessToken: string; refreshToken: string }>;
 };
+
 let serverDownCallback: (() => void) | null = null;
 
 export function setServerDownCallback(cb: () => void) {
@@ -20,7 +20,6 @@ export function setServerDownCallback(cb: () => void) {
 export function createAxiosAuth({
   tokenKey,
   refreshTokenKey,
-  loginPath,
   onRefreshToken,
 }: CreateAxiosAuthOptions) {
   const instance: AxiosInstance = axios.create({
@@ -31,10 +30,10 @@ export function createAxiosAuth({
   let isRefreshing = false;
   let failedQueue: Array<{
     resolve: (token: string) => void;
-    reject: (error: any) => void;
+    reject: (error: unknown) => void;
   }> = [];
 
-  const processQueue = (error: any, token: string | null = null) => {
+  const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue.forEach((prom) => {
       if (error) prom.reject(error);
       else if (token) prom.resolve(token);
@@ -55,62 +54,80 @@ export function createAxiosAuth({
 
   instance.interceptors.response.use(
     async (response): Promise<any> => {
-      const config = response.config as any;
+      const config = response.config;
       const data = response.data as ApiResponse<any>;
 
-      // 1. Kiểm tra mã lỗi hết hạn token TRƯỚC (Ví dụ backend quy định code 5555 là expired)
-      if (data?.code === 5555 && !config?._retry && !config?.skipAuthCheck) {
-        // Nếu chính request refresh mà cũng trả về 5555 thì không refresh nữa, tránh lặp vô hạn
-        if (config.url?.includes("/auth/refresh")) {
-          throw new ApiError(data.code, "Refresh token đã hết hạn");
-        }
-        config._retry = true;
-        return handleTokenRefresh(config);
-      }
-
-      // 2. Xử lý riêng cho các request đặc thù auth/refresh hoặc login
+      // Xử lý riêng cho các request đặc thù auth/refresh hoặc login
       if (
         config.url?.includes("/auth/refresh") ||
         config.url?.includes("/login")
       ) {
-        if (data?.code === 1000) return data.result; // Trả về result thô để hàm onRefreshToken nhận đúng cấu trúc
+        if (data?.code === 1000) return data.result;
         if (typeof data?.code === "number") {
-          throw new ApiError(data.code, data.message || "Auth Logic Error");
+          throw new ApiError(
+            data.code,
+            data.message || "Auth Logic Error",
+            response.status,
+          );
         }
         return data;
       }
 
-      // 3. Xử lý thành công chuẩn cho các API thông thường
+      // Xử lý thành công chuẩn cho các API thông thường
       if (data?.code === 1000) return data.result;
 
       if (typeof data?.code === "number") {
-        throw new ApiError(data.code, data.message || "Logic error");
+        throw new ApiError(
+          data.code,
+          data.message || "Logic error",
+          response.status,
+        );
       }
 
       return data;
     },
-    async (error) => {
-      const config = error.config as any;
+    async (error: AxiosError) => {
+      const config = error.config;
+      const errorData = error.response?.data as ApiResponse<any> | undefined;
 
+      // Nếu backend trả về status 4xx/5xx có chứa cấu trúc code logic của hệ thống
+      if (
+        errorData &&
+        typeof errorData.code === "number" &&
+        errorData.code !== 1000
+      ) {
+        if (
+          errorData.code === 5555 &&
+          !config?.url?.includes("/auth/refresh")
+        ) {
+          return handleTokenRefresh(config);
+        }
+        return Promise.reject(
+          new ApiError(
+            errorData.code,
+            errorData.message || "Logic error",
+            error.response?.status,
+          ),
+        );
+      }
+
+      // Xử lý server sập/sleep
       const isServerSleep =
-        !error.response || [502, 503, 504].includes(error.response?.status);
+        !error.response || [502, 503, 504].includes(error.response.status);
       if (typeof window !== "undefined" && isServerSleep) {
         serverDownCallback?.();
         return Promise.reject(error);
       }
 
-      // Nếu API /auth/refresh bị lỗi HTTP (Ví dụ 401, 403, 400), ném lỗi thẳng ra để đá về login
-      if (config.url?.includes("/auth/refresh")) {
+      if (config?.url?.includes("/auth/refresh")) {
         return Promise.reject(error);
       }
 
       // Xử lý lỗi 401 chuẩn HTTP thông thường cho access token hết hạn
       if (
         error.response?.status === 401 &&
-        !config?._retry &&
-        !config?.skipAuthCheck
+        !config?.url?.includes("/auth/refresh")
       ) {
-        config._retry = true;
         return handleTokenRefresh(config);
       }
 
@@ -152,11 +169,10 @@ export function createAxiosAuth({
     } catch (refreshError: any) {
       processQueue(refreshError, null);
 
-      // Nếu refresh token dính lỗi mạng khi gọi, báo sập server, ngược lại đá về login
       if (!refreshError.response || refreshError.response.status >= 500) {
         serverDownCallback?.();
       } else {
-        handleUnauthorized(tokenKey, refreshTokenKey, loginPath);
+        handleUnauthorized(tokenKey, refreshTokenKey);
       }
 
       return Promise.reject(refreshError);
@@ -165,18 +181,14 @@ export function createAxiosAuth({
     }
   }
 
-  return instance;
-}
+  function handleUnauthorized(tokenKey: string, refreshTokenKey: string) {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(refreshTokenKey);
 
-function handleUnauthorized(
-  tokenKey: string,
-  refreshTokenKey: string,
-  loginPath: string,
-) {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(tokenKey);
-  localStorage.removeItem(refreshTokenKey);
-  if (!window.location.pathname.startsWith(loginPath)) {
-    window.location.href = loginPath;
+    // 📢 Phát tín hiệu (Custom Event) để tầng UI tự xử lý điều hướng mượt mà
+    window.dispatchEvent(new Event("auth:unauthorized"));
   }
+
+  return instance;
 }

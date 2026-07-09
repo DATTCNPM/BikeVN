@@ -1,7 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-
 import { bookingClientApi } from "@repo/api";
-
 import type { BookingCreationPayload } from "@repo/types";
 
 export function useCreateBooking() {
@@ -9,6 +7,10 @@ export function useCreateBooking() {
     mutationFn: async (payload: BookingCreationPayload) => {
       console.log("Creating booking with payload:", payload);
       return bookingClientApi.createBooking(payload);
+    },
+    // 🌟 BỔ SUNG TẠI ĐÂY: Chặn Toast lỗi nghiệp vụ trùng lịch đặt xe
+    meta: {
+      silentErrorCodes: [1017, 1018, 1020],
     },
   });
 }
@@ -18,6 +20,10 @@ export function useCancelBooking() {
     mutationFn: async (bookingId: string) => {
       console.log("Canceling booking with ID:", bookingId);
       return bookingClientApi.cancelBooking(bookingId);
+    },
+    // Nếu hủy đặt xe có mã lỗi nghiệp vụ nào riêng, bạn cũng truyền vào mảng này
+    meta: {
+      silentErrorCodes: [],
     },
   });
 }

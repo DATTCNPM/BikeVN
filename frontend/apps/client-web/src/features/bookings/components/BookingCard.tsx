@@ -9,6 +9,7 @@ import type { DateRange } from "react-day-picker";
 
 import { Button } from "@repo/ui/components/ui/button";
 import { Calendar } from "@repo/ui/components/ui/calendar";
+
 import {
   Card,
   CardContent,
@@ -44,6 +45,8 @@ import { useProfile } from "@/features/profile/useProfile";
 import { bookingFormSchema } from "@repo/schemas";
 import type { Branch, Vehicle, BookingFormValues } from "@repo/types";
 import { calculateTotalDays, calculateTotalPrice } from "@repo/utils";
+import { toast } from "@repo/ui/components/ui/sonner";
+import { isApiError } from "@repo/api";
 
 type Props = {
   vehicle: Vehicle;
@@ -131,6 +134,34 @@ export default function BookingCard({ vehicle, branches }: Props) {
     createBooking(payload, {
       onSuccess: (booking) => {
         navigate(`/payment/${booking.id}`);
+      },
+      onError: (error: unknown) => {
+        // 🌟 SỬA ĐỔI: Thay any bằng unknown
+        // 🌟 SỬA ĐỔI: Đọc type-safe cho HTTP Status
+        const status = isApiError(error)
+          ? error.status
+          : (error as any)?.response?.status;
+
+        if (status === 403) {
+          toast.error(
+            "You have an unpaid booking. Please complete the payment for your previous booking before making a new one.",
+          );
+          return;
+        }
+
+        // 🌟 SỬA ĐỔI: Bắt gọn các mã lỗi nghiệp vụ im lặng đã cấu hình trong hook (1017, 1018, 1020)
+        if (isApiError(error)) {
+          if ([1017, 1018, 1020].includes(error.code)) {
+            toast.error(`Booking Failed: ${error.message}`);
+            return;
+          }
+          toast.error(error.message);
+        } else {
+          const err = error as Error;
+          toast.error(
+            err.message || "Failed to create booking. Please try again.",
+          );
+        }
       },
     });
   };

@@ -6,6 +6,8 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import MainLayout from "@/components/layouts/MainLayout";
 import AuthLayout from "@/components/layouts/AuthLayout";
 
+import { AuthListenerProvider } from "@repo/providers";
+
 // Lazy loading pages
 const Landing = lazy(() => import("@/pages/LandingPage"));
 const HomePage = lazy(() => import("@/pages/HomePage"));
@@ -33,7 +35,9 @@ function PageLoader() {
 function GlobalRootLayout() {
   return (
     <Suspense fallback={<PageLoader />}>
-      <Outlet />
+      <AuthListenerProvider loginPath="/login">
+        <Outlet />
+      </AuthListenerProvider>
     </Suspense>
   );
 }

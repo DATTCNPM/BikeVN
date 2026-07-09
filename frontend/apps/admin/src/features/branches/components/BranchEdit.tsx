@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
@@ -15,7 +15,16 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateBranch } from "@/features/branches/mutations";
 import { updateBranchSchema } from "@repo/schemas";
-import type { UpdateBranchPayload, Branch } from "@repo/types";
+import type { UpdateBranchPayload, Branch, BranchStatus } from "@repo/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@repo/ui/components/ui/select";
+
+const StatusOptions: BranchStatus[] = ["active", "inactive"];
 
 type Props = {
   open: boolean;
@@ -27,6 +36,7 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
   const { mutateAsync, isPending } = useUpdateBranch();
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -99,7 +109,24 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
 
           <Field>
             <FieldLabel>Status</FieldLabel>
-            <Input {...register("status")} />
+            <Controller
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {StatusOptions.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.status && <FieldError>{errors.status.message}</FieldError>}
           </Field>
         </FieldGroup>
