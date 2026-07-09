@@ -25,6 +25,7 @@ public class SecurityConfig {
             "/auth/login",
             "/auth/logout",
             "/auth/introspect",
+            "/auth/refresh",
             "/users", "/roles",
             "/permissions",
     };
