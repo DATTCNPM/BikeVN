@@ -55,10 +55,10 @@ public interface BookingRepository extends JpaRepository<Booking, String>, JpaSp
     List<Booking> findByStatus(BookingStatus status);
     List<Booking> findByUserId(String userId);
     List<String> findIdsByPickupBranchId(String branchId);
-    @Query("SELECT v.brand, COUNT(b.id) " +
+    @Query("SELECT v.brand.name, COUNT(b.id) " +
             "FROM Booking b JOIN Vehicle v ON b.vehicleId = v.id " +
             "WHERE b.status IN ('completed', 'approved') " +
-            "GROUP BY v.brand " +
+            "GROUP BY v.brand.name " +
             "ORDER BY COUNT(b.id) DESC")
     List<Object[]> getPopularVehicleBrands();
 
