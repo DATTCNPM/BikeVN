@@ -15,12 +15,14 @@ import com.backend.bikerental.module.user.UserRepository;
 import com.backend.bikerental.module.vehicle.Vehicle;
 import com.backend.bikerental.module.vehicle.VehicleRepository;
 import com.backend.bikerental.module.vehicle.enums.StatusVehicleEnum;
+import io.lettuce.core.GeoArgs;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -134,7 +136,8 @@ public class BookingService {
     @PreAuthorize("hasRole('admin')")
     public PageResponse<BookingResponse> getAllBooking(int page, int size)
     {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Booking> pageData = bookingRepository.findAll(pageable);
 
         var bookingResponses = mapToBookingResponsesWithDetails(pageData.getContent());
@@ -162,7 +165,7 @@ public class BookingService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Booking> pageData = bookingRepository
                 .findByPickupBranchIdOrReturnBranchId(branchId, branchId, pageable);
 
