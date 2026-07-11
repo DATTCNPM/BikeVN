@@ -21,6 +21,11 @@ export function useLoginPortal() {
   return useMutation({
     mutationFn: async (payload: LoginPayload) => authApi.login(payload),
 
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn các mã lỗi validation của Form đăng nhập Portal tương tự login Client
+    meta: {
+      silentErrorCodes: [1003, 1004],
+    },
+
     onSuccess: (auth) => {
       const token = auth.token;
 

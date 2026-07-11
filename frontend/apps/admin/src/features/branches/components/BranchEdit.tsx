@@ -1,10 +1,8 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
-
 import {
   Field,
   FieldError,
@@ -12,7 +10,6 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
-
 import { useUpdateBranch } from "@/features/branches/mutations";
 import { updateBranchSchema } from "@repo/schemas";
 import type { UpdateBranchPayload, Branch, BranchStatus } from "@repo/types";
@@ -23,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/ui/select";
+import { handleFormBackendError } from "@repo/providers";
+import { isApiError } from "@repo/api";
 
 const StatusOptions: BranchStatus[] = ["active", "inactive"];
 
@@ -33,13 +32,14 @@ type Props = {
 };
 
 export default function BranchEdit({ open, onOpenChange, branch }: Props) {
-  const { mutateAsync, isPending } = useUpdateBranch();
+  const { mutate: updateBranch, isPending } = useUpdateBranch(); // 🌟 Đổi từ mutateAsync sang mutate
 
   const {
     control,
     register,
     handleSubmit,
     reset,
+    setError, // 🌟 Lấy ra để map lỗi backend
     formState: { errors },
   } = useForm<UpdateBranchPayload>({
     resolver: zodResolver(updateBranchSchema),
@@ -56,15 +56,22 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
     });
   }, [branch, reset]);
 
-  const onSubmit = async (values: UpdateBranchPayload) => {
+  const onSubmit = (values: UpdateBranchPayload) => {
     if (!branch) return;
-    try {
-      await mutateAsync({ id: branch.id, payload: values });
-      toast.success("Branch updated successfully");
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to update branch");
-    }
+
+    updateBranch(
+      { id: branch.id, payload: values },
+      {
+        onSuccess: () => {
+          toast.success("Branch updated successfully");
+          onOpenChange(false);
+        },
+        onError: (error: unknown) => {
+          // 🌟 Tự động bắt lỗi cập nhật (ví dụ sửa tên trùng với chi nhánh khác)
+          handleFormBackendError(error, setError, isApiError);
+        },
+      },
+    );
   };
 
   return (
@@ -78,6 +85,7 @@ export default function BranchEdit({ open, onOpenChange, branch }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Save Changes"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <div className="grid gap-5">
         <FieldGroup>

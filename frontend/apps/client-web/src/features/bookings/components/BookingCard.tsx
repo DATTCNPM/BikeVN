@@ -47,6 +47,7 @@ import type { Branch, Vehicle, BookingFormValues } from "@repo/types";
 import { calculateTotalDays, calculateTotalPrice } from "@repo/utils";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { isApiError } from "@repo/api";
+import { ERROR_MESSAGES } from "@repo/providers"; // 🌟 Import file cấu hình lỗi nghiệp vụ
 
 type Props = {
   vehicle: Vehicle;
@@ -136,31 +137,26 @@ export default function BookingCard({ vehicle, branches }: Props) {
         navigate(`/payment/${booking.id}`);
       },
       onError: (error: unknown) => {
-        // 🌟 SỬA ĐỔI: Thay any bằng unknown
-        // 🌟 SỬA ĐỔI: Đọc type-safe cho HTTP Status
-        const status = isApiError(error)
-          ? error.status
-          : (error as any)?.response?.status;
-
-        if (status === 403) {
-          toast.error(
-            "You have an unpaid booking. Please complete the payment for your previous booking before making a new one.",
-          );
-          return;
-        }
-
-        // 🌟 SỬA ĐỔI: Bắt gọn các mã lỗi nghiệp vụ im lặng đã cấu hình trong hook (1017, 1018, 1020)
         if (isApiError(error)) {
-          if ([1017, 1018, 1020].includes(error.code)) {
-            toast.error(`Booking Failed: ${error.message}`);
+          // 1. Xử lý trường hợp phân quyền / trạng thái đặc biệt từ HTTP status
+          if (error.status === 403) {
+            toast.error(
+              "You have an unpaid booking. Please complete it before making a new one.",
+            );
             return;
           }
-          toast.error(error.message);
+
+          // 2. Tự động lấy câu báo lỗi chuẩn từ file cấu hình ERROR_MESSAGES dựa trên code hệ thống
+          const errorConfig = ERROR_MESSAGES[error.code];
+          const finalMessage = errorConfig
+            ? errorConfig.message
+            : error.message;
+
+          toast.error(finalMessage || "Failed to create booking.");
         } else {
+          // Lỗi không xác định hoặc lỗi mạng
           const err = error as Error;
-          toast.error(
-            err.message || "Failed to create booking. Please try again.",
-          );
+          toast.error(err.message || "An unexpected error occurred.");
         }
       },
     });

@@ -43,10 +43,10 @@ export default function UniversalDialog({
   submitLabel,
 }: UniversalDialogProps) {
   const handleAction = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (loading) return;
-  onSubmit(e); 
-};
+    e.preventDefault();
+    if (loading) return;
+    onSubmit(e);
+  };
 
   return (
     <Dialog open={open} onOpenChange={loading ? undefined : onOpenChange}>

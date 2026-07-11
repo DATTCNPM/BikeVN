@@ -1,9 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
 
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { Badge } from "@repo/ui/components/ui/badge";
-import { Button } from "@repo/ui/components/ui/button";
 import {
   Card,
   CardContent,
@@ -24,11 +22,9 @@ import {
 } from "lucide-react";
 
 import { useVehicleReturnByBookingId } from "@/features/vehicleReturns/vehicleReturnQueries";
-import VehicleReturnCreate from "@/features/vehicleReturns/components/VehicleReturnCreate";
 
 export default function BookingReturnPage() {
   const { bookingId = "" } = useParams();
-  const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
   const { data: vehicleReturn, isLoading } =
     useVehicleReturnByBookingId(bookingId);
@@ -55,19 +51,6 @@ export default function BookingReturnPage() {
           This booking hasn't been processed for a return. Please inspect the
           vehicle condition and create a receipt.
         </p>
-        <Button
-          onClick={() => setOpenCreateDialog(true)}
-          size="lg"
-          className="shadow-sm"
-        >
-          Create Return Receipt
-        </Button>
-
-        <VehicleReturnCreate
-          bookingId={bookingId}
-          open={openCreateDialog}
-          onOpenChange={setOpenCreateDialog}
-        />
       </div>
     );
   }

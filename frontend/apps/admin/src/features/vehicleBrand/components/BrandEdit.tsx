@@ -24,6 +24,9 @@ import type { VehicleBrand } from "@repo/types";
 import { vehicleBrandUpdateSchema } from "@repo/schemas";
 import type { VehicleBrandUpdateRequest } from "@repo/types";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,12 +34,13 @@ type Props = {
 };
 
 export default function BrandEdit({ open, onOpenChange, brand }: Props) {
-  const { mutateAsync, isPending } = useUpdateVehicleBrand();
+  const { mutate: updateVehicleBrand, isPending } = useUpdateVehicleBrand();
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<VehicleBrandUpdateRequest>({
     resolver: zodResolver(vehicleBrandUpdateSchema),
@@ -51,21 +55,24 @@ export default function BrandEdit({ open, onOpenChange, brand }: Props) {
     });
   }, [brand, reset]);
 
-  const onSubmit = async (values: VehicleBrandUpdateRequest) => {
+  const onSubmit = (values: VehicleBrandUpdateRequest) => {
     if (!brand) return;
 
-    try {
-      await mutateAsync({
+    updateVehicleBrand(
+      {
         id: brand.id,
         data: values,
-      });
-
-      toast.success("Update vehicle brand successfully");
-
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to update vehicle brand");
-    }
+      },
+      {
+        onSuccess: () => {
+          toast.success("Update vehicle brand successfully");
+          onOpenChange(false);
+        },
+        onError: (error: unknown) => {
+          handleFormBackendError(error, setError, isApiError);
+        },
+      },
+    );
   };
 
   return (
@@ -79,6 +86,7 @@ export default function BrandEdit({ open, onOpenChange, brand }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Save Changes"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <FieldGroup>
         <Field>

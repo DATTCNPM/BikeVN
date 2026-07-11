@@ -8,6 +8,12 @@ export function useCreatePermission() {
   return useMutation({
     mutationFn: (payload: PermissionRequest) =>
       permissionApi.createPermission(payload),
+
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn lỗi trùng tên quyền hạn trên Form tạo mới
+    meta: {
+      silentErrorCodes: [2003],
+    },
+
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: permissionKeys.all });
     },

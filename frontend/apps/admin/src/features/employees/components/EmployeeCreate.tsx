@@ -23,6 +23,9 @@ import { adminEmployeeCreationSchema } from "@repo/schemas";
 import type { AdminEmployeeCreationPayload } from "@repo/types";
 import { useBranches } from "@repo/hooks";
 
+import { handleFormBackendError } from "@repo/providers";
+import { isApiError } from "@repo/api";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -38,13 +41,14 @@ const defaultValues: AdminEmployeeCreationPayload = {
 };
 
 export default function EmployeeCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateEmployee();
+  const { mutate: createEmployee, isPending } = useCreateEmployee();
   const { data: branches } = useBranches();
 
   const {
     register,
     control,
     handleSubmit,
+    setError,
     reset,
     formState: { errors },
   } = useForm<AdminEmployeeCreationPayload>({
@@ -52,15 +56,17 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
     defaultValues,
   });
 
-  const onSubmit = async (values: AdminEmployeeCreationPayload) => {
-    try {
-      await mutateAsync(values);
-      toast.success("Create employee successfully");
-      reset(defaultValues);
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create employee");
-    }
+  const onSubmit = (values: AdminEmployeeCreationPayload) => {
+    createEmployee(values, {
+      onSuccess: () => {
+        toast.success("Employee created successfully");
+        reset(defaultValues);
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -74,6 +80,7 @@ export default function EmployeeCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create Employee"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <div className="grid gap-5">
         <FieldGroup>

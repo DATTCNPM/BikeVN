@@ -30,13 +30,18 @@ import {
 
 import { useLoginPortal } from "@/features/auth/useLoginPortal";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 export default function Login() {
-  const { mutateAsync: loginPortal, isPending } = useLoginPortal();
+  const { mutate: loginPortal, isPending } = useLoginPortal();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm<LoginPayload>({
     resolver: zodResolver(loginSchema),
@@ -46,17 +51,29 @@ export default function Login() {
     },
   });
 
-  const onSubmit = async (data: LoginPayload) => {
-    await loginPortal(data);
+  // 🌟 Đảm bảo hàm định hình rõ ràng kiểu void trả về để không làm nhiễu handleSubmit
+  const onSubmit = (data: LoginPayload): void => {
+    clearErrors("root");
+
+    loginPortal(data, {
+      onError: (error: unknown) => {
+        if (isApiError(error)) {
+          handleFormBackendError(error, setError, isApiError);
+        } else {
+          setError("root.serverError", {
+            type: "manual",
+            message: error instanceof Error ? error.message : "Mất kết nối tới máy chủ.",
+          });
+        }
+      },
+    });
   };
 
   return (
-    // Khung chứa căn giữa, bọc ngoài lớp bảo vệ mờ cao cấp kết hợp với Background xe của bạn
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md border-zinc-200/80 bg-white/90 shadow-2xl backdrop-blur-md dark:border-zinc-800/50 dark:bg-zinc-900/80">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
-            {/* Logo nhận diện portal nghiêm túc */}
             <div className="flex items-center gap-1.5 text-amber-500 dark:text-amber-400">
               <ShieldCheck className="h-6 w-6" />
               <span className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
@@ -74,7 +91,19 @@ export default function Login() {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* 🌟 Giải pháp triệt để: Sử dụng arrow function bọc ngoài để triệt tiêu Promise trả về cấu trúc HTML */}
+          <form 
+            onSubmit={(e) => {
+              void handleSubmit(onSubmit)(e);
+            }} 
+            className="space-y-4"
+          >
+            {errors.root?.serverError && (
+              <div className="p-3 text-xs font-medium text-destructive bg-destructive/10 rounded-xl border border-destructive/20 text-center">
+                {errors.root.serverError.message}
+              </div>
+            )}
+
             <FieldGroup className="space-y-3">
               {/* Trường Email */}
               <Field>
@@ -116,7 +145,6 @@ export default function Login() {
                     className="pr-10 focus-visible:ring-amber-500 dark:focus-visible:ring-amber-400 border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/50 w-full"
                     {...register("password")}
                   />
-                  {/* Nút ẩn hiện mật khẩu định vị chính xác theo chiều dọc */}
                   <Button
                     type="button"
                     variant="ghost"

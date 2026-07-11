@@ -7,6 +7,12 @@ export function useCreateRole() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: RoleRequest) => roleApi.createRole(payload),
+
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn lỗi trùng tên vai trò trên Form tạo mới
+    meta: {
+      silentErrorCodes: [2002],
+    },
+
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: roleKeys.all });
     },

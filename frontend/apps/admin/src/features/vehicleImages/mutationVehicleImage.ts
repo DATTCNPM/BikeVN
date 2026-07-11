@@ -22,6 +22,11 @@ export function useUploadVehicleImage() {
       payload: VehicleImageCreatePayload;
     }) => vehicleImageAdminApi.uploadImage(vehicleId, payload),
 
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn các mã lỗi liên quan đến Xe không tồn tại và Upload ảnh thất bại trên Form
+    meta: {
+      silentErrorCodes: [1005, 1012],
+    },
+
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: vehicleImageKeys.list(variables.vehicleId),
@@ -46,6 +51,11 @@ export function useUpdateVehicleImage() {
       payload: VehicleImageUpdatePayload;
     }) => vehicleImageAdminApi.editImage(vehicleId, imageId, payload),
 
+    // 🌟 Áp dụng tương tự cho nghiệp vụ Update ảnh xe
+    meta: {
+      silentErrorCodes: [1005, 1012],
+    },
+
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: vehicleImageKeys.list(variables.vehicleId),
@@ -66,6 +76,9 @@ export function useDeleteVehicleImage() {
 
       imageId: string;
     }) => vehicleImageAdminApi.deleteImage(vehicleId, imageId),
+
+    // Với nghiệp vụ xóa thường không cần silent error form, nhưng nếu form của bạn có bắt lỗi root
+    // thì có thể tùy chọn thêm: meta: { silentErrorCodes: [1005] }
 
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({

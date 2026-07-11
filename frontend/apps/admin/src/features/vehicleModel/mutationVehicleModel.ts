@@ -15,6 +15,11 @@ export const useCreateVehicleModel = () => {
     mutationFn: (data: VehicleModelCreationRequest) =>
       vehicleModelAdminApi.create(data),
 
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn các mã lỗi liên quan đến Model và Brand khi validate form
+    meta: {
+      silentErrorCodes: [1006, 1007, 1010],
+    },
+
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: vehicleModelKeys.all,
@@ -34,6 +39,11 @@ export const useUpdateVehicleModel = () => {
   return useMutation({
     mutationFn: ({ id, data }: UpdatePayload) =>
       vehicleModelAdminApi.update(id, data),
+
+    // 🌟 Áp dụng tương tự cho nghiệp vụ Update
+    meta: {
+      silentErrorCodes: [1006, 1007, 1010],
+    },
 
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({

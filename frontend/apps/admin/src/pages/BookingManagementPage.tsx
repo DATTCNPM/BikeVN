@@ -16,6 +16,7 @@ import UniversalFilterSheet, {
 import ReviewCreate from "@/features/reviews/components/ReviewCreate";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { IdCell } from "@/components/common/IdCell";
+import VehicleReturnCreate from "@/features/vehicleReturns/components/VehicleReturnCreate";
 
 import { useBookings, useBookingFilters } from "@/features/bookings/queries";
 import { useBranches } from "@repo/hooks";
@@ -239,6 +240,10 @@ export default function BookingManagementPage() {
                 setSelectedBooking(booking);
                 setOpenCreateDialog(true);
               }}
+              onCreateVehicleReturn={() => {
+                setSelectedBooking(booking);
+                setOpenCreateDialog(true);
+              }}
             />
           );
         },
@@ -308,6 +313,13 @@ export default function BookingManagementPage() {
           open={openCreateDialog}
           onOpenChange={setOpenCreateDialog}
           bookingId={selectedBooking?.id ?? ""}
+        />
+      )}
+      {openCreateDialog && (
+        <VehicleReturnCreate
+          bookingId={selectedBooking?.id ?? ""}
+          open={openCreateDialog}
+          onOpenChange={setOpenCreateDialog}
         />
       )}
     </div>

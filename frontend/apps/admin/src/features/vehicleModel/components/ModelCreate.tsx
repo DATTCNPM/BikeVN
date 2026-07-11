@@ -28,6 +28,10 @@ import { vehicleModelCreationSchema } from "@repo/schemas";
 import type { VehicleModelCreationRequest } from "@repo/types";
 import { useVehicleBrands } from "@repo/hooks";
 
+// 🌟 Import helper check error từ Packages hệ thống giống trang Login
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,7 +46,8 @@ const defaultValues: VehicleModelCreationRequest = {
 };
 
 export default function ModelCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateVehicleModel();
+  // 🌟 Đổi tên thành createModel và sử dụng cấu trúc mutate
+  const { mutate: createModel, isPending } = useCreateVehicleModel();
   const { data: brands } = useVehicleBrands(1, 100);
 
   const {
@@ -50,24 +55,27 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
     control,
     handleSubmit,
     reset,
+    setError, // 🌟 Lấy hàm setError để map lỗi backend vào từng ô input
     formState: { errors },
   } = useForm<VehicleModelCreationRequest>({
     resolver: zodResolver(vehicleModelCreationSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: VehicleModelCreationRequest) => {
-    try {
-      await mutateAsync(values);
-
-      toast.success("Create vehicle model successfully");
-
-      reset(defaultValues);
-
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create vehicle model");
-    }
+  const onSubmit = (values: VehicleModelCreationRequest) => {
+    // 🌟 Chuyển sang sử dụng cấu trúc callback onSuccess/onError của mutate
+    createModel(values, {
+      onSuccess: () => {
+        toast.success("Create vehicle model successfully");
+        reset(defaultValues);
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        // 🌟 Tự động phân tích payload lỗi backend và gán lỗi vào ô input phù hợp
+        // Ví dụ: Lỗi 1010 (brandName/modelName đã tồn tại) sẽ được map đúng vào field tương ứng
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -81,6 +89,7 @@ export default function ModelCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create Model"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -15,6 +15,9 @@ import { useCreateUser } from "@/features/users/mutations";
 import { adminUserCreationSchema } from "@repo/schemas";
 import type { AdminUserCreationPayload } from "@repo/types";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,11 +32,11 @@ const defaultValues: AdminUserCreationPayload = {
 };
 
 export default function UserCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateUser();
+  const { mutate: createUser, isPending } = useCreateUser();
 
   const {
     register,
-
+    setError,
     handleSubmit,
     reset,
     formState: { errors },
@@ -42,15 +45,17 @@ export default function UserCreate({ open, onOpenChange }: Props) {
     defaultValues,
   });
 
-  const onSubmit = async (values: AdminUserCreationPayload) => {
-    try {
-      await mutateAsync(values);
-      toast.success("User created successfully");
-      reset(defaultValues);
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create user");
-    }
+  const onSubmit = (values: AdminUserCreationPayload) => {
+    createUser(values, {
+      onSuccess: () => {
+        toast.success("User created successfully");
+        reset(defaultValues);
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -64,6 +69,7 @@ export default function UserCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create User"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <div className="grid gap-5">
         <FieldGroup>

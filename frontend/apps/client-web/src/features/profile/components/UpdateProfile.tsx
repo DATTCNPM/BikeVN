@@ -1,6 +1,6 @@
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { updateProfileSchema } from "@repo/schemas";
-import type { UpdateProfilePayload } from "@repo/types";
+import type { UpdateProfilePayload, User } from "@repo/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Input } from "@repo/ui/components/ui/input";
@@ -12,11 +12,10 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 import { toast } from "sonner";
-
 import { useEffect, useState } from "react";
-
-import type { User } from "@repo/types";
 import { useUpdateProfile } from "@/features/profile/useUpdateProfile";
+import { handleFormBackendError } from "@repo/providers"; // 🌟 Import hàm helper dùng chung
+import { isApiError } from "@repo/api";
 
 type UpdateProfileProps = {
   userProfile: User;
@@ -29,22 +28,18 @@ export default function UpdateProfile({
 }: UpdateProfileProps) {
   const [open, setOpen] = useState(false);
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
-  const methods = useForm<UpdateProfilePayload>({
-    resolver: zodResolver(updateProfileSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      cccdNumber: "",
-    },
-  });
 
   const {
     register,
     handleSubmit,
     reset,
+    setError, // 🌟 Lấy ra setError để chuyển giao cho hàm helper map lỗi
     formState: { errors },
-  } = methods;
+  } = useForm<UpdateProfilePayload>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: { name: "", email: "", phone: "", cccdNumber: "" },
+  });
+
   useEffect(() => {
     if (userProfile) {
       reset({
@@ -55,6 +50,7 @@ export default function UpdateProfile({
       });
     }
   }, [userProfile, reset]);
+
   const onSubmit = (data: UpdateProfilePayload) => {
     updateProfile(
       { userId: userProfile?.id || "", payload: data },
@@ -62,6 +58,10 @@ export default function UpdateProfile({
         onSuccess: () => {
           toast.success("Profile updated successfully");
           setOpen(false);
+        },
+        onError: (error: unknown) => {
+          // 🌟 TỰ ĐỘNG HOÀN TOÀN: Nếu trùng email (1002), lỗi tự nhảy vào ô Email
+          handleFormBackendError(error, setError, isApiError);
         },
       },
     );
@@ -83,53 +83,43 @@ export default function UpdateProfile({
         <Field>
           <FieldLabel htmlFor="name">Full Name</FieldLabel>
           <FieldContent>
-            <Input
-              type="text"
-              id="name"
-              placeholder={`${userProfile?.name || "John Doe"}`}
-              {...register("name")}
-            />
+            <Input type="text" id="name" {...register("name")} />
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </FieldContent>
         </Field>
+
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <FieldContent>
-            <Input
-              type="email"
-              id="email"
-              placeholder={`${userProfile?.email || "john.doe@example.com"}`}
-              {...register("email")}
-            />
+            <Input type="email" id="email" {...register("email")} />
             {errors.email && <FieldError>{errors.email.message}</FieldError>}
           </FieldContent>
         </Field>
+
         <Field>
           <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
           <FieldContent>
-            <Input
-              type="text"
-              id="phone"
-              placeholder={`${userProfile?.phone || "0123456789"}`}
-              {...register("phone")}
-            />
+            <Input type="text" id="phone" {...register("phone")} />
             {errors.phone && <FieldError>{errors.phone.message}</FieldError>}
           </FieldContent>
         </Field>
+
         <Field>
           <FieldLabel htmlFor="cccdNumber">CCCD Number</FieldLabel>
           <FieldContent>
-            <Input
-              type="text"
-              id="cccdNumber"
-              placeholder={`${userProfile?.cccdNumber || "123456789"}`}
-              {...register("cccdNumber")}
-            />
+            <Input type="text" id="cccdNumber" {...register("cccdNumber")} />
             {errors.cccdNumber && (
               <FieldError>{errors.cccdNumber.message}</FieldError>
             )}
           </FieldContent>
         </Field>
+
+        {/* 🌟 HIỂN THỊ LỖI CHUNG: Phòng trường hợp lỗi hệ thống phát sinh khi update */}
+        {errors.root && (
+          <div className="p-3 text-xs font-medium text-destructive bg-destructive/10 rounded-xl border border-destructive/20 text-center">
+            {errors.root.message}
+          </div>
+        )}
       </FieldGroup>
     </UniversalDialog>
   );

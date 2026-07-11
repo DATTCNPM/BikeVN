@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogin } from "@/features/auth/useLogin";
 import AuthCard from "@/features/auth/components/AuthCard";
 import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -50,39 +51,8 @@ export default function Login() {
         }
       },
       onError: (error: unknown) => {
-        // 🌟 Sử dụng kiểu dữ liệu unknown (Type-safe)
-        console.log("Login error:", error);
-
-        if (isApiError(error)) {
-          // TypeScript hiểu rõ biến error lúc này có thuộc tính .code và .message
-          switch (error.code) {
-            case 1003:
-              setError("email", {
-                type: "server",
-                message: "Email don't exist. Please check and try again.",
-              });
-              break;
-            case 1004:
-              setError("password", {
-                type: "server",
-                message: "Password is incorrect. Please check and try again.",
-              });
-              break;
-            default:
-              setError("root", {
-                message:
-                  error.message ||
-                  "An unexpected error occurred. Please try again later.",
-              });
-          }
-        } else {
-          const err = error as Error;
-          setError("root", {
-            message:
-              err.message ||
-              "An unexpected error occurred. Please try again later.",
-          });
-        }
+        // Tự động lo liệu toàn bộ: từ việc check lỗi email (1003) -> ô email, password (1004) -> ô password
+        handleFormBackendError(error, setError, isApiError);
       },
     });
   };
