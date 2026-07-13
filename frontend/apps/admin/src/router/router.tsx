@@ -49,6 +49,9 @@ const VehicleReturnAdminPage = lazy(
 const VehicleReturnBranchPage = lazy(
   () => import("@/pages/VehicleReturnBranchPage"),
 );
+
+const HomeEmployeePage = lazy(() => import("@/pages/HomeEmployeePage"));
+
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { ServerErrorPage } from "@/pages/ServerErrorPage";
 
@@ -127,7 +130,7 @@ const router = createBrowserRouter([
     path: "employee",
     element: <AdminDashboardLayout />,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <HomeEmployeePage /> },
       { path: "vehicles", element: <VehicleManagementPage /> },
       {
         path: "vehicles/:vehicleId/images",

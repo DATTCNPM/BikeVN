@@ -1,27 +1,26 @@
 import type { ChatMessageResponse } from "@repo/types";
-import { Card } from "@repo/ui/components/ui/card";
 import { cn } from "@repo/ui/lib/utils";
 
 type Props = {
   message: ChatMessageResponse;
   isCurrentUser: boolean;
+  showTimestamp: boolean;
 };
 
-export default function MessageItem({ message, isCurrentUser }: Props) {
-  // 🌟 KHẮC PHỤC LỖI 8:00 AM TẠI ĐÂY
+export default function MessageItem({
+  message,
+  isCurrentUser,
+  showTimestamp,
+}: Props) {
   const formatTime = (isoString: string | undefined | null) => {
     try {
-      // Nếu không có isoString hoặc chuỗi trống, lấy luôn thời gian hiện tại của client
       const date = isoString ? new Date(isoString) : new Date();
-
-      // Kiểm tra xem Date có hợp lệ không (tránh trường hợp chuỗi lỗi)
       if (isNaN(date.getTime())) {
         return new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         });
       }
-
       return date.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -37,8 +36,9 @@ export default function MessageItem({ message, isCurrentUser }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-1",
+        "flex flex-col gap-0.5 w-full transition-all",
         isCurrentUser ? "items-end" : "items-start",
+        showTimestamp ? "mb-3" : "mb-0",
       )}
     >
       <div
@@ -47,30 +47,24 @@ export default function MessageItem({ message, isCurrentUser }: Props) {
           isCurrentUser ? "justify-end" : "justify-start",
         )}
       >
-        <Card
+        <div
           className={cn(
-            "max-w-[75%] rounded-2xl shadow-none border-none h-auto block clear-both",
+            "max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words transition-colors",
             isCurrentUser
-              ? "rounded-br-md bg-primary text-secondary-foreground"
-              : "rounded-bl-md bg-card text-foreground",
+              ? "bg-primary text-primary-foreground"
+              : "bg-card border border-border/40 text-foreground",
           )}
         >
-          {message.content && (
-            <div className="px-4 py-2">
-              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                {message.content}
-              </p>
-            </div>
-          )}
-        </Card>
+          {message.content}
+        </div>
       </div>
 
-      {/* Thời gian + Trạng thái đã đọc */}
-      <div className="flex items-center gap-1.5 px-2 text-[10px] text-muted-foreground">
-        {/* Truyền giá trị vào hàm an toàn hơn */}
-        <span>{formatTime(message.createdAt)}</span>
-        {isCurrentUser && <span>• {message.isRead ? "Read" : "Sent"}</span>}
-      </div>
+      {showTimestamp && (
+        <div className="flex items-center gap-1.5 px-2 mt-1 text-[10px] text-muted-foreground select-none animate-fade-in">
+          <span>{formatTime(message.createdAt)}</span>
+          {isCurrentUser && <span>• {message.isRead ? "Read" : "Sent"}</span>}
+        </div>
+      )}
     </div>
   );
 }

@@ -233,17 +233,32 @@ export default function BookingManagementPage() {
                 setSelectedBooking(booking);
                 setDialogMode("reject");
               }}
-              onManagerVehicleReturn={() =>
-                navigate(`/admin/bookings/${booking.id}/return`)
+              onManagerVehicleReturn={
+                booking.actualReturnTime
+                  ? () => {
+                      void navigate(`/admin/bookings/${booking.id}/return`);
+                    }
+                  : undefined
               }
-              onCreateReview={() => {
-                setSelectedBooking(booking);
-                setOpenCreateDialog(true);
-              }}
-              onCreateVehicleReturn={() => {
-                setSelectedBooking(booking);
-                setOpenCreateDialog(true);
-              }}
+              // 🌟 Điều kiện hiển thị Đánh giá: status phải bằng "completed" (hoặc "complete" tùy database của bạn)
+              onCreateReview={
+                booking.status === "completed"
+                  ? () => {
+                      setSelectedBooking(booking);
+                      setOpenCreateDialog(true);
+                    }
+                  : undefined
+              }
+              // 🌟 Điều kiện tạo Biên bản trả xe: actualReturnTime phải khác null và undefined
+              onCreateVehicleReturn={
+                booking.actualReturnTime !== null &&
+                booking.actualReturnTime !== undefined
+                  ? () => {
+                      setSelectedBooking(booking);
+                      setOpenCreateDialog(true);
+                    }
+                  : undefined
+              }
             />
           );
         },

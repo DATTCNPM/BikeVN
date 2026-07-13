@@ -191,8 +191,10 @@ export default function AppSidebar() {
                       ? `${basePath}/${item.path}`
                       : basePath;
                     const isActive =
-                      location.pathname === href ||
-                      location.pathname.startsWith(`${href}/`);
+                      item.path === ""
+                        ? location.pathname === href
+                        : location.pathname === href ||
+                          location.pathname.startsWith(`${href}/`);
 
                     return (
                       <SidebarMenuItem key={item.title}>

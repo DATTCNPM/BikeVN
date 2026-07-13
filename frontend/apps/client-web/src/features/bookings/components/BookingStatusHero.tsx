@@ -23,7 +23,7 @@ type StatusConfigItem = {
 
 const STATUS_CONFIG: Record<Booking["status"], StatusConfigItem> = {
   pending: {
-    title: "Booking Successful",
+    title: "Booking Pending",
     description: "Your booking is pending confirmation from the store.",
     icon: Clock3,
     // 🟡 Màu vàng/hổ phách: Thể hiện trạng thái đang chờ xử lý

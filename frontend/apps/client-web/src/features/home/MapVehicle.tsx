@@ -45,29 +45,32 @@ export default function MapVehicle() {
 
   const handleSelectBranch = (branchId: string) => {
     setSelectedBranch(branchId);
-    setPage(1); // 🌟 Reset về page 1 khi đổi chi nhánh khác
+    setPage(1);
     setActiveTab("list");
   };
 
   return (
-    // h-screen và overflow-hidden giúp khóa cứng toàn bộ trang, không cho scroll chung
-    <div className="flex flex-col gap-4 p-4 md:p-6 w-full h-[calc(100vh-17rem)] overflow-hidden max-w-[1600px] mx-auto bg-background">
+    <div className="flex flex-col gap-4 p-4 md:p-6 w-full h-[calc(100vh-12rem)] overflow-hidden max-w-[1600px] mx-auto bg-background">
       {/* Mobile Tabs Switcher */}
-      <div className="flex md:hidden bg-muted p-1 rounded-lg w-full shrink-0">
+      <div className="flex md:hidden bg-muted p-1 rounded-xl w-full shrink-0">
         <button
-          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+          className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
             activeTab === "list"
-              ? "bg-background shadow-sm"
+              ? "bg-background shadow-sm text-foreground"
               : "text-muted-foreground"
           }`}
           onClick={() => setActiveTab("list")}
         >
-          List ({selectedBranchData ? vehicleCardData.length : "Chưa chọn"})
+          List (
+          {selectedBranchData
+            ? (vehicles?.totalElements ?? vehicleCardData.length)
+            : "None"}
+          )
         </button>
         <button
-          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+          className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
             activeTab === "map"
-              ? "bg-background shadow-sm"
+              ? "bg-background shadow-sm text-foreground"
               : "text-muted-foreground"
           }`}
           onClick={() => setActiveTab("map")}
@@ -78,7 +81,7 @@ export default function MapVehicle() {
 
       {/* Main Layout Container */}
       <div className="grid grid-cols-12 gap-4 md:gap-5 flex-1 min-h-0">
-        {/* Left Side: Branch & Vehicles (Rộng hơn để xe hiển thị trọn vẹn) */}
+        {/* Left Side: Branch & Vehicles */}
         <div
           className={`col-span-12 md:col-span-5 lg:col-span-5 h-full overflow-hidden ${
             activeTab === "list" ? "block" : "hidden md:block"
@@ -98,9 +101,9 @@ export default function MapVehicle() {
           />
         </div>
 
-        {/* Right Side: Map (Nhỏ gọn lại, nhường chỗ cho danh sách) */}
+        {/* Right Side: Map */}
         <div
-          className={`col-span-12 md:col-span-7 lg:col-span-7 rounded-xl overflow-hidden border border-border bg-card shadow-sm h-full ${
+          className={`col-span-12 md:col-span-7 lg:col-span-7 rounded-2xl overflow-hidden border border-border/50 bg-card shadow-sm h-full ${
             activeTab === "map" ? "block" : "hidden md:block"
           }`}
         >

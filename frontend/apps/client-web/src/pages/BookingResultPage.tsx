@@ -22,10 +22,21 @@ export default function BookingResultPage() {
     booking?.vehicleId || "",
   );
   const { data: branches = [], isLoading: branchesLoading } = useBranches();
-  const { data: vehicleReturn, isLoading: returnLoading } =
-    useVehicleReturnByBookingId(id);
 
-  if (isLoading || vehicleLoading || branchesLoading || returnLoading) {
+  // 🌟 ĐIỀU KIỆN THÔNG MINH: Chỉ tìm biên bản trả xe nếu đơn hàng đã sang trạng thái trả xe/hoàn thành
+  const hasReturnInfo = booking?.status === "completed";
+
+  const { data: vehicleReturn, isLoading: returnLoading } =
+    useVehicleReturnByBookingId(id, { enabled: !!booking && hasReturnInfo });
+
+  // 🌟 SỬA ĐIỀU KIỆN LOADING: returnLoading chỉ chặn nếu đơn hàng ĐỦ ĐIỀU KIỆN có biên bản phạt
+  const isPageLoading =
+    isLoading ||
+    vehicleLoading ||
+    branchesLoading ||
+    (hasReturnInfo && returnLoading);
+
+  if (isPageLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Spinner />
@@ -33,16 +44,30 @@ export default function BookingResultPage() {
     );
   }
 
+  // Chặn trường hợp gõ sai ID trên URL gây vỡ Layout
+  if (!booking) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center text-sm font-medium text-muted-foreground">
+        Booking order details could not be found.
+      </div>
+    );
+  }
+
   const pickupBranch = branches.find((b) => b.id === booking?.pickupBranchId);
   const returnBranch = branches.find((b) => b.id === booking?.returnBranchId);
+
+  console.log("BookingResultPage: booking", booking);
 
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
-        <ExtraFeeReminder vehicleReturnData={vehicleReturn} />
+        {/* Chỉ truyền dữ liệu phạt nếu thực sự tìm thấy */}
+        {vehicleReturn && (
+          <ExtraFeeReminder vehicleReturnData={vehicleReturn} />
+        )}
+
         <BookingStatusHero status={booking?.status} />
 
-        {/* Tích hợp toàn bộ thông tin Xe + Thông tin ID/Giá tiền tại đây */}
         <BookingVehicleCard
           booking={booking}
           vehicle={vehicle}
@@ -51,7 +76,7 @@ export default function BookingResultPage() {
         />
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px] items-start">
-          {/* CỘT TRÁI: CHỈ CÒN DUY NHẤT TIMELINE RÕ RÀNG */}
+          {/* CỘT TRÁI */}
           <div className="space-y-6">
             <BookingTimeline status={booking?.status} />
             {booking?.status === "completed" && (
@@ -59,10 +84,11 @@ export default function BookingResultPage() {
             )}
           </div>
 
-          {/* CỘT PHẢI: SIDEBAR HÀNH ĐỘNG CỐ ĐỊNH NHỎ GỌN */}
+          {/* CỘT PHẢI */}
           <div className="space-y-6 lg:sticky lg:top-6">
-            <BookingActions />
+            <BookingActions bookingId={booking.id} status={booking.status} />
 
+            {/* Chỉ hiện card phạt khi có thông tin trả xe từ admin */}
             {vehicleReturn && (
               <ReturnSurchargeCard vehicleReturn={vehicleReturn} />
             )}

@@ -50,17 +50,16 @@ export default function ChatContent({
   return (
     <section
       className={`
-        flex-1 h-full flex-col overflow-hidden bg-card border border-border/60 rounded-2xl shadow-sm
+        flex-1 h-full flex-col overflow-hidden bg-background border border-border/40 rounded-2xl shadow-sm
         ${conversation ? "flex" : "hidden md:flex"}
       `}
     >
-      {/* Thanh Header của Box Chat */}
       <div className="flex items-center border-b border-border/40 pr-4 bg-card shrink-0">
         <Button
           variant="ghost"
           size="icon"
           onClick={onBack}
-          className="ml-2 md:hidden shrink-0 rounded-xl"
+          className="ml-2 md:hidden shrink-0 rounded-xl size-8"
         >
           <ChevronLeft className="size-5" />
         </Button>
@@ -69,8 +68,7 @@ export default function ChatContent({
         </div>
       </div>
 
-      {/* 🌟 SỬA: Danh sách tin nhắn - Sử dụng flex-1 min-h-0 để tận dụng tối đa chiều cao còn lại */}
-      <div className="flex-1 min-h-0 bg-muted/5 relative">
+      <div className="flex-1 min-h-0 bg-muted/10 relative">
         <MessageList
           loading={loading}
           messages={messages}
@@ -78,7 +76,6 @@ export default function ChatContent({
         />
       </div>
 
-      {/* 🌟 SỬA: Ô nhập liệu - Xóa bỏ div bọc ngoài có padding thừa, chuyển padding vào trong ChatInput */}
       <div className="shrink-0 bg-card">
         <ChatInput onSend={handleSend} />
       </div>
