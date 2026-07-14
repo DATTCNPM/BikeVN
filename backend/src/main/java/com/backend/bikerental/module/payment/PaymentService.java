@@ -297,7 +297,7 @@ public class PaymentService {
    }
 
    @Transactional(readOnly = true)
-   @PreAuthorize("hasRole('employee')")
+   @PreAuthorize("hasAnyRole('admin', 'employee')")
    public PageResponse<PaymentResponse> getAllPaymentPerBranch(int page, int size)
    {
        var auth = SecurityContextHolder.getContext().getAuthentication();

@@ -38,6 +38,17 @@ public class PaymentController {
                 .result(paymentService.createPayment(request))
                 .build();
     }
+
+    @GetMapping("/branch")
+    public ApiResponse<PageResponse<PaymentResponse>> getPaymentPerBranch
+            (@RequestParam(defaultValue = "1") int page,
+             @RequestParam(defaultValue = "10") int size)
+    {
+        return ApiResponse.<PageResponse<PaymentResponse>>builder()
+                .result(paymentService.getAllPaymentPerBranch(page, size))
+                .build();
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     @GetMapping("/{paymentId}/vnpay-url")
     public ApiResponse<String> getVNPayUrl(
