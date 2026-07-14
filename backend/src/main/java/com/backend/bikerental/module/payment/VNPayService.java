@@ -86,7 +86,8 @@ public class VNPayService {
         vnp_Params.put("vnp_TmnCode", tmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
-        vnp_Params.put("vnp_TxnRef", paymentId);
+        //change
+        vnp_Params.put("vnp_TxnRef", paymentId + "_" + System.currentTimeMillis());
 
         vnp_Params.put("vnp_OrderInfo", "Pay for the order " + paymentId);
         vnp_Params.put("vnp_OrderType", vnp_OrderType);

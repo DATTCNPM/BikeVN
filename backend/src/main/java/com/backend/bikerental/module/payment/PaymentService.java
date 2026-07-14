@@ -6,6 +6,7 @@ import com.backend.bikerental.module.booking.Booking;
 import com.backend.bikerental.module.booking.BookingLockService;
 import com.backend.bikerental.module.payment.dto.PaymentCreationRequest;
 import com.backend.bikerental.module.payment.dto.PaymentResponse;
+import com.backend.bikerental.module.payment.dto.PaymentRetryRequest;
 import com.backend.bikerental.module.user.User;
 import com.backend.bikerental.module.vehicle.Vehicle;
 import com.backend.bikerental.module.booking.enums.BookingStatus;
@@ -64,7 +65,9 @@ public class PaymentService {
         if (booking.getStatus() == BookingStatus.completed) {
             throw new AppException(ErrorCode.BOOKING_ALREADY_COMPLETED);
         }
-        if (booking.getStatus() == BookingStatus.pending && booking.getExpiresAt() != null && booking.getExpiresAt().isBefore(LocalDateTime.now()))
+        if (booking.getStatus() == BookingStatus.pending
+                && booking.getExpiresAt() != null
+                && booking.getExpiresAt().isBefore(LocalDateTime.now()))
         {
             throw new AppException(ErrorCode.BOOKING_EXPIRED);
         }
@@ -96,7 +99,6 @@ public class PaymentService {
         payment.setUpdatedAt(now);
 
         paymentRepository.save(payment);
-        System.out.println("DB TYPE = " + payment.getType());
 
         return buildResponse(payment, booking);
     }
@@ -384,6 +386,33 @@ public class PaymentService {
 
         paymentRepository.save(payment);
         bookingRepository.save(booking);
+
+        return buildResponse(payment, booking);
+    }
+
+    @Transactional
+    @PreAuthorize("isAuthenticated()")
+    public PaymentResponse retryPayment(String paymentId, String newPaymentMethod)
+    {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(()-> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        if(payment.getStatus() == PaymentStatus.completed)
+        {
+            throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
+        }
+
+        if(payment.getStatus() == PaymentStatus.failed || payment.getStatus() == PaymentStatus.pending)
+        {
+            payment.setStatus(PaymentStatus.pending);
+            payment.setPaymentMethod(newPaymentMethod != null ? newPaymentMethod : "unspecified");
+            payment.setUpdatedAt(LocalDateTime.now());
+
+            paymentRepository.save(payment);
+        }
+
+        Booking booking = bookingRepository.findById(payment.getBookingId())
+                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         return buildResponse(payment, booking);
     }

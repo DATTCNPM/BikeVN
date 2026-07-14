@@ -4,6 +4,7 @@ import com.backend.bikerental.module.payment.dto.PaymentCreationRequest;
 import com.backend.bikerental.core.dto.ApiResponse;
 import com.backend.bikerental.core.dto.PageResponse;
 import com.backend.bikerental.module.payment.dto.PaymentResponse;
+import com.backend.bikerental.module.payment.dto.PaymentRetryRequest;
 import com.backend.bikerental.module.payment.enums.PaymentStatus;
 import com.backend.bikerental.module.payment.enums.PaymentType;
 import com.backend.bikerental.core.exception.AppException;
@@ -135,7 +136,16 @@ public class PaymentController {
                 return result;
             }
 
-            String paymentId = fields.get("vnp_TxnRef");
+            String paymentIdRaw = fields.get("vnp_TxnRef");
+
+            if (paymentIdRaw == null || paymentIdRaw.isEmpty()) {
+                result.put("RspCode", "99");
+                result.put("Message", "Missing vnp_TxnRef");
+                return result;
+            }
+
+            String paymentId = paymentIdRaw.split("_")[0];
+
             String responseCode = fields.get("vnp_ResponseCode");
             String transactionCode = fields.get("vnp_TransactionNo");
             long vnpAmount = Long.parseLong(fields.get("vnp_Amount")) / 100;
@@ -176,16 +186,6 @@ public class PaymentController {
                 .build();
     }
 
-    @PostMapping("/{id}/cancel")
-    public ApiResponse<PaymentResponse> cancelPayment(
-            @PathVariable String id,
-            @RequestParam(required = false, defaultValue = "User canceled") String reason
-    ) {
-        return ApiResponse.<PaymentResponse>builder()
-                .result(paymentService.cancelPayment(id, reason))
-                .build();
-    }
-
     @GetMapping("/admin/filter")
     @PreAuthorize("hasAnyRole('admin', 'employee')")
     public ApiResponse<PageResponse<PaymentResponse>> filterPayments(
@@ -213,6 +213,25 @@ public class PaymentController {
                 .result(paymentService.filterPayments(
                         bookingId, transactionCode, branchId, status, type, notes, fromDate, toDate, page, size
                 ))
+                .build();
+    }
+
+    @PatchMapping("/{id}/retry")
+    public ApiResponse<PaymentResponse> retryPayment(@PathVariable String paymentId,
+                                                     @RequestBody PaymentRetryRequest request)
+    {
+        return ApiResponse.<PaymentResponse>builder()
+                .result(paymentService.retryPayment(paymentId, request.getNewPaymentMethod()))
+                .build();
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ApiResponse<PaymentResponse> cancelPayment(
+            @PathVariable String id,
+            @RequestParam(required = false, defaultValue = "User canceled") String reason
+    ) {
+        return ApiResponse.<PaymentResponse>builder()
+                .result(paymentService.cancelPayment(id, reason))
                 .build();
     }
 
