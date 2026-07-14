@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
@@ -20,6 +20,7 @@ import VehicleReturnCreate from "@/features/vehicleReturns/components/VehicleRet
 
 import {
   useBookings,
+  useBookingsByBranch, // Import hook mới dành cho Employee
   useBookingFilters,
 } from "@/features/bookings/hooks/queries";
 import { useBranches } from "@repo/hooks";
@@ -45,6 +46,11 @@ const bookingStatusLabel = {
 
 export default function BookingManagementPage() {
   const navigate = useNavigate();
+  const { pathname } = useLocation(); // Bắt địa chỉ URL hiện tại
+
+  // Xác định xem người dùng hiện tại có phải là Employee không dựa vào URL Path
+  const isEmployee = pathname.startsWith("/employee");
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
@@ -62,14 +68,25 @@ export default function BookingManagementPage() {
 
   // Fetch dữ liệu nền
   const { data: branches = [], isLoading: isBranchesLoading } = useBranches();
-  const { data: bookings, isLoading } = useBookings(page, 10);
+
+  // 🌟 GIẢI PHÁP ĐỘNG: Chỉ gọi hook tương thích với Vai Trò để tránh dư thừa request
+  const { data: adminBookings, isLoading: isAdminBookingsLoading } =
+    useBookings(page, 10, { enabled: !isEmployee });
+
+  const { data: branchBookings, isLoading: isBranchBookingsLoading } =
+    useBookingsByBranch(page, 10, { enabled: isEmployee });
+
+  // Gộp loading từ cả 2 nguồn động
+  const isDataLoading = isEmployee
+    ? isBranchBookingsLoading
+    : isAdminBookingsLoading;
 
   const findNameByBranchId = (branchId: string) => {
     const branch = branches.find((b) => b.id === branchId);
     return branch ? branch.name : "Unknown Branch";
   };
 
-  // 1. Cập nhật filterConfigs đầy đủ các trường theo Schema
+  // 1. Cấu hình bộ lọc
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     return [
       {
@@ -92,12 +109,12 @@ export default function BookingManagementPage() {
       },
       {
         key: "fromDate",
-        title: "From Date (Từ ngày)",
+        title: "From Date",
         type: "date",
       },
       {
         key: "toDate",
-        title: "To Date (Đến ngày)",
+        title: "To Date",
         type: "date",
       },
       {
@@ -113,7 +130,7 @@ export default function BookingManagementPage() {
     ];
   }, [branches]);
 
-  // 2. Map dữ liệu từ UI gửi lên API (Có format chuẩn ISO Datetime cho backend)
+  // 2. Map dữ liệu bộ lọc gửi lên API
   const apiFilters = useMemo<
     BookingFilter & { page: number; size: number }
   >(() => {
@@ -124,11 +141,8 @@ export default function BookingManagementPage() {
       status: selectedFilters["status"]?.value,
       userId: selectedFilters["userId"]?.trim() || undefined,
       vehicleId: selectedFilters["vehicleId"]?.trim() || undefined,
-
-      // Chuyển đổi định dạng ngày "YYYY-MM-DD" thành chuẩn ISO "YYYY-MM-DDT00:00:00.000Z" theo schema
       fromDate: rawFromDate ? new Date(rawFromDate).toISOString() : undefined,
       toDate: rawToDate ? new Date(rawToDate).toISOString() : undefined,
-
       page,
       size: 10,
     };
@@ -141,19 +155,22 @@ export default function BookingManagementPage() {
   // Gọi API filter khi trạng thái hasFilter = true
   const { data: filteredBookings } = useBookingFilters(apiFilters, hasFilter);
 
+  // Phân bổ dữ liệu hiển thị (Dữ liệu gốc phụ thuộc vào isEmployee)
+  const defaultBookings = isEmployee ? branchBookings : adminBookings;
+
   const bookingData = useMemo(() => {
-    return (hasFilter ? filteredBookings?.data : bookings?.data) ?? [];
-  }, [bookings, filteredBookings, hasFilter]);
+    return (hasFilter ? filteredBookings?.data : defaultBookings?.data) ?? [];
+  }, [defaultBookings, filteredBookings, hasFilter]);
 
   const pagination = useMemo(() => {
-    const currentSource = hasFilter ? filteredBookings : bookings;
+    const currentSource = hasFilter ? filteredBookings : defaultBookings;
     return {
       page: currentSource?.currentPage ?? 1,
       pageSize: currentSource?.pageSize ?? 10,
       totalPages: currentSource?.totalPages ?? 1,
       totalElements: currentSource?.totalElements ?? 0,
     };
-  }, [bookings, filteredBookings, hasFilter]);
+  }, [defaultBookings, filteredBookings, hasFilter]);
 
   const columns = useMemo<ColumnDef<Booking>[]>(
     () => [
@@ -226,6 +243,7 @@ export default function BookingManagementPage() {
         header: "",
         cell: ({ row }) => {
           const booking = row.original;
+          const prefixPath = isEmployee ? "/employee" : "/admin";
           return (
             <BookingActionDropdown
               onApprove={() => {
@@ -239,11 +257,12 @@ export default function BookingManagementPage() {
               onManagerVehicleReturn={
                 booking.actualReturnTime
                   ? () => {
-                      void navigate(`/admin/bookings/${booking.id}/return`);
+                      void navigate(
+                        `${prefixPath}/bookings/${booking.id}/return`,
+                      );
                     }
                   : undefined
               }
-              // 🌟 Điều kiện hiển thị Đánh giá: status phải bằng "completed" (hoặc "complete" tùy database của bạn)
               onCreateReview={
                 booking.status === "completed"
                   ? () => {
@@ -252,7 +271,6 @@ export default function BookingManagementPage() {
                     }
                   : undefined
               }
-              // 🌟 Điều kiện tạo Biên bản trả xe: actualReturnTime phải khác null và undefined
               onCreateVehicleReturn={
                 booking.actualReturnTime !== null &&
                 booking.actualReturnTime !== undefined
@@ -267,10 +285,10 @@ export default function BookingManagementPage() {
         },
       },
     ],
-    [branches, navigate],
+    [branches, navigate, isEmployee],
   );
 
-  if (isLoading || isBranchesLoading) {
+  if (isDataLoading || isBranchesLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
@@ -280,7 +298,6 @@ export default function BookingManagementPage() {
 
   return (
     <div className="space-y-4">
-      {/* Tách và dời Filter vào trong Toolbar gọn gàng tương tự trang Vehicles */}
       <DataTableToolbar
         search={search}
         onSearchChange={(value) => {

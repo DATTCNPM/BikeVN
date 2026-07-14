@@ -1,13 +1,12 @@
 // src/apis/bookingApi.ts
-
 import { axiosAdmin } from "@repo/api";
-
 import type { Booking, BookingFilter, PaginationResponse } from "@repo/types";
-
 import { createBookingCommonApi } from "@repo/api";
 
 export const bookingAdminApi = {
   ...createBookingCommonApi(axiosAdmin),
+
+  // API lấy toàn bộ booking hệ thống (Dành cho Admin)
   async getAllBooking(page: number, size: number) {
     const data = await axiosAdmin.get<
       PaginationResponse<Booking>,
@@ -15,9 +14,20 @@ export const bookingAdminApi = {
     >(`/bookings?page=${page}&size=${size}`);
     return data;
   },
+
+  // API lấy booking của riêng chi nhánh (Dành cho Employee) - MỚI
+  async getAllBookingByBranch(page: number, size: number) {
+    const data = await axiosAdmin.get<
+      PaginationResponse<Booking>,
+      PaginationResponse<Booking>
+    >(`/bookings/branch?page=${page}&size=${size}`);
+    return data;
+  },
+
   async approveBooking(id: string) {
     await axiosAdmin.post(`/bookings/${id}/approve`);
   },
+
   async rejectBooking(id: string) {
     await axiosAdmin.post(`/bookings/${id}/reject`);
   },
@@ -29,7 +39,6 @@ export const bookingAdminApi = {
     >("/bookings/admin/filter", {
       params,
     });
-
     return data;
   },
 };

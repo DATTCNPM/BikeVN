@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, Menu, Search } from "lucide-react";
+import { Bell, ChevronDown, Menu, Search, Trash2 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import { Badge } from "@repo/ui/components/ui/badge";
@@ -17,13 +17,17 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { usePortalAuth } from "@/features/auth/hooks/usePortalAuth";
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
+import { useNotificationStore } from "@/hooks/useNotificationStore"; // Import Store
 
 export default function AppHeader() {
   const navigate = useNavigate();
 
   const logoutPortal = usePortalAuth((state) => state.logoutPortal);
-
   const { data: portalProfile } = usePortalProfile();
+
+  // 🔔 Lấy dữ liệu thông báo từ Zustand
+  const { notifications, unreadCount, resetUnreadCount, clearNotifications } =
+    useNotificationStore();
 
   const handleLogout = () => {
     logoutPortal();
@@ -69,18 +73,97 @@ export default function AppHeader() {
             />
           </div>
 
-          <Button
-            variant="outline"
-            size="icon"
-            className="relative rounded-2xl"
+          {/* 🔔 CHIẾC CHUÔNG THÔNG BÁO REALTIME */}
+          <DropdownMenu
+            onOpenChange={(open) => {
+              if (open) {
+                // Khi click mở chuông ra xem thì reset bộ đếm chưa đọc về 0
+                resetUnreadCount();
+              }
+            }}
           >
-            <Bell className="size-5" />
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="relative rounded-2xl"
+              >
+                <Bell className="size-5" />
 
-            <span className="absolute top-2 right-2 size-2 rounded-full bg-primary" />
-          </Button>
+                {/* Chỉ hiển thị chấm đỏ khi có thông báo chưa đọc */}
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground animate-bounce">
+                    {unreadCount}
+                  </span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-80 rounded-2xl p-2">
+              <div className="flex items-center justify-between px-3 py-2">
+                <p className="font-semibold text-sm">Notifications</p>
+                {notifications.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 rounded-lg text-muted-foreground hover:text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clearNotifications();
+                    }}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                )}
+              </div>
+              <DropdownMenuSeparator />
+
+              <div className="max-h-[300px] overflow-y-auto space-y-1">
+                {notifications.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <p className="text-xs text-muted-foreground">
+                      No new alerts yet
+                    </p>
+                  </div>
+                ) : (
+                  notifications.map((item, idx) => (
+                    <DropdownMenuItem
+                      key={idx}
+                      className="flex flex-col items-start gap-1 p-3 rounded-xl cursor-pointer"
+                      onClick={() => {
+                        // Xác định đường dẫn điều hướng dựa vào URL của Portal
+                        const isEmployee =
+                          window.location.pathname.startsWith("/employee");
+                        const route = isEmployee
+                          ? "/employee/bookings"
+                          : "/admin/bookings";
+                        navigate(route);
+                      }}
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <span className="font-semibold text-xs text-primary">
+                          {item.title}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(item.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {item.content}
+                      </p>
+                    </DropdownMenuItem>
+                  ))
+                )}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Separator orientation="vertical" className="hidden h-10 md:block" />
 
+          {/* Dropdown User Profile giữ nguyên phía sau... */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
