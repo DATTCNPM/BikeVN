@@ -15,4 +15,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, String>, JpaSp
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT v FROM Vehicle v WHERE v.id = :id")
     Optional<Vehicle> findByIdForUpdate(@Param("id") String id);
+
+    @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.currentBranch.id = :branchId")
+    long countByCurrentBranchId(@Param("branchId") String branchId);
 }

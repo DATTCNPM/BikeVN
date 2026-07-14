@@ -62,6 +62,20 @@ public interface BookingRepository extends JpaRepository<Booking, String>, JpaSp
             "ORDER BY COUNT(b.id) DESC")
     List<Object[]> getPopularVehicleBrands();
 
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.pickupBranchId = :branchId")
+    long countBookingsByBranch(@Param("branchId") String branchId);
+
+    @Query("SELECT COUNT(DISTINCT b.userId) FROM Booking b WHERE b.pickupBranchId = :branchId")
+    long countUniqueCustomersByBranch(@Param("branchId") String branchId);
+
+    @Query("SELECT v.brand.name, COUNT(b.id) " +
+            "FROM Booking b JOIN Vehicle v ON b.vehicleId = v.id " +
+            "WHERE b.status IN ('completed', 'approved') " +
+            "AND b.pickupBranchId = :branchId " +
+            "GROUP BY v.brand.name " +
+            "ORDER BY COUNT(b.id) DESC")
+    List<Object[]> getPopularVehicleBrandsByBranch(@Param("branchId") String branchId);
+
     Page<Booking> findByPickupBranchIdOrReturnBranchId(String pickupBranchId,
                                                        String returnBranchId,
                                                        Pageable pageable);
