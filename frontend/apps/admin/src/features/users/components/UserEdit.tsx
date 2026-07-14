@@ -12,7 +12,7 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useUpdateUser } from "@/features/users/mutations";
+import { useUpdateUser } from "@/features/users/hooks/mutations";
 import { updateUserSchema } from "@repo/schemas";
 import type { UpdateUserPayload, User } from "@repo/types";
 
@@ -50,15 +50,18 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
 
   const onSubmit = (values: UpdateUserPayload) => {
     if (!user) return;
-    updateUser({ id: user.id, payload: values }, {
-      onSuccess: () => {
-        toast.success("Update user successfully");
-        onOpenChange(false);
+    updateUser(
+      { id: user.id, payload: values },
+      {
+        onSuccess: () => {
+          toast.success("Update user successfully");
+          onOpenChange(false);
+        },
+        onError: (error: unknown) => {
+          handleFormBackendError(error, setError, isApiError);
+        },
       },
-      onError: (error: unknown) => {
-        handleFormBackendError(error, setError, isApiError);
-      },
-    });
+    );
   };
 
   return (

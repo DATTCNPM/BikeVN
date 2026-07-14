@@ -13,7 +13,7 @@ import {
 } from "@repo/ui/components/ui/select";
 import ConversationItem from "./ConversationItem";
 import { useBranches } from "@repo/hooks";
-import { useGetOrCreateConversation } from "@/features/chat/useChatQueries";
+import { useGetOrCreateConversation } from "@/features/chat/hooks/useChatQueries";
 
 type Props = {
   loading: boolean;

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { reviewAdminApi } from "@repo/api";
+import { reviewAdminApi } from "../api/reviewAdminApi";
 import { reviewKeys } from "@repo/hooks";
 import type { ReviewQueryParams } from "@repo/types";
 

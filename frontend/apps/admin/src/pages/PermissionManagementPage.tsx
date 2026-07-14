@@ -10,7 +10,7 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import PermissionCreate from "@/features/permissions/components/PermissionCreate";
 import PermissionDelete from "@/features/permissions/components/PermissionDelete";
 
-import { usePermissions } from "@/features/permissions/queriesPermission";
+import { usePermissions } from "@/features/permissions/hooks/queriesPermission";
 
 import type { Permission } from "@repo/types";
 

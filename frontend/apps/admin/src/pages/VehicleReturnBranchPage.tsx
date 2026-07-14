@@ -15,8 +15,8 @@ import { IdCell } from "@/components/common/IdCell";
 import {
   useVehicleReturnsPerBranch,
   useFilterVehicleReturns,
-} from "@/features/vehicleReturns/vehicleReturnQueries";
-import { usePortalProfile } from "@/features/auth/usePortalProfile";
+} from "@/features/vehicleReturns/hooks/vehicleReturnQueries";
+import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 
 import type { VehicleReturn, VehicleReturnFilterParams } from "@repo/types";
 

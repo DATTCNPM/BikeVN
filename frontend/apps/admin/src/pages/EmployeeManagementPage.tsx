@@ -20,7 +20,7 @@ import EmployeeDelete from "@/features/employees/components/EmployeeDelete";
 import {
   useEmployees,
   useEmployeeFilters,
-} from "@/features/employees/queriesEmployee";
+} from "@/features/employees/hooks/queriesEmployee";
 import { useBranches } from "@repo/hooks";
 
 import type { User } from "@repo/types";

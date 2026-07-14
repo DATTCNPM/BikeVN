@@ -2,7 +2,7 @@ import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useDeletePermission } from "../mutationsPermission";
+import { useDeletePermission } from "../hooks/mutationsPermission";
 
 import type { Permission } from "@repo/types";
 

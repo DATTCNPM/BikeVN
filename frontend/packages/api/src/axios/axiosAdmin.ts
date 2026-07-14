@@ -8,7 +8,7 @@ const refreshAxios = axios.create({
   timeout: 10000,
 });
 
-export default createAxiosAuth({
+export const axiosAdmin = createAxiosAuth({
   tokenKey: TOKEN_KEYS.PORTAL_ACCESS,
   refreshTokenKey: TOKEN_KEYS.PORTAL_REFRESH,
   onRefreshToken: async (token) => {

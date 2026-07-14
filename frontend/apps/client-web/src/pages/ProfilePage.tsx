@@ -8,8 +8,8 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 // Hooks
-import { useProfile } from "@/features/profile/useProfile";
-import { useLogout } from "@/features/auth/useLogout";
+import { useProfile } from "@/features/profile/hooks/useProfile";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import AccountSettings from "@/features/profile/components/AccountSettingSection";
 import { useState } from "react";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";

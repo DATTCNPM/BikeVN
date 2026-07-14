@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePortalAuth } from "./usePortalAuth";
-import { usePortalProfile } from "./usePortalProfile";
+import { usePortalAuth } from "./hooks/usePortalAuth";
+import { usePortalProfile } from "./hooks/usePortalProfile";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 export default function ProtectedRoute({

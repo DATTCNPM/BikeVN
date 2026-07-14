@@ -5,34 +5,25 @@ export * from "./client/reviewClientApi";
 export * from "./client/userClientApi";
 export * from "./client/chatClientApi";
 
-export * from "./admin/userAdminApi";
-export * from "./admin/roleApi";
-export * from "./admin/permissionApi";
-export * from "./admin/bookingAdminApi";
-export * from "./admin/vehicleAdminApi";
-export * from "./admin/branchAdminApi";
-export * from "./admin/authAdminApi";
-export * from "./admin/vehicleBrandAdminApi";
-export * from "./admin/vehicleModelAdminApi";
-export * from "./admin/vehicleImageAdminApi";
-export * from "./admin/paymentAdminApi";
-export * from "./admin/vehicleReturnAdminApi";
-export * from "./admin/reviewAdminApi";
-export * from "./admin/userAdminApi";
-export * from "./admin/chatAdminApi";
-export * from "./admin/statisticAdminApi";
-
 export * from "./common/chatApi";
 export * from "./common/notificationApi";
 export * from "./common/vehicleBrandPublicApi";
 export * from "./common/vehiclePublicApi";
 export * from "./common/branchPublicApi";
 export * from "./common/authApi";
+export * from "./common/reviewPublicApi";
+
 export * from "./common/vehicleModelPublicApi";
 export * from "./common/vehicleImagePublicApi";
 export * from "./common/createBookingCommonApi";
 export * from "./common/createPaymentCommonApi";
-export * from "./common/reviewPublicApi";
+export * from "./common/createReviewCommonApi";
+export * from "./common/createUserCommonApi";
+export * from "./common/createVehicleReturnCommonApi";
+
+export * from "./axios/createAxiosAuth";
+export * from "./axios/axiosAdmin";
+export * from "./axios/axiosClient";
 
 export * from "./error/ApiError";
 

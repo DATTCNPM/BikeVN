@@ -15,7 +15,7 @@ import UniversalFilterSheet, {
   type FilterConfigItem,
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
-import { usePayments } from "@/features/payments/queries";
+import { usePayments } from "@/features/payments/hooks/queries";
 import { useBranches } from "@repo/hooks"; // Sử dụng để lấy danh sách chi nhánh giống bên User
 
 import type {

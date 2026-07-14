@@ -15,8 +15,8 @@ import { Input } from "@repo/ui/components/ui/input";
 import { Separator } from "@repo/ui/components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 
-import { usePortalAuth } from "@/features/auth/usePortalAuth";
-import { usePortalProfile } from "@/features/auth/usePortalProfile";
+import { usePortalAuth } from "@/features/auth/hooks/usePortalAuth";
+import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 
 export default function AppHeader() {
   const navigate = useNavigate();

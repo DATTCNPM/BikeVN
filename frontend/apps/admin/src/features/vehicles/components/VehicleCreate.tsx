@@ -21,7 +21,7 @@ import {
 } from "@repo/ui/components/ui/field";
 
 import { toast } from "@repo/ui/components/ui/sonner";
-import { useCreateVehicle } from "@/features/vehicles/mutations";
+import { useCreateVehicle } from "@/features/vehicles/hooks/mutations";
 import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
 import { vehicleCreationSchema } from "@repo/schemas";

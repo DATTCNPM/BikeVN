@@ -16,7 +16,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { permissionCreationSchema } from "@repo/schemas";
 
-import { useCreatePermission } from "../mutationsPermission";
+import { useCreatePermission } from "../hooks/mutationsPermission";
 
 import type { PermissionRequest } from "@repo/types";
 

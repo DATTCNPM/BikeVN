@@ -1,6 +1,6 @@
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useDeleteRole } from "../mutationsRole";
+import { useDeleteRole } from "../hooks/mutationsRole";
 
 import type { Role } from "@repo/types";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";

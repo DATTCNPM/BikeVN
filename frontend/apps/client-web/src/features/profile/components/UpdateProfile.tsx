@@ -13,7 +13,7 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { useUpdateProfile } from "@/features/profile/useUpdateProfile";
+import { useUpdateProfile } from "@/features/profile/hooks/useUpdateProfile";
 import { handleFormBackendError } from "@repo/providers"; // 🌟 Import hàm helper dùng chung
 import { isApiError } from "@repo/api";
 

@@ -16,7 +16,7 @@ import { useBranches } from "@repo/hooks";
 import {
   useVehicleReturnsAll,
   useFilterVehicleReturns,
-} from "@/features/vehicleReturns/vehicleReturnQueries";
+} from "@/features/vehicleReturns/hooks/vehicleReturnQueries";
 
 import type { VehicleReturn, VehicleReturnFilterParams } from "@repo/types";
 

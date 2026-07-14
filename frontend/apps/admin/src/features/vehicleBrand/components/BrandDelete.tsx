@@ -2,7 +2,7 @@ import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useDeleteVehicleBrand } from "@/features/vehicleBrand/mutationVehicleBrand";
+import { useDeleteVehicleBrand } from "@/features/vehicleBrand/hooks/mutationVehicleBrand";
 
 import type { VehicleBrand } from "@repo/types";
 

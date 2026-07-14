@@ -15,7 +15,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@repo/ui/components/ui/alert";
-import { useGetVNPayUrl } from "@/features/payments/mutations"; // Sử dụng mutation lấy URL VNPay cũ
+import { useGetVNPayUrl } from "@/features/payments/hooks/mutations"; // Sử dụng mutation lấy URL VNPay cũ
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { VehicleReturn } from "@repo/types"; // Import đúng kiểu VehicleReturn
 

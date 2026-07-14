@@ -14,7 +14,6 @@ export * from "./queries/queriesChat";
 export * from "./queries/useServerHealthCheck";
 
 export * from "./mutations/mutationsReview";
-export * from "./mutations/mutationsPayment";
 
 export * from "./queryKeys/bookingKeys";
 export * from "./queryKeys/branchKeys";

@@ -10,7 +10,7 @@ import type { Booking } from "@repo/types";
 import {
   useApproveBooking,
   useRejectBooking,
-} from "@/features/bookings/mutations";
+} from "@/features/bookings/hooks/mutations";
 
 import { isApiError } from "@repo/api";
 import { useState } from "react";

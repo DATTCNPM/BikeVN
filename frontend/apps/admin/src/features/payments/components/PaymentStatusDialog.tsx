@@ -8,8 +8,8 @@ import {
   useApprovePaymentManually,
   useAdminCancelPayment,
   useProcessRefund,
-} from "@/features/payments/mutations";
-import { usePortalProfile } from "@/features/auth/usePortalProfile";
+} from "@/features/payments/hooks/mutations";
+import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 import { isApiError } from "@repo/api";
 
 type Props = {

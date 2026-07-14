@@ -1,5 +1,5 @@
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
-import { useDeleteEmployee } from "@/features/employees/mutationEmployee";
+import { useDeleteEmployee } from "@/features/employees/hooks/mutationEmployee";
 import { toast } from "@repo/ui/components/ui/sonner";
 import type { User } from "@repo/types";
 

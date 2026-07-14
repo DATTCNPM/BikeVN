@@ -32,7 +32,7 @@ import type { VehicleModelUpdateRequest } from "@repo/types";
 
 import type { VehicleModel } from "@repo/types";
 
-import { useUpdateVehicleModel } from "@/features/vehicleModel/mutationVehicleModel";
+import { useUpdateVehicleModel } from "@/features/vehicleModel/hooks/mutationVehicleModel";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

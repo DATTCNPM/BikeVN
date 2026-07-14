@@ -4,13 +4,13 @@ import { MessageCircle } from "lucide-react";
 import {
   useAdminConversations,
   useAdminMessageHistory,
-} from "@/features/chat/useChatQueries";
-import { useAdminChatManager } from "@/features/chat/useChatManager";
+} from "@/features/chat/hooks/useChatQueries";
+import { useAdminChatManager } from "@/features/chat/hooks/useChatManager";
 
 import { Badge } from "@repo/ui/components/ui/badge";
 import { ChatSidebar } from "@/features/chat/components/ChatSidebar";
 import { ChatActiveWindow } from "@/features/chat/components/ChatActiveWindow";
-import { usePortalProfile } from "@/features/auth/usePortalProfile";
+import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 interface AdminConversation {
   id: string;
   title: string;

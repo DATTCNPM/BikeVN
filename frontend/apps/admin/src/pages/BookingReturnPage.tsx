@@ -21,7 +21,7 @@ import {
   DollarSign,
 } from "lucide-react";
 
-import { useVehicleReturnByBookingId } from "@/features/vehicleReturns/vehicleReturnQueries";
+import { useVehicleReturnByBookingId } from "@/features/vehicleReturns/hooks/vehicleReturnQueries";
 
 export default function BookingReturnPage() {
   const { bookingId = "" } = useParams();

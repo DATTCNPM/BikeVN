@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import { Bell } from "lucide-react";
 
-import { useUnreadNotifications } from "@/features/notifications/useUnreadNotifications";
+import { useUnreadNotifications } from "@/features/notifications/hooks/useUnreadNotifications";
 
 import {
   Popover,
