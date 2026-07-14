@@ -2,23 +2,23 @@ package com.backend.bikerental.module.payment;
 
 import com.backend.bikerental.core.component.PricingCalculator;
 import com.backend.bikerental.core.dto.PageResponse;
-import com.backend.bikerental.module.booking.Booking;
-import com.backend.bikerental.module.booking.BookingLockService;
-import com.backend.bikerental.module.payment.dto.PaymentCreationRequest;
-import com.backend.bikerental.module.payment.dto.PaymentResponse;
-import com.backend.bikerental.module.payment.dto.PaymentRetryRequest;
-import com.backend.bikerental.module.user.User;
-import com.backend.bikerental.module.vehicle.Vehicle;
-import com.backend.bikerental.module.booking.enums.BookingStatus;
-import com.backend.bikerental.module.payment.enums.PaymentStatus;
-import com.backend.bikerental.module.payment.enums.PaymentType;
-import com.backend.bikerental.module.vehicle.enums.StatusVehicleEnum;
 import com.backend.bikerental.core.exception.AppException;
 import com.backend.bikerental.core.exception.ErrorCode;
+import com.backend.bikerental.module.booking.Booking;
+import com.backend.bikerental.module.booking.BookingLockService;
 import com.backend.bikerental.module.booking.BookingRepository;
-import com.backend.bikerental.module.user.UserRepository;
-import com.backend.bikerental.module.vehicle.VehicleRepository;
+import com.backend.bikerental.module.booking.enums.BookingStatus;
 import com.backend.bikerental.module.branch.BranchSecurityUtil;
+import com.backend.bikerental.module.chat.dto.NotificationMessage;
+import com.backend.bikerental.module.payment.dto.PaymentCreationRequest;
+import com.backend.bikerental.module.payment.dto.PaymentResponse;
+import com.backend.bikerental.module.payment.enums.PaymentStatus;
+import com.backend.bikerental.module.payment.enums.PaymentType;
+import com.backend.bikerental.module.user.User;
+import com.backend.bikerental.module.user.UserRepository;
+import com.backend.bikerental.module.vehicle.Vehicle;
+import com.backend.bikerental.module.vehicle.VehicleRepository;
+import com.backend.bikerental.module.vehicle.enums.StatusVehicleEnum;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +56,7 @@ public class PaymentService {
     BranchSecurityUtil branchSecurityUtil;
     UserRepository userRepository;
     VNPayService vnPayService;
+    SimpMessagingTemplate messagingTemplate;
     static final int EXPIRE_MINUTES = 20;
     @Transactional
     public PaymentResponse createPayment(PaymentCreationRequest request) {
@@ -179,13 +181,15 @@ public class PaymentService {
         payment.setPaidAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 
+
+        Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
+                .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
         if(PaymentType.rental.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.approved);
             booking.setExpiresAt(null);
 
-            Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
-                    .orElseThrow(() -> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
             vehicle.setStatus(StatusVehicleEnum.rented);
             vehicleRepository.save(vehicle);
 
@@ -201,6 +205,21 @@ public class PaymentService {
         bookingRepository.save(booking);
 
         bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(),booking.getUserId());
+
+        String branchId = booking.getPickupBranchId();
+
+        NotificationMessage notificationMessage = NotificationMessage.builder()
+                .type("NEW_BOOKING_ALERT")
+                .branchId(branchId)
+                .title("New Booking !!!")
+                .content("Xe " + vehicle.getName() + " (License: " + vehicle.getLicensePlate() +
+                        ") just rented!!!")
+                .referenceId(booking.getId())
+                .build();
+        messagingTemplate.convertAndSend(
+                "/topic/branch/" + branchId + "/notifications", notificationMessage
+        );
+
     }
 
     @Transactional
@@ -566,6 +585,18 @@ public class PaymentService {
             payment.setNotes("NEEDS_REFUND");
             paymentRepository.save(payment);
         }
+
+        NotificationMessage notificationMessage = NotificationMessage.builder()
+                .type("NEED_REFUND_ALERT")
+                .branchId(payment.getBranchId())
+                .title("Need Refund !!!")
+                .content("Payment " + payment.getId() + "need refund")
+                .referenceId(payment.getBookingId())
+                .build();
+
+        messagingTemplate.convertAndSend(
+                "/topic/branch/" + payment.getBranchId() + "/notifications", notificationMessage
+        );
     }
 }
 

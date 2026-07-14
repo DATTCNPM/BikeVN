@@ -217,11 +217,11 @@ public class PaymentController {
     }
 
     @PatchMapping("/{id}/retry")
-    public ApiResponse<PaymentResponse> retryPayment(@PathVariable String paymentId,
+    public ApiResponse<PaymentResponse> retryPayment(@PathVariable String id,
                                                      @RequestBody PaymentRetryRequest request)
     {
         return ApiResponse.<PaymentResponse>builder()
-                .result(paymentService.retryPayment(paymentId, request.getNewPaymentMethod()))
+                .result(paymentService.retryPayment(id, request.getNewPaymentMethod()))
                 .build();
     }
 
