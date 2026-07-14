@@ -26,5 +26,5 @@
     },
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src"]
+  "include": ["src", "../../packages/api/src/axios/axiosAdmin.ts"]
 }

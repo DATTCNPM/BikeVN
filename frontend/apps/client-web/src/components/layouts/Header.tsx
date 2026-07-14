@@ -19,8 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
 import { NotificationPopover } from "@/features/notifications/components/notificationPopover";
-import { useProfile } from "@/features/profile/useProfile";
-import { useLogout } from "@/features/auth/useLogout";
+import { useProfile } from "@/features/profile/hooks/useProfile";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 

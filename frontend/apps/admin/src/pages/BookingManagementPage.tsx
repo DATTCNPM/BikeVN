@@ -18,7 +18,10 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import { IdCell } from "@/components/common/IdCell";
 import VehicleReturnCreate from "@/features/vehicleReturns/components/VehicleReturnCreate";
 
-import { useBookings, useBookingFilters } from "@/features/bookings/queries";
+import {
+  useBookings,
+  useBookingFilters,
+} from "@/features/bookings/hooks/queries";
 import { useBranches } from "@repo/hooks";
 import type { Booking, BookingFilter } from "@repo/types";
 

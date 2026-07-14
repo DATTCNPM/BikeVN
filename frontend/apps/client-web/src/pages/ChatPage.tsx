@@ -4,9 +4,9 @@ import ChatSidebar from "@/features/chat/components/sidebar/ChatSidebar";
 import {
   useMyConversations,
   useMessageHistory,
-} from "@/features/chat/useChatQueries";
-import { useChatManager } from "@/features/chat/useChatManager";
-import { useProfile } from "@/features/profile/useProfile";
+} from "@/features/chat/hooks/useChatQueries";
+import { useChatManager } from "@/features/chat/hooks/useChatManager";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 
 export default function ChatPage() {
   const { data: profile } = useProfile();

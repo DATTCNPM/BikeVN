@@ -28,7 +28,7 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 
-import { useLoginPortal } from "@/features/auth/useLoginPortal";
+import { useLoginPortal } from "@/features/auth/hooks/useLoginPortal";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";
@@ -62,7 +62,10 @@ export default function Login() {
         } else {
           setError("root.serverError", {
             type: "manual",
-            message: error instanceof Error ? error.message : "Mất kết nối tới máy chủ.",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Mất kết nối tới máy chủ.",
           });
         }
       },
@@ -92,10 +95,10 @@ export default function Login() {
 
         <CardContent>
           {/* 🌟 Giải pháp triệt để: Sử dụng arrow function bọc ngoài để triệt tiêu Promise trả về cấu trúc HTML */}
-          <form 
+          <form
             onSubmit={(e) => {
               void handleSubmit(onSubmit)(e);
-            }} 
+            }}
             className="space-y-4"
           >
             {errors.root?.serverError && (

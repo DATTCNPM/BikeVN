@@ -36,7 +36,6 @@ import { Label } from "@repo/ui/components/ui/label";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import UpdateProfile from "./UpdateProfile";
 
-import { useDeleteUser } from "@/features/profile/useDeleteUser";
 import { updatePasswordSchema } from "@repo/schemas";
 import type { UpdatePasswordPayload } from "@repo/types";
 import { useState } from "react";
@@ -47,7 +46,6 @@ interface AccountSettingsProps {
 
 export default function AccountSettings({ user }: AccountSettingsProps) {
   const { theme, setTheme } = useTheme();
-  const { mutate: deleteUser } = useDeleteUser();
   const [openDelete, setOpenDelete] = useState(false);
 
   const methods = useForm<UpdatePasswordPayload>({
@@ -236,7 +234,9 @@ export default function AccountSettings({ user }: AccountSettingsProps) {
               variant="destructive"
               title="Confirm Account Deletion"
               description="Are you sure you want to delete your account? This action cannot be undone."
-              onSubmit={() => deleteUser(user?.id || "")}
+              onSubmit={() => {
+                toast.error("Feature not implemented yet");
+              }}
               open={openDelete}
               onOpenChange={setOpenDelete}
             />

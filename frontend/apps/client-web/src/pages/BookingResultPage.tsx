@@ -12,7 +12,7 @@ import { useVehicle, useBranches } from "@repo/hooks";
 import {
   useBooking,
   useVehicleReturnByBookingId,
-} from "@/features/bookings/queries";
+} from "@/features/bookings/hooks/queries";
 
 export default function BookingResultPage() {
   const { id = "" } = useParams();

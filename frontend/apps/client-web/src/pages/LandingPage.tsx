@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { useAuthStore } from "@/features/auth/authStore";
+import { useAuthStore } from "@/features/auth/stores/authStore";
 
 import Vehicle from "@/features/landing/Vehicle";
 import Hero from "@/features/landing/Hero";

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { usePortalAuth } from "./usePortalAuth";
+import { usePortalAuth } from "./hooks/usePortalAuth";
 
 export function AuthInitializer() {
   const initializeAuth = usePortalAuth((state) => state.initializeAuth);

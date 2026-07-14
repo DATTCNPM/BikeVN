@@ -6,7 +6,7 @@ import { Card, CardContent } from "@repo/ui/components/ui/card";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 
-import { usePortalProfile } from "@/features/auth/usePortalProfile";
+import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 import { useBranches } from "@repo/hooks";
 
 export default function InfoPage() {

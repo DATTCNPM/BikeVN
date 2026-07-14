@@ -15,7 +15,7 @@ import {
 } from "@repo/ui/components/ui/field";
 
 import { useNavigate } from "react-router-dom";
-import { useRegister } from "@/features/auth/useRegister";
+import { useRegister } from "@/features/auth/hooks/useRegister";
 import AuthCard from "@/features/auth/components/AuthCard";
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

@@ -16,7 +16,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useUpdateVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
+import { useUpdateVehicleImage } from "@/features/vehicleImages/hooks/mutationVehicleImage";
 
 import { vehicleImageUpdateSchema } from "@repo/schemas";
 

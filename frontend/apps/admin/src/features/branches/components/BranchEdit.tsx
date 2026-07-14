@@ -10,7 +10,7 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
-import { useUpdateBranch } from "@/features/branches/mutations";
+import { useUpdateBranch } from "@/features/branches/hooks/mutations";
 import { updateBranchSchema } from "@repo/schemas";
 import type { UpdateBranchPayload, Branch, BranchStatus } from "@repo/types";
 import {

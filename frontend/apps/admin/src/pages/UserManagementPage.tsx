@@ -16,8 +16,8 @@ import UserCreate from "@/features/users/components/UserCreate";
 import UserEdit from "@/features/users/components/UserEdit";
 import UserDelete from "@/features/users/components/UserDelete";
 
-import { useUsers } from "@/features/users/queries";
-import { useUserFilters } from "@/features/users/queries";
+import { useUsers } from "@/features/users/hooks/queries";
+import { useUserFilters } from "@/features/users/hooks/queries";
 
 import type { User, UserQueryParams } from "@repo/types";
 

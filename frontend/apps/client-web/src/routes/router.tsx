@@ -1,6 +1,6 @@
 import { createBrowserRouter, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
-import { useAuthStore } from "@/features/auth/authStore";
+import { useAuthStore } from "@/features/auth/stores/authStore";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import MainLayout from "@/components/layouts/MainLayout";

@@ -39,9 +39,9 @@ import {
 } from "@repo/ui/components/ui/popover";
 import VehicleStatusBadge from "@/components/common/VehicleStatusBadge";
 
-import { useCreateBooking } from "@/features/bookings/mutations";
-import { useAuthStore } from "@/features/auth/authStore";
-import { useProfile } from "@/features/profile/useProfile";
+import { useCreateBooking } from "@/features/bookings/hooks/mutations";
+import { useAuthStore } from "@/features/auth/stores/authStore";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 import { bookingFormSchema } from "@repo/schemas";
 import type { Branch, Vehicle, BookingFormValues } from "@repo/types";
 import { calculateTotalDays, calculateTotalPrice } from "@repo/utils";

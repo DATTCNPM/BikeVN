@@ -11,7 +11,7 @@ import {
   useMonthlyRevenueChart,
   useRevenueByBranchChart,
   usePopularVehiclesChart,
-} from "@/features/dashboard/queries";
+} from "@/features/dashboard/hooks/queries";
 // Import các UI phụ trợ vừa tạo ở trên
 import {
   ChartSkeleton,

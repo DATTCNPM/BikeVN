@@ -18,7 +18,7 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateEmployee } from "@/features/employees/mutationEmployee";
+import { useCreateEmployee } from "@/features/employees/hooks/mutationEmployee";
 import { adminEmployeeCreationSchema } from "@repo/schemas";
 import type { AdminEmployeeCreationPayload } from "@repo/types";
 import { useBranches } from "@repo/hooks";

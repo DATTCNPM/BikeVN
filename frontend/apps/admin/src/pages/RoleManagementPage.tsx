@@ -10,7 +10,7 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 import RoleCreate from "@/features/roles/components/RoleCreate";
 import RoleDelete from "@/features/roles/components/RoleDelete";
 
-import { useRoles } from "@/features/roles/queriesRole";
+import { useRoles } from "@/features/roles/hooks/queriesRole";
 
 import type { Role } from "@repo/types";
 

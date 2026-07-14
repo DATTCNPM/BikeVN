@@ -11,7 +11,7 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateUser } from "@/features/users/mutations";
+import { useCreateUser } from "@/features/users/hooks/mutations";
 import { adminUserCreationSchema } from "@repo/schemas";
 import type { AdminUserCreationPayload } from "@repo/types";
 

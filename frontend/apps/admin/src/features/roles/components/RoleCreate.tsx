@@ -12,7 +12,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { roleCreationSchema } from "@repo/schemas";
 
-import { useCreateRole } from "../mutationsRole";
+import { useCreateRole } from "../hooks/mutationsRole";
 
 import type { RoleRequest } from "@repo/types";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";

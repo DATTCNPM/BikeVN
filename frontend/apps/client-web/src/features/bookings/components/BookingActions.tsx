@@ -2,7 +2,7 @@
 import { Button } from "@repo/ui/components/ui/button";
 import { ArrowRight, Bike, ClipboardList, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCancelBooking } from "@/features/bookings/mutations"; // Điều chỉnh đường dẫn import hook của bạn
+import { useCancelBooking } from "@/features/bookings/hooks/mutations"; // Điều chỉnh đường dẫn import hook của bạn
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";

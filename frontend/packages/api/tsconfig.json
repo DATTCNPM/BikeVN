@@ -9,6 +9,20 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "../../apps/admin/src/features/bookings/api/bookingAdminApi.ts",
+    "../../apps/admin/src/features/branches/branchAdminApi.ts",
+    "../../apps/admin/src/features/chat/chatAdminApi.ts",
+    "../../apps/admin/src/features/dashboard/api/statisticAdminApi.ts",
+    "../../apps/admin/src/features/users/api/userAdminApi.ts",
+    "../../apps/admin/src/features/payments/api/paymentAdminApi.ts",
+    "../../apps/admin/src/features/permissions/permissionApi.ts",
+    "../../apps/admin/src/features/roles/api/roleApi.ts",
+    "../../apps/admin/src/features/reviews/api/reviewAdminApi.ts",
+    "../../apps/admin/src/features/vehicleBrand/api/vehicleBrandAdminApi.ts",
+    "../../apps/admin/src/features/vehicleImages/api/vehicleImageAdminApi.ts",
+    "../../apps/admin/src/features/vehicleModel/api/vehicleModelAdminApi.ts",
+    "../../apps/admin/src/features/vehicleReturns/api/vehicleReturnAdminApi.ts",
+    "../../apps/admin/src/features/vehicles/api/vehicleAdminApi.ts"
   ]
 }

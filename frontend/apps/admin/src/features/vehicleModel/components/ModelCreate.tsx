@@ -22,7 +22,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateVehicleModel } from "@/features/vehicleModel/mutationVehicleModel";
+import { useCreateVehicleModel } from "@/features/vehicleModel/hooks/mutationVehicleModel";
 
 import { vehicleModelCreationSchema } from "@repo/schemas";
 import type { VehicleModelCreationRequest } from "@repo/types";

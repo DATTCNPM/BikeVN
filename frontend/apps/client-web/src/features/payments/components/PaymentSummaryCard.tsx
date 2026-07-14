@@ -6,7 +6,7 @@ import { Card } from "@repo/ui/components/ui/card";
 import {
   useCreatePayment,
   useGetVNPayUrl,
-} from "@/features/payments/mutations";
+} from "@/features/payments/hooks/mutations";
 import VerificationModal from "./VerificationModal";
 import type {
   Booking,

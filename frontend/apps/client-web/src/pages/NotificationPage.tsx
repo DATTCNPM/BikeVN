@@ -1,6 +1,6 @@
 "use client";
 
-import { useNotifications } from "@/features/notifications/useNotifications";
+import { useNotifications } from "@/features/notifications/hooks/useNotifications";
 
 import { Card, CardContent } from "@repo/ui/components/ui/card";
 

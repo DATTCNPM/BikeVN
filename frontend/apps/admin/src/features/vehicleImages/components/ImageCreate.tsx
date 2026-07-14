@@ -12,7 +12,7 @@ import {
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useUploadVehicleImage } from "@/features/vehicleImages/mutationVehicleImage";
+import { useUploadVehicleImage } from "@/features/vehicleImages/hooks/mutationVehicleImage";
 
 import { vehicleImageCreationSchema } from "@repo/schemas";
 import type { VehicleImageCreatePayload } from "@repo/types";

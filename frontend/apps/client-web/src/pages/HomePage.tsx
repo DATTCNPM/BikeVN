@@ -1,5 +1,5 @@
-import ListVehicle from "../features/home/ListVehicle";
-import MapVehicle from "../features/home/MapVehicle";
+import ListVehicle from "../features/vehicle/ListVehicle";
+import MapVehicle from "../features/vehicle/MapVehicle";
 import { List, MapPin } from "lucide-react";
 import {
   Tabs,

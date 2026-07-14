@@ -7,12 +7,12 @@ import PaymentSummaryCard from "@/features/payments/components/PaymentSummaryCar
 import PaymentVehicleCard from "@/features/payments/components/PaymentVehicleCard";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-import { useProfile } from "@/features/profile/useProfile";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 import { useVehicle } from "@repo/hooks";
 import {
   useBooking,
   useVehicleReturnByBookingId,
-} from "@/features/bookings/queries";
+} from "@/features/bookings/hooks/queries";
 
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -20,7 +20,7 @@ import type { PaymentMethod } from "@repo/types";
 
 import { useNavigate } from "react-router-dom";
 import { Button } from "@repo/ui/components/ui/button";
-import { useCancelBooking } from "@/features/bookings/mutations";
+import { useCancelBooking } from "@/features/bookings/hooks/mutations";
 import { toast } from "@repo/ui/components/ui/sonner";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
