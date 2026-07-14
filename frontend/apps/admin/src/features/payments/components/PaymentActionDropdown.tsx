@@ -12,12 +12,14 @@ type Props = {
   onRefund?: () => void;
   onApproveManually?: () => void;
   onCancel?: () => void;
+  onRetry?: () => void;
 };
 
 export default function PaymentActionDropdown({
   onRefund,
   onApproveManually,
   onCancel,
+  onRetry,
 }: Props) {
   return (
     <DropdownMenu>
@@ -39,6 +41,13 @@ export default function PaymentActionDropdown({
           <DropdownMenuItem onClick={onApproveManually}>
             <CreditCard className="mr-2 size-4" />
             Approve Manually
+          </DropdownMenuItem>
+        )}
+
+        {onRetry && (
+          <DropdownMenuItem onClick={onRetry}>
+            <Check className="mr-2 size-4" />
+            Retry Payment
           </DropdownMenuItem>
         )}
 

@@ -35,3 +35,20 @@ export function useGetVNPayUrl() {
     },
   });
 }
+
+export function useClientRetryPayment() {
+  return useMutation({
+    mutationFn: ({
+      id,
+      newPaymentMethod,
+    }: {
+      id: string;
+      newPaymentMethod: string;
+    }) => paymentClientApi.retryPayment(id, newPaymentMethod),
+
+    // 🌟 Ẩn các mã lỗi toast tự động nếu component màn hình payment tự xử lý UI lỗi
+    meta: {
+      silentErrorCodes: [1014, 1016, 1021],
+    },
+  });
+}

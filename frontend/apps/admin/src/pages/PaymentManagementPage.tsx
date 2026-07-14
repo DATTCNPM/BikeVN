@@ -56,7 +56,7 @@ export default function PaymentManagementPage() {
 
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [dialogMode, setDialogMode] = useState<
-    "approve" | "cancel" | "refund" | null
+    "approve" | "cancel" | "refund" | "retry" | null
   >(null);
 
   // 1. Quản lý trạng thái bộ lọc nâng cao trên UI
@@ -189,12 +189,8 @@ export default function PaymentManagementPage() {
         cell: ({ row }) => {
           const payment = row.original;
 
-          // Nếu đã hoàn tiền hoặc giao dịch thất bại thì không cần làm gì nữa
-          if (
-            payment.status === "completed" ||
-            payment.status === "failed" ||
-            payment.status === "refunded"
-          ) {
+          // Đã hoàn tiền thì ẩn toàn bộ action
+          if (payment.status === "refunded") {
             return null;
           }
 
@@ -210,17 +206,37 @@ export default function PaymentManagementPage() {
             );
           }
 
-          // Nếu đang Pending, Admin có thể Duyệt tay hoặc Hủy
+          // 🌟 ĐÃ CẬP NHẬT: Nếu trạng thái là Completed, không cho hủy/duyệt, nhưng có thể ẩn luôn hoặc giữ lại tùy cấu trúc cũ.
+          // Giả định Completed không làm gì thì return null tại đây:
+          if (payment.status === "completed") {
+            return null;
+          }
+
+          // Nếu trạng thái là Pending hoặc Failed, hiển thị các nút tương ứng
           return (
             <PaymentActionDropdown
-              onApproveManually={() => {
-                setSelectedPayment(payment);
-                setDialogMode("approve");
-              }}
+              // Chỉ hiện duyệt tay nếu là pending
+              onApproveManually={
+                payment.status === "pending"
+                  ? () => {
+                      setSelectedPayment(payment);
+                      setDialogMode("approve");
+                    }
+                  : undefined
+              }
               onCancel={() => {
                 setSelectedPayment(payment);
                 setDialogMode("cancel");
               }}
+              // 🌟 THÊM MỚI: Nếu trạng thái là pending hoặc failed, xuất hiện nút retry
+              onRetry={
+                payment.status === "pending" || payment.status === "failed"
+                  ? () => {
+                      setSelectedPayment(payment);
+                      setDialogMode("retry");
+                    }
+                  : undefined
+              }
             />
           );
         },

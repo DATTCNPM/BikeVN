@@ -65,6 +65,7 @@ export default function VehicleReturnCreate({
     returnOdometerReading: 0,
     notes: "",
     employeeId: profile?.id || "",
+    paymentMethod: "bank_transfer",
   };
 
   const {
@@ -104,6 +105,7 @@ export default function VehicleReturnCreate({
       {
         ...values,
         employeeId: profile?.id || values.employeeId,
+        paymentMethod: "bank_transfer",
       },
       {
         onSuccess: () => {

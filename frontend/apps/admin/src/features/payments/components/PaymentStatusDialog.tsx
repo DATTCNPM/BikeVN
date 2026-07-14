@@ -8,6 +8,7 @@ import {
   useApprovePaymentManually,
   useAdminCancelPayment,
   useProcessRefund,
+  useAdminRetryPayment, // 🌟 Giả định có hook này
 } from "@/features/payments/hooks/mutations";
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 import { isApiError } from "@repo/api";
@@ -16,7 +17,7 @@ type Props = {
   payment: Payment | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mode: "approve" | "cancel" | "refund";
+  mode: "approve" | "cancel" | "refund" | "retry";
 };
 
 export default function PaymentStatusDialog({
@@ -29,7 +30,7 @@ export default function PaymentStatusDialog({
   const approveMutation = useApprovePaymentManually();
   const cancelMutation = useAdminCancelPayment();
   const refundMutation = useProcessRefund();
-
+  const retryMutation = useAdminRetryPayment(); // 🌟 Giả định có hook này
   const [errorReason, setErrorReason] = useState<string | null>(null);
 
   const { data: currentAdmin } = usePortalProfile();
@@ -38,7 +39,8 @@ export default function PaymentStatusDialog({
   const loading =
     approveMutation.isPending ||
     cancelMutation.isPending ||
-    refundMutation.isPending;
+    refundMutation.isPending ||
+    retryMutation.isPending;
 
   // 🌟 Hàm Wrapper thay thế để đảm bảo reset lỗi mỗi khi trạng thái Open thay đổi từ bên trong Dialog
   const handleOpenChange = (isOpen: boolean) => {
@@ -95,6 +97,19 @@ export default function PaymentStatusDialog({
           },
         );
         break;
+
+      case "retry":
+        // Handle retry logic here
+        retryMutation.mutate(
+          { id: payment.id, newPaymentMethod: "cash" }, // Example payload
+          {
+            onSuccess: () => handleSuccess("Payment retried successfully"),
+            onError: handleError,
+          },
+        );
+        break;
+      default:
+        break;
     }
   };
 
@@ -102,6 +117,7 @@ export default function PaymentStatusDialog({
     approve: "Approve Payment Manually",
     cancel: "Cancel Payment",
     refund: "Refund Transaction",
+    retry: "Retry Payment",
   };
 
   const descriptionMap = {
@@ -109,6 +125,7 @@ export default function PaymentStatusDialog({
     cancel: "Are you sure you want to cancel this transaction?",
     refund:
       "Are you sure you want to process a refund for this transaction via VNPay?",
+    retry: "Are you sure you want to retry this payment?",
   };
 
   return (

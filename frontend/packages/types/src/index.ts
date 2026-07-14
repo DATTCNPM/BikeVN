@@ -17,3 +17,4 @@ export * from "./userType";
 export * from "./vehicleReturnType";
 export * from "./chatType";
 export * from "./statisticType";
+export * from "./notificationMessageType";

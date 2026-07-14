@@ -9,4 +9,9 @@ export const createPaymentCommonApi = (axiosInstance: AxiosInstance) => ({
       },
     });
   },
+  async retryPayment(id: string, newPaymentMethod: string) {
+    return axiosInstance.patch<Payment>(`/payments/${id}/retry`, {
+      newPaymentMethod,
+    });
+  },
 });

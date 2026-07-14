@@ -54,6 +54,7 @@ const HomeEmployeePage = lazy(() => import("@/pages/HomeEmployeePage"));
 
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { ServerErrorPage } from "@/pages/ServerErrorPage";
+import { useBranchNotifications } from "@/hooks/useBranchNotifications";
 
 // 🌀 Loading Spinner toàn màn hình
 function AdminPageLoader() {
@@ -72,6 +73,22 @@ function AdminDashboardLayout() {
         {/* Bọc Suspense ở đây để khi bấm menu chuyển giữa các trang Lazy load, 
           nó sẽ hiển thị AdminPageLoader thay vì làm crash ứng dụng.
         */}
+        <Suspense fallback={<AdminPageLoader />}>
+          <MainLayout />
+        </Suspense>
+      </ProtectedRoute>
+    </AuthListenerProvider>
+  );
+}
+
+// 💼 2. Layout dành riêng cho EMPLOYEE (Kích hoạt lắng nghe thông báo Realtime)
+function EmployeeLayout() {
+  // Chỉ nhân viên mới kích hoạt kết nối WebSocket và nhận Toast
+  useBranchNotifications();
+
+  return (
+    <AuthListenerProvider loginPath="/login">
+      <ProtectedRoute>
         <Suspense fallback={<AdminPageLoader />}>
           <MainLayout />
         </Suspense>
@@ -128,7 +145,7 @@ const router = createBrowserRouter([
   // 💼 EMPLOYEE ROUTES
   {
     path: "employee",
-    element: <AdminDashboardLayout />,
+    element: <EmployeeLayout />,
     children: [
       { index: true, element: <HomeEmployeePage /> },
       { path: "vehicles", element: <VehicleManagementPage /> },

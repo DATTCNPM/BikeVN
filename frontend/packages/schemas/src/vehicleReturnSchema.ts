@@ -78,6 +78,7 @@ export const createVehicleReturnSchema = z.object({
   notes: z.string().optional(),
 
   employeeId: z.string(),
+  paymentMethod: z.enum(["bank_transfer", "cash"]),
 });
 
 export const updateVehicleReturnSchema = createVehicleReturnSchema.partial();

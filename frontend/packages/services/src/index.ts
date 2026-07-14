@@ -5,3 +5,4 @@ export * from "./permissionService";
 export * from "./chatWebSocketService";
 export * from "./chatAdminWebSocket";
 export * from "./chatClientWebSocket";
+export * from "./notificationWebSocketService";
