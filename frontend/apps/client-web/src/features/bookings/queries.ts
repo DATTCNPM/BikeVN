@@ -20,10 +20,11 @@ export function useBooking(id: string) {
   });
 }
 
-export function useVehicleReturnByBookingId(bookingId: string) {
+export function useVehicleReturnByBookingId(bookingId: string, options?: any) {
   return useQuery({
     queryKey: bookingsKeys.vehicleReturn(bookingId),
     queryFn: () => bookingClientApi.getVehicleReturn(bookingId),
-    enabled: !!bookingId,
+    enabled: !!bookingId && options?.enabled !== false, // <--- Thêm dòng này
+    retry: false, // Không cần thử lại nếu không tìm thấy biên bản trả xe
   });
 }

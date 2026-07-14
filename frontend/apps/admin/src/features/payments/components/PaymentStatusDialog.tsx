@@ -3,18 +3,20 @@ import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { paymentsKeys } from "@repo/hooks";
 import type { Payment } from "@repo/types";
+import { useState } from "react"; // 🌟 Xóa bỏ useEffect
 import {
   useApprovePaymentManually,
   useAdminCancelPayment,
+  useProcessRefund,
 } from "@/features/payments/mutations";
-import { useProcessRefund } from "@/features/payments/mutations";
 import { usePortalProfile } from "@/features/auth/usePortalProfile";
+import { isApiError } from "@repo/api";
 
 type Props = {
   payment: Payment | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mode: "approve" | "cancel" | "refund"; // Đổi confirm thành refund
+  mode: "approve" | "cancel" | "refund";
 };
 
 export default function PaymentStatusDialog({
@@ -26,9 +28,10 @@ export default function PaymentStatusDialog({
   const queryClient = useQueryClient();
   const approveMutation = useApprovePaymentManually();
   const cancelMutation = useAdminCancelPayment();
-  const refundMutation = useProcessRefund(); // Thêm mới mutation hoàn tiền
+  const refundMutation = useProcessRefund();
 
-  // Giả định bạn có hook lấy thông tin admin hiện tại
+  const [errorReason, setErrorReason] = useState<string | null>(null);
+
   const { data: currentAdmin } = usePortalProfile();
   const adminId = currentAdmin?.id || "system-admin";
 
@@ -37,41 +40,61 @@ export default function PaymentStatusDialog({
     cancelMutation.isPending ||
     refundMutation.isPending;
 
-  const handleConfirm = async () => {
+  // 🌟 Hàm Wrapper thay thế để đảm bảo reset lỗi mỗi khi trạng thái Open thay đổi từ bên trong Dialog
+  const handleOpenChange = (isOpen: boolean) => {
+    setErrorReason(null);
+    onOpenChange(isOpen);
+  };
+
+  const handleConfirm = () => {
     if (!payment) return;
+    setErrorReason(null); // 🌟 Đảm bảo xóa lỗi cũ khi bắt đầu một submit mới
 
-    try {
-      switch (mode) {
-        case "approve":
-          await approveMutation.mutateAsync({
-            id: payment.id,
-            adminId,
-            actualPaymentMethod: "cash",
-          });
-          toast.success("Approved payment manually successfully");
-          break;
+    const handleSuccess = (successMessage: string) => {
+      toast.success(successMessage);
+      void queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
+      handleOpenChange(false);
+    };
 
-        case "cancel":
-          await cancelMutation.mutateAsync({
-            id: payment.id,
-            reason: "Admin canceled from dashboard",
-          });
-          toast.success("Canceled payment successfully");
-          break;
-
-        case "refund": // Thêm mới xử lý refund
-          await refundMutation.mutateAsync({
-            id: payment.id,
-            adminId,
-          });
-          toast.success("Refund processed successfully");
-          break;
+    const handleError = (error: unknown) => {
+      if (isApiError(error)) {
+        setErrorReason(error.message || "An error occurred on the server");
+      } else {
+        setErrorReason("Failed to perform action. Please try again later.");
       }
+    };
 
-      await queryClient.invalidateQueries({ queryKey: paymentsKeys.all });
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to perform action");
+    switch (mode) {
+      case "approve":
+        approveMutation.mutate(
+          { id: payment.id, adminId, actualPaymentMethod: "cash" },
+          {
+            onSuccess: () =>
+              handleSuccess("Approved payment manually successfully"),
+            onError: handleError,
+          },
+        );
+        break;
+
+      case "cancel":
+        cancelMutation.mutate(
+          { id: payment.id, reason: "Admin canceled from dashboard" },
+          {
+            onSuccess: () => handleSuccess("Canceled payment successfully"),
+            onError: handleError,
+          },
+        );
+        break;
+
+      case "refund":
+        refundMutation.mutate(
+          { id: payment.id, adminId },
+          {
+            onSuccess: () => handleSuccess("Refund processed successfully"),
+            onError: handleError,
+          },
+        );
+        break;
     }
   };
 
@@ -94,12 +117,13 @@ export default function PaymentStatusDialog({
       trigger={null}
       variant={mode === "cancel" ? "destructive" : "default"}
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange} // 🌟 Thay đổi sang wrapper function
       loading={loading}
       onSubmit={handleConfirm}
       title={titleMap[mode]}
       description={descriptionMap[mode]}
       submitLabel={titleMap[mode]}
+      error={errorReason}
     />
   );
 }

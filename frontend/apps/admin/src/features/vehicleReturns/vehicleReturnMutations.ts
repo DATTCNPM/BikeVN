@@ -11,6 +11,10 @@ export const useCreateVehicleReturn = () => {
     mutationFn: (payload: CreateVehicleReturnRequest) =>
       vehicleReturnAdminApi.createVehicleReturn(payload),
 
+    meta: {
+      silentErrorCodes: [1008, 1023],
+    },
+
     onSuccess: (data) => {
       // 🟢 FIX 2: Ép kiểu hoặc truy cập an toàn tùy thuộc vào cấu trúc trả về từ API của bạn
       // Nếu file API bọc qua axios thông thường, data nhận được có thể nằm trong một trường cụ thể.

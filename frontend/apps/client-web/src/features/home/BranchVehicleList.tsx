@@ -1,6 +1,6 @@
 import type { Branch, VehicleCardData } from "@repo/types";
 import CardProduct from "@/components/common/CardProduct";
-import { MapPin, ChevronRight, ArrowLeft, Car } from "lucide-react"; // Thêm icon trực quan
+import { MapPin, ChevronRight, ArrowLeft, Car } from "lucide-react";
 import PaginationComponent from "@/components/common/PaginationComponent";
 
 type Props = {
@@ -28,7 +28,7 @@ export default function BranchVehicleList({
   totalElements,
   onPageChange,
 }: Props) {
-  // Trạng thái khi CHƯA CHỌN chi nhánh
+  // --- TRẠNG THÁI: CHƯA CHỌN CHI NHÁNH ---
   if (!branch) {
     return (
       <div className="flex flex-col h-full space-y-4">
@@ -49,7 +49,7 @@ export default function BranchVehicleList({
               <button
                 key={b.id}
                 onClick={() => onSelectBranch?.(b)}
-                className="flex items-center justify-between p-3.5 rounded-xl border border-border/50 bg-card hover:bg-accent/40 text-left transition-all group hover:border-primary/20 shadow-sm"
+                className="flex items-center justify-between p-3 rounded-xl border border-border/50 bg-card hover:bg-accent/40 text-left transition-all group hover:border-primary/20 shadow-sm"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="p-2 rounded-lg bg-secondary group-hover:bg-primary/10 transition-colors">
@@ -68,11 +68,11 @@ export default function BranchVehicleList({
     );
   }
 
-  // Trạng thái khi ĐÃ CHỌN chi nhánh
+  // --- TRẠNG THÁI: ĐÃ CHỌN CHI NHÁNH ---
   return (
     <div className="flex flex-col h-full space-y-4">
       {/* Header Info */}
-      <div className=" shrink-0 bg-background/50 backdrop-blur-sm rounded-xl border p-2 shadow-sm">
+      <div className="shrink-0 bg-background/50 backdrop-blur-sm rounded-xl border border-border/60 p-3 shadow-sm">
         <button
           onClick={onBackToBranches}
           className="text-xs text-muted-foreground hover:text-primary mb-2 flex items-center gap-1.5 transition-colors font-medium group"
@@ -80,48 +80,57 @@ export default function BranchVehicleList({
           <ArrowLeft className="size-3.5 group-hover:-translate-x-0.5 transition-transform" />{" "}
           Change Branch
         </button>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-          <h2 className="text-lg font-bold tracking-tight text-foreground truncate flex items-center gap-2">
-            <span className="size-2 rounded-full bg-green-500 animate-pulse" />
-            {branch.name}
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-base font-bold tracking-tight text-foreground truncate flex items-center gap-2">
+            <span className="size-2 rounded-full bg-green-500 flex-shrink-0" />
+            <span className="truncate">{branch.name}</span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-            <Car className="size-3.5 text-primary" /> {vehicles.length} vehicle
-            {vehicles.length > 1 ? "s" : ""} active
+          <p className="text-xs text-muted-foreground flex items-center gap-1 shrink-0 bg-muted/60 px-2 py-0.5 rounded-md">
+            <Car className="size-3.5 text-primary" />
+            <span>
+              {totalElements ?? vehicles.length} vehicle
+              {(totalElements ?? vehicles.length) > 1 ? "s" : ""}
+            </span>
           </p>
         </div>
       </div>
 
-      {/* Vehicles Container */}
-      <div className="space-y-3 grid grid-cols-2 gap-4 overflow-y-auto min-h-0 custom-scrollbar">
+      {/* Vùng cuộn danh sách xe độc lập */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 custom-scrollbar">
         {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((n) => (
+          /* Đồng bộ Skeleton dạng Grid 2 cột mượt mà */
+          <div className="grid grid-cols-2 gap-3">
+            {[1, 2, 4, 4].map((n) => (
               <div
                 key={n}
-                className="h-28 w-full animate-pulse bg-muted/80 rounded-2xl border border-border/40"
+                className="h-48 w-full animate-pulse bg-muted/60 rounded-xl border border-border/40"
               />
             ))}
           </div>
         ) : vehicles.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border/80 p-8 text-center bg-muted/20 my-auto">
-            <p className="text-sm text-muted-foreground">
+          <div className="h-full flex items-center justify-center rounded-2xl border border-dashed border-border/80 p-8 text-center bg-muted/10">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Current branch has no available vehicles.
             </p>
           </div>
         ) : (
-          vehicles.map((vehicle) => (
-            <div
-              key={vehicle.id}
-              className="transition-all duration-300 hover:shadow-md hover:border-primary/10 rounded-2xl"
-            >
-              <CardProduct vehicle={vehicle} />
-            </div>
-          ))
+          <div className="grid grid-cols-2 gap-3 pb-2">
+            {vehicles.map((vehicle) => (
+              <div
+                key={vehicle.id}
+                className="transition-all duration-300 hover:shadow-sm rounded-xl overflow-hidden"
+              >
+                <CardProduct vehicle={vehicle} />
+              </div>
+            ))}
+          </div>
         )}
-        {(!isLoading && totalPages) ||
-          (1 > 1 && (
-            <div className="border-t border-border bg-background shrink-0 col-span-2">
+      </div>
+
+      {/* Phân trang được tách biệt cố định ở đáy */}
+      {!isLoading && totalPages
+        ? totalPages > 1 && (
+            <div className="pt-2 border-t border-border/60 bg-background shrink-0">
               <PaginationComponent
                 page={currentPage || 1}
                 totalPages={totalPages || 1}
@@ -129,8 +138,8 @@ export default function BranchVehicleList({
                 onPageChange={onPageChange || (() => {})}
               />
             </div>
-          ))}
-      </div>
+          )
+        : null}
     </div>
   );
 }

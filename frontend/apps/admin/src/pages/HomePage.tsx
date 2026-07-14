@@ -48,7 +48,7 @@ export default function HomePage() {
           value={
             isStatsLoading
               ? "..."
-              : `$${generalStats?.totalRevenue?.toLocaleString() ?? 0}`
+              : `đ${generalStats?.totalRevenue?.toLocaleString() ?? 0}`
           }
           description="Total revenue of the system"
           icon={<DollarSign className="size-5" />}
@@ -98,26 +98,24 @@ export default function HomePage() {
       {/* CHARTS SECTION 2: BRANCH PERFORMANCE & TOP VEHICLES */}
       <section className="grid gap-5 lg:grid-cols-2">
         {/* Branch Performance */}
-        <div>
-          {isBranchLoading ? (
-            <ChartSkeleton />
-          ) : !branchPerformance || branchPerformance.length === 0 ? (
-            <ChartEmptyState title="Branch Performance" />
-          ) : (
-            <BranchPerformanceChart data={branchPerformance} />
-          )}
-        </div>
+
+        {isBranchLoading ? (
+          <ChartSkeleton />
+        ) : !branchPerformance || branchPerformance.length === 0 ? (
+          <ChartEmptyState title="Branch Performance" />
+        ) : (
+          <BranchPerformanceChart data={branchPerformance} />
+        )}
 
         {/* Top Vehicles */}
-        <div>
-          {isVehiclesLoading ? (
-            <ChartSkeleton />
-          ) : !popularVehicles || popularVehicles.length === 0 ? (
-            <ChartEmptyState title="Top Vehicles" />
-          ) : (
-            <TopVehiclesChart data={popularVehicles} />
-          )}
-        </div>
+
+        {isVehiclesLoading ? (
+          <ChartSkeleton />
+        ) : !popularVehicles || popularVehicles.length === 0 ? (
+          <ChartEmptyState title="Top Vehicles" />
+        ) : (
+          <TopVehiclesChart data={popularVehicles} />
+        )}
       </section>
     </div>
   );

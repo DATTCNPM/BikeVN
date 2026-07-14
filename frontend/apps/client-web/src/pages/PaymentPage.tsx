@@ -18,24 +18,45 @@ import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import type { PaymentMethod } from "@repo/types";
 
+import { useNavigate } from "react-router-dom";
+import { Button } from "@repo/ui/components/ui/button";
+import { useCancelBooking } from "@/features/bookings/mutations";
+import { toast } from "@repo/ui/components/ui/sonner";
+import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
+
 export default function PaymentPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const paymentType =
     searchParams.get("type") === "surcharge" ? "surcharge" : "booking";
 
-  // Các Hook lấy dữ liệu nguồn
   const { data: userProfile, isLoading: profileLoading } = useProfile();
   const { data: booking, isLoading: bookingLoading } = useBooking(id!);
   const { data: vehicleReturn, isLoading: returnLoading } =
-    useVehicleReturnByBookingId(id!);
+    useVehicleReturnByBookingId(id!, { enabled: paymentType === "surcharge" });
   const { data: vehicle, isLoading: vehicleLoading } = useVehicle(
     booking?.vehicleId || "",
   );
 
+  // 🌟 KHỞI TẠO HOOK HỦY ĐƠN
+  const { mutate: cancelBooking, isPending: isCanceling } = useCancelBooking();
+
+  const [openCancelDialog, setOpenCancelDialog] = useState(false);
+
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("vnpay");
 
-  // Gộp nhóm kiểm tra trạng thái Loading sạch sẽ
+  const handleCancelBooking = () => {
+    if (!id) return;
+
+    cancelBooking(id, {
+      onSuccess: () => {
+        toast.success("Booking has been canceled successfully.");
+        navigate("/my-bookings");
+      },
+    });
+  };
+
   const isPageLoading =
     profileLoading ||
     bookingLoading ||
@@ -50,11 +71,12 @@ export default function PaymentPage() {
     );
   }
 
-  // Chặn rách giao diện (UI Break) khi sai ID đơn hàng
-  if (!booking) {
+  if (!booking || (paymentType === "surcharge" && !vehicleReturn)) {
     return (
       <div className="flex h-64 flex-col items-center justify-center text-sm font-medium text-muted-foreground">
-        Booking information could not be found.
+        {paymentType === "surcharge"
+          ? "Surcharge invoice details could not be found."
+          : "Booking information could not be found."}
       </div>
     );
   }
@@ -74,6 +96,29 @@ export default function PaymentPage() {
               onMethodSelect={setSelectedMethod}
             />
             <PaymentPolicyCard />
+
+            {/* 🌟 KHU VỰC HỦY ĐƠN TINH TẾ (Chỉ hiển thị khi đang trong luồng đặt xe mới và đơn có thể huỷ) */}
+            {paymentType === "booking" && booking.status === "pending" && (
+              <div className="mt-6 flex flex-col items-center gap-4 rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
+                <p className="text-sm font-medium uppercase tracking-wider text-primary">
+                  Need to cancel?
+                </p>
+
+                <div className="space-y-2 flex">
+                  <p className="text-sm text-muted-foreground">
+                    If you change your mind, you can cancel your booking before
+                    the payment is completed. Please note that cancellation may
+                    be subject to our cancellation policy.
+                  </p>
+                  <Button
+                    variant="destructive"
+                    onClick={() => setOpenCancelDialog(true)}
+                  >
+                    Cancel Booking
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
@@ -87,6 +132,18 @@ export default function PaymentPage() {
           </div>
         </div>
       </div>
+      <UniversalDialog
+        trigger={null}
+        type="confirm"
+        variant="destructive"
+        open={openCancelDialog}
+        onOpenChange={setOpenCancelDialog}
+        title="Cancel Booking"
+        description="Are you sure you want to cancel this booking and stop payment?"
+        onSubmit={handleCancelBooking}
+        submitLabel="Yes, Cancel Booking"
+        loading={isCanceling}
+      />
     </main>
   );
 }

@@ -17,6 +17,9 @@ import { useCreateRole } from "../mutationsRole";
 import type { RoleRequest } from "@repo/types";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,12 +32,13 @@ const defaultValues: RoleRequest = {
 };
 
 export default function RoleCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateRole();
+  const { mutate: createRole, isPending } = useCreateRole();
 
   const {
     register,
     control,
     handleSubmit,
+    setError,
     reset,
     formState: { errors },
   } = useForm<RoleRequest>({
@@ -42,17 +46,17 @@ export default function RoleCreate({ open, onOpenChange }: Props) {
     defaultValues,
   });
 
-  const onSubmit = async (values: RoleRequest) => {
-    try {
-      await mutateAsync(values);
-
-      toast.success("Role created successfully");
-
-      reset(defaultValues);
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create role");
-    }
+  const onSubmit = (values: RoleRequest) => {
+    createRole(values, {
+      onSuccess: () => {
+        toast.success("Role created successfully");
+        reset(defaultValues);
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -66,6 +70,7 @@ export default function RoleCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create Role"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <FieldGroup>
         <Field>

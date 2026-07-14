@@ -35,6 +35,10 @@ import {
 import type { CreateVehicleReturnRequest } from "@repo/types";
 import { usePortalProfile } from "@/features/auth/usePortalProfile";
 
+// 🌟 Import helper check error từ Packages hệ thống giống trang Login
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -46,7 +50,8 @@ export default function VehicleReturnCreate({
   onOpenChange,
   bookingId,
 }: Props) {
-  const { mutateAsync, isPending } = useCreateVehicleReturn();
+  // 🌟 Đổi tên mutate thành createReturn để tường minh
+  const { mutate: createReturn, isPending } = useCreateVehicleReturn();
   const { data: branches = [] } = useBranches();
   const { data: profile } = usePortalProfile();
 
@@ -68,6 +73,7 @@ export default function VehicleReturnCreate({
     handleSubmit,
     reset,
     setValue,
+    setError, // 🌟 Lấy hàm setError để map lỗi backend vào từng ô input
     formState: { errors },
   } = useForm<CreateVehicleReturnRequest>({
     resolver: zodResolver(createVehicleReturnSchema),
@@ -92,24 +98,29 @@ export default function VehicleReturnCreate({
     defaultValue: [],
   });
 
-  const onSubmit = async (values: CreateVehicleReturnRequest) => {
-    try {
-      await mutateAsync({
+  const onSubmit = (values: CreateVehicleReturnRequest) => {
+    // 🌟 Chuyển sang dùng cấu trúc callback onSuccess/onError của mutate
+    createReturn(
+      {
         ...values,
         employeeId: profile?.id || values.employeeId,
-      });
-
-      toast.success("create vehicle return successfully");
-
-      reset({
-        ...defaultValues,
-        employeeId: profile?.id || "",
-      });
-
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create vehicle return");
-    }
+      },
+      {
+        onSuccess: () => {
+          toast.success("Create vehicle return successfully");
+          reset({
+            ...defaultValues,
+            employeeId: profile?.id || "",
+          });
+          onOpenChange(false);
+        },
+        onError: (error: unknown) => {
+          // 🌟 Tự động phân tích payload lỗi từ backend:
+          // Ví dụ: Code 1008 map vào ô `branchId` -> Form đổi thành lỗi của field `returnBranchId`
+          handleFormBackendError(error, setError, isApiError);
+        },
+      },
+    );
   };
 
   return (
@@ -123,12 +134,8 @@ export default function VehicleReturnCreate({
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Confirm Return"
-      // MẸO: Bạn nên truyền className vào Content của Dialog thông qua component EntityFormDialog nếu nó hỗ trợ
-      // className="max-w-3xl max-h-[85vh] flex flex-col"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
-      {/* Bọc một lớp cuộn nội dung tự động nếu EntityFormDialog chưa có.
-        Giúp nút Submit luôn hiển thị ở chân Dialog mà không bị đẩy mất.
-      */}
       <div className="max-h-[60vh] overflow-y-auto pr-2 -mr-2">
         <FieldGroup className="space-y-5">
           {/* Hàng 1: Thông tin cố định hệ thống */}
@@ -137,6 +144,10 @@ export default function VehicleReturnCreate({
               <FieldLabel>Booking ID</FieldLabel>
               <input type="hidden" {...register("bookingId")} />
               <Input value={bookingId} disabled className="bg-muted" />
+              {/* Lỗi liên quan đến Booking (Ví dụ: 1023 xe đã được tạo record trả rồi) */}
+              {errors.bookingId && (
+                <FieldError>{errors.bookingId.message}</FieldError>
+              )}
             </Field>
 
             <Field>
@@ -255,12 +266,9 @@ export default function VehicleReturnCreate({
             </Field>
           </div>
 
-          {/* Hàng 5: Khu vực Upload ảnh - Chiếm trọn 1 hàng lớn phía dưới cùng nội dung */}
+          {/* Hàng 5: Khu vực Upload ảnh */}
           <Field className="border-t pt-4">
             <FieldLabel>Images Documentation</FieldLabel>
-            {/* LƯU Ý: Phía bên trong `ImageUploadField`, bạn nên cấu hình vùng chứa ảnh preview 
-              có `max-h-[150px] overflow-y-auto` hoặc hiển thị dạng grid thu nhỏ để không chiếm diện tích dọc.
-            */}
             <div className="mt-1">
               <ImageUploadField
                 multiple

@@ -16,6 +16,9 @@ import { useUpdateUser } from "@/features/users/mutations";
 import { updateUserSchema } from "@repo/schemas";
 import type { UpdateUserPayload, User } from "@repo/types";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -23,11 +26,11 @@ type Props = {
 };
 
 export default function UserEdit({ open, onOpenChange, user }: Props) {
-  const { mutateAsync, isPending } = useUpdateUser();
+  const { mutate: updateUser, isPending } = useUpdateUser();
 
   const {
     register,
-
+    setError,
     handleSubmit,
     reset,
     formState: { errors },
@@ -45,15 +48,17 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
     });
   }, [user, reset]);
 
-  const onSubmit = async (values: UpdateUserPayload) => {
+  const onSubmit = (values: UpdateUserPayload) => {
     if (!user) return;
-    try {
-      await mutateAsync({ id: user.id, payload: values });
-      toast.success("Update user successfully");
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to update user");
-    }
+    updateUser({ id: user.id, payload: values }, {
+      onSuccess: () => {
+        toast.success("Update user successfully");
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -67,6 +72,7 @@ export default function UserEdit({ open, onOpenChange, user }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Save Changes"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <div className="grid gap-5">
         <FieldGroup>

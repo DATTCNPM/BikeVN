@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useRegister } from "@/features/auth/useRegister";
 import AuthCard from "@/features/auth/components/AuthCard";
 import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -45,30 +46,7 @@ export default function Register() {
         navigate("/home");
       },
       onError: (error: unknown) => {
-        // 🌟 SỬA ĐỔI: Thay any bằng unknown
-        console.log("Register error:", error);
-
-        if (isApiError(error)) {
-          switch (error.code) {
-            case 1002: // 🌟 SỬA ĐỔI: Đồng bộ đúng mã 1002 (Email đã tồn tại)
-              setError("email", {
-                type: "server",
-                message: "Email already exists. Please use a different email.",
-              });
-              break;
-            default:
-              setError("root", {
-                message:
-                  error.message ||
-                  "An error occurred while registering. Please try again later.",
-              });
-          }
-        } else {
-          const err = error as Error;
-          setError("root", {
-            message: err.message || "Unable to connect to the server.",
-          });
-        }
+        handleFormBackendError(error, setError, isApiError);
       },
     });
   };

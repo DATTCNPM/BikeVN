@@ -15,6 +15,11 @@ export const useCreateVehicleBrand = () => {
     mutationFn: (data: VehicleBrandCreationRequest) =>
       vehicleBrandAdminApi.create(data),
 
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn mã lỗi trùng tên hãng xe khi tạo mới
+    meta: {
+      silentErrorCodes: [1011],
+    },
+
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: vehicleBrandKeys.all,
@@ -34,6 +39,11 @@ export const useUpdateVehicleBrand = () => {
       id: number;
       data: VehicleBrandUpdateRequest;
     }) => vehicleBrandAdminApi.update(id, data),
+
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn mã lỗi không tồn tại hoặc trùng tên khi chỉnh sửa hãng xe
+    meta: {
+      silentErrorCodes: [1006, 1011],
+    },
 
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({

@@ -27,6 +27,9 @@ import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 import { vehicleCreationSchema } from "@repo/schemas";
 import type { VehicleCreationRequest } from "@repo/types";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -48,7 +51,7 @@ const defaultValues: VehicleCreationRequest = {
 };
 
 export default function VehicleCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateVehicle();
+  const { mutate: createVehicle, isPending } = useCreateVehicle(); // 🌟 Đổi sang dùng mutate đồng bộ
   const { data: branches = [] } = useBranches();
   const { data: brands } = useVehicleBrands(1, 100);
   const { data: models } = useVehicleModels(1, 100);
@@ -58,31 +61,31 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     control,
     handleSubmit,
     reset,
+    setError, // 🌟 Nhớ lấy setError ra bạn nhé
     formState: { errors },
   } = useForm<VehicleCreationRequest>({
     resolver: zodResolver(vehicleCreationSchema),
     defaultValues,
   });
 
-  const selectedBrandId = useWatch({
-    control,
-    name: "brandId",
-  });
-
+  const selectedBrandId = useWatch({ control, name: "brandId" });
   const filteredModels = models?.data?.filter(
     (m) => m.brandId === selectedBrandId,
   );
 
-  const onSubmit = async (values: VehicleCreationRequest) => {
-    console.log("Submitting vehicle:", values);
-    try {
-      await mutateAsync(values);
-      toast.success("Create vehicle successfully");
-      reset(defaultValues);
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create vehicle");
-    }
+  // 🌟 KHÔNG CÒN TRY-CATCH, CODE GỌN GÀNG HƠN RẤT NHIỀU
+  const onSubmit = (values: VehicleCreationRequest) => {
+    createVehicle(values, {
+      onSuccess: () => {
+        toast.success("Create vehicle successfully");
+        reset(defaultValues);
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        // 🌟 Gọi helper dùng chung: Tự động map 1010 vào modelName, 1005 vào vehicleId...
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -96,6 +99,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create Vehicle"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

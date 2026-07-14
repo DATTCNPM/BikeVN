@@ -11,6 +11,12 @@ export function useCreateEmployee() {
   return useMutation({
     mutationFn: (payload: Omit<AdminEmployeeCreationPayload, "passwordHash">) =>
       userApi.createEmployee(payload),
+
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn lỗi trùng lặp email/tài khoản nhân viên khi tạo mới
+    meta: {
+      silentErrorCodes: [1002],
+    },
+
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: employeeKeys.all });
     },
@@ -27,6 +33,12 @@ export function useUpdateEmployee() {
       id: string;
       payload: Partial<UpdateEmployeePayload>;
     }) => userApi.updateEmployee(id, payload),
+
+    // 🌟 KHAI BÁO TẠI ĐÂY: Ẩn lỗi không tìm thấy tài khoản hoặc trùng email khi cập nhật thông tin
+    meta: {
+      silentErrorCodes: [1002, 1003],
+    },
+
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: employeeKeys.all });
       await queryClient.invalidateQueries({

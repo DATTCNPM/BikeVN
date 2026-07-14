@@ -19,6 +19,9 @@ import { useCreateVehicleBrand } from "@/features/vehicleBrand/mutationVehicleBr
 import { vehicleBrandCreationSchema } from "@repo/schemas";
 import type { VehicleBrandCreationRequest } from "@repo/types";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -30,30 +33,30 @@ const defaultValues: VehicleBrandCreationRequest = {
 };
 
 export default function BrandCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateVehicleBrand();
+  const { mutate: createVehicleBrand, isPending } = useCreateVehicleBrand();
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<VehicleBrandCreationRequest>({
     resolver: zodResolver(vehicleBrandCreationSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: VehicleBrandCreationRequest) => {
-    try {
-      await mutateAsync(values);
-
-      toast.success("Create vehicle brand successfully");
-
-      reset(defaultValues);
-
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create vehicle brand");
-    }
+  const onSubmit = (values: VehicleBrandCreationRequest) => {
+    createVehicleBrand(values, {
+      onSuccess: () => {
+        toast.success("Vehicle brand created successfully");
+        reset();
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -67,6 +70,7 @@ export default function BrandCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create Brand"
+      error={errors.root?.message}
     >
       <FieldGroup>
         <Field>

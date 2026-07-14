@@ -18,6 +18,9 @@ import { vehicleImageCreationSchema } from "@repo/schemas";
 import type { VehicleImageCreatePayload } from "@repo/types";
 import ImageUploadField from "@/components/common/ImageUploadField";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,12 +32,13 @@ const defaultValues: VehicleImageCreatePayload = {
 };
 
 export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
-  const { mutateAsync, isPending } = useUploadVehicleImage();
+  const { mutate: uploadVehicleImage, isPending } = useUploadVehicleImage();
 
   const {
     control,
     handleSubmit,
     reset,
+    setError,
     setValue,
     formState: { errors },
   } = useForm<VehicleImageCreatePayload>({
@@ -48,24 +52,20 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
     defaultValue: [],
   });
 
-  const onSubmit = async (values: VehicleImageCreatePayload) => {
-    try {
-      await mutateAsync({
-        vehicleId,
-
-        payload: {
-          imageUrl: values.imageUrl,
+  const onSubmit = (values: VehicleImageCreatePayload) => {
+    uploadVehicleImage(
+      { vehicleId, payload: values },
+      {
+        onSuccess: () => {
+          toast.success("Vehicle image uploaded successfully");
+          reset(defaultValues);
+          onOpenChange(false);
         },
-      });
-
-      toast.success("Upload image successfully");
-
-      reset(defaultValues);
-
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to upload image");
-    }
+        onError: (error: unknown) => {
+          handleFormBackendError(error, setError, isApiError);
+        },
+      },
+    );
   };
 
   return (
@@ -79,6 +79,7 @@ export default function ImageCreate({ open, onOpenChange, vehicleId }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Upload"
+      error={errors.root?.message}
     >
       <FieldGroup>
         <Field>

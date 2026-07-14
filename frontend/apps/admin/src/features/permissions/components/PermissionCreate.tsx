@@ -20,6 +20,9 @@ import { useCreatePermission } from "../mutationsPermission";
 
 import type { PermissionRequest } from "@repo/types";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,29 +34,30 @@ const defaultValues: PermissionRequest = {
 };
 
 export default function PermissionCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreatePermission();
+  const { mutate: createPermission, isPending } = useCreatePermission();
 
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<PermissionRequest>({
     resolver: zodResolver(permissionCreationSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: PermissionRequest) => {
-    try {
-      await mutateAsync(values);
-
-      toast.success("Create permission successfully");
-
-      reset(defaultValues);
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create permission");
-    }
+  const onSubmit = (values: PermissionRequest) => {
+    createPermission(values, {
+      onSuccess: () => {
+        toast.success("Permission created successfully");
+        reset(defaultValues);
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -67,6 +71,7 @@ export default function PermissionCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <FieldGroup>
         <Field>

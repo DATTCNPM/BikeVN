@@ -4,6 +4,11 @@ import { paymentClientApi } from "@repo/api";
 export function useCreatePayment() {
   return useMutation({
     mutationFn: paymentClientApi.createPayment,
+    // 🌟 THÊM VÀO: Ngăn chặn cơ chế bắn toast lỗi tự động toàn hệ thống
+    // đối với các mã lỗi nghiệp vụ mà component PaymentSummaryCard sẽ tự bắt.
+    meta: {
+      silentErrorCodes: [1014, 1015, 1016, 1021, 1025],
+    },
   });
 }
 

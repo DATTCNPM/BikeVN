@@ -17,46 +17,42 @@ export default function ChatInput({ onSend }: Props) {
     formState: { errors },
   } = useForm<{ content: string }>({
     resolver: zodResolver(chatMessageRequestSchema.pick({ content: true })),
-    defaultValues: {
-      content: "",
-    },
+    defaultValues: { content: "" },
   });
 
   const onSubmit = (data: { content: string }) => {
-    console.log("🚀 ~ file: ChatInput.tsx:24 ~ onSubmit ~ data:", data);
+    if (!data.content.trim()) return;
     onSend(data);
     reset();
   };
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
-      // 🌟 SỬA: Tinh gọn p-4 thành p-3 (hoặc px-4 py-3)
-      className="border-t bg-background px-4 py-3"
+      onSubmit={(e) => {
+        void handleSubmit(onSubmit)(e);
+      }}
+      className="border-t bg-background px-4 py-3 flex-shrink-0"
     >
-      <div className="mx-auto flex max-w-4xl items-end gap-2">
-        {/* 🌟 SỬA: Giảm kích thước nút đính kèm từ size-12 xuống size-10 */}
-        <label className="flex size-10 cursor-pointer items-center justify-center rounded-xl border transition hover:bg-accent shrink-0">
-          <ImagePlus className="size-4.5" />
+      <div className="mx-auto flex max-w-4xl items-center gap-2">
+        <label className="flex size-10 cursor-pointer items-center justify-center rounded-xl border border-border/60 transition hover:bg-accent shrink-0">
+          <ImagePlus className="size-4.5 text-muted-foreground" />
           <input type="file" accept="image/*" className="hidden" />
         </label>
 
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col relative">
           <Input
             {...register("content")}
             placeholder="Type a message..."
-            // 🌟 SỬA: Giảm chiều cao từ h-12 xuống h-10, đổi border-radius sang rounded-xl cho gọn
-            className="h-10 rounded-xl text-xs"
+            className="h-10 rounded-xl text-sm"
             autoComplete="off"
           />
           {errors.content && (
-            <span className="mt-1 text-[10px] text-red-500 pl-1 absolute -top-5 bg-background px-1 border rounded shadow-sm">
+            <span className="text-[10px] text-destructive pl-1 mt-0.5 absolute top-full left-0">
               {errors.content.message}
             </span>
           )}
         </div>
 
-        {/* 🌟 SỬA: Giảm kích thước nút gửi xuống size-10 */}
         <Button
           type="submit"
           size="icon"

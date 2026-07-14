@@ -34,6 +34,9 @@ import type { VehicleModel } from "@repo/types";
 
 import { useUpdateVehicleModel } from "@/features/vehicleModel/mutationVehicleModel";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -41,7 +44,7 @@ type Props = {
 };
 
 export default function ModelEdit({ open, onOpenChange, model }: Props) {
-  const { mutateAsync, isPending } = useUpdateVehicleModel();
+  const { mutate: updateModel, isPending } = useUpdateVehicleModel();
 
   const { data: brands } = useVehicleBrands();
 
@@ -50,6 +53,7 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
     control,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<VehicleModelUpdateRequest>({
     resolver: zodResolver(vehicleModelUpdateSchema),
@@ -67,18 +71,25 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
     });
   }, [model, reset]);
 
-  const onSubmit = async (values: VehicleModelUpdateRequest) => {
+  const onSubmit = (values: VehicleModelUpdateRequest) => {
     if (!model) return;
 
     try {
-      await mutateAsync({
-        id: model.id,
-        data: values,
-      });
-
-      toast.success("Update vehicle model successfully");
-
-      onOpenChange(false);
+      updateModel(
+        {
+          id: model.id,
+          data: values,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Update vehicle model successfully");
+            onOpenChange(false);
+          },
+          onError: (error: unknown) => {
+            handleFormBackendError(error, setError, isApiError);
+          },
+        },
+      );
     } catch {
       toast.error("Failed to update vehicle model");
     }
@@ -95,6 +106,7 @@ export default function ModelEdit({ open, onOpenChange, model }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Save Changes"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <FieldGroup>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

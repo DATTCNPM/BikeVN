@@ -27,6 +27,9 @@ import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 import type { Vehicle, VehicleUpdateRequest } from "@repo/types";
 import { vehicleUpdateSchema } from "@repo/schemas";
 
+import { handleFormBackendError } from "@repo/providers";
+import { isApiError } from "@repo/api";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -34,7 +37,7 @@ type Props = {
 };
 
 export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
-  const { mutateAsync, isPending } = useUpdateVehicle();
+  const { mutate: updateVehicle, isPending } = useUpdateVehicle(); // 🌟 Đổi sang dùng mutate đồng bộ
   const { data: branches = [] } = useBranches();
   const { data: brands } = useVehicleBrands();
   const { data: models } = useVehicleModels();
@@ -44,6 +47,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     control,
     handleSubmit,
     reset,
+    setError, // 🌟 Nhớ lấy setError ra bạn nhé
     formState: { errors },
   } = useForm<VehicleUpdateRequest>({
     resolver: zodResolver(vehicleUpdateSchema),
@@ -51,7 +55,6 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
 
   useEffect(() => {
     if (!vehicle) return;
-
     reset({
       name: vehicle.name,
       brandId: vehicle.brandId,
@@ -68,27 +71,28 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     });
   }, [vehicle, reset]);
 
-  const selectedBrandId = useWatch({
-    control,
-    name: "brandId",
-  });
-
+  const selectedBrandId = useWatch({ control, name: "brandId" });
   const filteredModels = models?.data?.filter(
     (m) => m.brandId === selectedBrandId,
   );
 
-  const onSubmit = async (values: VehicleUpdateRequest) => {
+  // 🌟 SẠCH SẼ - KHÔNG TRY CATCH
+  const onSubmit = (values: VehicleUpdateRequest) => {
     if (!vehicle) return;
-    try {
-      await mutateAsync({
-        id: vehicle.id,
-        payload: values,
-      });
-      toast.success("Update vehicle successfully");
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to update vehicle");
-    }
+
+    updateVehicle(
+      { id: vehicle.id, payload: values },
+      {
+        onSuccess: () => {
+          toast.success("Update vehicle successfully");
+          onOpenChange(false);
+        },
+        onError: (error: unknown) => {
+          // 🌟 Helper tự động xử lý tất cả dựa theo file errorMessages.ts mới cập nhật
+          handleFormBackendError(error, setError, isApiError);
+        },
+      },
+    );
   };
 
   return (

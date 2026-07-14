@@ -32,26 +32,20 @@ export default function ChatSidebar({
   const { mutate: getOrCreateConversation, isPending: isCreatingChat } =
     useGetOrCreateConversation();
 
-  // 🌟 SỬA: Chuyển default thành undefined để hiển thị chữ placeholder chuẩn Shadcn
   const [selectValue, setSelectValue] = useState<string | undefined>(undefined);
 
   const handleBranchChange = (branchId: string) => {
     if (!branchId) return;
-
-    // Đặt tạm value để UI hiển thị nhánh đang chọn trong lúc loading
     setSelectValue(branchId);
-
     getOrCreateConversation(branchId, {
       onSuccess: (data) => {
         const conversationId = data?.id;
         if (conversationId) {
           onSelectConversation(conversationId);
         }
-        // 🌟 SỬA: Reset về undefined sau khi tạo thành công để có thể bấm lại lần sau
         setSelectValue(undefined);
       },
       onError: () => {
-        // Reset về ban đầu nếu lỗi
         setSelectValue(undefined);
       },
     });
@@ -60,25 +54,25 @@ export default function ChatSidebar({
   return (
     <aside
       className={`
-        w-full md:w-[340px] lg:w-[380px] shrink-0 h-full flex flex-col
-        bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden
+        w-full md:w-[320px] lg:w-[360px] shrink-0 h-full flex flex-col
+        bg-card border-r border-border/40 overflow-hidden
         ${selectedConversationId ? "hidden md:flex" : "flex"}
       `}
     >
-      {/* Header Sidebar */}
-      <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
+      <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
         <div>
-          <h2 className="text-base font-semibold tracking-tight">Chat</h2>
-          <p className="text-xs text-muted-foreground">List of conversations</p>
+          <h2 className="text-base font-semibold tracking-tight text-foreground">
+            Chat
+          </h2>
+          <p className="text-xs text-muted-foreground">Conversations list</p>
         </div>
-        <Button size="icon" variant="ghost" className="rounded-xl">
-          <Users className="size-4.5 text-muted-foreground" />
+        <Button size="icon" variant="ghost" className="size-8 rounded-lg">
+          <Users className="size-4 text-muted-foreground" />
         </Button>
       </div>
 
-      {/* Bộ chọn chi nhánh */}
-      <div className="border-b border-border/40 p-4 bg-muted/20">
-        <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+      <div className="border-b border-border/40 p-3 bg-muted/20">
+        <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
           <Building2 className="size-3.5 text-primary" /> Quick Connect to
           Branch
         </label>
@@ -88,20 +82,19 @@ export default function ChatSidebar({
           onValueChange={handleBranchChange}
           value={selectValue}
         >
-          <SelectTrigger className="w-full h-9 rounded-xl border border-input bg-background px-3 text-xs font-medium shadow-sm focus:ring-1 focus:ring-primary/40 transition-all">
-            {/* 🌟 SỬA: Bọc nội dung bằng SelectValue placeholder để hiển thị chữ mặc định một cách tự động */}
+          <SelectTrigger className="w-full h-9 rounded-xl border border-input bg-background px-3 text-xs font-medium shadow-sm transition-all">
             <SelectValue
               placeholder={
-                isCreatingChat ? "Creating..." : "Select a branch..."
+                isCreatingChat ? "Connecting..." : "Select a branch..."
               }
             />
           </SelectTrigger>
-          <SelectContent className="rounded-xl shadow-lg border border-border/80">
+          <SelectContent className="rounded-xl shadow-lg border border-border/60">
             {branches.map((branch) => (
               <SelectItem
                 key={branch.id}
                 value={branch.id}
-                className="text-xs rounded-lg cursor-pointer focus:bg-primary/5 focus:text-primary"
+                className="text-xs rounded-lg cursor-pointer"
               >
                 {branch.name}
               </SelectItem>
@@ -110,9 +103,8 @@ export default function ChatSidebar({
         </Select>
       </div>
 
-      {/* List danh sách */}
       <ScrollArea className="flex-1">
-        <div className="space-y-1.5 p-3">
+        <div className="space-y-0.5 p-2">
           {loading ? (
             Array.from({ length: 5 }).map((_, i) => (
               <ConversationItemSkeleton key={i} />

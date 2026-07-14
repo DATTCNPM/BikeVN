@@ -12,6 +12,9 @@ import {
   useRejectBooking,
 } from "@/features/bookings/mutations";
 
+import { isApiError } from "@repo/api";
+import { useState } from "react";
+
 type Props = {
   booking: Booking | null;
   open: boolean;
@@ -31,33 +34,42 @@ export default function BookingStatusDialog({
   const approveMutation = useApproveBooking();
   const rejectMutation = useRejectBooking();
 
+  const [errorReason, setErrorReason] = useState<string | null>(null);
+
   const loading = approveMutation.isPending || rejectMutation.isPending;
+
+  // 🌟 Hàm Wrapper để reset lỗi một cách an toàn khi đóng/mở Dialog
+  const handleOpenChange = (isOpen: boolean) => {
+    setErrorReason(null);
+    onOpenChange(isOpen);
+  };
 
   const handleConfirm = () => {
     if (!booking) return;
+    setErrorReason(null); // Reset trạng thái lỗi trước khi chạy tiếp
 
     const mutation = mode === "approve" ? approveMutation : rejectMutation;
     const successMsg =
       mode === "approve"
         ? "Booking approved successfully"
         : "Booking rejected successfully";
-    const errorMsg =
-      mode === "approve"
-        ? "Failed to approve booking"
-        : "Failed to reject booking";
 
-    mutation
-      .mutateAsync(booking.id)
-      .then(() => {
+    // 🌟 Chuyển đổi sang sử dụng .mutate với cấu trúc callback chuẩn
+    mutation.mutate(booking.id, {
+      onSuccess: () => {
         toast.success(successMsg);
-        return queryClient.invalidateQueries({ queryKey: bookingsKeys.all });
-      })
-      .then(() => {
-        onOpenChange(false);
-      })
-      .catch(() => {
-        toast.error(errorMsg);
-      });
+        void queryClient.invalidateQueries({ queryKey: bookingsKeys.all });
+        handleOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        if (isApiError(error)) {
+          // Lấy thông điệp lỗi nghiệp vụ được trả về từ phía Backend
+          setErrorReason(error.message || "An error occurred on the server");
+        } else {
+          setErrorReason("Failed to perform action. Please try again later.");
+        }
+      },
+    });
   };
 
   return (
@@ -66,7 +78,7 @@ export default function BookingStatusDialog({
       variant={mode === "approve" ? "default" : "destructive"}
       trigger={null}
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange} // 🌟 Thay sang hàm wrapper an toàn
       loading={loading}
       onSubmit={handleConfirm}
       title={mode === "approve" ? "Confirm Booking" : "Reject Booking"}
@@ -76,6 +88,7 @@ export default function BookingStatusDialog({
           : "Are you sure you want to reject this booking?"
       }
       submitLabel={mode === "approve" ? "Approve Booking" : "Reject Booking"}
+      error={errorReason} // 🌟 Truyền errorReason vào để UniversalDialog tự render UI banner lỗi
     />
   );
 }

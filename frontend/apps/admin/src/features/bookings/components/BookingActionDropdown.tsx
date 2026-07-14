@@ -13,6 +13,7 @@ type Props = {
   onReject?: () => void | Promise<void>;
   onManagerVehicleReturn?: () => void | Promise<void>;
   onCreateReview?: () => void | Promise<void>;
+  onCreateVehicleReturn?: () => void | Promise<void>;
 };
 
 export default function BookingActionDropdown({
@@ -20,6 +21,7 @@ export default function BookingActionDropdown({
   onReject,
   onManagerVehicleReturn,
   onCreateReview,
+  onCreateVehicleReturn,
 }: Props) {
   return (
     <DropdownMenu>
@@ -71,6 +73,16 @@ export default function BookingActionDropdown({
           >
             <CirclePlus className="mr-2 size-4" />
             <span className="mr-2">Create Review</span>
+          </DropdownMenuItem>
+        )}
+        {onCreateVehicleReturn && (
+          <DropdownMenuItem
+            onClick={() => {
+              void onCreateVehicleReturn();
+            }}
+          >
+            <CirclePlus className="mr-2 size-4" />
+            <span className="mr-2">Create Vehicle Return</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

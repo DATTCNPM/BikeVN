@@ -24,6 +24,9 @@ import { useBranches } from "@repo/hooks";
 import { updateEmployeeSchema } from "@repo/schemas";
 import type { UpdateEmployeePayload, Employee } from "@repo/types";
 
+import { handleFormBackendError } from "@repo/providers";
+import { isApiError } from "@repo/api";
+
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,13 +34,14 @@ type Props = {
 };
 
 export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
-  const { mutateAsync, isPending } = useUpdateEmployee();
+  const { mutate: updateEmployee, isPending } = useUpdateEmployee();
   const { data: branches } = useBranches();
 
   const {
     register,
     control,
     handleSubmit,
+    setError,
     reset,
     formState: { errors },
   } = useForm<UpdateEmployeePayload>({
@@ -55,15 +59,20 @@ export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
     });
   }, [user, reset]);
 
-  const onSubmit = async (values: UpdateEmployeePayload) => {
+  const onSubmit = (values: UpdateEmployeePayload) => {
     if (!user) return;
-    try {
-      await mutateAsync({ id: user.id, payload: values });
-      toast.success("Update employee successfully");
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to update employee");
-    }
+    updateEmployee(
+      { id: user.id, payload: values },
+      {
+        onSuccess: () => {
+          toast.success("Update employee successfully");
+          onOpenChange(false);
+        },
+        onError: (error: unknown) => {
+          handleFormBackendError(error, setError, isApiError);
+        },
+      },
+    );
   };
 
   return (
@@ -77,6 +86,7 @@ export default function EmployeeEdit({ open, onOpenChange, user }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Save Changes"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <div className="grid gap-5">
         <FieldGroup>

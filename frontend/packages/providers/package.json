@@ -16,7 +16,8 @@
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.100.9",
     "@types/react": "^19.2.14",
-    "react-router-dom": "^7.14.2"
+    "react-router-dom": "^7.14.2",
+    "react-hook-form": "^7.75.0"
   },
   "private": true,
   "peerDependencies": {

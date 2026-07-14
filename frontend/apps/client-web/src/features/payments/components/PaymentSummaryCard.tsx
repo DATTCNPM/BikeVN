@@ -1,4 +1,3 @@
-// components/payment/PaymentSummaryCard.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
@@ -17,14 +16,16 @@ import type {
   VehicleReturn,
 } from "@repo/types";
 import { toast } from "@repo/ui/components/ui/sonner";
+import { isApiError } from "@repo/api"; // 🌟 Import hàm kiểm tra lỗi từ API của hệ thống
+import { ERROR_MESSAGES } from "@repo/providers"; // 🌟 Khai báo để lấy text chuẩn hóa theo code
 
 type Props = {
   booking: Booking | null;
-  vehicleReturn?: VehicleReturn | null; // 🌟 Nhận dữ liệu biên bản trả xe
+  vehicleReturn?: VehicleReturn | null;
   selectedMethod: PaymentMethod;
   userProfile: User | undefined;
   paymentType: "booking" | "surcharge";
-  surchargeAmount?: number; // Có thể dùng prop này hoặc đọc trực tiếp từ vehicleReturn
+  surchargeAmount?: number;
 };
 
 const formatVND = (value: number) => `${value.toLocaleString("vi-VN")}đ`;
@@ -44,16 +45,12 @@ export default function PaymentSummaryCard({
   const [modalOpen, setModalOpen] = useState(false);
   const [missingFields, setMissingFields] = useState<string[]>([]);
 
-  // 🌟 KHẮC PHỤC LỖI BIẾN 'data': Xác định nguồn tiền chuẩn xác
-  // Ưu tiên lấy từ surchargeAmount (trang cha tính toán), nếu ko có thì tự lấy từ vehicleReturn?.extraFee
   const finalPrice =
     paymentType === "surcharge"
       ? (surchargeAmount ?? vehicleReturn?.extraFee ?? 0)
       : booking?.totalPrice || 0;
 
   const isLoading = isCreating || isGettingUrl;
-
-  // Kiểm tra xem đã có đủ dữ liệu gốc để tiến hành thanh toán chưa
   const hasRequiredData = booking !== null;
 
   const handlePayment = () => {
@@ -70,7 +67,7 @@ export default function PaymentSummaryCard({
     }
 
     const payload: PaymentCreationPayload = {
-      bookingId: booking.id, // 🌟 Sửa từ data.id thành booking.id
+      bookingId: booking.id,
       amount: finalPrice,
       idempotencyKey: crypto.randomUUID(),
       paymentMethod: selectedMethod,
@@ -87,18 +84,33 @@ export default function PaymentSummaryCard({
               ? "Surcharge confirmed! Please pay at the counter."
               : "Booking order created! Please pay at the counter.",
           );
-          navigate(`/booking-result/${booking.id}`); // 🌟 Sửa từ data.id thành booking.id
+          navigate(`/booking-result/${booking.id}`);
         } else if (selectedMethod === "vnpay") {
           const bookingId =
             paymentType === "surcharge"
               ? vehicleReturn?.payment?.bookingId
               : booking.id;
-          const returnUrl = `${window.location.origin}/booking-result/${bookingId}?payment=success`; // 🌟 Sửa từ data.id thành booking.id
+          const returnUrl = `${window.location.origin}/booking-result/${bookingId}?payment=success`;
           getVNPayUrl({ paymentId, returnUrl });
         }
       },
-      onError: (error) => {
-        toast.error(`Error: ${error.message}`);
+      // 🌟 KHẮC PHỤC TRIỆT ĐỂ: Đồng bộ hoá cách bóc lỗi an toàn tương tự form đăng nhập
+      onError: (error: unknown) => {
+        let message = "An unknown error occurred";
+
+        if (isApiError(error)) {
+          const errCode = error.code;
+          // Nếu mã lỗi được định nghĩa trong từ điển ERROR_MESSAGES, sử dụng nó
+          if (errCode && ERROR_MESSAGES[errCode]) {
+            message = ERROR_MESSAGES[errCode].message;
+          } else {
+            message = error.message || message;
+          }
+        } else if (error instanceof Error) {
+          message = error.message;
+        }
+
+        toast.error(`Error: ${message}`);
       },
     });
   };
@@ -114,10 +126,6 @@ export default function PaymentSummaryCard({
     }
     return selectedMethod === "cash" ? "Confirm Booking" : "Pay Now";
   };
-
-  console.log("booking in PaymentSummaryCard:", booking);
-  console.log("vehicleReturn in PaymentSummaryCard:", vehicleReturn);
-  console.log("finalPrice in PaymentSummaryCard:", finalPrice);
 
   return (
     <>
@@ -159,7 +167,7 @@ export default function PaymentSummaryCard({
         </div>
 
         <Button
-          disabled={!hasRequiredData || isLoading} // 🌟 Sửa logic disabled dựa trên booking trạng thái
+          disabled={!hasRequiredData || isLoading}
           onClick={handlePayment}
           className="mt-8 h-14 w-full rounded-2xl text-base font-bold"
         >

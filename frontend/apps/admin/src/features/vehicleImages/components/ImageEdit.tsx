@@ -24,6 +24,9 @@ import type { VehicleImage, VehicleImageUpdatePayload } from "@repo/types";
 
 import { getImageUrl } from "@repo/utils";
 
+import { isApiError } from "@repo/api";
+import { handleFormBackendError } from "@repo/providers";
+
 type FormValues = VehicleImageUpdatePayload;
 
 type Props = {
@@ -39,7 +42,7 @@ export default function ImageEdit({
   vehicleId,
   image,
 }: Props) {
-  const { mutateAsync, isPending } = useUpdateVehicleImage();
+  const { mutate: updateVehicleImage, isPending } = useUpdateVehicleImage();
 
   const [preview, setPreview] = useState<string>("");
 
@@ -48,6 +51,7 @@ export default function ImageEdit({
     control,
     handleSubmit,
     reset,
+    setError,
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
@@ -92,23 +96,26 @@ export default function ImageEdit({
     });
   };
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = (values: FormValues) => {
     console.log(values);
     if (!image) return;
 
-    try {
-      await mutateAsync({
+    updateVehicleImage(
+      {
         vehicleId,
         imageId: image.id,
         payload: values,
-      });
-
-      toast.success("Update image successfully");
-
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to update image");
-    }
+      },
+      {
+        onSuccess: () => {
+          toast.success("Update image successfully");
+          onOpenChange(false);
+        },
+        onError: (error: unknown) => {
+          handleFormBackendError(error, setError, isApiError);
+        },
+      },
+    );
   };
 
   return (
@@ -122,6 +129,7 @@ export default function ImageEdit({
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Save Changes"
+      error={errors.root?.message}
     >
       <FieldGroup>
         <Field>

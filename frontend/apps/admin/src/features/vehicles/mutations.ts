@@ -13,6 +13,9 @@ export function useCreateVehicle() {
       console.log("Creating vehicle with payload:", payload);
       return vehicleAdminApi.createVehicle(payload);
     },
+    meta: {
+      silentErrorCodes: [1005],
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });
     },
@@ -32,6 +35,9 @@ export function useUpdateVehicle() {
     }) => {
       console.log("Updating vehicle with id:", id, "and payload:", payload);
       return vehicleAdminApi.updateVehicle(id, payload);
+    },
+    meta: {
+      silentErrorCodes: [1005],
     },
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: vehiclesKeys.all });

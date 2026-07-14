@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { Input } from "@repo/ui/components/ui/input";
 import {
@@ -10,7 +9,6 @@ import {
   FieldLabel,
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
-
 import { useCreateBranch } from "@/features/branches/mutations";
 import { createBranchSchema } from "@repo/schemas";
 import type { CreateBranchPayload, BranchStatus } from "@repo/types";
@@ -21,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/ui/select";
+import { handleFormBackendError } from "@repo/providers"; // 🌟 Import helper dùng chung
+import { isApiError } from "@repo/api";
 
 type Props = {
   open: boolean;
@@ -31,39 +31,39 @@ const StatusOptions: BranchStatus[] = ["active", "inactive"];
 
 const defaultValues: CreateBranchPayload = {
   name: "",
-
   address: "",
-
   lat: 0,
-
   lng: 0,
-
   status: "active",
 };
 
 export default function BranchCreate({ open, onOpenChange }: Props) {
-  const { mutateAsync, isPending } = useCreateBranch();
+  const { mutate: createBranch, isPending } = useCreateBranch(); // 🌟 Đổi sang dùng mutate đồng bộ dữ liệu
 
   const {
     control,
     register,
     handleSubmit,
     reset,
+    setError, // 🌟 Lấy ra để map lỗi backend
     formState: { errors },
   } = useForm<CreateBranchPayload>({
     resolver: zodResolver(createBranchSchema),
     defaultValues,
   });
 
-  const onSubmit = async (values: CreateBranchPayload) => {
-    try {
-      await mutateAsync(values);
-      toast.success("Branch created successfully");
-      reset(defaultValues);
-      onOpenChange(false);
-    } catch {
-      toast.error("Failed to create branch");
-    }
+  const onSubmit = (values: CreateBranchPayload) => {
+    createBranch(values, {
+      onSuccess: () => {
+        toast.success("Branch created successfully");
+        reset(defaultValues);
+        onOpenChange(false);
+      },
+      onError: (error: unknown) => {
+        // 🌟 TỰ ĐỘNG hoàn toàn: Trùng tên (1009) -> thông báo lỗi nhảy trực tiếp vào Input "Name"
+        handleFormBackendError(error, setError, isApiError);
+      },
+    });
   };
 
   return (
@@ -77,6 +77,7 @@ export default function BranchCreate({ open, onOpenChange }: Props) {
       onSubmit={handleSubmit(onSubmit)}
       loading={isPending}
       submitLabel="Create Branch"
+      error={errors.root?.message} // 🌟 Hiển thị lỗi chung hệ thống (mất mạng, concurrency, code 9999, 5050) nếu có
     >
       <div className="grid gap-5">
         <FieldGroup>

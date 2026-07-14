@@ -11,7 +11,8 @@ import { ERROR_MESSAGES } from "./errorMessages";
 
 function getErrorMessage(error: unknown): string {
   if (isApiError(error)) {
-    return ERROR_MESSAGES[error.code] ?? error.message;
+    // 🌟 KHẮC PHỤC LỖI: Lấy thuộc tính .message từ object ErrorConfig nếu có
+    return ERROR_MESSAGES[error.code]?.message ?? error.message;
   }
   if (error instanceof Error) {
     return error.message;
@@ -26,14 +27,12 @@ const queryClient = new QueryClient({
       gcTime: 1000 * 60 * 5,
       refetchOnWindowFocus: false,
       retry: (failureCount, error: unknown) => {
-        // Lỗi nghiệp vụ logic từ backend trả về không retry
         if (isApiError(error) && error.code >= 1000 && error.code < 2000)
           return false;
 
         const responseStatus =
           (error as any)?.status ?? (error as any)?.response?.status;
 
-        // Chặn lỗi 4xx ngoại trừ 408 (Timeout) và 429 (Too many requests)
         if (
           responseStatus >= 400 &&
           responseStatus < 500 &&
@@ -65,7 +64,6 @@ const queryClient = new QueryClient({
 
       if (isApiError(error) && error.code === 5555) return;
 
-      // 🌟 LẤY ĐỘNG DANH SÁCH MÃ LỖI MUỐN ẨN TOAST TỪ TRONG HOOK GỌI API
       const silentCodes = (mutation.meta?.silentErrorCodes as number[]) || [];
       if (isApiError(error) && silentCodes.includes(error.code)) {
         return;
