@@ -22,7 +22,7 @@ public class StatisticController {
     StatisticService statisticService;
 
     @GetMapping("/general")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public ApiResponse<AdminGeneralStatResponse> getAdminGeneralStats()
     {
         return ApiResponse.<AdminGeneralStatResponse>builder()
@@ -31,7 +31,7 @@ public class StatisticController {
     }
 
     @GetMapping("/charts/revenue-monthly")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public ApiResponse<List<ChartDataResponse>> getMonthlyRevenueChart
             (@RequestParam(required = false) Integer year)
     {
@@ -50,7 +50,7 @@ public class StatisticController {
     }
 
     @GetMapping("charts/popular-vehicles")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public ApiResponse<List<ChartDataResponse>> getPopularVehiclesChart()
     {
         return ApiResponse.<List<ChartDataResponse>>builder()

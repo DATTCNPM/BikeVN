@@ -39,4 +39,14 @@ public interface PaymentRepository extends JpaRepository<Payment, String>, JpaSp
             "WHERE p.status = 'completed' " +
             "GROUP BY b.id, b.name")
     List<Object[]> getRevenueByBranch();
+
+    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.status = :status AND p.branchId = :branchId")
+    BigDecimal calculateTotalRevenueByBranch(@Param("status") PaymentStatus status, @Param("branchId") String branchId);
+
+    @Query("SELECT MONTH(p.paidAt) as month, SUM(p.amount) as total " +
+            "FROM Payment p " +
+            "WHERE p.status = 'completed' AND YEAR(p.paidAt) = :year AND p.branchId = :branchId " +
+            "GROUP BY MONTH(p.paidAt) " +
+            "ORDER BY MONTH(p.paidAt)")
+    List<Object[]> getMonthlyRevenueByBranch(@Param("year") int year, @Param("branchId") String branchId);
 }
