@@ -15,14 +15,14 @@ import { Input } from "@repo/ui/components/ui/input";
 import { Separator } from "@repo/ui/components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
 
-import { usePortalAuth } from "@/features/auth/hooks/usePortalAuth";
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 import { useNotificationStore } from "@/hooks/useNotificationStore"; // Import Store
+import { useLogoutAdmin } from "@/features/auth/hooks/useLogoutAdmin"; // Thay đổi đường dẫn import cho đúng với dự án của bạn
 
 export default function AppHeader() {
   const navigate = useNavigate();
+  const logoutAdmin = useLogoutAdmin();
 
-  const logoutPortal = usePortalAuth((state) => state.logoutPortal);
   const { data: portalProfile } = usePortalProfile();
 
   // 🔔 Lấy dữ liệu thông báo từ Zustand
@@ -30,8 +30,7 @@ export default function AppHeader() {
     useNotificationStore();
 
   const handleLogout = () => {
-    logoutPortal();
-    void navigate("/login");
+    logoutAdmin();
   };
 
   const initials =

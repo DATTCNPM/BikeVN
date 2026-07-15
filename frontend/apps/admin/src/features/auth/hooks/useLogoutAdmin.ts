@@ -14,9 +14,7 @@ export function useLogoutAdmin() {
     logoutPortal();
     // authStorageService.clearPortalTokens(); // (Dòng này có thể bỏ vì logoutPortal đã làm ở trên)
 
-    queryClient.removeQueries({
-      queryKey: ["portal-profile"],
-    });
+    queryClient.clear();
 
     void navigate("/login"); // <-- Thêm dòng này để đá user về trang login admin
   };

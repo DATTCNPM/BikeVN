@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom"; // Import useLocation
 import { CalendarDays, Car, DollarSign, User, Users } from "lucide-react";
 
 import DashboardCard from "@/features/dashboard/components/DashboardCard";
@@ -12,7 +13,7 @@ import {
   useRevenueByBranchChart,
   usePopularVehiclesChart,
 } from "@/features/dashboard/hooks/queries";
-// Import các UI phụ trợ vừa tạo ở trên
+
 import {
   ChartSkeleton,
   ChartEmptyState,
@@ -20,16 +21,24 @@ import {
 
 export default function HomePage() {
   const [selectedYear] = useState<number>(new Date().getFullYear());
+  const { pathname } = useLocation();
 
-  // Gọi các API riêng biệt
+  // Xác định xem người dùng đang truy cập thông qua phân hệ Admin hay Employee
+  const isAdminPath = pathname.startsWith("/admin");
+
+  // 1. Các API dùng chung cho cả 2 phân hệ
   const { data: generalStats, isLoading: isStatsLoading } =
     useAdminGeneralStats();
+
   const { data: monthlyRevenue, isLoading: isRevenueLoading } =
     useMonthlyRevenueChart({ year: selectedYear });
-  const { data: branchPerformance, isLoading: isBranchLoading } =
-    useRevenueByBranchChart();
+
   const { data: popularVehicles, isLoading: isVehiclesLoading } =
     usePopularVehiclesChart();
+
+  // 2. Chỉ kích hoạt call API doanh thu chi nhánh nếu URL thuộc phân hệ /admin
+  const { data: branchPerformance, isLoading: isBranchLoading } =
+    useRevenueByBranchChart(isAdminPath);
 
   return (
     <div className="space-y-8 p-6">
@@ -41,7 +50,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* OVERVIEW CARDS - Hiệu ứng nhấp nháy khi chưa có dữ liệu */}
+      {/* OVERVIEW CARDS */}
       <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
         <DashboardCard
           title="Revenue"
@@ -96,26 +105,32 @@ export default function HomePage() {
       </section>
 
       {/* CHARTS SECTION 2: BRANCH PERFORMANCE & TOP VEHICLES */}
-      <section className="grid gap-5 lg:grid-cols-2">
-        {/* Branch Performance */}
-
-        {isBranchLoading ? (
-          <ChartSkeleton />
-        ) : !branchPerformance || branchPerformance.length === 0 ? (
-          <ChartEmptyState title="Branch Performance" />
-        ) : (
-          <BranchPerformanceChart data={branchPerformance} />
+      <section
+        className={`grid gap-5 ${isAdminPath ? "lg:grid-cols-2" : "grid-cols-1"}`}
+      >
+        {/* Chỉ hiển thị Phần Branch Performance nếu đang ở URL Admin */}
+        {isAdminPath && (
+          <div>
+            {isBranchLoading ? (
+              <ChartSkeleton />
+            ) : !branchPerformance || branchPerformance.length === 0 ? (
+              <ChartEmptyState title="Branch Performance" />
+            ) : (
+              <BranchPerformanceChart data={branchPerformance} />
+            )}
+          </div>
         )}
 
-        {/* Top Vehicles */}
-
-        {isVehiclesLoading ? (
-          <ChartSkeleton />
-        ) : !popularVehicles || popularVehicles.length === 0 ? (
-          <ChartEmptyState title="Top Vehicles" />
-        ) : (
-          <TopVehiclesChart data={popularVehicles} />
-        )}
+        {/* Top Vehicles (Cả Admin và Employee đều xem được) */}
+        <div>
+          {isVehiclesLoading ? (
+            <ChartSkeleton />
+          ) : !popularVehicles || popularVehicles.length === 0 ? (
+            <ChartEmptyState title="Top Vehicles" />
+          ) : (
+            <TopVehiclesChart data={popularVehicles} />
+          )}
+        </div>
       </section>
     </div>
   );

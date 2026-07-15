@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import { Toaster } from "@repo/ui/components/ui/sonner";
 import { QueryProvider } from "@repo/providers";
 import { AuthInitializer } from "./features/auth/AuthInitializer";
+import { ThemeProvider } from "@/components/common/ThemeProvider";
 
 // Import hooks và store dùng chung từ Monorepo
 import { useServerHealthCheck } from "@repo/hooks";
@@ -31,10 +32,17 @@ function AppContent() {
 // 🌟 COMPONENT APP GỐC: Chỉ đóng vai trò cấu hình Provider ở tầng cao nhất
 function App() {
   return (
-    <QueryProvider>
-      <AppContent />
-      <Toaster />
-    </QueryProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <QueryProvider>
+        <AppContent />
+        <Toaster />
+      </QueryProvider>
+    </ThemeProvider>
   );
 }
 
