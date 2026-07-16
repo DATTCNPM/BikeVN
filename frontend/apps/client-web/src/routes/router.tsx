@@ -5,6 +5,7 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import MainLayout from "@/components/layouts/MainLayout";
 import AuthLayout from "@/components/layouts/AuthLayout";
+import MainLayoutNoFooter from "@/components/layouts/MainLayoutNoFooter"; // 🌟 Import Layout không Footer
 
 import { AuthListenerProvider } from "@repo/providers";
 
@@ -31,7 +32,6 @@ function PageLoader() {
   );
 }
 
-// GỌN GÀNG: Không check, không sub store ở đây. Cứ để app chạy tự nhiên, sập nguồn Axios sẽ ép nhảy trang.
 function GlobalRootLayout() {
   return (
     <Suspense fallback={<PageLoader />}>
@@ -65,8 +65,9 @@ const router = createBrowserRouter([
     element: <GlobalRootLayout />,
     children: [
       { index: true, element: <Landing /> },
-
       { path: "*", element: <NotFoundPage /> },
+
+      // 🔐 1. AUTH LAYOUT (Login/Register)
       {
         element: <AuthLayout />,
         children: [
@@ -74,13 +75,22 @@ const router = createBrowserRouter([
           { path: "register", element: <Register /> },
         ],
       },
+
+      // 💻 2. MAIN LAYOUT (CÓ FOOTER - Dành cho duyệt xe và trang chủ)
       {
         element: <MainLayout />,
         children: [
           { path: "home", element: <HomePage /> },
           { path: "vehicles/:id", element: <VehicleDetail /> },
+        ],
+      },
+
+      // 🚫 3. MAIN LAYOUT NO FOOTER (KHÔNG CÓ FOOTER - Dành cho tính năng, thanh toán, trang cá nhân)
+      {
+        element: <MainLayoutNoFooter />,
+        children: [
           {
-            element: <ProtectedRoute />,
+            element: <ProtectedRoute />, // Chốt chặn bảo vệ nằm bên trong layout không footer
             children: [
               { path: "chat", element: <ChatPage /> },
               { path: "profile", element: <ProfilePage /> },

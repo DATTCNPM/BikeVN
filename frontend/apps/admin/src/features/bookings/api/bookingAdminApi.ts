@@ -1,5 +1,5 @@
 // src/apis/bookingApi.ts
-import { axiosAdmin } from "@repo/api";
+import { axiosAdmin } from "@/hooks/axiosAdmin";
 import type { Booking, BookingFilter, PaginationResponse } from "@repo/types";
 import { createBookingCommonApi } from "@repo/api";
 

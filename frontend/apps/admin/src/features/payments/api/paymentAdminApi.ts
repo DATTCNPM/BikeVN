@@ -3,7 +3,7 @@ import type {
   PaginationResponse,
   PaymentFilterParams,
 } from "@repo/types";
-import { axiosAdmin } from "@repo/api";
+import { axiosAdmin } from "@/hooks/axiosAdmin";
 import { createPaymentCommonApi } from "@repo/api";
 
 export const paymentAdminApi = {

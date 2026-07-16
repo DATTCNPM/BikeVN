@@ -1,4 +1,4 @@
-import { axiosAdmin } from "@repo/api";
+import { axiosAdmin } from "@/hooks/axiosAdmin";
 import type {
   VehicleModel,
   VehicleModelCreationRequest,

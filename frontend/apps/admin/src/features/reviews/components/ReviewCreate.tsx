@@ -12,7 +12,7 @@ import {
 } from "@repo/ui/components/ui/field";
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import { useCreateReview } from "@repo/hooks";
+import { useCreateReview } from "../hooks/mutations";
 import { reviewCreationSchema } from "@repo/schemas";
 import type { ReviewCreationPayload } from "@repo/types";
 

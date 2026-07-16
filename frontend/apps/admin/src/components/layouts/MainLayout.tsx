@@ -1,6 +1,5 @@
 import { Suspense } from "react"; // Chớ quên import Suspense nhé
 import { Outlet } from "react-router-dom";
-import AppFooter from "@/components/layouts/Footer";
 import AppHeader from "@/components/layouts/Header";
 import AppSidebar from "@/components/layouts/Sidebar";
 import {
@@ -31,7 +30,6 @@ export default function MainLayout() {
             <Outlet />
           </Suspense>
         </div>
-        <AppFooter />
       </main>
     </SidebarProvider>
   );

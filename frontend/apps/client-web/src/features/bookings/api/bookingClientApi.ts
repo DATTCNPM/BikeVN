@@ -1,9 +1,11 @@
-import axiosClient from "../axios/axiosClient";
+import axiosClient from "@/hooks/axiosClient";
 
 import type { Booking, BookingCreationPayload } from "@repo/types";
 
-import { createBookingCommonApi } from "../common/createBookingCommonApi";
-import { createVehicleReturnCommonApi } from "../common/createVehicleReturnCommonApi";
+import {
+  createBookingCommonApi,
+  createVehicleReturnCommonApi,
+} from "@repo/api";
 
 export const bookingClientApi = {
   ...createBookingCommonApi(axiosClient),

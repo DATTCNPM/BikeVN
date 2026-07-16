@@ -1,4 +1,4 @@
-import axiosClient from "../axios/axiosClient";
+import axiosClient from "@/hooks/axiosClient";
 
 import type { User } from "@repo/types";
 

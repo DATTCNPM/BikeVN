@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { userClientApi } from "@repo/api";
+import { userClientApi } from "@/features/profile/api/userClientApi";
 import { authKeys } from "@/features/auth/hooks/authKeys";
 import type { User, UpdateProfilePayload } from "@repo/types";
 

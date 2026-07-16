@@ -6,7 +6,7 @@ import {
   useMessageHistory,
 } from "@/features/chat/hooks/useChatQueries";
 import { useChatManager } from "@/features/chat/hooks/useChatManager";
-import { useProfile } from "@/features/profile/hooks/useProfile";
+import { useProfile } from "@/features/auth/hooks/useProfile";
 
 export default function ChatPage() {
   const { data: profile } = useProfile();
@@ -47,8 +47,8 @@ export default function ChatPage() {
   );
 
   return (
-    // Sử dụng h-[calc(100vh-theme(spacing.16)-padding)] để không bị lố chiều cao layout tổng
-    <div className="flex h-[calc(100vh-14rem)] gap-6 overflow-hidden items-start antialiased">
+    // Sử dụng h-[calc(100vh-8rem)] để không bị lố chiều cao layout tổng
+    <div className="flex h-[calc(100vh-8rem)] gap-6 overflow-hidden items-start antialiased">
       <ChatSidebar
         loading={conversationsLoading}
         conversations={conversations}

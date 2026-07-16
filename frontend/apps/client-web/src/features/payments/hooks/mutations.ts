@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { paymentClientApi } from "@repo/api";
+import { paymentClientApi } from "../api/paymentClientApi";
 
 export function useCreatePayment() {
   return useMutation({

@@ -42,14 +42,6 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8 p-6">
-      {/* HEADER */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Overview of the vehicle rental management system.
-        </p>
-      </div>
-
       {/* OVERVIEW CARDS */}
       <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
         <DashboardCard

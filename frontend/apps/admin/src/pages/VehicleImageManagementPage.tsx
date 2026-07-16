@@ -130,8 +130,6 @@ export default function VehicleImageManagementPage() {
     );
   }
 
-  console.log("Vehicle images:", images);
-
   return (
     <>
       <DataTableToolbar

@@ -7,7 +7,7 @@ import PaymentSummaryCard from "@/features/payments/components/PaymentSummaryCar
 import PaymentVehicleCard from "@/features/payments/components/PaymentVehicleCard";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 
-import { useProfile } from "@/features/profile/hooks/useProfile";
+import { useProfile } from "@/features/auth/hooks/useProfile";
 import { useVehicle } from "@repo/hooks";
 import {
   useBooking,

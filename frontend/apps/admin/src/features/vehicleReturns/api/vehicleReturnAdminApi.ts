@@ -1,4 +1,5 @@
-import { axiosAdmin, createVehicleReturnCommonApi } from "@repo/api";
+import { createVehicleReturnCommonApi } from "@repo/api";
+import { axiosAdmin } from "@/hooks/axiosAdmin";
 
 import type {
   VehicleReturn,
@@ -51,10 +52,7 @@ export const vehicleReturnAdminApi = {
       },
     );
 
-    return {
-      message: "Trả xe thành công",
-      vehicleReturn: data, // data lúc này chính xác là kiểu VehicleReturn
-    };
+    return data;
   },
 
   // 3. Lấy TOÀN BỘ danh sách (Dành cho siêu Admin hệ thống)

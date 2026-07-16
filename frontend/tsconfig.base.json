@@ -1,21 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-
-    "target": "es2022",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "module": "esnext",
+    "target": "ES2022",
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "paths": {
-      "@repo/*": ["packages/*/src"],
-      "@repo/hooks": ["packages/hooks/src"],
-      "@repo/api": ["packages/api/src"]
-    },
+    "strict": true, // 🌟 Luôn bật strict mode ở base để code an toàn hơn
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "ignoreDeprecations": "6.0",
-    "types": ["vite/client"]
+    "resolveJsonModule": true, // Hữu ích trong monorepo khi cần đọc package.json
+    "ignoreDeprecations": "6.0"
   }
 }

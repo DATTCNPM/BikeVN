@@ -186,15 +186,6 @@ export default function VehicleReturnAdminPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold tracking-tight">
-          Global Vehicle Returns
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Admin panel to monitor all vehicle return receipts across branches.
-        </p>
-      </div>
-
       <DataTableToolbar
         showSearch={true}
         showCreate={false}
@@ -220,7 +211,7 @@ export default function VehicleReturnAdminPage() {
         />
       </DataTableToolbar>
 
-      <DataTable columns={columns} data={vehicleReturns as any} />
+      <DataTable columns={columns} data={vehicleReturns} />
 
       <TablePagination
         page={pagination.page}

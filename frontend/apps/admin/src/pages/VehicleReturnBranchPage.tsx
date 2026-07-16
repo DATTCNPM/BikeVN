@@ -170,18 +170,6 @@ export default function VehicleReturnBranchPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold tracking-tight">
-          Branch Return Receipts
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Managing return logs for branch:{" "}
-          <span className="font-semibold text-primary">
-            {profile?.branchId || "Current Store"}
-          </span>
-        </p>
-      </div>
-
       <DataTableToolbar
         showSearch={true}
         showCreate={false} // Khởi tạo việc trả xe nên đặt trực tiếp tại màn hình Chi tiết đơn hàng (Booking Details) sẽ tối ưu luồng dữ liệu hơn
@@ -207,7 +195,7 @@ export default function VehicleReturnBranchPage() {
         />
       </DataTableToolbar>
 
-      <DataTable columns={columns} data={vehicleReturns as any} />
+      <DataTable columns={columns} data={vehicleReturns} />
 
       <TablePagination
         page={pagination.page}

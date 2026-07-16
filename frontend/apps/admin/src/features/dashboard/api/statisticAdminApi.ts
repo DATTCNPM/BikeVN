@@ -1,4 +1,4 @@
-import { axiosAdmin } from "@repo/api";
+import { axiosAdmin } from "@/hooks/axiosAdmin";
 import type {
   AdminGeneralStatResponse,
   ChartDataResponse,
@@ -8,10 +8,9 @@ import type {
 export const statisticAdminApi = {
   // GET /statistics/general
   getGeneralStats() {
-    return axiosAdmin.get<
-      AdminGeneralStatResponse,
-      AdminGeneralStatResponse
-    >("/statistics/general");
+    return axiosAdmin.get<AdminGeneralStatResponse, AdminGeneralStatResponse>(
+      "/statistics/general",
+    );
   },
 
   // GET /statistics/charts/revenue-monthly

@@ -1,18 +1,17 @@
+// Nơi khai báo: createReviewCommonApi
 import type { AxiosInstance } from "axios";
-
 import type { Review, ReviewCreationPayload } from "@repo/types";
 
 export const createReviewCommonApi = (axiosInstance: AxiosInstance) => ({
-  async createReview(payload: ReviewCreationPayload) {
+  createReview: async (payload: ReviewCreationPayload) => {
     const data = await axiosInstance.post<Review, ReviewCreationPayload>(
       "/reviews",
       payload,
     );
-
     return data;
   },
 
-  async deleteReview(id: string) {
+  deleteReview: async (id: string) => {
     await axiosInstance.delete(`/reviews/${id}`);
   },
 });

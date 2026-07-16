@@ -1,5 +1,5 @@
 import { TOKEN_KEYS } from "@repo/constants";
-import { createAxiosAuth } from "./createAxiosAuth";
+import { createAxiosAuth } from "@repo/api";
 import axios from "axios";
 
 // Tạo một instance phụ riêng biệt CHỈ dành cho việc refresh, tránh loop interceptor

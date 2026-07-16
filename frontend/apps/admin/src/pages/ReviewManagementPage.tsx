@@ -14,7 +14,7 @@ import UniversalFilterSheet, {
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
 import ReviewDelete from "@/features/reviews/components/ReviewDelete";
-import { useAdminReviews } from "@/features/reviews/queries/useAdminReviews";
+import { useAdminReviews } from "@/features/reviews/hooks/useAdminReviews";
 
 import type { Review, ReviewQueryParams } from "@repo/types";
 

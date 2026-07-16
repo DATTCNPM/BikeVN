@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, Menu, Search, Trash2 } from "lucide-react";
+import { Bell, ChevronDown, Menu, Trash2 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import { Badge } from "@repo/ui/components/ui/badge";
@@ -11,27 +11,132 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
-import { Input } from "@repo/ui/components/ui/input";
 import { Separator } from "@repo/ui/components/ui/separator";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // 🌟 Import thêm useLocation
 
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
-import { useNotificationStore } from "@/hooks/useNotificationStore"; // Import Store
-import { useLogoutAdmin } from "@/features/auth/hooks/useLogoutAdmin"; // Thay đổi đường dẫn import cho đúng với dự án của bạn
+import { useNotificationStore } from "@/hooks/useNotificationStore";
+import { useLogoutAdmin } from "@/features/auth/hooks/useLogoutAdmin";
+
+// 🌟 1. CẤU HÌNH TIÊU ĐỀ & MÔ TẢ ĐỘNG THEO PATHNAME
+const ROUTE_METADATA: Record<string, { title: string; description: string }> = {
+  dashboard: {
+    title: "Dashboard",
+    description:
+      "Overview of system metrics, recent activities, and quick access to management features.",
+  },
+  vehicles: {
+    title: "Vehicle Management",
+    description: "List, status, and update information of vehicles.",
+  },
+  brands: {
+    title: "Brands",
+    description: "Manage the list of vehicle brands in the system.",
+  },
+  models: {
+    title: "Models",
+    description: "Manage vehicle models and trim levels.",
+  },
+  employees: {
+    title: "Employees",
+    description: "Manage employee accounts, permissions, and schedules.",
+  },
+  users: {
+    title: "Users",
+    description: "List of registered customers and their interaction history.",
+  },
+  branches: {
+    title: "Branches",
+    description: "Manage the network of store branches across the system.",
+  },
+  bookings: {
+    title: "Bookings",
+    description:
+      "Track, approve, and update the progress of vehicle rental schedules.",
+  },
+  reviews: {
+    title: "Reviews",
+    description: "Feedback and ratings from customers.",
+  },
+  payments: {
+    title: "Payments",
+    description: "Transaction logs, invoices, and payment history.",
+  },
+  "vehicle-returns": {
+    title: "Vehicle Returns",
+    description: "List of return documents and vehicle handover records.",
+  },
+  chats: {
+    title: "Customer Support",
+    description: "Online chat channel for real-time customer assistance.",
+  },
+  info: {
+    title: "Personal Information",
+    description: "View and update your member profile.",
+  },
+  settings: {
+    title: "System Settings",
+    description: "Customize general operational parameters of the software.",
+  },
+  security: {
+    title: "Account Security",
+    description: "Manage passwords, security keys, and login sessions.",
+  },
+  permissions: {
+    title: "Permission Management",
+    description: "Configure detailed actions allowed within the system.",
+  },
+  roles: {
+    title: "Roles & Permissions",
+    description: "Assign administrative roles and manage system permissions.",
+  },
+};
+
+// 🌟 2. HELPER FUNCTION ĐỂ ĐỌC METADATA DỰA TRÊN PATH HIỆN TẠI
+function getHeaderMetadata(pathname: string) {
+  const defaultMeta = {
+    title: "Hệ thống quản trị",
+    description: "Hệ thống quản lý dịch vụ cho thuê xe BikeVN.",
+  };
+
+  // Chia nhỏ path thành các segment (Ví dụ: "/admin/vehicles/123/images" -> ["admin", "vehicles", "123", "images"])
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length === 0) return defaultMeta;
+
+  // Nếu đang ở trang chủ admin hoặc employee (Ví dụ: /admin hoặc /employee)
+  if (
+    segments.length === 1 &&
+    (segments[0] === "admin" || segments[0] === "employee")
+  ) {
+    return ROUTE_METADATA.dashboard;
+  }
+
+  // Ưu tiên tìm kiếm key khớp với segment tiếp theo (Ví dụ: "vehicles", "bookings"...)
+  // Giải quyết được cả trường hợp route lồng phức tạp hoặc route động: "/admin/bookings/5/return" -> Tìm key "bookings" hoặc "return"
+  for (const segment of segments.reverse()) {
+    if (ROUTE_METADATA[segment]) {
+      return ROUTE_METADATA[segment];
+    }
+  }
+
+  return defaultMeta;
+}
 
 export default function AppHeader() {
   const navigate = useNavigate();
   const logoutAdmin = useLogoutAdmin();
+  const { pathname } = useLocation(); // 🌟 Lấy pathname hiện tại của trình duyệt
 
   const { data: portalProfile } = usePortalProfile();
-
-  // 🔔 Lấy dữ liệu thông báo từ Zustand
   const { notifications, unreadCount, resetUnreadCount, clearNotifications } =
     useNotificationStore();
 
   const handleLogout = () => {
     logoutAdmin();
   };
+
+  // 🌟 Lấy thông tin tiêu đề và mô tả động tương ứng với URL hiện tại
+  const { title, description } = getHeaderMetadata(pathname);
 
   const initials =
     portalProfile?.name
@@ -53,32 +158,22 @@ export default function AppHeader() {
             <Menu className="size-5" />
           </Button>
 
+          {/* 🌟 HIỂN THỊ TIÊU ĐỀ & MÔ TẢ ĐỘNG */}
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Dashboard</h1>
-
-            <p className="text-sm text-muted-foreground">
-              Welcome back, {portalProfile?.name?.split(" ")[0] ?? "Admin"}!
+            <h1 className="text-lg font-bold tracking-tight md:text-xl">
+              {title}
+            </h1>
+            <p className="hidden text-xs text-muted-foreground md:block">
+              {description}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="relative hidden w-72 lg:block">
-            <Search className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-
-            <Input
-              placeholder="Search..."
-              className="h-11 rounded-2xl border-border/60 bg-muted/40 pl-11 shadow-none"
-            />
-          </div>
-
-          {/* 🔔 CHIẾC CHUÔNG THÔNG BÁO REALTIME */}
+          {/* 🔔 CHUÔNG THÔNG BÁO */}
           <DropdownMenu
             onOpenChange={(open) => {
-              if (open) {
-                // Khi click mở chuông ra xem thì reset bộ đếm chưa đọc về 0
-                resetUnreadCount();
-              }
+              if (open) resetUnreadCount();
             }}
           >
             <DropdownMenuTrigger asChild>
@@ -88,8 +183,6 @@ export default function AppHeader() {
                 className="relative rounded-2xl"
               >
                 <Bell className="size-5" />
-
-                {/* Chỉ hiển thị chấm đỏ khi có thông báo chưa đọc */}
                 {unreadCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground animate-bounce">
                     {unreadCount}
@@ -130,13 +223,12 @@ export default function AppHeader() {
                       key={idx}
                       className="flex flex-col items-start gap-1 p-3 rounded-xl cursor-pointer"
                       onClick={() => {
-                        // Xác định đường dẫn điều hướng dựa vào URL của Portal
                         const isEmployee =
                           window.location.pathname.startsWith("/employee");
                         const route = isEmployee
                           ? "/employee/bookings"
                           : "/admin/bookings";
-                        navigate(route);
+                        void navigate(route);
                       }}
                     >
                       <div className="flex w-full items-center justify-between">
@@ -162,7 +254,7 @@ export default function AppHeader() {
 
           <Separator orientation="vertical" className="hidden h-10 md:block" />
 
-          {/* Dropdown User Profile giữ nguyên phía sau... */}
+          {/* USER PROFILE */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -177,7 +269,6 @@ export default function AppHeader() {
                   <p className="text-sm font-semibold">
                     {portalProfile?.name ?? "Admin"}
                   </p>
-
                   <p className="text-xs text-muted-foreground">
                     {portalProfile?.email ?? ""}
                   </p>
@@ -190,7 +281,6 @@ export default function AppHeader() {
             <DropdownMenuContent align="end" className="w-64 rounded-2xl">
               <DropdownMenuLabel className="space-y-1">
                 <p className="font-semibold">Admin System</p>
-
                 <p className="text-xs font-normal text-muted-foreground">
                   {portalProfile?.email ?? "admin@example.com"}
                 </p>

@@ -1,4 +1,4 @@
-import { axiosAdmin } from "@repo/api";
+import { axiosAdmin } from "@/hooks/axiosAdmin";
 import type {
   User,
   Employee,
@@ -91,9 +91,7 @@ export const userApi = {
   },
 
   // Lấy danh sách xe dựa theo bộ lọc chuyên sâu (Search, Filter, Sort...)
-  getUserFilters(
-    params?: UserQueryParams,
-  ): Promise<PaginationResponse<User>> {
+  getUserFilters(params?: UserQueryParams): Promise<PaginationResponse<User>> {
     // CHÚ Ý: Chỉ truyền 1 tham số Vehicle vào PaginationResponse
     return axiosAdmin.get<PaginationResponse<User>, PaginationResponse<User>>(
       "/users/filter",
