@@ -4,7 +4,7 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Textarea } from "@repo/ui/components/ui/textarea";
 import { Card } from "@repo/ui/components/ui/card";
 import { toast } from "@repo/ui/components/ui/sonner";
-import { useCreateReview } from "@repo/hooks";
+import { useCreateReview } from "../hooks/mutationReview";
 
 type Props = { bookingId: string };
 

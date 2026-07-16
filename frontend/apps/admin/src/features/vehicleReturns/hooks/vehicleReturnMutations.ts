@@ -19,7 +19,7 @@ export const useCreateVehicleReturn = () => {
       // 🟢 FIX 2: Ép kiểu hoặc truy cập an toàn tùy thuộc vào cấu trúc trả về từ API của bạn
       // Nếu file API bọc qua axios thông thường, data nhận được có thể nằm trong một trường cụ thể.
       // Dựa vào thông báo lỗi, ta lấy chính xác object vehicleReturn:
-      const newReturn = data?.vehicleReturn;
+      const newReturn = data;
 
       if (newReturn && "bookingId" in newReturn) {
         // Cập nhật ngay lập tức dữ liệu chi tiết cho Booking hiện tại mà không cần gọi lại API

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { chatClientApi } from "@repo/api"; // File HTTP REST đã tạo ở bước trước
+import { chatClientApi } from "../api/chatClientApi"; // File HTTP REST đã tạo ở bước trước
 
 // Key quản lý Cache của React Query
 export const chatKeys = {

@@ -199,9 +199,6 @@ export default function ModelManagementPage() {
     );
   }
 
-  console.log("brands", brands);
-  console.log("modelsResponse", modelsResponse);
-
   return (
     <div className="space-y-4">
       <DataTableToolbar

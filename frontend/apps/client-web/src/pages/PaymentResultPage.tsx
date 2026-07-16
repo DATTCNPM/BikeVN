@@ -1,5 +1,4 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import {
   CheckCircle2,
   XCircle,
@@ -10,8 +9,9 @@ import {
 import { Button } from "@repo/ui/components/ui/button";
 import { Card } from "@repo/ui/components/ui/card";
 import { Spinner } from "@repo/ui/components/ui/spinner";
-import { paymentClientApi } from "@repo/api";
 import { toast } from "@repo/ui/components/ui/sonner";
+// Import hook vừa tạo thay vì import trực tiếp api client
+import { useVerifyVNPayCallback } from "@/features/payments/hooks/queries";
 
 export default function PaymentResultPage() {
   const [searchParams] = useSearchParams();
@@ -26,24 +26,17 @@ export default function PaymentResultPage() {
   const amountRaw = queryParams["vnp_Amount"];
   const amount = amountRaw ? Number(amountRaw) / 100 : 0;
 
-  // Gửi params về Backend thực hiện đối chiếu verifyCallback
+  // Sử dụng custom hook gọn sạch
   const {
     data: verifyResult,
     isLoading,
     error,
     refetch,
     isRefetching,
-  } = useQuery({
-    queryKey: ["vnpay-callback", paymentId],
-    queryFn: () => paymentClientApi.handleVNPayReturn(queryParams),
-    enabled: !!paymentId && Object.keys(queryParams).length > 0,
-    retry: false,
-    staleTime: Infinity,
-  });
+  } = useVerifyVNPayCallback(queryParams, paymentId);
 
   const handleRefreshStatus = async () => {
     const { data } = await refetch();
-    // SỬA: Check chính xác chuỗi "SUCCESS" để hiện thông báo phù hợp
     if (data === "SUCCESS") {
       toast.success("Transaction updated! Payment completed successfully.");
     } else if (data === "FAILED") {
@@ -67,14 +60,11 @@ export default function PaymentResultPage() {
   // LOGIC ĐÁNH GIÁ TRẠNG THÁI CUỐI CÙNG
   let statusKey: "completed" | "failed" | "pending" = "pending";
 
-  if (isLoading || isRefetching) {
-    statusKey = "pending";
-  } else if (error || verifyResult === "FAILED") {
+  if (error || verifyResult === "FAILED") {
     statusKey = "failed";
   } else if (verifyResult === "SUCCESS") {
     statusKey = "completed";
   } else if (responseCode === "00") {
-    // Nếu chưa có verifyResult từ BE nhưng VNPay báo 00 -> Đợi cập nhật thêm
     statusKey = "pending";
   } else {
     statusKey = "failed";
@@ -107,15 +97,6 @@ export default function PaymentResultPage() {
   };
 
   const currentStatus = PAYMENT_STATUS_CONFIG[statusKey];
-
-  console.log(
-    "🚀 ~ file: PaymentResultPage.tsx:92 ~ PaymentResultPage ~ verifyResult:",
-    verifyResult,
-  );
-  console.log(
-    "🚀 ~ file: PaymentResultPage.tsx:93 ~ PaymentResultPage ~ statusKey:",
-    statusKey,
-  );
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">

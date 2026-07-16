@@ -1,4 +1,5 @@
-import { axiosAdmin, createReviewCommonApi } from "@repo/api";
+import { createReviewCommonApi } from "@repo/api";
+import { axiosAdmin } from "@/hooks/axiosAdmin";
 
 import type {
   PaginationResponse,

@@ -1,4 +1,4 @@
-import { useDeleteReview } from "@repo/hooks";
+import { useDeleteReview } from "../hooks/mutations";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 

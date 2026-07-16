@@ -12,7 +12,7 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { useBookingsByUser } from "@/features/bookings/hooks/queries";
-import { useProfile } from "@/features/profile/hooks/useProfile";
+import { useProfile } from "@/features/auth/hooks/useProfile";
 import { formatDateTime } from "@repo/utils";
 import type { Booking } from "@repo/types";
 import imageMock from "@/assets/images/motorbike1.png";

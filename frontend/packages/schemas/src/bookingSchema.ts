@@ -1,5 +1,5 @@
 import { z } from "zod";
-
+import { paymentSchema } from "./paymentSchema";
 // Định nghĩa các trạng thái của booking
 export const bookingStatusSchema = z.enum([
   "pending",
@@ -42,6 +42,7 @@ export const bookingSchema = bookingCreationSchema.extend({
   actualReturnTime: z.string().nullable().optional(),
   totalPrice: z.number().nullable().optional(),
   status: bookingStatusSchema,
+  payments: z.array(paymentSchema).optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   expiresAt: z.string(),

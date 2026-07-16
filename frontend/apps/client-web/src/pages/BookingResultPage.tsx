@@ -56,8 +56,6 @@ export default function BookingResultPage() {
   const pickupBranch = branches.find((b) => b.id === booking?.pickupBranchId);
   const returnBranch = branches.find((b) => b.id === booking?.returnBranchId);
 
-  console.log("BookingResultPage: booking", booking);
-
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
@@ -86,7 +84,12 @@ export default function BookingResultPage() {
 
           {/* CỘT PHẢI */}
           <div className="space-y-6 lg:sticky lg:top-6">
-            <BookingActions bookingId={booking.id} status={booking.status} />
+            <BookingActions
+              bookingId={booking.id}
+              status={booking.status}
+              paymentId={booking.payments?.[0]?.id}
+              paymentStatus={booking.payments?.[0]?.status}
+            />
 
             {/* Chỉ hiện card phạt khi có thông tin trả xe từ admin */}
             {vehicleReturn && (

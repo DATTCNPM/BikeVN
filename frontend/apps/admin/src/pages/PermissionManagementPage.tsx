@@ -15,7 +15,7 @@ import { usePermissions } from "@/features/permissions/hooks/queriesPermission";
 import type { Permission } from "@repo/types";
 
 export default function PermissionManagementPage() {
-  const { data: permissions = [], isLoading } = usePermissions();
+  const { data: permissions, isLoading } = usePermissions();
 
   const [search, setSearch] = useState("");
 
@@ -25,7 +25,7 @@ export default function PermissionManagementPage() {
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const filteredPermissions = permissions.filter((permission) =>
+  const filteredPermissions = permissions?.filter((permission) =>
     permission.name.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -73,7 +73,7 @@ export default function PermissionManagementPage() {
         onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
-      <DataTable columns={columns} data={filteredPermissions} />
+      <DataTable columns={columns} data={filteredPermissions || []} />
 
       <PermissionCreate
         open={openCreateDialog}

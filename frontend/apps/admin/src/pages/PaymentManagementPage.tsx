@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import DataTable from "@/components/common/DataTable";
@@ -15,8 +16,11 @@ import UniversalFilterSheet, {
   type FilterConfigItem,
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
-import { usePayments } from "@/features/payments/hooks/queries";
-import { useBranches } from "@repo/hooks"; // Sử dụng để lấy danh sách chi nhánh giống bên User
+import {
+  usePayments,
+  usePaymentsByBranch,
+} from "@/features/payments/hooks/queries";
+import { useBranches } from "@repo/hooks";
 
 import type {
   Payment,
@@ -32,7 +36,7 @@ const paymentStatusMap: Record<PaymentStatus, string> = {
     "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
   failed: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
   processing_refund:
-    "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300", // THÊM MỚI
+    "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300",
   refunded: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
 };
 
@@ -40,7 +44,7 @@ const paymentStatusLabel: Record<PaymentStatus, string> = {
   pending: "Pending",
   completed: "Completed",
   failed: "Failed",
-  processing_refund: "Processing Refund", // THÊM MỚI
+  processing_refund: "Processing Refund",
   refunded: "Refunded",
 };
 
@@ -51,30 +55,25 @@ const paymentTypeLabel: Record<PaymentType, string> = {
 };
 
 export default function PaymentManagementPage() {
+  const { pathname } = useLocation();
+  const isEmployee = pathname.startsWith("/employee");
+
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState(""); // Ô search chung đại diện cho `bookingId` hoặc `transactionCode`
+  const [search, setSearch] = useState("");
 
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [dialogMode, setDialogMode] = useState<
-    "approve" | "cancel" | "refund" | null
+    "approve" | "cancel" | "refund" | "retry" | null
   >(null);
 
-  // 1. Quản lý trạng thái bộ lọc nâng cao trên UI
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
     {},
   );
-
-  // 2. Fetch danh sách chi nhánh hỗ trợ bộ lọc
   const { data: branches } = useBranches();
 
-  // 3. Cấu hình hiển thị cho UniversalFilterSheet dựa trên Payment Schema
+  // Cấu hình bộ lọc động: Nhân viên chi nhánh không cần lọc theo chi nhánh nữa
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
-    return [
-      {
-        key: "branchId",
-        title: "Branch",
-        options: branches?.map((b) => ({ label: b.name, value: b.id })) ?? [],
-      },
+    const baseConfigs: FilterConfigItem[] = [
       {
         key: "status",
         title: "Status",
@@ -82,7 +81,7 @@ export default function PaymentManagementPage() {
           { label: "Pending", value: "pending" },
           { label: "Completed", value: "completed" },
           { label: "Failed", value: "failed" },
-          { label: "Processing Refund", value: "processing_refund" }, // THÊM MỚI
+          { label: "Processing Refund", value: "processing_refund" },
           { label: "Refunded", value: "refunded" },
         ],
       },
@@ -95,37 +94,54 @@ export default function PaymentManagementPage() {
           { label: "Unspecified", value: "unspecified" },
         ],
       },
-      // Lưu ý: Đối với From Date / To Date nếu UniversalFilterSheet chưa hỗ trợ input dạng date,
-      // bạn có thể tạm bổ sung text hoặc xử lý riêng, ở đây config đại diện text/select mẫu.
     ];
-  }, [branches]);
 
-  // 4. Ánh xạ các giá trị state thành Query Params gửi lên API của `usePayments`
+    if (!isEmployee) {
+      baseConfigs.unshift({
+        key: "branchId",
+        title: "Branch",
+        options: branches?.map((b) => ({ label: b.name, value: b.id })) ?? [],
+      });
+    }
+
+    return baseConfigs;
+  }, [branches, isEmployee]);
+
   const apiParams = useMemo<PaymentFilterParams>(() => {
     const trimmedSearch = search.trim();
-
     return {
-      // Phân bổ ô search chung vào cả bookingId hoặc transactionCode tùy thuộc thiết kế API BE
       bookingId: trimmedSearch || undefined,
       transactionCode: trimmedSearch || undefined,
       branchId: selectedFilters["branchId"]?.value,
       status: selectedFilters["status"]?.value as PaymentStatus,
       type: selectedFilters["type"]?.value as PaymentType,
       page,
-      size: 10, // Đồng bộ với schema BE dùng `size` thay vì `pageSize`
+      size: 10,
     };
   }, [search, selectedFilters, page]);
 
-  // 5. Fetch dữ liệu từ API
-  const { data: paymentsResponse, isLoading } = usePayments(apiParams);
+  // 🌟 ĐIỀU PHỐI ĐỘNG: Gọi API tương ứng dựa trên vai trò
+  const { data: adminPayments, isLoading: isAdminLoading } = usePayments(
+    apiParams,
+    {
+      enabled: !isEmployee,
+    },
+  );
 
-  const paymentData = paymentsResponse?.data || [];
+  const { data: branchPayments, isLoading: isBranchLoading } =
+    usePaymentsByBranch(page, 10, {
+      enabled: isEmployee,
+    });
 
+  const isDataLoading = isEmployee ? isBranchLoading : isAdminLoading;
+  const currentPaymentsResponse = isEmployee ? branchPayments : adminPayments;
+
+  const paymentData = currentPaymentsResponse?.data || [];
   const pagination = {
-    page: paymentsResponse?.currentPage || 1,
-    pageSize: paymentsResponse?.pageSize || 10,
-    totalPages: paymentsResponse?.totalPages || 1,
-    totalElements: paymentsResponse?.totalElements || 0,
+    page: currentPaymentsResponse?.currentPage || 1,
+    pageSize: currentPaymentsResponse?.pageSize || 10,
+    totalPages: currentPaymentsResponse?.totalPages || 1,
+    totalElements: currentPaymentsResponse?.totalElements || 0,
   };
 
   const columns = useMemo<ColumnDef<Payment>[]>(
@@ -189,16 +205,8 @@ export default function PaymentManagementPage() {
         cell: ({ row }) => {
           const payment = row.original;
 
-          // Nếu đã hoàn tiền hoặc giao dịch thất bại thì không cần làm gì nữa
-          if (
-            payment.status === "completed" ||
-            payment.status === "failed" ||
-            payment.status === "refunded"
-          ) {
-            return null;
-          }
+          if (payment.status === "refunded") return null;
 
-          // Nếu đã thanh toán thành công, Admin chỉ có quyền kích hoạt Hoàn tiền (Refund)
           if (payment.status === "processing_refund") {
             return (
               <PaymentActionDropdown
@@ -210,17 +218,30 @@ export default function PaymentManagementPage() {
             );
           }
 
-          // Nếu đang Pending, Admin có thể Duyệt tay hoặc Hủy
+          if (payment.status === "completed") return null;
+
           return (
             <PaymentActionDropdown
-              onApproveManually={() => {
-                setSelectedPayment(payment);
-                setDialogMode("approve");
-              }}
+              onApproveManually={
+                payment.status === "pending"
+                  ? () => {
+                      setSelectedPayment(payment);
+                      setDialogMode("approve");
+                    }
+                  : undefined
+              }
               onCancel={() => {
                 setSelectedPayment(payment);
                 setDialogMode("cancel");
               }}
+              onRetry={
+                payment.status === "pending" || payment.status === "failed"
+                  ? () => {
+                      setSelectedPayment(payment);
+                      setDialogMode("retry");
+                    }
+                  : undefined
+              }
             />
           );
         },
@@ -229,7 +250,7 @@ export default function PaymentManagementPage() {
     [],
   );
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner />
@@ -239,7 +260,6 @@ export default function PaymentManagementPage() {
 
   return (
     <div className="space-y-4">
-      {/* 6. Tích hợp UniversalFilterSheet vào DataTableToolbar */}
       <DataTableToolbar
         showSearch={true}
         search={search}

@@ -14,3 +14,4 @@ export * from "./vehicleReturnSchema";
 export * from "./reviewSchema";
 export * from "./chatSchema";
 export * from "./statisticSchema";
+export * from "./NotificationMessageSchema";

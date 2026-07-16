@@ -1,15 +1,16 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter } from "react-router-dom";
-
-// 📦 UI Components & Route Guards
-import MainLayout from "@/components/layouts/MainLayout";
-import ProtectedRoute from "@/features/auth/ProtectedRoute";
-import AuthRedirectRoute from "@/features/auth/AuthRedirectRoute";
-import { Spinner } from "@repo/ui/components/ui/spinner";
-
+import { createBrowserRouter, Outlet } from "react-router-dom";
+import { ROLES } from "@repo/constants";
 import { AuthListenerProvider } from "@repo/providers";
 
-// 💤 Lazy Loading các trang cũ
+// UI Components & Guards
+import MainLayout from "@/components/layouts/MainLayout";
+import ProtectedRoute from "./ProtectedRoute";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+import { NotFoundPage } from "@/pages/NotFoundPage";
+import { ServerErrorPage } from "@/pages/ServerErrorPage";
+
+// Lazy Loading Pages
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const VehicleManagementPage = lazy(
   () => import("@/pages/VehicleManagementPage"),
@@ -41,8 +42,6 @@ const RoleManagementPage = lazy(() => import("@/pages/RoleManagementPage"));
 const EmployeeManagementPage = lazy(
   () => import("@/pages/EmployeeManagementPage"),
 );
-
-// 🆕 Lazy Loading 2 trang lịch sử trả xe mới tinh chỉnh
 const VehicleReturnAdminPage = lazy(
   () => import("@/pages/VehicleReturnAdminPage"),
 );
@@ -50,32 +49,16 @@ const VehicleReturnBranchPage = lazy(
   () => import("@/pages/VehicleReturnBranchPage"),
 );
 
-const HomeEmployeePage = lazy(() => import("@/pages/HomeEmployeePage"));
-
-import { NotFoundPage } from "@/pages/NotFoundPage";
-import { ServerErrorPage } from "@/pages/ServerErrorPage";
-
-// 🌀 Loading Spinner toàn màn hình
-function AdminPageLoader() {
-  return (
-    <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-background">
-      <Spinner className="size-8" />
-    </div>
-  );
-}
-
-// 🛡️ Wrapper Layout đảm nhiệm việc bắt trạng thái Suspense cho toàn bộ Route con
-function AdminDashboardLayout() {
+// Khai báo cấu hình spinner inline đơn giản
+const loader = (
+  <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-background">
+    <Spinner className="size-8" />
+  </div>
+);
+function RootLayout() {
   return (
     <AuthListenerProvider loginPath="/login">
-      <ProtectedRoute>
-        {/* Bọc Suspense ở đây để khi bấm menu chuyển giữa các trang Lazy load, 
-          nó sẽ hiển thị AdminPageLoader thay vì làm crash ứng dụng.
-        */}
-        <Suspense fallback={<AdminPageLoader />}>
-          <MainLayout />
-        </Suspense>
-      </ProtectedRoute>
+      <Outlet />
     </AuthListenerProvider>
   );
 }
@@ -83,80 +66,99 @@ function AdminDashboardLayout() {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AuthRedirectRoute />,
-  },
-  {
-    path: "login",
-    element: (
-      <Suspense fallback={<AdminPageLoader />}>
-        <LoginPage />
-      </Suspense>
-    ),
-  },
-  // 👑 ADMIN ROUTES
-  {
-    path: "admin",
-    element: <AdminDashboardLayout />,
+    element: <RootLayout />, // 🌟 Đặt RootLayout làm chốt chặn cao nhất chứa Context Router
     children: [
-      { index: true, element: <HomePage /> },
-      { path: "vehicles", element: <VehicleManagementPage /> },
       {
-        path: "vehicles/:vehicleId/images",
-        element: <VehicleImageManagementPage />,
+        index: true,
+        element: <ProtectedRoute />,
       },
-      { path: "brands", element: <BrandManagementPage /> },
-      { path: "models", element: <ModelManagementPage /> },
-      { path: "employees", element: <EmployeeManagementPage /> },
-      { path: "users", element: <UserManagementPage /> },
-      { path: "branches", element: <BranchManagementPage /> },
-      { path: "bookings", element: <BookingManagementPage /> },
-      { path: "reviews", element: <ReviewManagementPage /> },
-      { path: "payments", element: <PaymentManagementPage /> },
-      { path: "bookings/:bookingId/return", element: <BookingReturnPage /> },
-
-      // 🆕 Route danh sách quản lý trả xe tổng (Admin)
-      { path: "vehicle-returns", element: <VehicleReturnAdminPage /> },
-
-      { path: "chats", element: <ChatManagementPage /> },
-      { path: "info", element: <InfoPage /> },
-      { path: "security", element: <SecurityPage /> },
-      { path: "settings", element: <SettingPage /> },
-      { path: "permissions", element: <PermissionManagementPage /> },
-      { path: "roles", element: <RoleManagementPage /> },
+      {
+        path: "login",
+        element: (
+          <ProtectedRoute requireAuth={false}>
+            <Suspense fallback={loader}>
+              <LoginPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+      },
+      // 👑 ADMIN ROUTES
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <Suspense fallback={loader}>
+              <MainLayout />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: "vehicles", element: <VehicleManagementPage /> },
+          {
+            path: "vehicles/:vehicleId/images",
+            element: <VehicleImageManagementPage />,
+          },
+          { path: "brands", element: <BrandManagementPage /> },
+          { path: "models", element: <ModelManagementPage /> },
+          { path: "employees", element: <EmployeeManagementPage /> },
+          { path: "users", element: <UserManagementPage /> },
+          { path: "branches", element: <BranchManagementPage /> },
+          { path: "bookings", element: <BookingManagementPage /> },
+          { path: "reviews", element: <ReviewManagementPage /> },
+          { path: "payments", element: <PaymentManagementPage /> },
+          {
+            path: "bookings/:bookingId/return",
+            element: <BookingReturnPage />,
+          },
+          { path: "vehicle-returns", element: <VehicleReturnAdminPage /> },
+          { path: "chats", element: <ChatManagementPage /> },
+          { path: "info", element: <InfoPage /> },
+          { path: "security", element: <SecurityPage /> },
+          { path: "settings", element: <SettingPage /> },
+          { path: "permissions", element: <PermissionManagementPage /> },
+          { path: "roles", element: <RoleManagementPage /> },
+        ],
+      },
+      // 💼 EMPLOYEE ROUTES
+      {
+        path: "employee",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.EMPLOYEE]}>
+            <Suspense fallback={loader}>
+              <MainLayout />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: "vehicles", element: <VehicleManagementPage /> },
+          {
+            path: "vehicles/:vehicleId/images",
+            element: <VehicleImageManagementPage />,
+          },
+          { path: "brands", element: <BrandManagementPage /> },
+          { path: "models", element: <ModelManagementPage /> },
+          { path: "users", element: <UserManagementPage /> },
+          { path: "branches", element: <BranchManagementPage /> },
+          { path: "bookings", element: <BookingManagementPage /> },
+          { path: "reviews", element: <ReviewManagementPage /> },
+          { path: "payments", element: <PaymentManagementPage /> },
+          {
+            path: "bookings/:bookingId/return",
+            element: <BookingReturnPage />,
+          },
+          { path: "vehicle-returns", element: <VehicleReturnBranchPage /> },
+          { path: "chats", element: <ChatManagementPage /> },
+          { path: "info", element: <InfoPage /> },
+          { path: "security", element: <SecurityPage /> },
+          { path: "settings", element: <SettingPage /> },
+        ],
+      },
+      { path: "*", element: <NotFoundPage /> },
+      { path: "server-error", element: <ServerErrorPage /> },
     ],
   },
-  // 💼 EMPLOYEE ROUTES
-  {
-    path: "employee",
-    element: <AdminDashboardLayout />,
-    children: [
-      { index: true, element: <HomeEmployeePage /> },
-      { path: "vehicles", element: <VehicleManagementPage /> },
-      {
-        path: "vehicles/:vehicleId/images",
-        element: <VehicleImageManagementPage />,
-      },
-      { path: "brands", element: <BrandManagementPage /> },
-      { path: "models", element: <ModelManagementPage /> },
-      { path: "users", element: <UserManagementPage /> },
-      { path: "branches", element: <BranchManagementPage /> },
-      { path: "bookings", element: <BookingManagementPage /> },
-      { path: "reviews", element: <ReviewManagementPage /> },
-      { path: "payments", element: <PaymentManagementPage /> },
-      { path: "bookings/:bookingId/return", element: <BookingReturnPage /> },
-
-      // 🆕 Route danh sách lịch sử trả xe nội bộ chi nhánh (Employee)
-      { path: "vehicle-returns", element: <VehicleReturnBranchPage /> },
-
-      { path: "chats", element: <ChatManagementPage /> },
-      { path: "info", element: <InfoPage /> },
-      { path: "security", element: <SecurityPage /> },
-      { path: "settings", element: <SettingPage /> },
-    ],
-  },
-  // 🛑 Các trang lỗi
-  { path: "*", element: <NotFoundPage /> },
-  { path: "server-error", element: <ServerErrorPage /> },
 ]);
 
 export default router;

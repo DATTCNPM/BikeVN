@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { bookingClientApi } from "@repo/api";
+import { bookingClientApi } from "../api/bookingClientApi";
 
 import { bookingsKeys } from "@repo/hooks";
 

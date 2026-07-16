@@ -48,3 +48,19 @@ export function useCancelPayment() {
       paymentAdminApi.cancelPayment(id, reason),
   });
 }
+
+export function useAdminRetryPayment() {
+  return useMutation({
+    mutationFn: ({
+      id,
+      newPaymentMethod,
+    }: {
+      id: string;
+      newPaymentMethod: string;
+    }) => paymentAdminApi.retryPayment(id, newPaymentMethod),
+
+    meta: {
+      silentErrorCodes: [1014, 1021],
+    },
+  });
+}

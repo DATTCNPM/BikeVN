@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { authClientApi } from "@repo/api";
+import { authClientApi } from "@/features/auth/api/authClientApi";
 import { authKeys } from "@/features/auth/hooks/authKeys";
 import { useAuthStore } from "@/features/auth/stores/authStore";
 
