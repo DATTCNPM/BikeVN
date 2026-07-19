@@ -38,7 +38,11 @@ export default function HomePage() {
 
   // 2. Chỉ kích hoạt call API doanh thu chi nhánh nếu URL thuộc phân hệ /admin
   const { data: branchPerformance, isLoading: isBranchLoading } =
-    useRevenueByBranchChart(isAdminPath);
+    useRevenueByBranchChart(isAdminPath); // Truyền isAdminPath vào hook để quyết định có gọi API hay không
+
+  console.log("monthly revenue", monthlyRevenue);
+  console.log("popular vehicles", popularVehicles);
+  console.log("branch performance", branchPerformance);
 
   return (
     <div className="space-y-8 p-6">

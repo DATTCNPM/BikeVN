@@ -18,11 +18,11 @@ export const useMonthlyRevenueChart = (params?: MonthlyRevenueParams) =>
   });
 
 // 3. Hook lấy dữ liệu doanh thu theo từng chi nhánh
-export const useRevenueByBranchChart = (enabled: boolean = true) =>
+export const useRevenueByBranchChart = (isAdminPath: boolean) =>
   useQuery({
     queryKey: statisticKeys.revenueByBranch(),
     queryFn: () => statisticAdminApi.getRevenueByBranch(),
-    enabled, // Nhận giá trị true/false truyền từ component vào
+    enabled: isAdminPath, // Chỉ kích hoạt khi đang ở phân hệ Admin
   });
 
 // 4. Hook lấy dữ liệu danh sách xe phổ biến/thuê nhiều nhất

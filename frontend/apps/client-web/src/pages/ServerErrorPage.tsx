@@ -12,10 +12,6 @@ export default function ServerErrorPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [timeLeft, setTimeLeft] = useState(COUNTDOWN_TIME);
 
-  // ✂️ ĐÃ XÓA: useServerRecovery() cũ
-  // ✂️ ĐÃ XÓA: useAuthStore() lắng nghe trạng thái cũ
-  // ✂️ ĐÃ XÓA: useEffect điều hướng navigate() cũ
-
   const handleGetColors = useCallback(
     (
       isDark: boolean,

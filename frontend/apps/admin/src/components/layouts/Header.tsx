@@ -146,6 +146,8 @@ export default function AppHeader() {
       .slice(0, 2)
       .toUpperCase() ?? "AD";
 
+  console.log("Current Pathname:", pathname);
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
       <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-6">
@@ -288,17 +290,31 @@ export default function AppHeader() {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem>
-                <Link to="/admin/info">Profile</Link>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem>
-                <Link to="/admin/settings">Settings</Link>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem>
-                <Link to="/admin/security">Security</Link>
-              </DropdownMenuItem>
+              {pathname.includes("/admin") ? (
+                <>
+                  <DropdownMenuItem>
+                    <Link to="/admin/info">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/admin/settings">Settings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/admin/security">Security</Link>
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem>
+                    <Link to="/employee/info">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/employee/settings">Settings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link to="/employee/security">Security</Link>
+                  </DropdownMenuItem>
+                </>
+              )}
 
               <DropdownMenuSeparator />
 
