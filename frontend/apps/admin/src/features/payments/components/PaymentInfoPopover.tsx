@@ -1,12 +1,4 @@
-import {
-  Calendar,
-  Clock3,
-  CreditCard,
-  FileText,
-  Landmark,
-  Receipt,
-  User,
-} from "lucide-react";
+import { Calendar, Clock3, Receipt } from "lucide-react";
 
 import InfoPopover from "@/components/common/InfoPopover";
 
