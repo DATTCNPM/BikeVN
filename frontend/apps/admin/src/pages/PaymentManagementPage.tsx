@@ -147,6 +147,15 @@ export default function PaymentManagementPage() {
   const columns = useMemo<ColumnDef<Payment>[]>(
     () => [
       {
+        accessorKey: "ID",
+        header: "ID",
+        cell: ({ row }) => (
+          <span className="font-medium">
+            <IdCell id={row.original.id} prefix="#" />
+          </span>
+        ),
+      },
+      {
         accessorKey: "bookingId",
         header: "Booking ID",
         cell: ({ row }) => (

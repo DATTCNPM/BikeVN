@@ -47,7 +47,7 @@ export default function HomePage() {
   return (
     <div className="space-y-8 p-6">
       {/* OVERVIEW CARDS */}
-      <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardCard
           title="Revenue"
           value={
