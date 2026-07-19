@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { chatClientApi } from "../api/chatClientApi"; // File HTTP REST đã tạo ở bước trước
 
 // Key quản lý Cache của React Query
@@ -19,13 +24,29 @@ export function useMyConversations() {
 }
 
 // 2. Hook lấy lịch sử tin nhắn (Phân trang)
-export function useMessageHistory(conversationId: string, page = 0, size = 20) {
-  return useQuery({
+export function useMessageHistory(conversationId: string, size = 20) {
+  return useInfiniteQuery({
     queryKey: chatKeys.history(conversationId),
-    queryFn: () =>
-      chatClientApi.getMessageHistory(conversationId, { page, size }),
-    enabled: !!conversationId, // Chỉ chạy khi có conversationId
-    staleTime: Infinity, // Lịch sử tin nhắn cũ không đổi, để Infinity để tránh refetch bừa bãi
+    queryFn: ({ pageParam = 0 }) =>
+      chatClientApi.getMessageHistory(conversationId, {
+        page: pageParam,
+        size,
+      }),
+    initialPageParam: 0,
+    enabled: !!conversationId,
+    staleTime: Infinity,
+    getNextPageParam: (lastPage: any) => {
+      // Xác định xem có trang tiếp theo dựa trên cấu trúc trả về từ backend (ví dụ Spring Boot)
+      if (
+        lastPage.last ||
+        lastPage.empty ||
+        !lastPage.content ||
+        lastPage.content.length < size
+      ) {
+        return undefined;
+      }
+      return lastPage.number + 1;
+    },
   });
 }
 

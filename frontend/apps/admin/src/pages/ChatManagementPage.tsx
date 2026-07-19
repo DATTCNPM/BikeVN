@@ -28,9 +28,16 @@ export default function ChatManagementPage() {
 
   const { data: rawConversations, isLoading: convLoading } =
     useAdminConversations();
-  const { data: messagesData, isLoading: msgLoading } = useAdminMessageHistory(
-    selectedId ?? "",
-  );
+
+  // 1. Gọi hook phân trang mới (Bỏ qua dependency `page` vì useInfiniteQuery tự quản lý)
+  const {
+    data: infiniteMessagesData,
+    isLoading: msgLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useAdminMessageHistory(selectedId ?? "");
+
   const { sendAdminMessage } = useAdminChatManager(selectedId);
 
   const conversations = useMemo<AdminConversation[]>(() => {
@@ -41,11 +48,18 @@ export default function ChatManagementPage() {
     return conversations.find((c) => c.id === selectedId);
   }, [conversations, selectedId]);
 
+  // 2. Gộp phẳng mảng tin nhắn từ tất cả các trang đã tải, sau đó đảo ngược để hiển thị dòng thời gian tăng dần
   const messages = useMemo(() => {
-    if (!messagesData?.content) return [];
-    // Tạo một mảng shallow sao chép rồi mới reverse để an toàn cho React render
-    return [...messagesData.content].reverse();
-  }, [messagesData]);
+    if (!infiniteMessagesData?.pages) return [];
+
+    // Gộp content của toàn bộ các page đã fetch được thành 1 mảng duy nhất
+    const allMessages = infiniteMessagesData.pages.flatMap(
+      (page) => page.content || [],
+    );
+
+    // Đảo ngược mảng để tin nhắn cũ ở trên, tin nhắn mới ở dưới cùng
+    return [...allMessages].reverse();
+  }, [infiniteMessagesData]);
 
   const totalUnread = useMemo(() => {
     return conversations.reduce(
@@ -94,17 +108,18 @@ export default function ChatManagementPage() {
             isLoading={msgLoading}
             currentAdminId={currentAdminId}
             onSendMessage={sendAdminMessage}
+            // 3. Truyền thêm các hàm kiểm tra/gọi phân trang vào component con
+            fetchNextPage={fetchNextPage}
+            hasNextPage={!!hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
           />
         ) : (
+          /* ... Phần giao diện trống giữ nguyên ... */
           <section className="col-span-12 md:col-span-8 lg:col-span-9 flex flex-col h-full bg-background justify-center items-center text-muted-foreground bg-muted/5 gap-2 p-4">
             <MessageCircle className="size-12 text-muted-foreground/40 stroke-[1.5]" />
             <h3 className="font-medium text-sm text-foreground">
               No conversation selected
             </h3>
-            <p className="text-xs text-center max-w-xs">
-              Please click on a customer account from the list on the left to
-              start receiving real-time support.
-            </p>
           </section>
         )}
       </div>

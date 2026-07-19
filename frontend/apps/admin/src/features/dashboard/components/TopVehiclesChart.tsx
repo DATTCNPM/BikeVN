@@ -58,62 +58,67 @@ export default function TopVehiclesChart({ data }: Props) {
       </CardHeader>
       <CardContent>
         {/* Loại bỏ ResponsiveContainer dư thừa */}
-        <ChartContainer config={chartConfig} className="h-[320px] w-full">
-          {/* Chỉnh margin để phần text bên trái và số bên phải không sát viền */}
-          <BarChart
-            layout="vertical"
-            data={data}
-            margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+        <div className="w-full h-[320px] relative min-b-0">
+          <ChartContainer
+            config={chartConfig}
+            className="absolute inset-0 h-full w-full"
           >
-            {/* Lưới dọc nét đứt nhẹ nhàng */}
-            <CartesianGrid
-              horizontal={false}
-              stroke="var(--border)"
-              strokeDasharray="3 3"
-            />
+            {/* Chỉnh margin để phần text bên trái và số bên phải không sát viền */}
+            <BarChart
+              layout="vertical"
+              data={data}
+              margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+            >
+              {/* Lưới dọc nét đứt nhẹ nhàng */}
+              <CartesianGrid
+                horizontal={false}
+                stroke="var(--border)"
+                strokeDasharray="3 3"
+              />
 
-            {/* Trục X đóng vai trò là Trục số (Rentals) */}
-            <XAxis
-              type="number"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              className="text-xs font-medium fill-muted-foreground"
-              tickFormatter={formatNumber}
-            />
+              {/* Trục X đóng vai trò là Trục số (Rentals) */}
+              <XAxis
+                type="number"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                className="text-xs font-medium fill-muted-foreground"
+                tickFormatter={formatNumber}
+              />
 
-            {/* Trục Y đóng vai trò là danh mục (Tên xe) */}
-            <YAxis
-              dataKey="label"
-              type="category"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              width={130} // Tăng từ 120 lên 130px để có thêm khoảng trống cho tên xe dài
-              className="text-xs font-medium fill-foreground" // Chuyển sang fill-foreground cho tên xe rõ nét hơn
-            />
+              {/* Trục Y đóng vai trò là danh mục (Tên xe) */}
+              <YAxis
+                dataKey="label"
+                type="category"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                width={130} // Tăng từ 120 lên 130px để có thêm khoảng trống cho tên xe dài
+                className="text-xs font-medium fill-foreground" // Chuyển sang fill-foreground cho tên xe rõ nét hơn
+              />
 
-            <ChartTooltip
-              cursor={{ fill: "var(--muted)", opacity: 0.15 }} // Highlight vùng dòng khi hover chuột
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value) => [
-                    `${formatNumber(value)} rentals`,
-                    "Rentals",
-                  ]}
-                />
-              }
-            />
+              <ChartTooltip
+                cursor={{ fill: "var(--muted)", opacity: 0.15 }} // Highlight vùng dòng khi hover chuột
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value) => [
+                      `${formatNumber(value)} rentals`,
+                      "Rentals",
+                    ]}
+                  />
+                }
+              />
 
-            <Bar
-              dataKey="value"
-              fill="var(--chart-3)"
-              radius={[0, 6, 6, 0]} // Bo tròn 2 góc phía bên phải của thanh ngang
-              maxBarSize={24} // Giới hạn thanh ngang thanh mảnh, sang xịn mịn (không bị phình to)
-            />
-          </BarChart>
-        </ChartContainer>
+              <Bar
+                dataKey="value"
+                fill="var(--chart-3)"
+                radius={[0, 6, 6, 0]} // Bo tròn 2 góc phía bên phải của thanh ngang
+                maxBarSize={24} // Giới hạn thanh ngang thanh mảnh, sang xịn mịn (không bị phình to)
+              />
+            </BarChart>
+          </ChartContainer>
+        </div>
       </CardContent>
     </Card>
   );

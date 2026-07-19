@@ -10,6 +10,7 @@ type ReadReceiptCallback = (event: ReadReceiptEvent) => void;
 
 type WebSocketConfig = {
   tokenKey: string;
+  brokerURL?: string;
 };
 
 export class ChatWebSocketService {
@@ -28,8 +29,8 @@ export class ChatWebSocketService {
   constructor(config: WebSocketConfig) {
     this.tokenKey = config.tokenKey;
 
-    const socketUrl =
-      import.meta.env.VITE_WS_URL || "wss://bikevn.onrender.com/ws";
+    // Thay đổi: Ưu tiên URL truyền vào cấu hình, nếu không có mới fallback
+    const socketUrl = config.brokerURL || "wss://bikevn.onrender.com/ws";
 
     this.stompClient = new Client({
       brokerURL: socketUrl,
@@ -76,10 +77,7 @@ export class ChatWebSocketService {
     };
 
     this.stompClient.onStompError = (frame) => {
-      console.error(
-        "[WebSocket] Broker Error:",
-        frame.headers["message"],
-      );
+      console.error("[WebSocket] Broker Error:", frame.headers["message"]);
 
       console.error(frame.body);
     };
@@ -149,22 +147,15 @@ export class ChatWebSocketService {
         const payload = JSON.parse(message.body);
 
         if (payload.eventType === "READ_RECEIPT") {
-          this.onReadReceiptReceived?.(
-            payload as ReadReceiptEvent,
-          );
+          this.onReadReceiptReceived?.(payload as ReadReceiptEvent);
           return;
         }
 
-        this.onMessageReceived?.(
-          payload as ChatMessageResponse,
-        );
+        this.onMessageReceived?.(payload as ChatMessageResponse);
       },
     );
 
-    console.log(
-      "[WebSocket] Subscribed:",
-      this.currentConversationId,
-    );
+    console.log("[WebSocket] Subscribed:", this.currentConversationId);
   }
 
   /**

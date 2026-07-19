@@ -1,7 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { chatAdminApi } from "../api/chatAdminApi"; // API sử dụng axiosAdmin đã tạo ở bước trước
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { chatAdminApi } from "../api/chatAdminApi";
 
-// Key quản lý Cache của React Query cho Admin
 export const chatAdminKeys = {
   all: ["chat-admin"] as const,
   conversations: () => [...chatAdminKeys.all, "conversations"] as const,
@@ -9,26 +8,35 @@ export const chatAdminKeys = {
     [...chatAdminKeys.all, "history", conversationId] as const,
 };
 
-// 1. Hook lấy danh sách phòng chat mà Admin/Employee này có quyền truy cập
 export function useAdminConversations() {
   return useQuery({
     queryKey: chatAdminKeys.conversations(),
     queryFn: () => chatAdminApi.getMyConversations(),
-    staleTime: 1000 * 60 * 3, // Cache trong 3 phút
+    staleTime: 1000 * 60 * 3,
   });
 }
 
-// 2. Hook lấy lịch sử tin nhắn của một phòng cụ thể (Phân trang)
-export function useAdminMessageHistory(
-  conversationId: string,
-  page = 0,
-  size = 20,
-) {
-  return useQuery({
+// Cập nhật Hook sử dụng useInfiniteQuery để phân trang
+export function useAdminMessageHistory(conversationId: string, size = 20) {
+  return useInfiniteQuery({
     queryKey: chatAdminKeys.history(conversationId),
-    queryFn: () =>
-      chatAdminApi.getMessageHistory(conversationId, { page, size }),
+    queryFn: ({ pageParam = 0 }) =>
+      chatAdminApi.getMessageHistory(conversationId, { page: pageParam, size }),
+    initialPageParam: 0,
     enabled: !!conversationId,
-    staleTime: Infinity, // Tránh refetch lịch sử cũ liên tục vì đã có WebSocket lo cập nhật realtime
+    staleTime: Infinity,
+    // Hàm này xác định trang tiếp theo dựa trên phản hồi của backend (ví dụ: Spring Data Page)
+    getNextPageParam: (lastPage) => {
+      // Nếu là trang cuối cùng (last === true hoặc không còn phần tử nào nữa), trả về undefined để dừng phân trang
+      if (
+        lastPage.last ||
+        lastPage.empty ||
+        !lastPage.content ||
+        lastPage.content.length < size
+      ) {
+        return undefined;
+      }
+      return lastPage.number + 1; // lastPage.number là số trang hiện tại từ API
+    },
   });
 }

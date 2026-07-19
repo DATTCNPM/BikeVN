@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { chatClientWebSocket } from "@repo/services";
 import { chatKeys } from "./useChatQueries";
 import type {
@@ -20,43 +20,61 @@ export function useChatManager(conversationId: string | null) {
     // 2. Đăng ký lắng nghe phòng chat hiện tại
     chatClientWebSocket.subscribeToConversation(
       conversationId,
+
       // Callback 1: Xử lý khi có TIN NHẮN MỚI
       (newMessage: ChatMessageResponse) => {
-        // Cập nhật trực tiếp vào danh sách lịch sử tin nhắn của React Query
-        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
-          chatKeys.history(conversationId),
-          (oldData) => {
-            if (!oldData) return oldData;
-            return {
-              ...oldData,
-              // Vì backend trả về Pageable, tùy thuộc cấu trúc của bạn (ví dụ data.result hoặc mảng content)
-              // Giả lập push tin nhắn mới vào đầu hoặc cuối mảng tùy theo Sort hướng hiển thị
-              content: [newMessage, ...(oldData.content || [])],
-            };
-          },
-        );
+        // Cập nhật vào cache dạng InfiniteData (phân trang)
+        queryClient.setQueryData<
+          InfiniteData<ChatResponse<ChatMessageResponse>>
+        >(chatKeys.history(conversationId), (oldData) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0)
+            return oldData;
 
-        // Đồng thời làm mới danh sách phòng chat bên ngoài sidebar để hiển thị lastMessageContent mới nhất
+          // Clone lại cấu trúc pages
+          const updatedPages = [...oldData.pages];
+
+          // Vì backend sắp xếp tin nhắn mới nhất nằm ở trang đầu tiên (pageIndex = 0)
+          // Ta chèn tin nhắn mới nhận từ socket vào ĐẦU mảng content của trang đầu tiên này.
+          if (updatedPages[0]) {
+            updatedPages[0] = {
+              ...updatedPages[0],
+              content: [newMessage, ...(updatedPages[0].content || [])],
+            };
+          }
+
+          return {
+            ...oldData,
+            pages: updatedPages,
+          };
+        });
+
+        // Đồng thời làm mới danh sách phòng chat bên ngoài sidebar để hiển thị nội dung tin nhắn mới nhất
         queryClient.invalidateQueries({ queryKey: chatKeys.conversations() });
       },
 
       // Callback 2: Xử lý khi có SỰ KIỆN ĐÃ ĐỌC (Read Receipt)
       (readEvent: ReadReceiptEvent) => {
-        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
-          chatKeys.history(conversationId),
-          (oldData) => {
-            if (!oldData) return oldData;
-            return {
-              ...oldData,
-              // Cập nhật tất cả tin nhắn của người kia thành isRead = true
-              content: oldData.content?.map((msg) =>
+        queryClient.setQueryData<
+          InfiniteData<ChatResponse<ChatMessageResponse>>
+        >(chatKeys.history(conversationId), (oldData) => {
+          if (!oldData) return oldData;
+
+          // Duyệt qua tất cả các trang đã tải trong bộ nhớ cache để cập nhật trạng thái đã đọc
+          const updatedPages = oldData.pages.map((page) => ({
+            ...page,
+            content:
+              page.content?.map((msg) =>
                 msg.senderId !== readEvent.readerId
                   ? { ...msg, isRead: true }
                   : msg,
-              ),
-            };
-          },
-        );
+              ) || [],
+          }));
+
+          return {
+            ...oldData,
+            pages: updatedPages,
+          };
+        });
       },
     );
 

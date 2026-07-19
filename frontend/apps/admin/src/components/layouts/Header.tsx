@@ -17,6 +17,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom"; // 🌟 Impor
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 import { useNotificationStore } from "@/hooks/useNotificationStore";
 import { useLogoutAdmin } from "@/features/auth/hooks/useLogoutAdmin";
+import { useBranchNotifications } from "@/hooks/useBranchNotifications";
 
 // 🌟 1. CẤU HÌNH TIÊU ĐỀ & MÔ TẢ ĐỘNG THEO PATHNAME
 const ROUTE_METADATA: Record<string, { title: string; description: string }> = {
@@ -126,6 +127,8 @@ export default function AppHeader() {
   const navigate = useNavigate();
   const logoutAdmin = useLogoutAdmin();
   const { pathname } = useLocation(); // 🌟 Lấy pathname hiện tại của trình duyệt
+
+  useBranchNotifications();
 
   const { data: portalProfile } = usePortalProfile();
   const { notifications, unreadCount, resetUnreadCount, clearNotifications } =
