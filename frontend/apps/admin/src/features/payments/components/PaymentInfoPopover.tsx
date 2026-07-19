@@ -31,26 +31,7 @@ export default function PaymentInfoPopover({ payment }: Props) {
           label: "Transaction",
           value: payment.transactionCode ?? "-",
         },
-        {
-          icon: Landmark,
-          label: "Bank",
-          value: payment.bankName ?? "-",
-        },
-        {
-          icon: CreditCard,
-          label: "Account",
-          value: payment.bankAccount ?? "-",
-        },
-        {
-          icon: User,
-          label: "Owner",
-          value: payment.accountName ?? "-",
-        },
-        {
-          icon: FileText,
-          label: "Transfer",
-          value: payment.transferContent ?? "-",
-        },
+
         {
           icon: Calendar,
           label: "Created",

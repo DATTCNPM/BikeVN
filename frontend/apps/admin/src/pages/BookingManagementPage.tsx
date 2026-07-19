@@ -272,7 +272,7 @@ export default function BookingManagementPage() {
                   : undefined
               }
               onCreateVehicleReturn={
-                booking.actualReturnTime !== null &&
+                booking.actualReturnTime !== null ||
                 booking.actualReturnTime !== undefined
                   ? () => {
                       setSelectedBooking(booking);

@@ -58,7 +58,7 @@ export default function TopVehiclesChart({ data }: Props) {
       </CardHeader>
       <CardContent>
         {/* Loại bỏ ResponsiveContainer dư thừa */}
-        <div className="w-full h-[320px] relative min-b-0">
+        <div className="w-full h-[320px] relative min-h-[320px]">
           <ChartContainer
             config={chartConfig}
             className="absolute inset-0 h-full w-full"
