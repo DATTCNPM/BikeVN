@@ -212,7 +212,7 @@ public class PaymentService {
                 .type("NEW_BOOKING_ALERT")
                 .branchId(branchId)
                 .title("New Booking !!!")
-                .content("Xe " + vehicle.getName() + " (License: " + vehicle.getLicensePlate() +
+                .content("Vehicle " + vehicle.getName() + " (License: " + vehicle.getLicensePlate() +
                         ") just rented!!!")
                 .referenceId(booking.getId())
                 .build();
@@ -490,8 +490,10 @@ public class PaymentService {
                 .type(payment.getType().name())
                 .paymentMethod(payment.getPaymentMethod())
                 .status(payment.getStatus())
-
+                .paidAt(payment.getPaidAt())
+                .transactionCode(payment.getTransactionCode())
                 .createdAt(payment.getCreatedAt())
+                .updatedAt(payment.getUpdatedAt())
                 .build();
     }
 
