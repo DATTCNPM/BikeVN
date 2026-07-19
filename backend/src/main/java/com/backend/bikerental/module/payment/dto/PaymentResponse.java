@@ -21,6 +21,9 @@ public class PaymentResponse {
     String type;
     String paymentMethod;
     PaymentStatus status;
+    LocalDateTime paidAt;
+    String transactionCode;
     String transferContent;
     LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }
