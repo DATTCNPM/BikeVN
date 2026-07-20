@@ -15,6 +15,7 @@ public class BookingSpecification {
     public static Specification<Booking> filterBookings(
             String userId,
             String vehicleId,
+            String bookingId,
             String branchId, // Dùng chung cho cả pickup và return (Phân quyền)
             BookingStatus status,
             LocalDate fromDate,
@@ -29,6 +30,12 @@ public class BookingSpecification {
 
             if (vehicleId != null && !vehicleId.isBlank()) {
                 predicates.add(criteriaBuilder.equal(root.get("vehicleId"), vehicleId));
+            }
+
+            if(bookingId != null && !bookingId.isBlank())
+            {
+                String searchPattern = "%" + bookingId + "%";
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("id")), searchPattern));
             }
 
             if (branchId != null && !branchId.isBlank()) {

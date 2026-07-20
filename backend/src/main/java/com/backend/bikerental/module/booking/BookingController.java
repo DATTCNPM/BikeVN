@@ -39,6 +39,16 @@ public class BookingController {
                 .build();
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public ApiResponse<List<BookingResponse>> searchByPhone(
+            @RequestParam(name = "phone") String phone) {
+
+        List<BookingResponse> result = bookingService.searchBookingsByPhone(phone);
+        return ApiResponse.<List<BookingResponse>>builder()
+                .result(result)
+                .build();
+    }
     @GetMapping
     public ApiResponse<PageResponse<BookingResponse>> getAllBooking(
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -113,7 +123,8 @@ public class BookingController {
         }
 
         return ApiResponse.<PageResponse<BookingResponse>>builder()
-                .result(bookingService.filterBookings(currentUserId, null, null, status, fromDate, toDate, page, size))
+                .result(bookingService.filterBookings(currentUserId, null, null, null,
+                        status, fromDate, toDate, page, size))
                 .build();
     }
 
@@ -122,6 +133,7 @@ public class BookingController {
     public ApiResponse<PageResponse<BookingResponse>> filterBookingsForAdmin(
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) String vehicleId,
+            @RequestParam(required = false) String bookingId,
             @RequestParam(required = false) BookingStatus status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -139,7 +151,8 @@ public class BookingController {
         }
 
         return ApiResponse.<PageResponse<BookingResponse>>builder()
-                .result(bookingService.filterBookings(userId, vehicleId, branchId, status, fromDate, toDate, page, size))
+                .result(bookingService.filterBookings(userId, vehicleId, bookingId, branchId,
+                        status, fromDate, toDate, page, size))
                 .build();
     }
 }

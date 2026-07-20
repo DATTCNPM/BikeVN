@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,17 +63,31 @@ public class BookingService {
         validateExistence(request);
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_admin"));
+        boolean isEmployee = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_employee"));
 
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if (!isAdmin && !user.getEmail().equals(auth.getName())) {
+        boolean isOwner = user.getEmail().equals(auth.getName());
+
+        if (!isAdmin && !isEmployee && !isOwner) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         Vehicle vehicle = vehicleRepository.findByIdForUpdate(request.getVehicleId())
                 .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
+
+        if (isEmployee && !isAdmin) {
+            User currentEmployee = userRepository.findByEmail(auth.getName())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+            if (!currentEmployee.getBranch().getId().equals(vehicle.getCurrentBranch().getId())) {
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+            }
+        }
 
         if(!vehicle.getStatus().equals(StatusVehicleEnum.available))
         {
@@ -130,6 +145,23 @@ public class BookingService {
         }
 
         return mapToBookingResponseWithDetails(booking);
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('admin', 'employee')")
+    public List<BookingResponse> searchBookingsByPhone(String phoneNumber) {
+        // 1. Validate input mỏng
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 2. Gọi Repository tìm danh sách Booking
+        List<Booking> bookings = bookingRepository.findBookingsByUserPhoneNumber(phoneNumber.trim());
+
+        // 3. Tái sử dụng hàm mapToBookingResponseWithDetails của bạn để trả về dữ liệu chuẩn
+        return bookings.stream()
+                .map(this::mapToBookingResponseWithDetails)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -324,6 +356,7 @@ public class BookingService {
     public PageResponse<BookingResponse> filterBookings(
             String userId,
             String vehicleId,
+            String bookingId,
             String branchId,
             BookingStatus status,
             LocalDate fromDate,
@@ -334,7 +367,7 @@ public class BookingService {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Specification<Booking> spec = BookingSpecification.filterBookings(
-                userId, vehicleId, branchId, status, fromDate, toDate
+                userId, vehicleId, bookingId, branchId, status, fromDate, toDate
         );
 
         Page<Booking> pageData = bookingRepository.findAll(spec, pageable);
