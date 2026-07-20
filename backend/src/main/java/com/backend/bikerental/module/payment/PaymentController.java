@@ -87,7 +87,7 @@ public class PaymentController {
         // The response code "00" represents a completely successful transaction.
         if ("00".equals(responseCode)) {
             try {
-                String paymentId = fields.get("vnp_TxnRef");
+                String paymentId = fields.get("vnp_TxnRef").split("_")[0];
                 String transactionCode = fields.get("vnp_TransactionNo");
                 long vnpAmount = Long.parseLong(fields.get("vnp_Amount")) / 100;
                 paymentService.processIpnPayment(paymentId, vnpAmount, responseCode, transactionCode);

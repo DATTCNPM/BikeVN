@@ -259,26 +259,6 @@ public class BookingService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('admin', 'employee')")
-    public void approveBooking(String bookingId) {
-
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
-
-        booking.setStatus(BookingStatus.approved);
-        booking.setExpiresAt(null);
-        booking.setUpdatedAt(LocalDateTime.now());
-
-        bookingRepository.save(booking);
-
-        Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
-                .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
-
-        vehicle.setStatus(StatusVehicleEnum.rented);
-        vehicleRepository.save(vehicle);
-    }
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('admin', 'employee')")
     public void rejectBooking(String bookingId) {
 
         Booking booking = bookingRepository.findById(bookingId)
