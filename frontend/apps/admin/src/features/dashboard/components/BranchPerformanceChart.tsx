@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  ResponsiveContainer, // 1. Import ResponsiveContainer từ recharts
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -36,13 +42,6 @@ const formatCurrency = (value: any) => {
 };
 
 export default function BranchPerformanceChart({ data }: Props) {
-  // 1. Thêm state kiểm tra Môi trường Client đã Mount chưa
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   if (!data || data.length === 0) {
     return (
       <Card className="rounded-3xl border-muted/50">
@@ -66,13 +65,11 @@ export default function BranchPerformanceChart({ data }: Props) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="h-[320px] w-full p-6 pt-0">
-        {/* 2. Chỉ render ChartContainer khi Client đã Mount hoàn tất */}
-        {isMounted ? (
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-full w-full"
-          >
+      <CardContent>
+        {/* 2. Dùng exact class như TasksLineChart: className="w-full h-[350px]" */}
+        <ChartContainer config={chartConfig} className="w-full h-[320px]">
+          {/* 3. Bọc <ResponsiveContainer> bên trong đúng như file TasksLineChart */}
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
               margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -117,11 +114,8 @@ export default function BranchPerformanceChart({ data }: Props) {
                 maxBarSize={50}
               />
             </BarChart>
-          </ChartContainer>
-        ) : (
-          // Placeholder hiển thị tạm trong lúc SSR/Hydrate trên Vercel
-          <div className="h-full w-full bg-muted/10 animate-pulse rounded-lg" />
-        )}
+          </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

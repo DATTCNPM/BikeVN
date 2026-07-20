@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -31,12 +37,6 @@ const formatNumber = (value: any) => {
 };
 
 export default function TopVehiclesChart({ data }: Props) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   if (!data || data.length === 0) {
     return (
       <Card className="rounded-3xl border-muted/50">
@@ -60,12 +60,9 @@ export default function TopVehiclesChart({ data }: Props) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="h-[320px] w-full p-6 pt-0">
-        {isMounted ? (
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-full w-full"
-          >
+      <CardContent>
+        <ChartContainer config={chartConfig} className="w-full h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart
               layout="vertical"
               data={data}
@@ -112,10 +109,8 @@ export default function TopVehiclesChart({ data }: Props) {
                 maxBarSize={24}
               />
             </BarChart>
-          </ChartContainer>
-        ) : (
-          <div className="h-full w-full bg-muted/10 animate-pulse rounded-lg" />
-        )}
+          </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
