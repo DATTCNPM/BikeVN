@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userClientApi } from "@/features/profile/api/userClientApi";
 import { authKeys } from "@/features/auth/hooks/authKeys";
-import type { User, UpdateProfilePayload } from "@repo/types";
+import type { User, UpdateProfilePayload } from "@repo/schemas";
 
 interface UpdateProfileParams {
   userId: string;

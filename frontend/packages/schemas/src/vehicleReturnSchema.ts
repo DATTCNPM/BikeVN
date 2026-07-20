@@ -92,3 +92,21 @@ export const vehicleReturnFilterParamsSchema = z.object({
   page: z.coerce.number().int().min(1).optional(),
   size: z.coerce.number().int().min(1).optional(),
 });
+
+export type VehicleConditionStatus = z.infer<
+  typeof vehicleConditionStatusSchema
+>;
+
+export type VehicleReturn = z.infer<typeof vehicleReturnSchema>;
+
+export type CreateVehicleReturnRequest = z.infer<
+  typeof createVehicleReturnSchema
+>;
+
+export type UpdateVehicleReturnRequest = z.infer<
+  typeof updateVehicleReturnSchema
+>;
+
+export type VehicleReturnFilterParams = z.infer<
+  typeof vehicleReturnFilterParamsSchema
+>;

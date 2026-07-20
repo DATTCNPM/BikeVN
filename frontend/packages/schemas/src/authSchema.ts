@@ -37,3 +37,9 @@ export const updatePasswordSchema = z
     message: "New password confirmation does not match",
     path: ["confirmNewPassword"],
   });
+
+export type LoginPayload = z.infer<typeof loginSchema>;
+
+export type RegisterPayload = z.infer<typeof registerSchema>;
+
+export type UpdatePasswordPayload = z.infer<typeof updatePasswordSchema>;

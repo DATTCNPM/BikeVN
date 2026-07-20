@@ -1,5 +1,5 @@
 import { TOKEN_KEYS } from "@repo/constants";
-import { ChatWebSocketService } from "../../../../packages/services/src/chatWebSocketService";
+import { ChatWebSocketService } from "@repo/services";
 
 export const chatAdminWebSocket = new ChatWebSocketService({
   brokerURL: import.meta.env.VITE_WS_URL,

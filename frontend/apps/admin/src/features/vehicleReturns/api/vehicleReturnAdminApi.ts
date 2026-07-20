@@ -4,9 +4,9 @@ import { axiosAdmin } from "@/hooks/axiosAdmin";
 import type {
   VehicleReturn,
   CreateVehicleReturnRequest,
-  PaginationResponse,
   VehicleReturnFilterParams, // Thêm type filter đã định nghĩa từ bài trước
-} from "@repo/types";
+} from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 
 export const vehicleReturnAdminApi = {
   ...createVehicleReturnCommonApi(axiosAdmin),

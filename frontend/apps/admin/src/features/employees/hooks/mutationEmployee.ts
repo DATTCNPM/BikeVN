@@ -4,7 +4,7 @@ import { employeeKeys } from "./employeeKeys";
 import type {
   UpdateEmployeePayload,
   AdminEmployeeCreationPayload,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export function useCreateEmployee() {
   const queryClient = useQueryClient();

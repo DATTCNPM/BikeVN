@@ -12,7 +12,7 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 import { useUpdateBranch } from "@/features/branches/hooks/mutations";
 import { updateBranchSchema } from "@repo/schemas";
-import type { UpdateBranchPayload, Branch, BranchStatus } from "@repo/types";
+import type { UpdateBranchPayload, Branch, BranchStatus } from "@repo/schemas";
 import {
   Select,
   SelectContent,

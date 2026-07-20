@@ -6,7 +6,7 @@ import { vehicleModelKeys } from "@repo/hooks";
 import type {
   VehicleModelCreationRequest,
   VehicleModelUpdateRequest,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const useCreateVehicleModel = () => {
   const queryClient = useQueryClient();

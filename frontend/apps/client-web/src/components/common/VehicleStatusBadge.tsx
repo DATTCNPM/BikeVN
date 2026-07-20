@@ -1,5 +1,5 @@
 import { Badge } from "@repo/ui/components/ui/badge";
-import type { StatusVehicleEnum } from "@repo/types";
+import type { StatusVehicleEnum } from "@repo/schemas";
 
 interface VehicleStatusBadgeProps {
   status: StatusVehicleEnum;

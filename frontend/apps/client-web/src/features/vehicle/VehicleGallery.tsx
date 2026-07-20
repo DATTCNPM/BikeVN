@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import type { VehicleImage } from "@repo/types";
+import type { VehicleImage } from "@repo/schemas";
 
 import { Navigation, Thumbs, Autoplay } from "swiper/modules";
 

@@ -13,7 +13,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateUser } from "@/features/users/hooks/mutations";
 import { adminUserCreationSchema } from "@repo/schemas";
-import type { AdminUserCreationPayload } from "@repo/types";
+import type { AdminUserCreationPayload } from "@repo/schemas";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

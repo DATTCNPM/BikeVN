@@ -2,7 +2,7 @@ import { Calendar, Fuel, Palette, Route } from "lucide-react";
 
 import InfoPopover from "@/components/common/InfoPopover";
 
-import type { Vehicle } from "@repo/types";
+import type { Vehicle } from "@repo/schemas";
 
 type Props = {
   vehicle: Vehicle;

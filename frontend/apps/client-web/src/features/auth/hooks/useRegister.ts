@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authStorageService } from "@repo/services";
 import { authApi } from "@repo/api";
-import type { RegisterPayload } from "@repo/types";
+import type { RegisterPayload } from "@repo/schemas";
 import { authKeys } from "./authKeys";
 import { useAuthStore } from "../stores/authStore";
 

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { reviewAdminApi } from "../api/reviewAdminApi";
 import { reviewKeys } from "@repo/hooks";
-import type { ReviewQueryParams } from "@repo/types";
+import type { ReviewQueryParams } from "@repo/schemas";
 
 export const useAdminReviews = (params: ReviewQueryParams) =>
   useQuery({

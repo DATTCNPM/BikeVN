@@ -1,6 +1,6 @@
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { updateProfileSchema } from "@repo/schemas";
-import type { UpdateProfilePayload, User } from "@repo/types";
+import type { UpdateProfilePayload, User } from "@repo/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Input } from "@repo/ui/components/ui/input";

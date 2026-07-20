@@ -19,7 +19,7 @@ import UserDelete from "@/features/users/components/UserDelete";
 import { useUsers } from "@/features/users/hooks/queries";
 import { useUserFilters } from "@/features/users/hooks/queries";
 
-import type { User, UserQueryParams } from "@repo/types";
+import type { User, UserQueryParams } from "@repo/schemas";
 
 export default function UserManagementPage() {
   const [page, setPage] = useState(1);

@@ -11,7 +11,7 @@ import {
   ChartTooltipContent,
 } from "@repo/ui/components/ui/chart";
 import type { ChartConfig } from "@repo/ui/components/ui/chart";
-import type { ChartDataResponse } from "@repo/types";
+import type { ChartDataResponse } from "@repo/schemas";
 
 type Props = {
   data: ChartDataResponse[];
@@ -24,13 +24,8 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-/**
- * Định dạng tiền tệ rút gọn cho doanh thu chi nhánh (Ví dụ: $10K, $1.2M hoặc định dạng VND)
- */
 const formatCurrency = (value: any) => {
   const numericValue = Number(value) || 0;
-
-  // Bạn có thể đổi sang "vi-VN" và "VND" nếu cần hiển thị tiền Việt nhé
   return new Intl.NumberFormat("en-US", {
     notation: "compact",
     compactDisplay: "short",
@@ -40,7 +35,6 @@ const formatCurrency = (value: any) => {
 };
 
 export default function BranchPerformanceChart({ data }: Props) {
-  // Phòng hờ trường hợp API chưa trả dữ liệu hoặc mảng rỗng
   if (!data || data.length === 0) {
     return (
       <Card className="rounded-3xl border-muted/50">
@@ -63,15 +57,18 @@ export default function BranchPerformanceChart({ data }: Props) {
           Branch Performance
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        {/* Đã loại bỏ bớt bọc <ResponsiveContainer> thừa bên trong này */}
 
-        <ChartContainer config={chartConfig} className="h-[320px] w-full">
+      {/* 1. Sửa tại đây: Set chiều cao cố định cho CardContent để tạo không gian vững chắc cho SSR */}
+      <CardContent className="h-[320px] w-full p-6 pt-0">
+        {/* 2. Sửa tại đây: Dùng `h-full w-full` kết hợp `aspect-auto` chuẩn Shadcn */}
+        <ChartContainer
+          config={chartConfig}
+          className="h-full w-full aspect-auto"
+        >
           <BarChart
             data={data}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
-            {/* Đường lưới nét đứt tinh tế */}
             <CartesianGrid
               vertical={false}
               stroke="var(--border)"
@@ -90,17 +87,17 @@ export default function BranchPerformanceChart({ data }: Props) {
               tickLine={false}
               axisLine={false}
               tickMargin={12}
-              width={65} // Giữ khoảng trống 65px an toàn để trục Y không bị che chữ
+              width={65}
               className="text-xs font-medium fill-muted-foreground"
               tickFormatter={formatCurrency}
             />
 
             <ChartTooltip
-              cursor={{ fill: "var(--muted)", opacity: 0.15 }} // Tạo hiệu ứng highlight vùng cột khi hover
+              cursor={{ fill: "var(--muted)", opacity: 0.15 }}
               content={
                 <ChartTooltipContent
                   hideLabel
-                  formatter={(value) => formatCurrency(value)} // Đồng bộ định dạng tiền tệ trong tooltip
+                  formatter={(value) => formatCurrency(value)}
                 />
               }
             />
@@ -108,8 +105,8 @@ export default function BranchPerformanceChart({ data }: Props) {
             <Bar
               dataKey="value"
               fill="var(--chart-2)"
-              radius={[6, 6, 0, 0]} // Bo góc nhẹ phần đỉnh cột nhìn sẽ hiện đại, mượt mà hơn
-              maxBarSize={50} // Giới hạn độ rộng tối đa của cột để tránh bị quá to khi có ít chi nhánh
+              radius={[6, 6, 0, 0]}
+              maxBarSize={50}
             />
           </BarChart>
         </ChartContainer>

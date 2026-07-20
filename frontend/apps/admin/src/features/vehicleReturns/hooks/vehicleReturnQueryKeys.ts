@@ -1,4 +1,4 @@
-import type { VehicleReturnFilterParams } from "@repo/types";
+import type { VehicleReturnFilterParams } from "@repo/schemas";
 
 export const vehicleReturnQueryKeys = {
   all: ["vehicle-return"] as const,

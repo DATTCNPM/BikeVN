@@ -1,8 +1,7 @@
 // @/pages/Login.tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "@repo/schemas";
-import type { LoginPayload } from "@repo/types";
+import { loginSchema, type LoginPayload } from "@repo/schemas";
 import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";

@@ -1,4 +1,4 @@
-import type { Branch } from "@repo/types";
+import type { Branch } from "@repo/schemas";
 
 export function calculateDistance(
   lat1: number,

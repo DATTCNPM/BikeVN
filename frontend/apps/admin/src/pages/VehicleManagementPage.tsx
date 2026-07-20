@@ -20,7 +20,7 @@ import UniversalFilterSheet, {
   type FilterConfigItem,
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
-import { type Vehicle, type VehicleQueryParams } from "@repo/types";
+import { type Vehicle, type VehicleQueryParams } from "@repo/schemas";
 import { useVehicles, useVehicleFilters } from "@repo/hooks";
 import { PRICE_RANGES } from "@repo/constants";
 

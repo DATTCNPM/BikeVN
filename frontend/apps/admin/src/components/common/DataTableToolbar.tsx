@@ -5,7 +5,7 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 
 type Props = {
-  search: string;
+  search?: string;
   showSearch?: boolean;
   showCreate?: boolean;
   onSearchChange?: (value: string) => void;
@@ -39,7 +39,7 @@ export default function DataTableToolbar({
   // 3. Hàm bắt sự kiện nhấn phím Enter
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      onSearchChange?.(localSearch);
+      onSearchChange?.(localSearch ?? "");
     }
   };
 

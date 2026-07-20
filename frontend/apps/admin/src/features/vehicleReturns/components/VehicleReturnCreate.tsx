@@ -32,7 +32,7 @@ import {
   vehicleConditionStatusSchema,
 } from "@repo/schemas";
 
-import type { CreateVehicleReturnRequest } from "@repo/types";
+import type { CreateVehicleReturnRequest } from "@repo/schemas";
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 
 // 🌟 Import helper check error từ Packages hệ thống giống trang Login

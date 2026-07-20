@@ -25,3 +25,17 @@ export const VehicleBrandQueryParamsSchema = z.object({
   page: z.number().default(1),
   size: z.number().default(10),
 });
+
+export type VehicleBrand = z.infer<typeof vehicleBrandSchema>;
+
+export type VehicleBrandCreationRequest = z.infer<
+  typeof vehicleBrandCreationSchema
+>;
+
+export type VehicleBrandUpdateRequest = z.infer<
+  typeof vehicleBrandUpdateSchema
+>;
+
+export type VehicleBrandQueryParams = z.infer<
+  typeof VehicleBrandQueryParamsSchema
+>;

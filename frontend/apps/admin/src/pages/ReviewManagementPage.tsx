@@ -16,7 +16,7 @@ import UniversalFilterSheet, {
 import ReviewDelete from "@/features/reviews/components/ReviewDelete";
 import { useAdminReviews } from "@/features/reviews/hooks/useAdminReviews";
 
-import type { Review, ReviewQueryParams } from "@repo/types";
+import type { Review, ReviewQueryParams } from "@repo/schemas";
 
 export default function ReviewManagementPage() {
   const [page, setPage] = useState(1);

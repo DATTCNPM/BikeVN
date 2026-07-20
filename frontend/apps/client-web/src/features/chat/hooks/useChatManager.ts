@@ -6,7 +6,7 @@ import type {
   ChatMessageResponse,
   ChatResponse,
   ReadReceiptEvent,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export function useChatManager(conversationId: string | null) {
   const queryClient = useQueryClient();

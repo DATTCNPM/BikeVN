@@ -1,6 +1,6 @@
 import { CalendarDays, MapPin, Banknote } from "lucide-react";
 import { Card } from "@repo/ui/components/ui/card";
-import type { Vehicle, Booking, Branch } from "@repo/types";
+import type { Vehicle, Booking, Branch } from "@repo/schemas";
 import { filterImagePrimary, formatTime } from "@repo/utils";
 import imageMock from "@/assets/images/motorbike1.png";
 
@@ -96,8 +96,7 @@ export default function BookingVehicleCard({
                     : "N/A"}
                 </p>
                 <p className="text-[11px] text-muted-foreground italic">
-                  Created:{" "}
-                  {formatTime(booking?.createdAt || "").split(" ")[0]}
+                  Created: {formatTime(booking?.createdAt || "").split(" ")[0]}
                 </p>
               </div>
             </div>

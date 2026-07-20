@@ -18,7 +18,7 @@ import {
   useFilterVehicleReturns,
 } from "@/features/vehicleReturns/hooks/vehicleReturnQueries";
 
-import type { VehicleReturn, VehicleReturnFilterParams } from "@repo/types";
+import type { VehicleReturn, VehicleReturnFilterParams } from "@repo/schemas";
 
 // Định nghĩa cấu trúc Object filter nhận từ UniversalFilterSheet
 type SelectedFilterState = {

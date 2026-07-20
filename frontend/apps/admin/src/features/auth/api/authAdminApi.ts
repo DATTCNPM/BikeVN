@@ -1,5 +1,5 @@
 import { axiosAdmin } from "@/hooks/axiosAdmin";
-import type { Employee } from "@repo/types";
+import type { Employee } from "@repo/schemas";
 
 export const authAdminApi = {
   getProfile() {

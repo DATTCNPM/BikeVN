@@ -21,7 +21,7 @@ import { formatTime } from "@repo/utils";
 import Map from "@/components/map/Map";
 import ReviewSection from "@/features/reviews/components/ReviewSection";
 import VehicleStatusBadge from "@/components/common/VehicleStatusBadge";
-import type { Vehicle, Branch } from "@repo/types";
+import type { Vehicle, Branch } from "@repo/schemas";
 
 type Props = {
   vehicle: Vehicle;

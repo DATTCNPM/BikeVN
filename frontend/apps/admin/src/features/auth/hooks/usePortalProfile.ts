@@ -4,7 +4,7 @@ import { authAdminApi } from "../api/authAdminApi";
 import { authStorageService } from "@repo/services";
 import { portalAuthKeys } from "./portalAuthKeys";
 
-import type { Employee } from "@repo/types";
+import type { Employee } from "@repo/schemas";
 
 export function usePortalProfile() {
   const token = authStorageService.getPortalToken();

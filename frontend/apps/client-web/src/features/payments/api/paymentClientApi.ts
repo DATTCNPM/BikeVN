@@ -1,6 +1,6 @@
 import axiosClient from "@/hooks/axiosClient";
 import { createPaymentCommonApi } from "@repo/api";
-import type { Payment, PaymentCreationPayload } from "@repo/types";
+import type { Payment, PaymentCreationPayload } from "@repo/schemas";
 
 export const paymentClientApi = {
   ...createPaymentCommonApi(axiosClient),

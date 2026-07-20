@@ -1,4 +1,4 @@
-import type { Branch, VehicleCardData } from "@repo/types";
+import type { Branch, VehicleCardData } from "@repo/schemas";
 import CardProduct from "@/components/common/CardProduct";
 import { MapPin, ChevronRight, ArrowLeft, Car } from "lucide-react";
 import PaginationComponent from "@/components/common/PaginationComponent";

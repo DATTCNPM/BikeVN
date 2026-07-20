@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "@repo/schemas";
-import type { RegisterPayload } from "@repo/types";
+import { registerSchema, type RegisterPayload } from "@repo/schemas";
 import { Input } from "@repo/ui/components/ui/input";
 import { Button } from "@repo/ui/components/ui/button";
 import { useState } from "react";

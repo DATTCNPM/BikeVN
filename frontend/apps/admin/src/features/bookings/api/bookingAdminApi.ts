@@ -1,6 +1,7 @@
 // src/apis/bookingApi.ts
 import { axiosAdmin } from "@/hooks/axiosAdmin";
-import type { Booking, BookingFilter, PaginationResponse } from "@repo/types";
+import type { Booking, BookingFilter } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 import { createBookingCommonApi } from "@repo/api";
 
 export const bookingAdminApi = {
@@ -39,6 +40,16 @@ export const bookingAdminApi = {
     >("/bookings/admin/filter", {
       params,
     });
+    return data;
+  },
+
+  async searchBookingsByPhone(phone: string) {
+    const data = await axiosAdmin.get<Booking[], Booking[]>(
+      "/bookings/search",
+      {
+        params: { phone },
+      },
+    );
     return data;
   },
 };

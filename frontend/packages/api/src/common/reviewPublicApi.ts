@@ -1,6 +1,6 @@
 import axiosPublic from "../axios/axiosPublic";
-
-import type { PaginationResponse, Review, PublicReview } from "@repo/types";
+import type { PaginationResponse } from "@repo/types";
+import type { Review, PublicReview } from "@repo/schemas";
 
 export const reviewPublicApi = {
   async getVehicleReviews({
@@ -12,14 +12,15 @@ export const reviewPublicApi = {
     page: number;
     size: number;
   }) {
-    const data = await axiosPublic.get<
-      PaginationResponse<Review>
-    >(`/reviews/vehicles/${vehicleId}`, {
-      params: {
-        page,
-        size,
+    const data = await axiosPublic.get<PaginationResponse<Review>>(
+      `/reviews/vehicles/${vehicleId}`,
+      {
+        params: {
+          page,
+          size,
+        },
       },
-    });
+    );
 
     return data;
   },
@@ -33,14 +34,15 @@ export const reviewPublicApi = {
     page: number;
     size: number;
   }) {
-    const data = await axiosPublic.get<
-      PaginationResponse<Review>
-    >(`/reviews/branches/${branchId}`, {
-      params: {
-        page,
-        size,
+    const data = await axiosPublic.get<PaginationResponse<Review>>(
+      `/reviews/branches/${branchId}`,
+      {
+        params: {
+          page,
+          size,
+        },
       },
-    });
+    );
 
     return data;
   },
@@ -56,16 +58,17 @@ export const reviewPublicApi = {
     page: number;
     size: number;
   }) {
-    const data = await axiosPublic.get<
-      PaginationResponse<PublicReview>
-    >("/reviews/public/filter", {
-      params: {
-        vehicleId,
-        rating,
-        page,
-        size,
+    const data = await axiosPublic.get<PaginationResponse<PublicReview>>(
+      "/reviews/public/filter",
+      {
+        params: {
+          vehicleId,
+          rating,
+          page,
+          size,
+        },
       },
-    });
+    );
 
     return data;
   },

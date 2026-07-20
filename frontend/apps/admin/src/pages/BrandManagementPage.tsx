@@ -16,7 +16,7 @@ import UniversalFilterSheet, {
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
 import { useVehicleBrands, useVehicleBrandFilters } from "@repo/hooks";
-import type { VehicleBrand, VehicleBrandQueryParams } from "@repo/types";
+import type { VehicleBrand, VehicleBrandQueryParams } from "@repo/schemas";
 
 export default function BrandManagementPage() {
   const [page, setPage] = useState(1);

@@ -1,11 +1,8 @@
 import { createReviewCommonApi } from "@repo/api";
 import { axiosAdmin } from "@/hooks/axiosAdmin";
 
-import type {
-  PaginationResponse,
-  Review,
-  ReviewQueryParams,
-} from "@repo/types";
+import type { Review, ReviewQueryParams } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 
 export const reviewAdminApi = {
   ...createReviewCommonApi(axiosAdmin),

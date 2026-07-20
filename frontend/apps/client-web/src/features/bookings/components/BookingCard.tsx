@@ -43,7 +43,7 @@ import { useCreateBooking } from "@/features/bookings/hooks/mutations";
 import { useAuthStore } from "@/features/auth/stores/authStore";
 import { useProfile } from "@/features/auth/hooks/useProfile";
 import { bookingFormSchema } from "@repo/schemas";
-import type { Branch, Vehicle, BookingFormValues } from "@repo/types";
+import type { Branch, Vehicle, BookingFormValues } from "@repo/schemas";
 import { calculateTotalDays, calculateTotalPrice } from "@repo/utils";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { isApiError } from "@repo/api";

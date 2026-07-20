@@ -5,7 +5,7 @@ import type {
   Branch,
   CreateBranchPayload,
   UpdateBranchPayload,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const branchAdminApi = {
   async createBranch(payload: CreateBranchPayload) {

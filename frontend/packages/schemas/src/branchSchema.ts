@@ -27,3 +27,11 @@ export const branchSchema = createBranchSchema.extend({
 
   createdAt: z.string().optional(),
 });
+
+export type Branch = z.infer<typeof branchSchema>;
+
+export type BranchStatus = z.infer<typeof branchStatusSchema>;
+
+export type CreateBranchPayload = z.infer<typeof createBranchSchema>;
+
+export type UpdateBranchPayload = z.infer<typeof updateBranchSchema>;

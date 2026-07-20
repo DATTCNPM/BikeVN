@@ -3,7 +3,7 @@ import type {
   VehicleModel,
   VehicleModelCreationRequest,
   VehicleModelUpdateRequest,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const vehicleModelAdminApi = {
   create(data: VehicleModelCreationRequest) {

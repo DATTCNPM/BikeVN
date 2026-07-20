@@ -12,23 +12,17 @@ import RoleDelete from "@/features/roles/components/RoleDelete";
 
 import { useRoles } from "@/features/roles/hooks/queriesRole";
 
-import type { Role } from "@repo/types";
+import type { RoleType } from "@repo/schemas";
 
 export default function RoleManagementPage() {
-  const { data: roles = [], isLoading } = useRoles();
+  const { data: roles, isLoading } = useRoles();
 
-  const [search, setSearch] = useState("");
-
-  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [selectedRole, setSelectedRole] = useState<RoleType | null>(null);
 
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const filteredRoles = roles.filter((role) =>
-    role.name.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  const columns = useMemo<ColumnDef<Role>[]>(
+  const columns = useMemo<ColumnDef<RoleType>[]>(
     () => [
       {
         accessorKey: "name",
@@ -72,12 +66,10 @@ export default function RoleManagementPage() {
     <div>
       <DataTableToolbar
         showCreate={true}
-        search={search}
-        onSearchChange={setSearch}
         onCreateOpen={() => setOpenCreateDialog(true)}
       />
 
-      <DataTable columns={columns} data={filteredRoles} />
+      <DataTable columns={columns} data={roles || []} />
 
       <RoleCreate open={openCreateDialog} onOpenChange={setOpenCreateDialog} />
 

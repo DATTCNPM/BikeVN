@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import type { Payment } from "@repo/types";
+import type { Payment } from "@repo/schemas";
 
 export const createPaymentCommonApi = (axiosInstance: AxiosInstance) => ({
   async cancelPayment(id: string, reason?: string) {

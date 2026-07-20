@@ -3,7 +3,7 @@ import type {
   AdminGeneralStatResponse,
   ChartDataResponse,
   MonthlyRevenueParams,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const statisticAdminApi = {
   // GET /statistics/general

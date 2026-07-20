@@ -32,3 +32,11 @@ export const reviewQueryParamsSchema = z.object({
   page: z.number().default(1),
   size: z.number().default(10),
 });
+
+export type Review = z.infer<typeof reviewSchema>;
+
+export type ReviewCreationPayload = z.infer<typeof reviewCreationSchema>;
+
+export type PublicReview = z.infer<typeof publicReviewSchema>;
+
+export type ReviewQueryParams = z.infer<typeof reviewQueryParamsSchema>;

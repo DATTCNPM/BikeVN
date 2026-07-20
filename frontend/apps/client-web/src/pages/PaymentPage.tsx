@@ -16,7 +16,7 @@ import {
 
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import type { PaymentMethod } from "@repo/types";
+import type { PaymentMethod } from "@repo/schemas";
 
 import { useNavigate } from "react-router-dom";
 import { Button } from "@repo/ui/components/ui/button";

@@ -2,7 +2,7 @@ import { useDeleteReview } from "../hooks/mutations";
 
 import { toast } from "@repo/ui/components/ui/sonner";
 
-import type { Review } from "@repo/types";
+import type { Review } from "@repo/schemas";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 type Props = {

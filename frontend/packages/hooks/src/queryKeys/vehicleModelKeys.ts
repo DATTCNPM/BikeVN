@@ -1,4 +1,4 @@
-import type { VehicleModelQueryParams } from "@repo/types";
+import type { VehicleModelQueryParams } from "@repo/schemas";
 export const vehicleModelKeys = {
   all: ["vehicle-models"] as const,
   lists: () => [...vehicleModelKeys.all, "list"] as const,

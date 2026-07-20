@@ -26,3 +26,37 @@ export const readReceiptEventSchema = z.object({
   readerId: z.string(),
   eventType: z.literal("READ_RECEIPT"),
 });
+
+export interface ChatResponse<T> {
+  content: T[];
+  empty: boolean;
+  first: boolean;
+  last: boolean;
+  number: number;
+  numberOfElements: number;
+  pageable: {
+    offset: number;
+    pageNumber: number;
+    pageSize: number;
+    paged: boolean;
+    unpaged: boolean;
+    sort: {
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+  };
+  size: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  totalElements: number;
+  totalPages: number;
+}
+
+export type ChatMessageResponse = z.infer<typeof chatMessageResponseSchema>;
+export type ConversationResponse = z.infer<typeof conversationResponseSchema>;
+export type ChatMessageRequest = z.infer<typeof chatMessageRequestSchema>;
+export type ReadReceiptEvent = z.infer<typeof readReceiptEventSchema>;

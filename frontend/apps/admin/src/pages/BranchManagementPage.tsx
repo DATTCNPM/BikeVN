@@ -13,7 +13,7 @@ import BranchEdit from "@/features/branches/components/BranchEdit";
 import BranchDelete from "@/features/branches/components/BranchDelete";
 
 import { useBranches } from "@repo/hooks";
-import type { Branch } from "@repo/types";
+import type { Branch } from "@repo/schemas";
 
 export default function BranchManagementPage() {
   const { data: branches = [], isLoading } = useBranches();
@@ -22,8 +22,6 @@ export default function BranchManagementPage() {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
-
-  const [search, setSearch] = useState("");
 
   const columns = useMemo<ColumnDef<Branch>[]>(
     () => [
@@ -88,9 +86,7 @@ export default function BranchManagementPage() {
   return (
     <div>
       <DataTableToolbar
-        search={search}
         showCreate={true}
-        onSearchChange={setSearch}
         onCreateOpen={() => setOpenCreateDialog(true)}
       />
 

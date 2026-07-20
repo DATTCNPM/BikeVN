@@ -1,6 +1,6 @@
 // Nơi khai báo: createReviewCommonApi
 import type { AxiosInstance } from "axios";
-import type { Review, ReviewCreationPayload } from "@repo/types";
+import type { Review, ReviewCreationPayload } from "@repo/schemas";
 
 export const createReviewCommonApi = (axiosInstance: AxiosInstance) => ({
   createReview: async (payload: ReviewCreationPayload) => {

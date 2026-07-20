@@ -1,11 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { employeeApi } from "../api/employeeAdminApi";
 import { employeeKeys } from "./employeeKeys";
-import type {
-  PaginationResponse,
-  Employee,
-  EmployeeQueryParams,
-} from "@repo/types";
+import type { Employee, EmployeeQueryParams } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 
 export function useEmployees(page: number = 1, size: number = 10) {
   return useQuery<PaginationResponse<Employee>>({

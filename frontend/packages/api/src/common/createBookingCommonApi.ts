@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import type { Booking } from "@repo/types";
+import type { Booking } from "@repo/schemas";
 
 export const createBookingCommonApi = (axiosInstance: AxiosInstance) => ({
   async getBooking(id: string) {

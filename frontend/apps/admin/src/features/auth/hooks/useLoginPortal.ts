@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { authApi } from "@repo/api";
 import { ROLES } from "@repo/constants";
 import { authStorageService, tokenService } from "@repo/services";
-import type { LoginPayload } from "@repo/types";
+import type { LoginPayload } from "@repo/schemas";
 
 import { usePortalAuth } from "./usePortalAuth";
 

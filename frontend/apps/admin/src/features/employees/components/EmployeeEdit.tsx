@@ -22,7 +22,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useUpdateEmployee } from "@/features/employees/hooks/mutationEmployee";
 import { useBranches } from "@repo/hooks";
 import { updateEmployeeSchema } from "@repo/schemas";
-import type { UpdateEmployeePayload, Employee } from "@repo/types";
+import type { UpdateEmployeePayload, Employee } from "@repo/schemas";
 
 import { handleFormBackendError } from "@repo/providers";
 import { isApiError } from "@repo/api";

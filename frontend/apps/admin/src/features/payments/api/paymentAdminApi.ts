@@ -1,8 +1,5 @@
-import type {
-  Payment,
-  PaginationResponse,
-  PaymentFilterParams,
-} from "@repo/types";
+import type { Payment, PaymentFilterParams } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 import { axiosAdmin } from "@/hooks/axiosAdmin";
 import { createPaymentCommonApi } from "@repo/api";
 
@@ -19,18 +16,6 @@ export const paymentAdminApi = {
     >("/payments/admin/filter", {
       params,
     });
-  },
-
-  // API lấy payments của riêng chi nhánh (Dành cho Employee) - MỚI
-  async getPaymentPerBranch(
-    page: number,
-    size: number,
-  ): Promise<PaginationResponse<Payment>> {
-    const data = await axiosAdmin.get<
-      PaginationResponse<Payment>,
-      PaginationResponse<Payment>
-    >(`/payments/branch?page=${page}&size=${size}`);
-    return data;
   },
 
   approvePaymentManually(

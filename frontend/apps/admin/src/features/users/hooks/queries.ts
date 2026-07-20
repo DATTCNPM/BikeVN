@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { userApi } from "../api/userAdminApi";
 import { usersKeys } from "./usersKeys";
-import type { PaginationResponse, User, UserQueryParams } from "@repo/types";
+import type {  User, UserQueryParams } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 
 export function useUsers(page: number = 1, size: number = 10) {
   return useQuery<PaginationResponse<User>>({

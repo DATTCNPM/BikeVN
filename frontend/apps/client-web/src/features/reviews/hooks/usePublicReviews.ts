@@ -2,13 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import { reviewPublicApi } from "@repo/api";
 import { reviewKeys } from "@repo/hooks";
-import type { ReviewQueryParams } from "@repo/types";
+import type { ReviewQueryParams } from "@repo/schemas";
 
-export const usePublicReviews = ({
-  params,
-}: {
-  params: ReviewQueryParams;
-}) =>
+export const usePublicReviews = ({ params }: { params: ReviewQueryParams }) =>
   useQuery({
     queryKey: reviewKeys.publicFilter(params),
 

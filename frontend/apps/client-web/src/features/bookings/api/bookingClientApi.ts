@@ -1,6 +1,6 @@
 import axiosClient from "@/hooks/axiosClient";
 
-import type { Booking, BookingCreationPayload } from "@repo/types";
+import type { Booking, BookingCreationPayload } from "@repo/schemas";
 
 import {
   createBookingCommonApi,

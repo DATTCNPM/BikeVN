@@ -25,7 +25,7 @@ import { useCreateVehicle } from "@/features/vehicles/hooks/mutations";
 import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
 import { vehicleCreationSchema, VEHICLE_STATUS_OPTIONS } from "@repo/schemas";
-import type { VehicleCreationRequest } from "@repo/types";
+import type { VehicleCreationRequest } from "@repo/schemas";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

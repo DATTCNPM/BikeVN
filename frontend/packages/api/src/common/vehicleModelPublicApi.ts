@@ -1,10 +1,8 @@
 // vehicleModelPublicApi.ts
 import axiosPublic from "../axios/axiosPublic";
-import type {
-  VehicleModel,
-  PaginationResponse,
-  VehicleModelQueryParams,
-} from "@repo/types";
+import type { PaginationResponse } from "@repo/types";
+
+import type { VehicleModel, VehicleModelQueryParams } from "@repo/schemas";
 
 export const vehicleModelPublicApi = {
   async getModels(page: number, size: number) {

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { permissionApi } from "../api/permissionApi";
 import { permissionKeys } from "./permissionKeys";
-import type { PermissionRequest } from "@repo/types";
+import type { PermissionRequest } from "@repo/schemas";
 
 export function useCreatePermission() {
   const queryClient = useQueryClient();

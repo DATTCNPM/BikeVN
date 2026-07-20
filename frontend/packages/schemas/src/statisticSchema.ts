@@ -22,3 +22,9 @@ export const adminGeneralStatResponseSchema = z.object({
   totalVehicles: z.number(),
   totalEmployees: z.number(),
 });
+
+export type MonthlyRevenueParams = z.infer<typeof monthlyRevenueParamsSchema>;
+export type ChartDataResponse = z.infer<typeof chartDataResponseSchema>;
+export type AdminGeneralStatResponse = z.infer<
+  typeof adminGeneralStatResponseSchema
+>;

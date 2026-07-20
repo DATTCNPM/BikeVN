@@ -1,4 +1,4 @@
-import type { PaymentFilterParams } from "@repo/types";
+import type { PaymentFilterParams } from "@repo/schemas";
 export const paymentsKeys = {
   all: ["payments"] as const,
 

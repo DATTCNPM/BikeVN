@@ -132,3 +132,16 @@ export const vehicleQuerySchema = z.object({
 
   size: z.number().optional(),
 });
+
+export type Vehicle = z.infer<typeof vehicleSchema>;
+export type VehicleCardData = z.infer<typeof vehicleCardData>;
+
+export type VehicleCreationRequest = z.infer<typeof vehicleCreationSchema>;
+
+export type VehicleUpdateRequest = z.infer<typeof vehicleUpdateSchema>;
+
+export type VehicleQueryParams = z.infer<typeof vehicleQuerySchema>;
+
+export type VehicleType = z.infer<typeof vehicleTypeSchema>;
+
+export type StatusVehicleEnum = z.infer<typeof vehicleStatusSchema>;

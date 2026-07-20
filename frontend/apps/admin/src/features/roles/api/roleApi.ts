@@ -1,14 +1,18 @@
 import { axiosAdmin } from "@/hooks/axiosAdmin";
 
-import type { Role, RoleRequest } from "@repo/types";
+import type { RoleType, RoleRequest } from "@repo/schemas";
 
 export const roleApi = {
   getRoles() {
-    return axiosAdmin.get<Role[], Role[]>("/roles");
+    return axiosAdmin.get<RoleType[], RoleType[]>("/roles");
+  },
+
+  getRoleById(id: string) {
+    return axiosAdmin.get<RoleType, RoleRequest>(`/roles/${id}`);
   },
 
   createRole(payload: RoleRequest) {
-    return axiosAdmin.post<Role, RoleRequest>("/roles", payload);
+    return axiosAdmin.post<RoleType, RoleType>("/roles", payload);
   },
 
   async deleteRole(roleId: string): Promise<void> {

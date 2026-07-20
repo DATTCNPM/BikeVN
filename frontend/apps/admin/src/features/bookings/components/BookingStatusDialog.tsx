@@ -5,7 +5,7 @@ import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { toast } from "@repo/ui/components/ui/sonner";
 
 import { bookingsKeys } from "@repo/hooks";
-import type { Booking } from "@repo/types";
+import type { Booking } from "@repo/schemas";
 
 import {
   useApproveBooking,

@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { paymentsKeys } from "@repo/hooks";
-import type { Payment } from "@repo/types";
+import type { Payment } from "@repo/schemas";
 import { useState } from "react"; // 🌟 Xóa bỏ useEffect
 import {
   useApprovePaymentManually,

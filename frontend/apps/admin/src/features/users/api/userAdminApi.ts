@@ -3,12 +3,12 @@ import type {
   User,
   Employee,
   AdminEmployeeCreationPayload,
-  PaginationResponse,
   AdminUserCreationPayload,
   UpdateEmployeePayload,
   UserQueryParams,
   EmployeeQueryParams,
-} from "@repo/types";
+} from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 import { createUserCommonApi } from "@repo/api";
 
 export const userApi = {

@@ -3,7 +3,7 @@ import type {
   ConversationResponse,
   ChatMessageResponse,
   ChatResponse,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const chatAdminApi = {
   // Lấy lịch sử tin nhắn của phòng hội thoại

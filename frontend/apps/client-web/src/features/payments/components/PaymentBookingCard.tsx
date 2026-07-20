@@ -3,7 +3,7 @@ import { CalendarDays, MapPinned } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useBranches } from "@repo/hooks";
 import { formatTime } from "@repo/utils";
-import type { Booking } from "@repo/types";
+import type { Booking } from "@repo/schemas";
 import { calculateTotalDays } from "@repo/utils";
 
 type Props = {

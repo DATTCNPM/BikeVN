@@ -1,7 +1,7 @@
 import { Card } from "@repo/ui/components/ui/card";
 import { ReceiptText, CheckCircle2 } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
-import type { VehicleReturn } from "@repo/types";
+import type { VehicleReturn } from "@repo/schemas"; // Import đúng kiểu VehicleReturn
 import { useNavigate } from "react-router-dom";
 
 type Props = {

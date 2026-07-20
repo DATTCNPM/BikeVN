@@ -6,7 +6,7 @@ import { vehicleBrandKeys } from "@repo/hooks";
 import type {
   VehicleBrandCreationRequest,
   VehicleBrandUpdateRequest,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const useCreateVehicleBrand = () => {
   const queryClient = useQueryClient();

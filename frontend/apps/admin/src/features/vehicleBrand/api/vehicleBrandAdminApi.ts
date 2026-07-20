@@ -3,7 +3,7 @@ import type {
   VehicleBrand,
   VehicleBrandCreationRequest,
   VehicleBrandUpdateRequest,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const vehicleBrandAdminApi = {
   create(data: VehicleBrandCreationRequest) {

@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "axios";
 
-import type { User, UpdateProfilePayload } from "@repo/types";
+import type { User, UpdateProfilePayload } from "@repo/schemas";
 
 export const createUserCommonApi = (axiosInstance: AxiosInstance) => ({
   async updateUser(

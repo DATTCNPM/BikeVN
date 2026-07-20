@@ -26,11 +26,11 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useVehicleBrands } from "@repo/hooks";
 
-import { vehicleModelUpdateSchema } from "@repo/schemas";
-
-import type { VehicleModelUpdateRequest } from "@repo/types";
-
-import type { VehicleModel } from "@repo/types";
+import {
+  vehicleModelUpdateSchema,
+  type VehicleModel,
+  type VehicleModelUpdateRequest,
+} from "@repo/schemas";
 
 import { useUpdateVehicleModel } from "@/features/vehicleModel/hooks/mutationVehicleModel";
 

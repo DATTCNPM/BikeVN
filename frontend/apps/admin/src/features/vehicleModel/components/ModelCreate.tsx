@@ -25,7 +25,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useCreateVehicleModel } from "@/features/vehicleModel/hooks/mutationVehicleModel";
 
 import { vehicleModelCreationSchema } from "@repo/schemas";
-import type { VehicleModelCreationRequest } from "@repo/types";
+import type { VehicleModelCreationRequest } from "@repo/schemas";
 import { useVehicleBrands } from "@repo/hooks";
 
 // 🌟 Import helper check error từ Packages hệ thống giống trang Login

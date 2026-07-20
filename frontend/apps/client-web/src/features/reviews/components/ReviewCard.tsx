@@ -7,7 +7,7 @@ import {
 } from "@repo/ui/components/ui/avatar";
 import { Card } from "@repo/ui/components/ui/card";
 
-import type { Review } from "@repo/types";
+import type { Review } from "@repo/schemas";
 
 type Props = {
   review: Review;
@@ -45,9 +45,7 @@ export default function ReviewCard({ review }: Props) {
           </Avatar>
 
           <div>
-            <h4 className="font-semibold text-foreground">
-              {review.userId}
-            </h4>
+            <h4 className="font-semibold text-foreground">{review.userId}</h4>
 
             <p className="text-sm text-muted-foreground">
               {new Date(review.createdAt).toLocaleDateString("vi-VN")}
