@@ -20,7 +20,7 @@ import { useUpdateVehicleImage } from "@/features/vehicleImages/hooks/mutationVe
 
 import { vehicleImageUpdateSchema } from "@repo/schemas";
 
-import type { VehicleImage, VehicleImageUpdatePayload } from "@repo/types";
+import type { VehicleImage, VehicleImageUpdatePayload } from "@repo/schemas";
 
 import { getImageUrl } from "@repo/utils";
 

@@ -3,11 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { vehiclePublicApi } from "@repo/api";
 import { vehiclesKeys } from "../queryKeys/vehicleKeys";
 
-import type {
-  Vehicle,
-  VehicleQueryParams,
-  PaginationResponse,
-} from "@repo/types";
+import type { Vehicle, VehicleQueryParams } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 
 export function useVehicles(page: number, size: number) {
   return useQuery<PaginationResponse<Vehicle>>({

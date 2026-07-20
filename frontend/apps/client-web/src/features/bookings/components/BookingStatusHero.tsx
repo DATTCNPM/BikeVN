@@ -6,7 +6,7 @@ import {
   Ban,
   CalendarCheck,
 } from "lucide-react";
-import type { Booking } from "@repo/types";
+import type { Booking } from "@repo/schemas";
 
 type Props = {
   status: Booking["status"] | null | undefined;

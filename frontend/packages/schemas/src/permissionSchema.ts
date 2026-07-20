@@ -9,3 +9,7 @@ export const permissionCreationSchema = z.object({
 export const permissionSchema = permissionCreationSchema.extend({
   id: z.string(),
 });
+
+export type PermissionType = z.infer<typeof permissionSchema>;
+
+export type PermissionRequest = z.infer<typeof permissionCreationSchema>;

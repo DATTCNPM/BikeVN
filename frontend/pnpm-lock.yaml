@@ -322,6 +322,9 @@ importers:
       '@repo/constants':
         specifier: workspace:*
         version: link:../constants
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@repo/services':
         specifier: workspace:*
         version: link:../services
@@ -342,6 +345,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../api
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@repo/types':
         specifier: workspace:*
         version: link:../types
@@ -469,6 +475,9 @@ importers:
 
   packages/utils:
     dependencies:
+      '@repo/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@repo/types':
         specifier: workspace:*
         version: link:../types

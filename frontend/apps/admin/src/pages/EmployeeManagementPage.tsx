@@ -23,7 +23,7 @@ import {
 } from "@/features/employees/hooks/queriesEmployee";
 import { useBranches } from "@repo/hooks";
 
-import type { User } from "@repo/types";
+import type { User } from "@repo/schemas";
 
 export default function EmployeeManagementPage() {
   const [page, setPage] = useState(1);

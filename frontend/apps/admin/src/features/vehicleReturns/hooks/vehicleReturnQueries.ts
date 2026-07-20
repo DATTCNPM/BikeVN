@@ -1,10 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { vehicleReturnAdminApi } from "../api/vehicleReturnAdminApi";
-import type {
-  VehicleReturnFilterParams,
-  PaginationResponse,
-  VehicleReturn,
-} from "@repo/types";
+import type { VehicleReturnFilterParams, VehicleReturn } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 import { vehicleReturnQueryKeys } from "./vehicleReturnQueryKeys";
 
 // 1. Lấy chi tiết biên bản trả xe theo mã Booking - GIỮ NGUYÊN

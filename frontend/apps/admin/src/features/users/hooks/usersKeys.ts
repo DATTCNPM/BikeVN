@@ -1,4 +1,4 @@
-import type { UserQueryParams } from "node_modules/@repo/types/src/userType";
+import type { UserQueryParams } from "@repo/schemas";
 
 export const usersKeys = {
   all: ["users"] as const,

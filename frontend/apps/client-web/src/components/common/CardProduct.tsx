@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Fuel, Globe, MapPin, Zap } from "lucide-react";
 import { Badge } from "@repo/ui/components/ui/badge";
 import motorPlaceholder from "@/assets/images/motorbike1.png";
-import type { VehicleCardData } from "@repo/types";
+import type { VehicleCardData } from "@repo/schemas";
 import VehicleStatusBadge from "./VehicleStatusBadge";
 
 const VEHICLE_TYPE_CONFIG = {
@@ -38,7 +38,7 @@ export default function CardProduct({ vehicle }: { vehicle: VehicleCardData }) {
       {/* Media Spotlight Section */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/40">
         <img
-          src={vehicle.image ?vehicle.image : motorPlaceholder}
+          src={vehicle.image ? vehicle.image : motorPlaceholder}
           alt={vehicle.name}
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           loading="lazy"

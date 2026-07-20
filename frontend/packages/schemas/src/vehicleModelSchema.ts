@@ -30,3 +30,17 @@ export const VehicleModelQueryParamsSchema = z.object({
   page: z.number().default(1),
   size: z.number().default(10),
 });
+
+export type VehicleModel = z.infer<typeof vehicleModelSchema>;
+
+export type VehicleModelCreationRequest = z.infer<
+  typeof vehicleModelCreationSchema
+>;
+
+export type VehicleModelUpdateRequest = z.infer<
+  typeof vehicleModelUpdateSchema
+>;
+
+export type VehicleModelQueryParams = z.infer<
+  typeof VehicleModelQueryParamsSchema
+>;

@@ -1,7 +1,7 @@
 import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
-import type { PaymentMethod } from "@repo/types";
+import type { PaymentMethod } from "@repo/schemas";
 
 type Props = {
   selectedMethod: PaymentMethod;

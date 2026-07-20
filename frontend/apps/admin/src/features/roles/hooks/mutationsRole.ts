@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { roleApi } from "../api/roleApi";
 import { roleKeys } from "./roleKeys";
-import type { RoleRequest } from "@repo/types";
+import type { RoleRequest } from "@repo/schemas";
 
 export function useCreateRole() {
   const queryClient = useQueryClient();

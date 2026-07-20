@@ -17,7 +17,7 @@ import {
 } from "@repo/ui/components/ui/alert";
 import { useGetVNPayUrl } from "@/features/payments/hooks/mutations"; // Sử dụng mutation lấy URL VNPay cũ
 import { toast } from "@repo/ui/components/ui/sonner";
-import type { VehicleReturn } from "@repo/types"; // Import đúng kiểu VehicleReturn
+import type { VehicleReturn } from "@repo/schemas"; // Import đúng kiểu VehicleReturn
 
 type Props = {
   vehicleReturnData: VehicleReturn | null | undefined; // Type VehicleReturn chúng ta vừa update Schema ở câu trước

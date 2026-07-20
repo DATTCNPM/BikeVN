@@ -20,7 +20,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateEmployee } from "@/features/employees/hooks/mutationEmployee";
 import { adminEmployeeCreationSchema } from "@repo/schemas";
-import type { AdminEmployeeCreationPayload } from "@repo/types";
+import type { AdminEmployeeCreationPayload } from "@repo/schemas";
 import { useBranches } from "@repo/hooks";
 
 import { handleFormBackendError } from "@repo/providers";

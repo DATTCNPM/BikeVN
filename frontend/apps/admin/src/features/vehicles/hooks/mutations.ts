@@ -2,7 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { vehicleAdminApi } from "../api/vehicleAdminApi";
 
-import type { VehicleCreationRequest, VehicleUpdateRequest } from "@repo/types";
+import type {
+  VehicleCreationRequest,
+  VehicleUpdateRequest,
+} from "@repo/schemas";
 import { vehiclesKeys } from "@repo/hooks";
 
 export function useCreateVehicle() {

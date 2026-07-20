@@ -4,12 +4,12 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useDeletePermission } from "../hooks/mutationsPermission";
 
-import type { Permission } from "@repo/types";
+import type { PermissionType } from "@repo/schemas";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  permission: Permission | null;
+  permission: PermissionType | null;
 };
 
 export default function PermissionDelete({

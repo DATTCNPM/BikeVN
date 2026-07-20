@@ -11,3 +11,7 @@ export const roleCreationSchema = z.object({
 export const roleSchema = roleCreationSchema.extend({
   id: z.string(),
 });
+
+export type RoleType = z.infer<typeof roleSchema>;
+
+export type RoleRequest = z.infer<typeof roleCreationSchema>;

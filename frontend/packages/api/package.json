@@ -15,6 +15,7 @@
     "@repo/constants": "workspace:*",
     "@repo/services": "workspace:*",
     "@repo/types": "workspace:*",
+    "@repo/schemas": "workspace:*",
     "axios": "^1.16.0",
     "jwt-decode": "^4.0.0"
   },

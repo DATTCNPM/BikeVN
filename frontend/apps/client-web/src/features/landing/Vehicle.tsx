@@ -1,6 +1,6 @@
 import CardProduct from "@/components/common/CardProduct";
 import { useVehicleFilters } from "@repo/hooks";
-import type { VehicleCardData, VehicleQueryParams } from "@repo/types";
+import type { VehicleCardData, VehicleQueryParams } from "@repo/schemas";
 
 export default function Vehicle() {
   const paramsFilter: VehicleQueryParams = {

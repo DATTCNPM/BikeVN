@@ -1,7 +1,7 @@
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import { useDeleteBranch } from "@/features/branches/hooks/mutations";
 import { toast } from "@repo/ui/components/ui/sonner";
-import type { Branch } from "@repo/types";
+import type { Branch } from "@repo/schemas";
 
 type Props = {
   open: boolean;

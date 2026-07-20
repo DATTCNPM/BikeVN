@@ -14,7 +14,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateUser } from "@/features/users/hooks/mutations";
 import { updateUserSchema } from "@repo/schemas";
-import type { UpdateUserPayload, User } from "@repo/types";
+import type { UpdateUserPayload, User } from "@repo/schemas";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

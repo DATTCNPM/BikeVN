@@ -3,7 +3,7 @@ import type {
   Vehicle,
   VehicleCreationRequest,
   VehicleUpdateRequest,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const vehicleAdminApi = {
   async createVehicle(payload: VehicleCreationRequest) {

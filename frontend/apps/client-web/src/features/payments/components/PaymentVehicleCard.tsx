@@ -1,6 +1,6 @@
 import { Card } from "@repo/ui/components/ui/card";
 import { MapPin, Motorbike } from "lucide-react";
-import type { Vehicle } from "@repo/types";
+import type { Vehicle } from "@repo/schemas";
 import { filterImagePrimary } from "@repo/utils";
 import imageMock from "@/assets/images/motorbike1.png";
 

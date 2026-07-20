@@ -36,8 +36,10 @@ import { Label } from "@repo/ui/components/ui/label";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 import UpdateProfile from "./UpdateProfile";
 
-import { updatePasswordSchema } from "@repo/schemas";
-import type { UpdatePasswordPayload } from "@repo/types";
+import {
+  updatePasswordSchema,
+  type UpdatePasswordPayload,
+} from "@repo/schemas";
 import { useState } from "react";
 
 interface AccountSettingsProps {

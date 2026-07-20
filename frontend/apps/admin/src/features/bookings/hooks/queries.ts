@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { bookingAdminApi } from "../api/bookingAdminApi";
 import { bookingsKeys } from "@repo/hooks";
-import type { Booking, BookingFilter, PaginationResponse } from "@repo/types";
+import type { Booking, BookingFilter } from "@repo/schemas";
+import type { PaginationResponse } from "@repo/types";
 
 // Hook lấy toàn bộ Bookings (Dành cho Admin)
 export function useBookings(
@@ -42,5 +43,18 @@ export function useBookingFilters(params?: BookingFilter, enabled = true) {
     queryKey: bookingsKeys.filter(params),
     queryFn: async () => bookingAdminApi.getBookingFilters(params),
     enabled: !!params && enabled,
+  });
+}
+
+export function useSearchBookingsByPhone(
+  phone: string,
+  options?: { enabled?: boolean },
+) {
+  const trimmedPhone = phone.trim();
+
+  return useQuery<Booking[]>({
+    queryKey: ["bookings", "search", trimmedPhone],
+    queryFn: async () => bookingAdminApi.searchBookingsByPhone(trimmedPhone),
+    enabled: (options?.enabled ?? true) && Boolean(trimmedPhone),
   });
 }

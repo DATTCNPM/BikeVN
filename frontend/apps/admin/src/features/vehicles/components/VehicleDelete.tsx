@@ -3,7 +3,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useDeleteVehicle } from "@/features/vehicles/hooks/mutations";
 
-import type { Vehicle } from "@repo/types";
+import type { Vehicle } from "@repo/schemas";
 
 type Props = {
   open: boolean;

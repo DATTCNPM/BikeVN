@@ -1,6 +1,6 @@
 import { Users, Building2 } from "lucide-react";
 import { useState } from "react";
-import type { ConversationResponse } from "@repo/types";
+import type { ConversationResponse } from "@repo/schemas";
 import { Button } from "@repo/ui/components/ui/button";
 import { ScrollArea } from "@repo/ui/components/ui/scroll-area";
 import { ConversationItemSkeleton } from "@/features/chat/components/skeleton/ChatSkeleton";

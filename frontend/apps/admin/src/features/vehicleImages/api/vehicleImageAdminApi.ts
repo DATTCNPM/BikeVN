@@ -3,7 +3,7 @@ import { axiosAdmin } from "@/hooks/axiosAdmin";
 import type {
   VehicleImageCreatePayload,
   VehicleImageUpdatePayload,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const vehicleImageAdminApi = {
   async uploadImage(vehicleId: string, payload: VehicleImageCreatePayload) {

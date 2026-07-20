@@ -29,3 +29,13 @@ export const vehicleImageSchema = vehicleImageCreationSchema
     isPrimary: z.boolean(),
     createdAt: z.string(),
   });
+
+export type VehicleImage = z.infer<typeof vehicleImageSchema>;
+
+export type VehicleImageCreatePayload = z.infer<
+  typeof vehicleImageCreationSchema
+>;
+
+export type VehicleImageUpdatePayload = z.infer<
+  typeof vehicleImageUpdateSchema
+>;

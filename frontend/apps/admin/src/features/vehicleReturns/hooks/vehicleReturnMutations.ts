@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { vehicleReturnAdminApi } from "../api/vehicleReturnAdminApi";
-import type { CreateVehicleReturnRequest } from "@repo/types";
+import type { CreateVehicleReturnRequest } from "@repo/schemas";
 import { vehicleReturnQueryKeys } from "./vehicleReturnQueryKeys";
 
 export const useCreateVehicleReturn = () => {

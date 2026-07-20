@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { branchPublicApi } from "@repo/api";
 import { branchesKeys } from "../queryKeys/branchKeys";
 
-import type { Branch } from "@repo/types";
+import type { Branch } from "@repo/schemas";
 
 export function useBranches() {
   return useQuery<Branch[]>({

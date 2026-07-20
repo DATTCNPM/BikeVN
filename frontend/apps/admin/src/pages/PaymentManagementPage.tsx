@@ -16,18 +16,16 @@ import UniversalFilterSheet, {
   type FilterConfigItem,
 } from "@repo/ui/components/wrapper/UniversalFilterSheet";
 
-import {
-  usePayments,
-  usePaymentsByBranch,
-} from "@/features/payments/hooks/queries";
+import { usePayments } from "@/features/payments/hooks/queries";
 import { useBranches } from "@repo/hooks";
+import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 
 import type {
   Payment,
   PaymentStatus,
   PaymentType,
   PaymentFilterParams,
-} from "@repo/types";
+} from "@repo/schemas";
 
 const paymentStatusMap: Record<PaymentStatus, string> = {
   pending:
@@ -54,9 +52,21 @@ const paymentTypeLabel: Record<PaymentType, string> = {
   unspecified: "Unspecified",
 };
 
+// Hàm hỗ trợ format ngày sang định dạng YYYY-MM-DD
+const formatDateToISOString = (dateVal: any): string | undefined => {
+  if (!dateVal) return undefined;
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return undefined;
+  return d.toISOString().split("T")[0];
+};
+
 export default function PaymentManagementPage() {
   const { pathname } = useLocation();
   const isEmployee = pathname.startsWith("/employee");
+
+  // Lấy thông tin user hiện tại
+  const { data: user, isLoading: isProfileLoading } = usePortalProfile();
+  const employeeBranchId = user?.branchId;
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -71,12 +81,13 @@ export default function PaymentManagementPage() {
   >({});
   const { data: branches } = useBranches();
 
-  // Cấu hình bộ lọc động: Nhân viên chi nhánh không cần lọc theo chi nhánh nữa
+  // 1. Cấu hình bộ lọc động chuẩn hóa theo Controller BE
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     const baseConfigs: FilterConfigItem[] = [
       {
         key: "status",
         title: "Status",
+        type: "select",
         options: [
           { label: "Pending", value: "pending" },
           { label: "Completed", value: "completed" },
@@ -88,11 +99,27 @@ export default function PaymentManagementPage() {
       {
         key: "type",
         title: "Type",
+        type: "select",
         options: [
           { label: "Rental Payment", value: "rental" },
           { label: "Extra Fee", value: "extra_fee" },
           { label: "Unspecified", value: "unspecified" },
         ],
+      },
+      {
+        key: "fromDate",
+        title: "From Date",
+        type: "date",
+      },
+      {
+        key: "toDate",
+        title: "To Date",
+        type: "date",
+      },
+      {
+        key: "notes",
+        title: "Notes Keyword",
+        type: "text",
       },
     ];
 
@@ -100,6 +127,7 @@ export default function PaymentManagementPage() {
       baseConfigs.unshift({
         key: "branchId",
         title: "Branch",
+        type: "select",
         options: branches?.map((b) => ({ label: b.name, value: b.id })) ?? [],
       });
     }
@@ -107,32 +135,30 @@ export default function PaymentManagementPage() {
     return baseConfigs;
   }, [branches, isEmployee]);
 
+  // 2. Map các giá trị gửi lên API
   const apiParams = useMemo<PaymentFilterParams>(() => {
     const trimmedSearch = search.trim();
     return {
       bookingId: trimmedSearch || undefined,
       transactionCode: trimmedSearch || undefined,
-      branchId: selectedFilters.branchId, // Không cần dùng .value nữa vì state lưu trực tiếp chuỗi primitive
+      branchId: isEmployee ? employeeBranchId : selectedFilters.branchId,
       status: selectedFilters.status,
       type: selectedFilters.type,
+      notes: selectedFilters.notes?.trim() || undefined,
+      fromDate: formatDateToISOString(selectedFilters.fromDate),
+      toDate: formatDateToISOString(selectedFilters.toDate),
       page,
       size: 10,
     };
-  }, [search, selectedFilters, page]);
+  }, [search, selectedFilters, page, isEmployee, employeeBranchId]);
 
-  // 🌟 ĐIỀU PHỐI ĐỘNG: Gọi API tương ứng dựa trên vai trò
-  const { data: adminPayments, isLoading: isAdminLoading } = usePayments(
-    apiParams,
-    { enabled: !isEmployee },
-  );
-
-  const { data: branchPayments, isLoading: isBranchLoading } =
-    usePaymentsByBranch(page, 10, {
-      enabled: isEmployee,
+  // 3. Hook gọi API
+  const { data: currentPaymentsResponse, isLoading: isPaymentsLoading } =
+    usePayments(apiParams, {
+      enabled: isEmployee ? Boolean(employeeBranchId) : true,
     });
 
-  const isDataLoading = isEmployee ? isBranchLoading : isAdminLoading;
-  const currentPaymentsResponse = isEmployee ? branchPayments : adminPayments;
+  const isDataLoading = isPaymentsLoading || (isEmployee && isProfileLoading);
 
   const paymentData = currentPaymentsResponse?.data || [];
   const pagination = {
@@ -145,7 +171,7 @@ export default function PaymentManagementPage() {
   const columns = useMemo<ColumnDef<Payment>[]>(
     () => [
       {
-        accessorKey: "ID",
+        accessorKey: "id",
         header: "ID",
         cell: ({ row }) => (
           <span className="font-medium">
@@ -278,10 +304,13 @@ export default function PaymentManagementPage() {
         <UniversalFilterSheet
           title="Filter Payments"
           configs={filterConfigs}
-          // Chuyển đổi State Phẳng thành dạng Object có chứa value để thích ứng với giao diện của Component Sheet
           value={Object.entries(selectedFilters).reduce(
             (acc, [key, val]) => {
-              if (val) acc[key] = { value: val, label: val };
+              if (val) {
+                // Giữ lại định dạng value object phù hợp cho cả select, date và text
+                acc[key] =
+                  typeof val === "object" ? val : { value: val, label: val };
+              }
               return acc;
             },
             {} as Record<string, any>,
@@ -290,14 +319,12 @@ export default function PaymentManagementPage() {
             const parsedFilters: Partial<PaymentFilterParams> = {};
 
             Object.entries(newFilters).forEach(([key, filterVal]) => {
-              // Lấy giá trị chuỗi thực sự (từ object { value, label } hoặc string trực tiếp)
               const rawValue =
                 typeof filterVal === "object" && filterVal !== null
                   ? filterVal.value
                   : filterVal;
 
               if (rawValue) {
-                // Ép kiểu `any` khi gán động theo key để thỏa mãn TypeScript
                 (parsedFilters as Record<string, any>)[key] = rawValue;
               }
             });

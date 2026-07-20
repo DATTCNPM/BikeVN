@@ -18,7 +18,7 @@ import { permissionCreationSchema } from "@repo/schemas";
 
 import { useCreatePermission } from "../hooks/mutationsPermission";
 
-import type { PermissionRequest } from "@repo/types";
+import type { PermissionRequest } from "@repo/schemas";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

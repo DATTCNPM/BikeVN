@@ -2,10 +2,11 @@ import { axiosAdmin } from "@/hooks/axiosAdmin";
 import type {
   Employee,
   AdminEmployeeCreationPayload,
-  PaginationResponse,
   UpdateEmployeePayload,
   EmployeeQueryParams,
-} from "@repo/types";
+} from "@repo/schemas";
+
+import type { PaginationResponse } from "@repo/types";
 
 export const employeeApi = {
   getEmployeeById(id: string) {

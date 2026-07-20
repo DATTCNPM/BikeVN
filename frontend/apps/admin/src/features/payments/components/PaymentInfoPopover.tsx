@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@repo/ui/components/ui/tooltip";
 import { toast } from "@repo/ui/components/ui/sonner";
-import type { Payment } from "@repo/types";
+import type { Payment } from "@repo/schemas";
 
 type Props = {
   payment: Payment;

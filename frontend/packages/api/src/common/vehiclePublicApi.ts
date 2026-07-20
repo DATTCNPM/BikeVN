@@ -1,9 +1,7 @@
 import axiosPublic from "../axios/axiosPublic";
-import type {
-  Vehicle,
-  VehicleQueryParams,
-  PaginationResponse,
-} from "@repo/types";
+import type { PaginationResponse } from "@repo/types";
+
+import type { Vehicle, VehicleQueryParams } from "@repo/schemas";
 
 export const vehiclePublicApi = {
   // Lấy danh sách xe có phân trang thông thường

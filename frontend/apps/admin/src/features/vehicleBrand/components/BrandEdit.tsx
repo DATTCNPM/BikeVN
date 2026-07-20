@@ -19,10 +19,11 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useUpdateVehicleBrand } from "@/features/vehicleBrand/hooks/mutationVehicleBrand";
 
-import type { VehicleBrand } from "@repo/types";
-
-import { vehicleBrandUpdateSchema } from "@repo/schemas";
-import type { VehicleBrandUpdateRequest } from "@repo/types";
+import {
+  vehicleBrandUpdateSchema,
+  type VehicleBrand,
+  type VehicleBrandUpdateRequest,
+} from "@repo/schemas";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

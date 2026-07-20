@@ -11,7 +11,7 @@ import {
   ChartTooltipContent,
 } from "@repo/ui/components/ui/chart";
 import type { ChartConfig } from "@repo/ui/components/ui/chart";
-import type { ChartDataResponse } from "@repo/types";
+import type { ChartDataResponse } from "@repo/schemas";
 
 type Props = {
   data: ChartDataResponse[];
@@ -24,16 +24,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-/**
- * Định dạng số lượt thuê (Ví dụ: 12500 -> 12,500 hoặc 12.5K tùy số lượng lớn hay nhỏ)
- */
 const formatNumber = (value: any) => {
   const numericValue = Number(value) || 0;
   return new Intl.NumberFormat("en-US").format(numericValue);
 };
 
 export default function TopVehiclesChart({ data }: Props) {
-  // Phòng hờ trường hợp dữ liệu trống
   if (!data || data.length === 0) {
     return (
       <Card className="rounded-3xl border-muted/50">
@@ -56,24 +52,25 @@ export default function TopVehiclesChart({ data }: Props) {
           Popular Vehicles
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        {/* Loại bỏ ResponsiveContainer dư thừa */}
 
-        <ChartContainer config={chartConfig} className="h-[320px] w-full">
-          {/* Chỉnh margin để phần text bên trái và số bên phải không sát viền */}
+      {/* Sửa: Đặt h-[320px] cố định ở CardContent */}
+      <CardContent className="h-[320px] w-full p-6 pt-0">
+        {/* Sửa: Thêm h-full w-full aspect-auto */}
+        <ChartContainer
+          config={chartConfig}
+          className="h-full w-full aspect-auto"
+        >
           <BarChart
             layout="vertical"
             data={data}
             margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
           >
-            {/* Lưới dọc nét đứt nhẹ nhàng */}
             <CartesianGrid
               horizontal={false}
               stroke="var(--border)"
               strokeDasharray="3 3"
             />
 
-            {/* Trục X đóng vai trò là Trục số (Rentals) */}
             <XAxis
               type="number"
               tickLine={false}
@@ -83,19 +80,18 @@ export default function TopVehiclesChart({ data }: Props) {
               tickFormatter={formatNumber}
             />
 
-            {/* Trục Y đóng vai trò là danh mục (Tên xe) */}
             <YAxis
               dataKey="label"
               type="category"
               tickLine={false}
               axisLine={false}
               tickMargin={10}
-              width={130} // Tăng từ 120 lên 130px để có thêm khoảng trống cho tên xe dài
-              className="text-xs font-medium fill-foreground" // Chuyển sang fill-foreground cho tên xe rõ nét hơn
+              width={130}
+              className="text-xs font-medium fill-foreground"
             />
 
             <ChartTooltip
-              cursor={{ fill: "var(--muted)", opacity: 0.15 }} // Highlight vùng dòng khi hover chuột
+              cursor={{ fill: "var(--muted)", opacity: 0.15 }}
               content={
                 <ChartTooltipContent
                   hideLabel
@@ -110,8 +106,8 @@ export default function TopVehiclesChart({ data }: Props) {
             <Bar
               dataKey="value"
               fill="var(--chart-3)"
-              radius={[0, 6, 6, 0]} // Bo tròn 2 góc phía bên phải của thanh ngang
-              maxBarSize={24} // Giới hạn thanh ngang thanh mảnh, sang xịn mịn (không bị phình to)
+              radius={[0, 6, 6, 0]}
+              maxBarSize={24}
             />
           </BarChart>
         </ChartContainer>

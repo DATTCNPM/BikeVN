@@ -15,7 +15,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useUploadVehicleImage } from "@/features/vehicleImages/hooks/mutationVehicleImage";
 
 import { vehicleImageCreationSchema } from "@repo/schemas";
-import type { VehicleImageCreatePayload } from "@repo/types";
+import type { VehicleImageCreatePayload } from "@repo/schemas";
 import ImageUploadField from "@/components/common/ImageUploadField";
 
 import { isApiError } from "@repo/api";

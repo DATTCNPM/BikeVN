@@ -9,7 +9,11 @@ import UniversalFilterSheet, {
 
 import { useVehicleFilters, useVehicles } from "@repo/hooks";
 import { vehicleStatusSchema, vehicleTypeSchema } from "@repo/schemas";
-import type { VehicleCardData, VehicleQueryParams, Vehicle } from "@repo/types";
+import type {
+  VehicleCardData,
+  VehicleQueryParams,
+  Vehicle,
+} from "@repo/schemas";
 
 import { motion } from "framer-motion";
 import {

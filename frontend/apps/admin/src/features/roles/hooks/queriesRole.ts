@@ -16,8 +16,8 @@ export function useRole(id: string) {
   return useQuery({
     queryKey: roleKeys.detail(id),
     queryFn: async () => {
-      const response = await roleApi.getRoles(); // Assuming there's no specific endpoint for a single role, we fetch all and find the one we need
-      return response.find((role) => role.id === id);
+      const response = await roleApi.getRoleById(id);
+      return response;
     },
     enabled: !!id,
   });

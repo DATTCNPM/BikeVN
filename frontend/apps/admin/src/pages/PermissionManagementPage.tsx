@@ -12,7 +12,7 @@ import PermissionDelete from "@/features/permissions/components/PermissionDelete
 
 import { usePermissions } from "@/features/permissions/hooks/queriesPermission";
 
-import type { Permission } from "@repo/types";
+import type { PermissionType } from "@repo/schemas";
 
 export default function PermissionManagementPage() {
   const { data: permissions, isLoading } = usePermissions();
@@ -20,7 +20,7 @@ export default function PermissionManagementPage() {
   const [search, setSearch] = useState("");
 
   const [selectedPermission, setSelectedPermission] =
-    useState<Permission | null>(null);
+    useState<PermissionType | null>(null);
 
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -29,7 +29,7 @@ export default function PermissionManagementPage() {
     permission.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const columns = useMemo<ColumnDef<Permission>[]>(
+  const columns = useMemo<ColumnDef<PermissionType>[]>(
     () => [
       {
         accessorKey: "name",

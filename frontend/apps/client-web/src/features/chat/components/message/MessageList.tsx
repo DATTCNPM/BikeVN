@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { ChatMessageResponse } from "@repo/types";
+import type { ChatMessageResponse } from "@repo/schemas";
 import { cn } from "@repo/ui/lib/utils";
 import { MessageItemSkeleton } from "@/features/chat/components/skeleton/ChatSkeleton";
 

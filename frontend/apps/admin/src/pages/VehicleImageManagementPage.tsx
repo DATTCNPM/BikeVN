@@ -18,7 +18,7 @@ import { Spinner } from "@repo/ui/components/ui/spinner";
 
 import { useVehicleImages } from "@repo/hooks";
 
-import type { VehicleImage } from "@repo/types";
+import type { VehicleImage } from "@repo/schemas";
 
 export default function VehicleImageManagementPage() {
   const { vehicleId = "" } = useParams();

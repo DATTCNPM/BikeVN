@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { statisticAdminApi } from "../api/statisticAdminApi";
 import { statisticKeys } from "./statisticKeys";
-import type { MonthlyRevenueParams } from "@repo/types";
+import type { MonthlyRevenueParams } from "@repo/schemas";
 
 // 1. Hook lấy số liệu tổng quan statistic
 export const useAdminGeneralStats = () =>

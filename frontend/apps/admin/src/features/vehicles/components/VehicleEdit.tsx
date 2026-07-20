@@ -24,7 +24,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useUpdateVehicle } from "@/features/vehicles/hooks/mutations";
 import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
-import type { Vehicle, VehicleUpdateRequest } from "@repo/types";
+import type { Vehicle, VehicleUpdateRequest } from "@repo/schemas";
 import { vehicleUpdateSchema, VEHICLE_STATUS_OPTIONS } from "@repo/schemas";
 
 import { handleFormBackendError } from "@repo/providers";

@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import { Eye, EyeOff, Home, ShieldCheck } from "lucide-react";
 
 // Schemas & Stores
-import { loginSchema } from "@repo/schemas";
-import type { LoginPayload } from "@repo/types";
+import { loginSchema, type LoginPayload } from "@repo/schemas";
 
 // UI Components từ Monorepo Monolith
 import { Input } from "@repo/ui/components/ui/input";

@@ -14,7 +14,7 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import { useBookingsByUser } from "@/features/bookings/hooks/queries";
 import { useProfile } from "@/features/auth/hooks/useProfile";
 import { formatTime } from "@repo/utils";
-import type { Booking } from "@repo/types";
+import type { Booking } from "@repo/schemas";
 import imageMock from "@/assets/images/motorbike1.png";
 
 import {

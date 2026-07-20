@@ -2,7 +2,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useDeleteVehicleImage } from "@/features/vehicleImages/hooks/mutationVehicleImage";
 
-import type { VehicleImage } from "@repo/types";
+import type { VehicleImage } from "@repo/schemas";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 type Props = {

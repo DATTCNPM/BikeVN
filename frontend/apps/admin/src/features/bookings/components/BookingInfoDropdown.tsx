@@ -2,7 +2,7 @@ import { CalendarDays, Clock3 } from "lucide-react";
 
 import InfoPopover from "@/components/common/InfoPopover";
 
-import type { Booking } from "@repo/types";
+import type { Booking } from "@repo/schemas";
 import { formatTime } from "@repo/utils";
 
 type Props = {

@@ -17,7 +17,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useCreateVehicleBrand } from "@/features/vehicleBrand/hooks/mutationVehicleBrand";
 
 import { vehicleBrandCreationSchema } from "@repo/schemas";
-import type { VehicleBrandCreationRequest } from "@repo/types";
+import type { VehicleBrandCreationRequest } from "@repo/schemas";
 
 import { isApiError } from "@repo/api";
 import { handleFormBackendError } from "@repo/providers";

@@ -1,4 +1,4 @@
-import type { ReviewQueryParams } from "@repo/types";
+import type { ReviewQueryParams } from "@repo/schemas";
 
 export const reviewKeys = {
   all: ["reviews"] as const,

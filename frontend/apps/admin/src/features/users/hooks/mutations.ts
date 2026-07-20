@@ -4,7 +4,7 @@ import { usersKeys } from "./usersKeys";
 import type {
   UpdateProfilePayload,
   AdminUserCreationPayload,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export function useCreateUser() {
   const queryClient = useQueryClient();

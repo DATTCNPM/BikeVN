@@ -4,7 +4,7 @@ import type {
   ApprovePaymentPayload,
   CancelPaymentPayload,
   ProcessRefundPayload,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export function useApprovePaymentManually() {
   return useMutation({

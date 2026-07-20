@@ -2,13 +2,13 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useDeleteRole } from "../hooks/mutationsRole";
 
-import type { Role } from "@repo/types";
+import type { RoleType } from "@repo/schemas";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  role: Role | null;
+  role: RoleType | null;
 };
 
 export default function RoleDelete({ open, onOpenChange, role }: Props) {

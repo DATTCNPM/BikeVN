@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ConversationResponse, ChatMessageResponse } from "@repo/types";
+import type { ConversationResponse, ChatMessageResponse } from "@repo/schemas";
 import { chatMessageRequestSchema } from "@repo/schemas";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";

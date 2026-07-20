@@ -1,4 +1,4 @@
-import type { Branch } from "@repo/types";
+import type { Branch } from "@repo/schemas";
 import axiosPublic from "../axios/axiosPublic";
 
 export const branchPublicApi = {

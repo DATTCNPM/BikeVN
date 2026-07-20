@@ -11,7 +11,7 @@ import {
 import { toast } from "@repo/ui/components/ui/sonner";
 import { useCreateBranch } from "@/features/branches/hooks/mutations";
 import { createBranchSchema } from "@repo/schemas";
-import type { CreateBranchPayload, BranchStatus } from "@repo/types";
+import type { CreateBranchPayload, BranchStatus } from "@repo/schemas";
 import {
   Select,
   SelectContent,

@@ -1,13 +1,13 @@
 import { axiosAdmin } from "@/hooks/axiosAdmin";
 
-import type { Permission, PermissionRequest } from "@repo/types";
+import type { PermissionType, PermissionRequest } from "@repo/schemas";
 
 export const permissionApi = {
-  getPermissions(): Promise<Permission[]> {
+  getPermissions(): Promise<PermissionType[]> {
     return axiosAdmin.get("/permissions");
   },
 
-  createPermission(payload: PermissionRequest): Promise<Permission> {
+  createPermission(payload: PermissionRequest): Promise<PermissionType> {
     return axiosAdmin.post("/permissions", payload);
   },
 

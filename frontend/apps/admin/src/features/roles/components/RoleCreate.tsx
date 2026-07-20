@@ -14,7 +14,7 @@ import { roleCreationSchema } from "@repo/schemas";
 
 import { useCreateRole } from "../hooks/mutationsRole";
 
-import type { RoleRequest } from "@repo/types";
+import type { RoleRequest } from "@repo/schemas";
 import UniversalDialog from "@repo/ui/components/wrapper/UniversalDialog";
 
 import { isApiError } from "@repo/api";

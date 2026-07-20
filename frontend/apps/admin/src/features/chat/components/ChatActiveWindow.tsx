@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { cn } from "@repo/ui/lib/utils";
 import { ChatInputForm } from "./ChatInputForm";
-import type { ChatMessageResponse } from "@repo/types";
+import type { ChatMessageResponse } from "@repo/schemas";
 
 interface ChatActiveWindowProps {
   activeConversation: { title: string };

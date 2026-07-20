@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { branchAdminApi } from "../api/branchAdminApi";
 import { branchesKeys } from "@repo/hooks";
-import type { CreateBranchPayload, UpdateBranchPayload } from "@repo/types";
+import type { CreateBranchPayload, UpdateBranchPayload } from "@repo/schemas";
 
 export function useCreateBranch() {
   const queryClient = useQueryClient();

@@ -6,7 +6,7 @@ import {
   Marker,
   useMap,
 } from "react-leaflet";
-import type { Branch } from "@repo/types";
+import type { Branch } from "@repo/schemas";
 import FlyToLocation from "./FlyToLocation";
 import { useEffect, useState } from "react";
 import vietnamIslandsGeoJSON from "@/assets/vietnam.geojson?url";

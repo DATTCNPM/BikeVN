@@ -14,7 +14,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 
 import { useCreateReview } from "../hooks/mutations";
 import { reviewCreationSchema } from "@repo/schemas";
-import type { ReviewCreationPayload } from "@repo/types";
+import type { ReviewCreationPayload } from "@repo/schemas";
 
 type Props = {
   open: boolean;

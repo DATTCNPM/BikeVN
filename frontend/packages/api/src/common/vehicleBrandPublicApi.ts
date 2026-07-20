@@ -1,9 +1,7 @@
 import axiosPublic from "../axios/axiosPublic";
-import type {
-  VehicleBrand,
-  PaginationResponse,
-  VehicleBrandQueryParams,
-} from "@repo/types";
+import type { PaginationResponse } from "@repo/types";
+
+import type { VehicleBrand, VehicleBrandQueryParams } from "@repo/schemas";
 
 export const vehicleBrandPublicApi = {
   async getBrands(page: number, size: number) {

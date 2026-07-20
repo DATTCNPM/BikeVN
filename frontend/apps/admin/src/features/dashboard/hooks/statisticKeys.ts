@@ -1,4 +1,4 @@
-import type { MonthlyRevenueParams } from "@repo/types";
+import type { MonthlyRevenueParams } from "@repo/schemas";
 
 export const statisticKeys = {
   all: ["statistic"] as const,

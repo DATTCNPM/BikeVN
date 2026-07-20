@@ -7,7 +7,7 @@ import { vehicleImageKeys } from "@repo/hooks";
 import type {
   VehicleImageCreatePayload,
   VehicleImageUpdatePayload,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export function useUploadVehicleImage() {
   const queryClient = useQueryClient();

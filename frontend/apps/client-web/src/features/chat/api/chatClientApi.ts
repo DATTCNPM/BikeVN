@@ -1,9 +1,10 @@
 import axiosClient from "@/hooks/axiosClient";
+
 import type {
   ConversationResponse,
   ChatMessageResponse,
   ChatResponse,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export const chatClientApi = {
   // Lấy hoặc tạo phòng chat với một Chi nhánh

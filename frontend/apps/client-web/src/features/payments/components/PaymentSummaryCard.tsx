@@ -11,7 +11,7 @@ import type {
   PaymentCreationPayload,
   PaymentMethod,
   VehicleReturn,
-} from "@repo/types";
+} from "@repo/schemas";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { isApiError } from "@repo/api"; // 🌟 Import hàm kiểm tra lỗi từ API của hệ thống
 import { ERROR_MESSAGES } from "@repo/providers"; // 🌟 Khai báo để lấy text chuẩn hóa theo code

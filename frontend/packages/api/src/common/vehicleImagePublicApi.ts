@@ -1,6 +1,6 @@
 import axiosPublic from "../axios/axiosPublic";
 
-import type { VehicleImage } from "@repo/types";
+import type { VehicleImage } from "@repo/schemas";
 
 export const vehicleImagePublicApi = {
   async getImages(vehicleId: string) {

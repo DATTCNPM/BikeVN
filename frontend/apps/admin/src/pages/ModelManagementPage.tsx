@@ -24,7 +24,7 @@ import type {
   VehicleBrand,
   VehicleModel,
   VehicleModelQueryParams,
-} from "@repo/types";
+} from "@repo/schemas";
 
 export default function ModelManagementPage() {
   const [page, setPage] = useState(1);

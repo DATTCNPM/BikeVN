@@ -3,7 +3,7 @@ import type {
   ChatMessageRequest,
   ChatMessageResponse,
   ReadReceiptEvent,
-} from "@repo/types";
+} from "@repo/schemas";
 
 type MessageCallback = (message: ChatMessageResponse) => void;
 type ReadReceiptCallback = (event: ReadReceiptEvent) => void;

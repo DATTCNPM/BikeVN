@@ -1,10 +1,7 @@
 import axiosPublic from "../axios/axiosPublic";
-import type {
-  AuthenticationResponse,
-  IntrospectResponse,
-  LoginPayload,
-  RegisterPayload,
-} from "@repo/types";
+import type { AuthenticationResponse, IntrospectResponse } from "@repo/types";
+
+import type { LoginPayload, RegisterPayload } from "@repo/schemas";
 
 export const authApi = {
   async ping() {
