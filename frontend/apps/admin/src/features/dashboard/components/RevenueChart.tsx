@@ -1,4 +1,11 @@
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -61,70 +68,78 @@ export default function RevenueChart({ data }: Props) {
       {/* Sửa: Đặt h-[320px] cố định ở CardContent */}
       <CardContent className="h-[320px] w-full p-6 pt-0">
         {/* Sửa: Thêm h-full w-full aspect-auto */}
-        <ChartContainer
-          config={chartConfig}
-          className="h-full w-full aspect-auto"
-        >
-          <AreaChart
-            data={data}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+        <ChartContainer config={chartConfig} className="h-full w-full">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
           >
-            <defs>
-              <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--chart-1)"
-                  stopOpacity={0.25}
-                />
-                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
+            <AreaChart
+              data={data}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--chart-1)"
+                    stopOpacity={0.25}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--chart-1)"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              </defs>
 
-            <CartesianGrid
-              vertical={false}
-              stroke="var(--border)"
-              strokeDasharray="3 3"
-            />
+              <CartesianGrid
+                vertical={false}
+                stroke="var(--border)"
+                strokeDasharray="3 3"
+              />
 
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={12}
-              className="text-xs font-medium fill-muted-foreground"
-            />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                className="text-xs font-medium fill-muted-foreground"
+              />
 
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={12}
-              width={65}
-              className="text-xs font-medium fill-muted-foreground"
-              tickFormatter={formatCurrency}
-            />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                width={65}
+                className="text-xs font-medium fill-muted-foreground"
+                tickFormatter={formatCurrency}
+              />
 
-            <ChartTooltip
-              cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value) => formatCurrency(value)}
-                />
-              }
-            />
+              <ChartTooltip
+                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value) => formatCurrency(value)}
+                  />
+                }
+              />
 
-            <Area
-              type="monotone"
-              dataKey="value"
-              fill="url(#fillRevenue)"
-              stroke="var(--chart-1)"
-              strokeWidth={2.5}
-              activeDot={{
-                r: 6,
-                style: { fill: "var(--chart-1)", opacity: 0.9 },
-              }}
-            />
-          </AreaChart>
+              <Area
+                type="monotone"
+                dataKey="value"
+                fill="url(#fillRevenue)"
+                stroke="var(--chart-1)"
+                strokeWidth={2.5}
+                activeDot={{
+                  r: 6,
+                  style: { fill: "var(--chart-1)", opacity: 0.9 },
+                }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

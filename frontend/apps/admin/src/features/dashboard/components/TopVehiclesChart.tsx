@@ -1,4 +1,11 @@
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -56,60 +63,64 @@ export default function TopVehiclesChart({ data }: Props) {
       {/* Sửa: Đặt h-[320px] cố định ở CardContent */}
       <CardContent className="h-[320px] w-full p-6 pt-0">
         {/* Sửa: Thêm h-full w-full aspect-auto */}
-        <ChartContainer
-          config={chartConfig}
-          className="h-full w-full aspect-auto"
-        >
-          <BarChart
-            layout="vertical"
-            data={data}
-            margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+        <ChartContainer config={chartConfig} className="h-full w-full">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={0}
           >
-            <CartesianGrid
-              horizontal={false}
-              stroke="var(--border)"
-              strokeDasharray="3 3"
-            />
+            <BarChart
+              layout="vertical"
+              data={data}
+              margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+            >
+              <CartesianGrid
+                horizontal={false}
+                stroke="var(--border)"
+                strokeDasharray="3 3"
+              />
 
-            <XAxis
-              type="number"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              className="text-xs font-medium fill-muted-foreground"
-              tickFormatter={formatNumber}
-            />
+              <XAxis
+                type="number"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                className="text-xs font-medium fill-muted-foreground"
+                tickFormatter={formatNumber}
+              />
 
-            <YAxis
-              dataKey="label"
-              type="category"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              width={130}
-              className="text-xs font-medium fill-foreground"
-            />
+              <YAxis
+                dataKey="label"
+                type="category"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                width={130}
+                className="text-xs font-medium fill-foreground"
+              />
 
-            <ChartTooltip
-              cursor={{ fill: "var(--muted)", opacity: 0.15 }}
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value) => [
-                    `${formatNumber(value)} rentals`,
-                    "Rentals",
-                  ]}
-                />
-              }
-            />
+              <ChartTooltip
+                cursor={{ fill: "var(--muted)", opacity: 0.15 }}
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value) => [
+                      `${formatNumber(value)} rentals`,
+                      "Rentals",
+                    ]}
+                  />
+                }
+              />
 
-            <Bar
-              dataKey="value"
-              fill="var(--chart-3)"
-              radius={[0, 6, 6, 0]}
-              maxBarSize={24}
-            />
-          </BarChart>
+              <Bar
+                dataKey="value"
+                fill="var(--chart-3)"
+                radius={[0, 6, 6, 0]}
+                maxBarSize={24}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>
