@@ -80,15 +80,6 @@ public class BookingController {
                 .build();
     }
 
-    @PostMapping("/{id}/approve")
-    public ApiResponse<Void> approveBooking(@PathVariable String id)
-    {
-        bookingService.approveBooking(id);
-        return ApiResponse.<Void>builder()
-                .message("Booking approved successfully")
-                .build();
-    }
-
     @PostMapping("/{id}/cancel")
     public ApiResponse<Void> cancelBooking(@PathVariable String id)
     {
