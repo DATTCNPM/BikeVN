@@ -89,8 +89,8 @@ export default function RevenueChart({ data }: Props) {
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[320px] w-full">
           {/* Đã chỉnh margin left: 0 và bổ sung width ở trục Y 
-            để đảm bảo không bao giờ bị cắt chữ/mất ký tự tiền tệ 
-          */}
+              để đảm bảo không bao giờ bị cắt chữ/mất ký tự tiền tệ 
+            */}
           <AreaChart
             data={data}
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}

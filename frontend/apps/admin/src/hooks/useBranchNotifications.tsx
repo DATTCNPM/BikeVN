@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 import { NotificationWebSocketService } from "@repo/services";
-import { useNotificationStore } from "./useNotificationStore"; // Import Store
+import { useNotificationStore } from "./useNotificationStore";
+import notificationSound from "@/assets/music/notification.mp3";
+
+// 🌟 ĐƯA KHỞI TẠO RA NGOÀI HOOK (Singleton Pattern)
+const notificationWS = new NotificationWebSocketService({
+  tokenKey: "portal_token",
+});
 
 export function useBranchNotifications() {
   const navigate = useNavigate();
@@ -16,17 +22,15 @@ export function useBranchNotifications() {
   useEffect(() => {
     if (!branchId) return;
 
-    const notificationWS = new NotificationWebSocketService({
-      tokenKey: "portal_token",
-    });
-
+    // Kích hoạt kết nối đến backend
     notificationWS.activate();
 
+    // Đăng ký nhận tin nhắn của chi nhánh
     notificationWS.subscribeToBranch(branchId, (notification) => {
-      // 1. Lưu thông báo vào Zustand Store để hiển thị ở chuông
+      // 1. Lưu thông báo vào Zustand Store
       addNotification(notification);
 
-      // 2. Hiển thị Toast thông báo nhanh ngoài màn hình
+      // 2. Hiển thị Toast
       toast.info(notification.title, {
         description: notification.content,
         duration: 8000,
@@ -38,9 +42,9 @@ export function useBranchNotifications() {
         },
       });
 
-      // 3. Phát âm thanh báo hiệu
+      // 3. Phát âm thanh
       try {
-        const audio = new Audio("/sounds/notification.mp3");
+        const audio = new Audio(notificationSound);
         audio.play();
       } catch (e) {
         console.warn("Autoplay block: Sound alert ignored.", e);
@@ -48,7 +52,9 @@ export function useBranchNotifications() {
     });
 
     return () => {
-      notificationWS.deactivate();
+      // Chỉ hủy đăng ký kênh branch đó, không ngắt hẳn Client
+      // để tránh việc chuyển trang làm mất kết nối socket
+      notificationWS.unsubscribeBranch();
     };
   }, [branchId, navigate, addNotification]);
 }

@@ -25,7 +25,7 @@ import { useUpdateVehicle } from "@/features/vehicles/hooks/mutations";
 import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
 import type { Vehicle, VehicleUpdateRequest } from "@repo/types";
-import { vehicleUpdateSchema } from "@repo/schemas";
+import { vehicleUpdateSchema, VEHICLE_STATUS_OPTIONS } from "@repo/schemas";
 
 import { handleFormBackendError } from "@repo/providers";
 import { isApiError } from "@repo/api";
@@ -37,7 +37,7 @@ type Props = {
 };
 
 export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
-  const { mutate: updateVehicle, isPending } = useUpdateVehicle(); // 🌟 Đổi sang dùng mutate đồng bộ
+  const { mutate: updateVehicle, isPending } = useUpdateVehicle();
   const { data: branches = [] } = useBranches();
   const { data: brands } = useVehicleBrands();
   const { data: models } = useVehicleModels();
@@ -47,12 +47,13 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
     control,
     handleSubmit,
     reset,
-    setError, // 🌟 Nhớ lấy setError ra bạn nhé
+    setError,
     formState: { errors },
   } = useForm<VehicleUpdateRequest>({
     resolver: zodResolver(vehicleUpdateSchema),
   });
 
+  // SỬA TẠI ĐÂY: Ép kiểu dữ liệu đồng bộ khi đổ từ API vào state của Form
   useEffect(() => {
     if (!vehicle) return;
     reset({
@@ -63,7 +64,7 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
       color: vehicle.color,
       year: vehicle.year,
       pricePerDay: vehicle.pricePerDay,
-      status: vehicle.status,
+      status: vehicle.status, // Đồng bộ chặt chẽ với vehicleStatusSchema
       vehicleType: vehicle.vehicleType,
       mileage: vehicle.mileage,
       description: vehicle.description ?? "",
@@ -73,22 +74,26 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
 
   const selectedBrandId = useWatch({ control, name: "brandId" });
   const filteredModels = models?.data?.filter(
-    (m) => m.brandId === selectedBrandId,
+    (m) => m.brandId === Number(selectedBrandId),
   );
 
-  // 🌟 SẠCH SẼ - KHÔNG TRY CATCH
   const onSubmit = (values: VehicleUpdateRequest) => {
     if (!vehicle) return;
 
+    const payload: VehicleUpdateRequest = {
+      ...values,
+      brandId: Number(values.brandId),
+      modelId: Number(values.modelId),
+    };
+
     updateVehicle(
-      { id: vehicle.id, payload: values },
+      { id: vehicle.id, payload },
       {
         onSuccess: () => {
           toast.success("Update vehicle successfully");
           onOpenChange(false);
         },
         onError: (error: unknown) => {
-          // 🌟 Helper tự động xử lý tất cả dựa theo file errorMessages.ts mới cập nhật
           handleFormBackendError(error, setError, isApiError);
         },
       },
@@ -254,9 +259,11 @@ export default function VehicleEdit({ open, onOpenChange, vehicle }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="unavailable">Unavailable</SelectItem>
-                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    {VEHICLE_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

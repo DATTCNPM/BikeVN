@@ -66,9 +66,9 @@ export default function PaymentManagementPage() {
     "approve" | "cancel" | "refund" | "retry" | null
   >(null);
 
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
-    {},
-  );
+  const [selectedFilters, setSelectedFilters] = useState<
+    Partial<PaymentFilterParams>
+  >({});
   const { data: branches } = useBranches();
 
   // Cấu hình bộ lọc động: Nhân viên chi nhánh không cần lọc theo chi nhánh nữa
@@ -112,9 +112,9 @@ export default function PaymentManagementPage() {
     return {
       bookingId: trimmedSearch || undefined,
       transactionCode: trimmedSearch || undefined,
-      branchId: selectedFilters["branchId"]?.value,
-      status: selectedFilters["status"]?.value as PaymentStatus,
-      type: selectedFilters["type"]?.value as PaymentType,
+      branchId: selectedFilters.branchId, // Không cần dùng .value nữa vì state lưu trực tiếp chuỗi primitive
+      status: selectedFilters.status,
+      type: selectedFilters.type,
       page,
       size: 10,
     };
@@ -123,9 +123,7 @@ export default function PaymentManagementPage() {
   // 🌟 ĐIỀU PHỐI ĐỘNG: Gọi API tương ứng dựa trên vai trò
   const { data: adminPayments, isLoading: isAdminLoading } = usePayments(
     apiParams,
-    {
-      enabled: !isEmployee,
-    },
+    { enabled: !isEmployee },
   );
 
   const { data: branchPayments, isLoading: isBranchLoading } =
@@ -146,6 +144,15 @@ export default function PaymentManagementPage() {
 
   const columns = useMemo<ColumnDef<Payment>[]>(
     () => [
+      {
+        accessorKey: "ID",
+        header: "ID",
+        cell: ({ row }) => (
+          <span className="font-medium">
+            <IdCell id={row.original.id} prefix="#" />
+          </span>
+        ),
+      },
       {
         accessorKey: "bookingId",
         header: "Booking ID",
@@ -271,9 +278,31 @@ export default function PaymentManagementPage() {
         <UniversalFilterSheet
           title="Filter Payments"
           configs={filterConfigs}
-          value={selectedFilters}
+          // Chuyển đổi State Phẳng thành dạng Object có chứa value để thích ứng với giao diện của Component Sheet
+          value={Object.entries(selectedFilters).reduce(
+            (acc, [key, val]) => {
+              if (val) acc[key] = { value: val, label: val };
+              return acc;
+            },
+            {} as Record<string, any>,
+          )}
           onChange={(newFilters) => {
-            setSelectedFilters(newFilters);
+            const parsedFilters: Partial<PaymentFilterParams> = {};
+
+            Object.entries(newFilters).forEach(([key, filterVal]) => {
+              // Lấy giá trị chuỗi thực sự (từ object { value, label } hoặc string trực tiếp)
+              const rawValue =
+                typeof filterVal === "object" && filterVal !== null
+                  ? filterVal.value
+                  : filterVal;
+
+              if (rawValue) {
+                // Ép kiểu `any` khi gán động theo key để thỏa mãn TypeScript
+                (parsedFilters as Record<string, any>)[key] = rawValue;
+              }
+            });
+
+            setSelectedFilters(parsedFilters);
             setPage(1);
           }}
           onReset={() => {

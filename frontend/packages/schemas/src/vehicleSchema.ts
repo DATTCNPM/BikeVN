@@ -8,6 +8,16 @@ export const vehicleStatusSchema = z.enum([
   "rented",
 ]);
 
+export const VEHICLE_STATUS_OPTIONS: {
+  label: string;
+  value: z.infer<typeof vehicleStatusSchema>;
+}[] = [
+  { label: "Available", value: "available" },
+  { label: "Unavailable", value: "unavailable" },
+  { label: "Maintenance", value: "maintenance" },
+  { label: "Rented", value: "rented" },
+];
+
 export const vehicleTypeSchema = z.enum(["fuel", "electric"]);
 
 export const vehicleSchema = z.object({
@@ -95,7 +105,9 @@ export const vehicleCardData = z.object({
   status: vehicleStatusSchema.optional(),
 });
 
-export const vehicleUpdateSchema = vehicleCreationSchema.partial();
+export const vehicleUpdateSchema = vehicleCreationSchema.extend({
+  // Nếu có trường nào ở Form sửa không cho sửa hoặc có cấu trúc khác thì override tại đây
+});
 
 export const vehicleQuerySchema = z.object({
   search: z.string().optional(),

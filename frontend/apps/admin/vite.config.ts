@@ -13,4 +13,5 @@ export default defineConfig({
     },
   },
   base: "/",
+  envDir: path.resolve(__dirname, "../../"),
 });

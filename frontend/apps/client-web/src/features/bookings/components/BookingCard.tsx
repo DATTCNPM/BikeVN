@@ -48,6 +48,7 @@ import { calculateTotalDays, calculateTotalPrice } from "@repo/utils";
 import { toast } from "@repo/ui/components/ui/sonner";
 import { isApiError } from "@repo/api";
 import { ERROR_MESSAGES } from "@repo/providers"; // 🌟 Import file cấu hình lỗi nghiệp vụ
+import VerificationModal from "./VerificationModal";
 
 type Props = {
   vehicle: Vehicle;
@@ -66,6 +67,9 @@ export default function BookingCard({ vehicle, branches }: Props) {
   const { data: profile } = useProfile();
   const { mutate: createBooking, isPending } = useCreateBooking();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [missingFields, setMissingFields] = useState<string[]>([]);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingFormSchema),
@@ -120,6 +124,17 @@ export default function BookingCard({ vehicle, branches }: Props) {
         JSON.stringify({ vehicleId: vehicle.id, formData: values }),
       );
       navigate("/login");
+      return;
+    }
+
+    // 1. Kiểm tra thông tin cá nhân bắt buộc (Giữ nguyên)
+    const missing: string[] = [];
+    if (!profile?.phone) missing.push("Phone Number");
+    if (!profile?.cccdNumber) missing.push("National ID (CCCD)");
+
+    if (missing.length > 0) {
+      setMissingFields(missing);
+      setModalOpen(true);
       return;
     }
 
@@ -331,6 +346,11 @@ export default function BookingCard({ vehicle, branches }: Props) {
           </Button>
         </CardFooter>
       </form>
+      <VerificationModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        missingFields={missingFields}
+      />
     </Card>
   );
 }

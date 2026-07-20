@@ -3,6 +3,6 @@ export * from "./tokenService";
 export * from "./permissionService";
 
 export * from "./chatWebSocketService";
-export * from "./chatAdminWebSocket";
-export * from "./chatClientWebSocket";
+export * from "../../../apps/admin/src/hooks/chatAdminWebSocket";
+export * from "../../../apps/client-web/src/hooks/chatClientWebSocket";
 export * from "./notificationWebSocketService";

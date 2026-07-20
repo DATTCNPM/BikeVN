@@ -61,7 +61,7 @@ export default function VerificationModal({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => navigate("/profile/info")}
+            onClick={() => navigate("/profile")}
             className="h-12 rounded-2xl bg-primary text-primary-foreground font-semibold"
           >
             <UserCheck className="size-4 mr-2" />

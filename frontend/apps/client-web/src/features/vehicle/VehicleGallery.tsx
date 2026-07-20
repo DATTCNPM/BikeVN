@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { VehicleImage } from "@repo/types";
 
-// 1. Core modules configuration
 import { Navigation, Thumbs, Autoplay } from "swiper/modules";
 
 import "swiper/css";
@@ -37,8 +36,8 @@ export default function VehicleGallery({
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
         }}
         autoplay={{
-          delay: 3500, // Duration before automated transition
-          disableOnInteraction: false, // Resume dynamic looping continuous to explicit user touch events
+          delay: 3500,
+          disableOnInteraction: false,
         }}
         className="rounded-2xl overflow-hidden shadow-sm border border-muted/40"
       >
@@ -48,7 +47,8 @@ export default function VehicleGallery({
                 <img
                   src={img}
                   alt="Vehicle preview placeholder"
-                  className="w-full h-[480px] object-cover"
+                  // Đổi thành object-contain + thêm background nhẹ để tôn dáng xe
+                  className="w-full h-[460px] object-contain bg-zinc-50 dark:bg-zinc-900/40"
                 />
               </SwiperSlide>
             ))
@@ -60,7 +60,8 @@ export default function VehicleGallery({
                     image.altText ||
                     `Vehicle presentation viewpoint ${index + 1}`
                   }
-                  className="w-full h-[480px] object-cover"
+                  // Đổi thành object-contain + thêm background nhẹ để tôn dáng xe
+                  className="w-full h-[460px] object-contain bg-zinc-50 dark:bg-zinc-900/40"
                 />
               </SwiperSlide>
             ))}
@@ -84,7 +85,8 @@ export default function VehicleGallery({
               <img
                 src={getImageUrl(image.imageUrl)}
                 alt={`Thumbnail indicator ${index + 1}`}
-                className="h-20 w-full rounded-xl object-cover cursor-pointer border border-muted transition-all dynamic-thumbnail"
+                // Đồng bộ object-contain cho cả thumbnail để nhìn rõ góc ảnh nhỏ
+                className="h-20 w-full rounded-xl object-contain cursor-pointer border border-muted bg-zinc-50 dark:bg-zinc-900/40 transition-all dynamic-thumbnail"
               />
             </SwiperSlide>
           ))}

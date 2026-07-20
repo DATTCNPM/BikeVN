@@ -164,7 +164,7 @@ export default function BookingReturnPage() {
                   <span className="text-xs font-medium text-muted-foreground">
                     Notes
                   </span>
-                  <p className="text-sm text-stone-600 bg-amber-50/30 border border-amber-100/60 rounded-lg p-3">
+                  <p className="text-sm text-muted-foreground bg-muted/40 border border-stone-200 rounded-lg p-3">
                     {vehicleReturn.notes}
                   </p>
                 </div>

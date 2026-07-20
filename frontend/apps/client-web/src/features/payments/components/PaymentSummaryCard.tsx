@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
 import { Button } from "@repo/ui/components/ui/button";
@@ -7,12 +6,10 @@ import {
   useCreatePayment,
   useGetVNPayUrl,
 } from "@/features/payments/hooks/mutations";
-import VerificationModal from "./VerificationModal";
 import type {
   Booking,
   PaymentCreationPayload,
   PaymentMethod,
-  User,
   VehicleReturn,
 } from "@repo/types";
 import { toast } from "@repo/ui/components/ui/sonner";
@@ -23,7 +20,7 @@ type Props = {
   booking: Booking | null;
   vehicleReturn?: VehicleReturn | null;
   selectedMethod: PaymentMethod;
-  userProfile: User | undefined;
+
   paymentType: "booking" | "surcharge";
   surchargeAmount?: number;
 };
@@ -34,16 +31,18 @@ export default function PaymentSummaryCard({
   booking,
   vehicleReturn,
   selectedMethod,
-  userProfile,
   paymentType,
   surchargeAmount,
 }: Props) {
+  console.log("booking", booking);
+  console.log("payment type", paymentType);
+  console.log(
+    "🚀 ~ file: PaymentSummaryCard.tsx:34 ~ PaymentSummaryCard ~ vehicleReturn:",
+    vehicleReturn,
+  );
   const navigate = useNavigate();
   const { mutate: createPayment, isPending: isCreating } = useCreatePayment();
   const { mutate: getVNPayUrl, isPending: isGettingUrl } = useGetVNPayUrl();
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [missingFields, setMissingFields] = useState<string[]>([]);
 
   const finalPrice =
     paymentType === "surcharge"
@@ -56,16 +55,33 @@ export default function PaymentSummaryCard({
   const handlePayment = () => {
     if (!booking) return;
 
-    const missing: string[] = [];
-    if (!userProfile?.phone) missing.push("Phone Number");
-    if (!userProfile?.cccdNumber) missing.push("National ID (CCCD)");
+    // =========================================================================
+    // 🌟 LUỒNG 1: THANH TOÁN PHỤ PHÍ (SURCHARGE) - GIỐNG EXTRA FEEREMINDER
+    // =========================================================================
+    if (paymentType === "surcharge") {
+      const pendingPayment = vehicleReturn?.payment;
 
-    if (missing.length > 0) {
-      setMissingFields(missing);
-      setModalOpen(true);
-      return;
+      if (!pendingPayment?.id) {
+        toast.error("Surcharge invoice payment data is missing.");
+        return;
+      }
+
+      if (selectedMethod === "cash") {
+        toast.success("Surcharge confirmed! Please pay at the counter.");
+        navigate(`/booking-result/${booking.id}`);
+      } else if (selectedMethod === "vnpay") {
+        // Đồng bộ returnUrl quay về kết quả kèm param phân biệt
+        const returnUrl = `${window.location.origin}/booking-result/${booking.id}?payment=success&type=surcharge`;
+
+        // Gọi THẲNG hook lấy link VNPay bằng ID hóa đơn phạt có sẵn từ Backend
+        getVNPayUrl({ paymentId: pendingPayment.id, returnUrl });
+      }
+      return; // 🛑 Bắt buộc có return để chặn không chạy xuống luồng tạo payment mới
     }
 
+    // =========================================================================
+    // 🌟 LUỒNG 2: THANH TOÁN TIỀN ĐẶT XE GỐC (BOOKING) - GIỮ NGUYÊN LOGIC CŨ
+    // =========================================================================
     const payload: PaymentCreationPayload = {
       bookingId: booking.id,
       amount: finalPrice,
@@ -79,28 +95,17 @@ export default function PaymentSummaryCard({
         if (!paymentId) return;
 
         if (selectedMethod === "cash") {
-          toast.success(
-            paymentType === "surcharge"
-              ? "Surcharge confirmed! Please pay at the counter."
-              : "Booking order created! Please pay at the counter.",
-          );
+          toast.success("Booking order created! Please pay at the counter.");
           navigate(`/booking-result/${booking.id}`);
         } else if (selectedMethod === "vnpay") {
-          const bookingId =
-            paymentType === "surcharge"
-              ? vehicleReturn?.payment?.bookingId
-              : booking.id;
-          const returnUrl = `${window.location.origin}/booking-result/${bookingId}?payment=success`;
+          const returnUrl = `${window.location.origin}/booking-result/${booking.id}?payment=success`;
           getVNPayUrl({ paymentId, returnUrl });
         }
       },
-      // 🌟 KHẮC PHỤC TRIỆT ĐỂ: Đồng bộ hoá cách bóc lỗi an toàn tương tự form đăng nhập
       onError: (error: unknown) => {
         let message = "An unknown error occurred";
-
         if (isApiError(error)) {
           const errCode = error.code;
-          // Nếu mã lỗi được định nghĩa trong từ điển ERROR_MESSAGES, sử dụng nó
           if (errCode && ERROR_MESSAGES[errCode]) {
             message = ERROR_MESSAGES[errCode].message;
           } else {
@@ -109,7 +114,6 @@ export default function PaymentSummaryCard({
         } else if (error instanceof Error) {
           message = error.message;
         }
-
         toast.error(`Error: ${message}`);
       },
     });
@@ -178,12 +182,6 @@ export default function PaymentSummaryCard({
           By continuing, you agree to the terms and conditions of the system.
         </p>
       </Card>
-
-      <VerificationModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        missingFields={missingFields}
-      />
     </>
   );
 }

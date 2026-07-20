@@ -21,6 +21,7 @@ export default function MapVehicle() {
   const { data: vehicles, isLoading } = useVehicleFilters(
     {
       currentBranchName: selectedBranchData?.name,
+      status: "available",
       page,
       size,
     },

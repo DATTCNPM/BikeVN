@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { chatAdminWebSocket } from "@repo/services";
 import { chatAdminKeys } from "./useChatQueries";
 import type {
@@ -20,19 +20,35 @@ export function useAdminChatManager(conversationId: string | null) {
     // 2. Đăng ký lắng nghe kênh phòng chat hội thoại cụ thể
     chatAdminWebSocket.subscribeToConversation(
       conversationId,
+
       // Callback 1: Khi nhận được TIN NHẮN MỚI
       (newMessage: ChatMessageResponse) => {
-        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
-          chatAdminKeys.history(conversationId),
-          (oldData) => {
-            if (!oldData) return oldData;
-            return {
-              ...oldData,
-              // SỬA THÀNH: Nhét tin nhắn mới vào ĐẦU MẢNG cache giống client
-              content: [newMessage, ...(oldData.content || [])],
+        // Chuẩn hóa: Nếu newMessage chưa có createdAt, gán ngay thời gian hiện tại dưới dạng ISO String
+        const normalizedMessage = {
+          ...newMessage,
+          createdAt: newMessage.createdAt || new Date().toISOString(),
+        };
+
+        queryClient.setQueryData<
+          InfiniteData<ChatResponse<ChatMessageResponse>>
+        >(chatAdminKeys.history(conversationId), (oldData) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0)
+            return oldData;
+
+          const updatedPages = [...oldData.pages];
+
+          if (updatedPages[0]) {
+            updatedPages[0] = {
+              ...updatedPages[0],
+              content: [normalizedMessage, ...(updatedPages[0].content || [])], // Dùng tin nhắn đã chuẩn hóa
             };
-          },
-        );
+          }
+
+          return {
+            ...oldData,
+            pages: updatedPages,
+          };
+        });
 
         queryClient.invalidateQueries({
           queryKey: chatAdminKeys.conversations(),
@@ -41,31 +57,32 @@ export function useAdminChatManager(conversationId: string | null) {
 
       // Callback 2: Khi Khách hàng hoặc Admin khác phát sự kiện ĐÃ ĐỌC
       (readEvent: ReadReceiptEvent) => {
-        queryClient.setQueryData<ChatResponse<ChatMessageResponse>>(
-          chatAdminKeys.history(conversationId),
-          (oldData) => {
-            if (!oldData) return oldData;
-            return {
-              ...oldData,
-              content: oldData.content?.map((msg) =>
-                // Nếu người đọc (readerId) chính là khách hàng,
-                // chuyển toàn bộ tin nhắn của Admin (senderId !== customer) thành true
+        // Duyệt qua toàn bộ mảng pages của useInfiniteQuery để cập nhật trạng thái đã đọc
+        queryClient.setQueryData<
+          InfiniteData<ChatResponse<ChatMessageResponse>>
+        >(chatAdminKeys.history(conversationId), (oldData) => {
+          if (!oldData) return oldData;
+
+          const updatedPages = oldData.pages.map((page) => ({
+            ...page,
+            content:
+              page.content?.map((msg) =>
                 msg.senderId !== readEvent.readerId
                   ? { ...msg, isRead: true }
                   : msg,
-              ),
-            };
-          },
-        );
+              ) || [],
+          }));
+
+          return {
+            ...oldData,
+            pages: updatedPages,
+          };
+        });
       },
     );
 
     // 3. Tự động đánh dấu "Đã đọc"
-    // Nếu socket đã connected thì gửi luôn, nếu chưa thì trong ChatWebSocketService
-    // hàm subscribeToConversation sẽ đợi onConnect rồi mới thực thi ngầm.
-    if (conversationId) {
-      chatAdminWebSocket.markAsRead(conversationId);
-    }
+    chatAdminWebSocket.markAsRead(conversationId);
 
     // Cleanup: Huỷ lắng nghe phòng này khi Admin chuyển sang chat với khách hàng khác
     return () => {

@@ -2,7 +2,7 @@ import { Card } from "@repo/ui/components/ui/card";
 import { CalendarDays, MapPinned } from "lucide-react";
 import { Spinner } from "@repo/ui/components/ui/spinner";
 import { useBranches } from "@repo/hooks";
-import { formatDateTime } from "@repo/utils";
+import { formatTime } from "@repo/utils";
 import type { Booking } from "@repo/types";
 import { calculateTotalDays } from "@repo/utils";
 
@@ -43,8 +43,8 @@ export default function PaymentBookingCard({ booking }: Props) {
             <p className="text-sm font-medium">Rental Time</p>
           </div>
           <div className="mt-3 space-y-1 text-sm font-medium">
-            <p>Start: {formatDateTime(booking?.startTime || "")}</p>
-            <p>End: {formatDateTime(booking?.endTime || "")}</p>
+            <p>Start: {formatTime(booking?.startTime || "")}</p>
+            <p>End: {formatTime(booking?.endTime || "")}</p>
             <p className="text-muted-foreground text-xs mt-1">
               Total Duration:{" "}
               {totalDays !== null

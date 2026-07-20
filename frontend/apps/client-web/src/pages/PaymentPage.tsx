@@ -125,7 +125,6 @@ export default function PaymentPage() {
             <PaymentSummaryCard
               booking={booking}
               selectedMethod={selectedMethod}
-              userProfile={userProfile}
               paymentType={paymentType}
               vehicleReturn={vehicleReturn}
             />

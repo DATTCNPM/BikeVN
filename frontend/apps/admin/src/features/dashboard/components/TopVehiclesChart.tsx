@@ -58,6 +58,7 @@ export default function TopVehiclesChart({ data }: Props) {
       </CardHeader>
       <CardContent>
         {/* Loại bỏ ResponsiveContainer dư thừa */}
+
         <ChartContainer config={chartConfig} className="h-[320px] w-full">
           {/* Chỉnh margin để phần text bên trái và số bên phải không sát viền */}
           <BarChart

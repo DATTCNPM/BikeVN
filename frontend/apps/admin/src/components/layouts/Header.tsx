@@ -17,6 +17,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom"; // 🌟 Impor
 import { usePortalProfile } from "@/features/auth/hooks/usePortalProfile";
 import { useNotificationStore } from "@/hooks/useNotificationStore";
 import { useLogoutAdmin } from "@/features/auth/hooks/useLogoutAdmin";
+import { useBranchNotifications } from "@/hooks/useBranchNotifications";
 
 // 🌟 1. CẤU HÌNH TIÊU ĐỀ & MÔ TẢ ĐỘNG THEO PATHNAME
 const ROUTE_METADATA: Record<string, { title: string; description: string }> = {
@@ -126,6 +127,8 @@ export default function AppHeader() {
   const navigate = useNavigate();
   const logoutAdmin = useLogoutAdmin();
   const { pathname } = useLocation(); // 🌟 Lấy pathname hiện tại của trình duyệt
+
+  useBranchNotifications();
 
   const { data: portalProfile } = usePortalProfile();
   const { notifications, unreadCount, resetUnreadCount, clearNotifications } =
@@ -237,7 +240,7 @@ export default function AppHeader() {
                         <span className="font-semibold text-xs text-primary">
                           {item.title}
                         </span>
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           {new Date(item.timestamp).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -292,15 +295,15 @@ export default function AppHeader() {
 
               {pathname.includes("/admin") ? (
                 <>
-                  <DropdownMenuItem>
-                    <Link to="/admin/info">Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link to="/admin/settings">Settings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link to="/admin/security">Security</Link>
-                  </DropdownMenuItem>
+                  <Link to="/admin/info">
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                  </Link>
+                  <Link to="/admin/settings">
+                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                  </Link>
+                  <Link to="/admin/security">
+                    <DropdownMenuItem>Security</DropdownMenuItem>
+                  </Link>
                 </>
               ) : (
                 <>

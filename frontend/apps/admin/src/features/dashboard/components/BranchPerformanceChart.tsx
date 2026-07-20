@@ -65,6 +65,7 @@ export default function BranchPerformanceChart({ data }: Props) {
       </CardHeader>
       <CardContent>
         {/* Đã loại bỏ bớt bọc <ResponsiveContainer> thừa bên trong này */}
+
         <ChartContainer config={chartConfig} className="h-[320px] w-full">
           <BarChart
             data={data}

@@ -24,7 +24,8 @@ export default function BookingResultPage() {
   const { data: branches = [], isLoading: branchesLoading } = useBranches();
 
   // 🌟 ĐIỀU KIỆN THÔNG MINH: Chỉ tìm biên bản trả xe nếu đơn hàng đã sang trạng thái trả xe/hoàn thành
-  const hasReturnInfo = booking?.status === "completed";
+  const hasReturnInfo =
+    booking?.status === "completed" || booking?.status === "approved";
 
   const { data: vehicleReturn, isLoading: returnLoading } =
     useVehicleReturnByBookingId(id, { enabled: !!booking && hasReturnInfo });
@@ -55,6 +56,11 @@ export default function BookingResultPage() {
 
   const pickupBranch = branches.find((b) => b.id === booking?.pickupBranchId);
   const returnBranch = branches.find((b) => b.id === booking?.returnBranchId);
+
+  console.log(
+    "🚀 ~ file: BookingResultPage.tsx:38 ~ BookingResultPage ~ vehicleReturn:",
+    vehicleReturn,
+  );
 
   return (
     <main className="min-h-screen bg-background">
