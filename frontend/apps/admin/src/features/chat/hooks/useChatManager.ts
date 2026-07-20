@@ -23,7 +23,12 @@ export function useAdminChatManager(conversationId: string | null) {
 
       // Callback 1: Khi nhận được TIN NHẮN MỚI
       (newMessage: ChatMessageResponse) => {
-        // Cập nhật vào cấu trúc InfiniteData của useInfiniteQuery
+        // Chuẩn hóa: Nếu newMessage chưa có createdAt, gán ngay thời gian hiện tại dưới dạng ISO String
+        const normalizedMessage = {
+          ...newMessage,
+          createdAt: newMessage.createdAt || new Date().toISOString(),
+        };
+
         queryClient.setQueryData<
           InfiniteData<ChatResponse<ChatMessageResponse>>
         >(chatAdminKeys.history(conversationId), (oldData) => {
@@ -32,11 +37,10 @@ export function useAdminChatManager(conversationId: string | null) {
 
           const updatedPages = [...oldData.pages];
 
-          // Nhét tin nhắn realtime mới nhận vào ĐẦU mảng content của trang mới nhất (Trang 0)
           if (updatedPages[0]) {
             updatedPages[0] = {
               ...updatedPages[0],
-              content: [newMessage, ...(updatedPages[0].content || [])],
+              content: [normalizedMessage, ...(updatedPages[0].content || [])], // Dùng tin nhắn đã chuẩn hóa
             };
           }
 
@@ -46,7 +50,6 @@ export function useAdminChatManager(conversationId: string | null) {
           };
         });
 
-        // Làm mới danh sách phòng chat bên ngoài sidebar để cập nhật tin nhắn cuối cùng (lastMessage)
         queryClient.invalidateQueries({
           queryKey: chatAdminKeys.conversations(),
         });

@@ -13,7 +13,7 @@ import { Card } from "@repo/ui/components/ui/card";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { useBookingsByUser } from "@/features/bookings/hooks/queries";
 import { useProfile } from "@/features/auth/hooks/useProfile";
-import { formatDateTime } from "@repo/utils";
+import { formatTime } from "@repo/utils";
 import type { Booking } from "@repo/types";
 import imageMock from "@/assets/images/motorbike1.png";
 
@@ -190,8 +190,8 @@ export default function MyBookingPage() {
                       <span>Rental Period:</span>
                     </div>
                     <div className="pl-4.5 font-semibold text-foreground/90 tracking-tight">
-                      {formatDateTime(booking.startTime)} &rarr;{" "}
-                      {formatDateTime(booking.endTime)}
+                      {formatTime(booking.startTime)} &rarr;{" "}
+                      {formatTime(booking.endTime)}
                     </div>
                   </div>
 

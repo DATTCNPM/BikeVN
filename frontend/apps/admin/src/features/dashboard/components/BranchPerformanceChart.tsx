@@ -65,58 +65,54 @@ export default function BranchPerformanceChart({ data }: Props) {
       </CardHeader>
       <CardContent>
         {/* Đã loại bỏ bớt bọc <ResponsiveContainer> thừa bên trong này */}
-        <div className="w-full h-[320px] relative min-h-[320px]">
-          <ChartContainer
-            config={chartConfig}
-            className="absolute inset-0 h-full w-full"
+
+        <ChartContainer config={chartConfig} className="h-[320px] w-full">
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
-            <BarChart
-              data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
-              {/* Đường lưới nét đứt tinh tế */}
-              <CartesianGrid
-                vertical={false}
-                stroke="var(--border)"
-                strokeDasharray="3 3"
-              />
+            {/* Đường lưới nét đứt tinh tế */}
+            <CartesianGrid
+              vertical={false}
+              stroke="var(--border)"
+              strokeDasharray="3 3"
+            />
 
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
-                className="text-xs font-medium fill-muted-foreground"
-              />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={12}
+              className="text-xs font-medium fill-muted-foreground"
+            />
 
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
-                width={65} // Giữ khoảng trống 65px an toàn để trục Y không bị che chữ
-                className="text-xs font-medium fill-muted-foreground"
-                tickFormatter={formatCurrency}
-              />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={12}
+              width={65} // Giữ khoảng trống 65px an toàn để trục Y không bị che chữ
+              className="text-xs font-medium fill-muted-foreground"
+              tickFormatter={formatCurrency}
+            />
 
-              <ChartTooltip
-                cursor={{ fill: "var(--muted)", opacity: 0.15 }} // Tạo hiệu ứng highlight vùng cột khi hover
-                content={
-                  <ChartTooltipContent
-                    hideLabel
-                    formatter={(value) => formatCurrency(value)} // Đồng bộ định dạng tiền tệ trong tooltip
-                  />
-                }
-              />
+            <ChartTooltip
+              cursor={{ fill: "var(--muted)", opacity: 0.15 }} // Tạo hiệu ứng highlight vùng cột khi hover
+              content={
+                <ChartTooltipContent
+                  hideLabel
+                  formatter={(value) => formatCurrency(value)} // Đồng bộ định dạng tiền tệ trong tooltip
+                />
+              }
+            />
 
-              <Bar
-                dataKey="value"
-                fill="var(--chart-2)"
-                radius={[6, 6, 0, 0]} // Bo góc nhẹ phần đỉnh cột nhìn sẽ hiện đại, mượt mà hơn
-                maxBarSize={50} // Giới hạn độ rộng tối đa của cột để tránh bị quá to khi có ít chi nhánh
-              />
-            </BarChart>
-          </ChartContainer>
-        </div>
+            <Bar
+              dataKey="value"
+              fill="var(--chart-2)"
+              radius={[6, 6, 0, 0]} // Bo góc nhẹ phần đỉnh cột nhìn sẽ hiện đại, mượt mà hơn
+              maxBarSize={50} // Giới hạn độ rộng tối đa của cột để tránh bị quá to khi có ít chi nhánh
+            />
+          </BarChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

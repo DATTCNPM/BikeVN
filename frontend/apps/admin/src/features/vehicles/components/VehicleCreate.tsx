@@ -24,7 +24,7 @@ import { toast } from "@repo/ui/components/ui/sonner";
 import { useCreateVehicle } from "@/features/vehicles/hooks/mutations";
 import { useBranches, useVehicleBrands, useVehicleModels } from "@repo/hooks";
 
-import { vehicleCreationSchema } from "@repo/schemas";
+import { vehicleCreationSchema, VEHICLE_STATUS_OPTIONS } from "@repo/schemas";
 import type { VehicleCreationRequest } from "@repo/types";
 
 import { isApiError } from "@repo/api";
@@ -35,16 +35,16 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-const defaultValues: VehicleCreationRequest = {
+const defaultValues = {
   name: "",
-  brandId: 0,
-  modelId: 0,
+  brandId: "" as unknown as number, // Trick ép kiểu ban đầu để không dính lỗi Zod số 0
+  modelId: "" as unknown as number,
   licensePlate: "",
   color: "",
   year: new Date().getFullYear(),
   pricePerDay: 0,
-  status: "available",
-  vehicleType: "fuel",
+  status: "available" as const,
+  vehicleType: "fuel" as const,
   mileage: 0,
   description: "",
   currentBranchId: "",
@@ -61,7 +61,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
     control,
     handleSubmit,
     reset,
-    setError, // 🌟 Nhớ lấy setError ra bạn nhé
+    setError,
     formState: { errors },
   } = useForm<VehicleCreationRequest>({
     resolver: zodResolver(vehicleCreationSchema),
@@ -70,19 +70,24 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
 
   const selectedBrandId = useWatch({ control, name: "brandId" });
   const filteredModels = models?.data?.filter(
-    (m) => m.brandId === selectedBrandId,
+    (m) => m.brandId === Number(selectedBrandId),
   );
 
-  // 🌟 KHÔNG CÒN TRY-CATCH, CODE GỌN GÀNG HƠN RẤT NHIỀU
   const onSubmit = (values: VehicleCreationRequest) => {
-    createVehicle(values, {
+    // Đảm bảo dữ liệu gửi lên API luôn là Number nguyên bản
+    const payload = {
+      ...values,
+      brandId: Number(values.brandId),
+      modelId: Number(values.modelId),
+    };
+
+    createVehicle(payload, {
       onSuccess: () => {
         toast.success("Create vehicle successfully");
         reset(defaultValues);
         onOpenChange(false);
       },
       onError: (error: unknown) => {
-        // 🌟 Gọi helper dùng chung: Tự động map 1010 vào modelName, 1005 vào vehicleId...
         handleFormBackendError(error, setError, isApiError);
       },
     });
@@ -117,9 +122,7 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
               render={({ field }) => (
                 <Select
                   value={field.value?.toString() || ""}
-                  onValueChange={(val) => {
-                    field.onChange(Number(val));
-                  }}
+                  onValueChange={(val) => field.onChange(Number(val))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Brand" />
@@ -250,12 +253,14 @@ export default function VehicleCreate({ open, onOpenChange }: Props) {
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="unavailable">Unavailable</SelectItem>
-                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    {VEHICLE_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

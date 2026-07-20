@@ -11,11 +11,28 @@ import FlyToLocation from "./FlyToLocation";
 import { useEffect, useState } from "react";
 import vietnamIslandsGeoJSON from "@/assets/vietnam.geojson?url";
 
+// --- CẬP NHẬT ĐOẠN FIX LỖI ỔN ĐỊNH CHO CẢ LOCAL VÀ PRODUCTION ---
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+const customIcon = new L.Icon({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41], // Kích thước mặc định của marker leaflet
+  iconAnchor: [12, 41], // Điểm neo chân marker
+  popupAnchor: [1, -34], // Vị trí hiển thị popup so với icon
+  shadowSize: [41, 41], // Kích thước đổ bóng
+});
+// ----------------------------------------------------------------
+
 type MapProps = {
   locations: Branch[];
   selectedBranchId?: string;
   onSelectBranch?: (branch: Branch) => void;
-  currentTab?: string; // Nhận prop kiểm tra trạng thái tab từ component cha
+  currentTab?: string;
 };
 
 // Sub-component sửa lỗi vỡ kích thước map khi chuyển tab
@@ -23,7 +40,6 @@ function ResizeMap({ isVisible }: { isVisible: boolean }) {
   const map = useMap();
   useEffect(() => {
     if (isVisible) {
-      // Chờ 50ms cho DOM của tab hoàn toàn render xong chiều cao rồi ép map vẽ lại đúng kích thước
       const timer = setTimeout(() => {
         map.invalidateSize();
       }, 50);
@@ -78,7 +94,6 @@ export default function Map({
       style={{ height: "100%", width: "100%" }}
       className="z-0"
     >
-      {/* Kích hoạt tính năng sửa lỗi tính toán size khi mở Tab Location */}
       <ResizeMap isVisible={currentTab === "location"} />
 
       <TileLayer
@@ -103,6 +118,7 @@ export default function Map({
         <Marker
           key={branch.id}
           position={[branch.lat, branch.lng]}
+          icon={customIcon} // <--- TRUYỀN CUSTOM ICON VÀO ĐÂY
           eventHandlers={{ click: () => onSelectBranch?.(branch) }}
         >
           <Popup>

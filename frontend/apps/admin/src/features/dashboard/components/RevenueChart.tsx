@@ -87,83 +87,74 @@ export default function RevenueChart({ data }: Props) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full h-[320px] relative min-h-[320px]">
-          <ChartContainer
-            config={chartConfig}
-            className="absolute inset-0 h-full w-full"
-          >
-            {/* Đã chỉnh margin left: 0 và bổ sung width ở trục Y 
+        <ChartContainer config={chartConfig} className="h-[320px] w-full">
+          {/* Đã chỉnh margin left: 0 và bổ sung width ở trục Y 
               để đảm bảo không bao giờ bị cắt chữ/mất ký tự tiền tệ 
             */}
-            <AreaChart
-              data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
-              <defs>
-                {/* Hiệu ứng Gradient chuyển màu mờ dần hiện đại */}
-                <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--chart-1)"
-                    stopOpacity={0.25}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--chart-1)"
-                    stopOpacity={0}
-                  />
-                </linearGradient>
-              </defs>
+          <AreaChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            <defs>
+              {/* Hiệu ứng Gradient chuyển màu mờ dần hiện đại */}
+              <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--chart-1)"
+                  stopOpacity={0.25}
+                />
+                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
 
-              {/* Đường lưới nét đứt tinh tế, tiệp màu hệ thống */}
-              <CartesianGrid
-                vertical={false}
-                stroke="var(--border)"
-                strokeDasharray="3 3"
-              />
+            {/* Đường lưới nét đứt tinh tế, tiệp màu hệ thống */}
+            <CartesianGrid
+              vertical={false}
+              stroke="var(--border)"
+              strokeDasharray="3 3"
+            />
 
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
-                className="text-xs font-medium fill-muted-foreground"
-              />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={12}
+              className="text-xs font-medium fill-muted-foreground"
+            />
 
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
-                width={65} // Tạo không gian cố định 65px cho trục Y hiển thị đẹp mắt
-                className="text-xs font-medium fill-muted-foreground"
-                tickFormatter={formatCurrency}
-              />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={12}
+              width={65} // Tạo không gian cố định 65px cho trục Y hiển thị đẹp mắt
+              className="text-xs font-medium fill-muted-foreground"
+              tickFormatter={formatCurrency}
+            />
 
-              <ChartTooltip
-                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
-                content={
-                  <ChartTooltipContent
-                    hideLabel
-                    formatter={(value) => formatCurrency(value)} // Định dạng tiền ngay trong tooltip khi hover
-                  />
-                }
-              />
+            <ChartTooltip
+              cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
+              content={
+                <ChartTooltipContent
+                  hideLabel
+                  formatter={(value) => formatCurrency(value)} // Định dạng tiền ngay trong tooltip khi hover
+                />
+              }
+            />
 
-              <Area
-                type="monotone"
-                dataKey="value"
-                fill="url(#fillRevenue)"
-                stroke="var(--chart-1)"
-                strokeWidth={2.5}
-                // Hiệu ứng chấm tròn động khi tương tác chuột
-                activeDot={{
-                  r: 6,
-                  style: { fill: "var(--chart-1)", opacity: 0.9 },
-                }}
-              />
-            </AreaChart>
-          </ChartContainer>
-        </div>
+            <Area
+              type="monotone"
+              dataKey="value"
+              fill="url(#fillRevenue)"
+              stroke="var(--chart-1)"
+              strokeWidth={2.5}
+              // Hiệu ứng chấm tròn động khi tương tác chuột
+              activeDot={{
+                r: 6,
+                style: { fill: "var(--chart-1)", opacity: 0.9 },
+              }}
+            />
+          </AreaChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

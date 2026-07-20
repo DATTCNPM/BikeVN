@@ -17,7 +17,7 @@ import {
   CarFront,
   Hash,
 } from "lucide-react";
-import { formatDateTime } from "@repo/utils";
+import { formatTime } from "@repo/utils";
 import Map from "@/components/map/Map";
 import ReviewSection from "@/features/reviews/components/ReviewSection";
 import VehicleStatusBadge from "@/components/common/VehicleStatusBadge";
@@ -149,11 +149,11 @@ export default function VehicleInfo({ vehicle, branches }: Props) {
           <div className="flex flex-col gap-1.5 mt-6 pt-4 border-t text-xs text-muted-foreground">
             <p>
               <span className="font-medium mr-1">Listed on:</span>{" "}
-              {vehicle.createdAt ? formatDateTime(vehicle.createdAt) : "N/A"}
+              {vehicle.createdAt ? formatTime(vehicle.createdAt) : "N/A"}
             </p>
             <p>
               <span className="font-medium mr-1">Last updated:</span>{" "}
-              {vehicle.updatedAt ? formatDateTime(vehicle.updatedAt) : "N/A"}
+              {vehicle.updatedAt ? formatTime(vehicle.updatedAt) : "N/A"}
             </p>
           </div>
 

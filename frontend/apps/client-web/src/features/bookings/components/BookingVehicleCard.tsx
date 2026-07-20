@@ -1,7 +1,7 @@
 import { CalendarDays, MapPin, Banknote } from "lucide-react";
 import { Card } from "@repo/ui/components/ui/card";
 import type { Vehicle, Booking, Branch } from "@repo/types";
-import { filterImagePrimary, formatDateTime } from "@repo/utils";
+import { filterImagePrimary, formatTime } from "@repo/utils";
 import imageMock from "@/assets/images/motorbike1.png";
 
 type Props = {
@@ -57,10 +57,10 @@ export default function BookingVehicleCard({
               <div className="space-y-1">
                 <p className="font-medium text-muted-foreground">Schedule</p>
                 <p className="font-semibold">
-                  {formatDateTime(booking?.startTime || "")}
+                  {formatTime(booking?.startTime || "")}
                 </p>
                 <p className="font-semibold text-amber-600">
-                  {formatDateTime(booking?.endTime || "")}
+                  {formatTime(booking?.endTime || "")}
                 </p>
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function BookingVehicleCard({
                 </p>
                 <p className="text-[11px] text-muted-foreground italic">
                   Created:{" "}
-                  {formatDateTime(booking?.createdAt || "").split(" ")[0]}
+                  {formatTime(booking?.createdAt || "").split(" ")[0]}
                 </p>
               </div>
             </div>

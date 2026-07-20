@@ -244,18 +244,52 @@ export default function BookingManagementPage() {
         cell: ({ row }) => {
           const booking = row.original;
           const prefixPath = isEmployee ? "/employee" : "/admin";
+          const hasReturned = Boolean(booking.actualReturnTime);
+
+          // Xây dựng các handlers dựa trên điều kiện
+          const canApprove = booking.status === "pending";
+          const canReject = booking.status === "pending";
+          const canManageReturn = hasReturned;
+          const canCreateReturn = !hasReturned && booking.status === "approved";
+          const canCreateReview = booking.status === "completed";
+
+          // 🌟 Kiểm tra nếu đơn hàng ở trạng thái không có hành động nào (như Cancelled, Rejected...)
+          const hasAnyAction =
+            canApprove ||
+            canReject ||
+            canManageReturn ||
+            canCreateReturn ||
+            canCreateReview;
+
+          // Nếu không có hành động nào, không hiển thị nút Action
+          if (!hasAnyAction) {
+            return (
+              <span className="text-muted-foreground text-xs font-medium">
+                —
+              </span>
+            );
+          }
+
           return (
             <BookingActionDropdown
-              onApprove={() => {
-                setSelectedBooking(booking);
-                setDialogMode("approve");
-              }}
-              onReject={() => {
-                setSelectedBooking(booking);
-                setDialogMode("reject");
-              }}
+              onApprove={
+                canApprove
+                  ? () => {
+                      setSelectedBooking(booking);
+                      setDialogMode("approve");
+                    }
+                  : undefined
+              }
+              onReject={
+                canReject
+                  ? () => {
+                      setSelectedBooking(booking);
+                      setDialogMode("reject");
+                    }
+                  : undefined
+              }
               onManagerVehicleReturn={
-                booking.actualReturnTime
+                canManageReturn
                   ? () => {
                       void navigate(
                         `${prefixPath}/bookings/${booking.id}/return`,
@@ -263,17 +297,16 @@ export default function BookingManagementPage() {
                     }
                   : undefined
               }
-              onCreateReview={
-                booking.status === "completed"
+              onCreateVehicleReturn={
+                canCreateReturn
                   ? () => {
                       setSelectedBooking(booking);
                       setOpenCreateDialog(true);
                     }
                   : undefined
               }
-              onCreateVehicleReturn={
-                booking.actualReturnTime !== null ||
-                booking.actualReturnTime !== undefined
+              onCreateReview={
+                canCreateReview
                   ? () => {
                       setSelectedBooking(booking);
                       setOpenCreateDialog(true);

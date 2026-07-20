@@ -52,13 +52,18 @@ export default function ChatManagementPage() {
   const messages = useMemo(() => {
     if (!infiniteMessagesData?.pages) return [];
 
-    // Gộp content của toàn bộ các page đã fetch được thành 1 mảng duy nhất
+    // Gộp phẳng toàn bộ tin nhắn từ các trang
     const allMessages = infiniteMessagesData.pages.flatMap(
       (page) => page.content || [],
     );
 
-    // Đảo ngược mảng để tin nhắn cũ ở trên, tin nhắn mới ở dưới cùng
-    return [...allMessages].reverse();
+    // Sắp xếp tường minh theo thời gian: Cũ lên trước, Mới xuống sau cùng
+    return [...allMessages].sort((a, b) => {
+      // Nếu không có ngày, fallback về 0 (đưa lên đầu) hoặc một mốc số cố định để đảm bảo hàm luôn thuần khiết
+      const timeA = a.createdAt ? Date.parse(a.createdAt) : 0;
+      const timeB = b.createdAt ? Date.parse(b.createdAt) : 0;
+      return timeA - timeB;
+    });
   }, [infiniteMessagesData]);
 
   const totalUnread = useMemo(() => {
