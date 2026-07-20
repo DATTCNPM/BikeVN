@@ -25,10 +25,6 @@ export const bookingAdminApi = {
     return data;
   },
 
-  async approveBooking(id: string) {
-    await axiosAdmin.post(`/bookings/${id}/approve`);
-  },
-
   async rejectBooking(id: string) {
     await axiosAdmin.post(`/bookings/${id}/reject`);
   },

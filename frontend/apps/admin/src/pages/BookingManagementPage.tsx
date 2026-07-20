@@ -5,7 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/DataTable";
 import DataTableToolbar from "@/components/common/DataTableToolbar";
 import BookingActionDropdown from "@/features/bookings/components/BookingActionDropdown";
-import BookingStatusDialog from "@/features/bookings/components/BookingStatusDialog";
+import BookingRejectDialog from "@/features/bookings/components/BookingStatusDialog";
 import BookingInfoDropdown from "@/features/bookings/components/BookingInfoDropdown";
 import TablePagination from "@/components/common/TablePagination";
 import { Spinner } from "@repo/ui/components/ui/spinner";
@@ -22,7 +22,7 @@ import {
   useBookings,
   useBookingsByBranch,
   useBookingFilters,
-  useSearchBookingsByPhone, // 🌟 Import hook search theo SĐT mới
+  useSearchBookingsByPhone,
 } from "@/features/bookings/hooks/queries";
 import { useBranches } from "@repo/hooks";
 import type { Booking, BookingFilter } from "@repo/schemas";
@@ -54,37 +54,28 @@ export default function BookingManagementPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  // States quản lý Dialogs
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [dialogMode, setDialogMode] = useState<"approve" | "reject" | null>(
-    null,
-  );
+  const [rejectBooking, setRejectBooking] = useState<Booking | null>(null);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
-  // State Object quản lý bộ lọc duy nhất cho Booking
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
     {},
   );
 
-  // Fetch dữ liệu nền
   const { data: branches = [], isLoading: isBranchesLoading } = useBranches();
 
-  // Xác định điều kiện active cho Search & Filter
   const isSearchActive = Boolean(search.trim());
   const hasFilter = Boolean(Object.values(selectedFilters).some(Boolean));
 
-  // 1. Hook tìm kiếm theo số điện thoại (Kích hoạt khi search có giá trị)
   const { data: searchedBookings, isLoading: isSearchLoading } =
     useSearchBookingsByPhone(search, { enabled: isSearchActive });
 
-  // 2. Các Hook lấy dữ liệu theo Vai trò (Chỉ chạy khi không nhập ô Search)
   const { data: adminBookings, isLoading: isAdminBookingsLoading } =
     useBookings(page, 10, { enabled: !isEmployee && !isSearchActive });
 
   const { data: branchBookings, isLoading: isBranchBookingsLoading } =
     useBookingsByBranch(page, 10, { enabled: isEmployee && !isSearchActive });
 
-  // Cấu hình bộ lọc
   const filterConfigs = useMemo<FilterConfigItem[]>(() => {
     return [
       {
@@ -105,30 +96,13 @@ export default function BookingManagementPage() {
         type: "select",
         options: branches.map((b) => ({ label: b.name, value: b.id })),
       },
-      {
-        key: "fromDate",
-        title: "From Date",
-        type: "date",
-      },
-      {
-        key: "toDate",
-        title: "To Date",
-        type: "date",
-      },
-      {
-        key: "userId",
-        title: "Customer ID",
-        type: "text",
-      },
-      {
-        key: "vehicleId",
-        title: "Vehicle ID",
-        type: "text",
-      },
+      { key: "fromDate", title: "From Date", type: "date" },
+      { key: "toDate", title: "To Date", type: "date" },
+      { key: "userId", title: "Customer ID", type: "text" },
+      { key: "vehicleId", title: "Vehicle ID", type: "text" },
     ];
   }, [branches]);
 
-  // Map dữ liệu bộ lọc gửi lên API
   const apiFilters = useMemo<
     BookingFilter & { page: number; size: number }
   >(() => {
@@ -146,13 +120,11 @@ export default function BookingManagementPage() {
     };
   }, [selectedFilters, page]);
 
-  // 3. Hook Filter (Chạy khi có filter và không tìm kiếm theo SĐT)
   const { data: filteredBookings } = useBookingFilters(
     apiFilters,
     hasFilter && !isSearchActive,
   );
 
-  // Tổng hợp trạng thái Loading
   const isDataLoading = isSearchActive
     ? isSearchLoading
     : isEmployee
@@ -166,7 +138,6 @@ export default function BookingManagementPage() {
 
   const defaultBookings = isEmployee ? branchBookings : adminBookings;
 
-  // Phân bổ danh sách dữ liệu hiển thị theo thứ tự ưu tiên: Search -> Filter -> Default
   const bookingData = useMemo(() => {
     if (isSearchActive) {
       return searchedBookings ?? [];
@@ -180,7 +151,6 @@ export default function BookingManagementPage() {
     defaultBookings,
   ]);
 
-  // Tính toán phân trang
   const pagination = useMemo(() => {
     if (isSearchActive) {
       const total = searchedBookings?.length ?? 0;
@@ -212,28 +182,18 @@ export default function BookingManagementPage() {
       {
         accessorKey: "id",
         header: "Booking ID",
-        cell: ({ row }) => (
-          <span className="text-sm font-medium">
-            <IdCell id={row.original.id} prefix="#" />
-          </span>
-        ),
+        cell: ({ row }) => <IdCell id={row.original.id} prefix="#" />,
       },
       {
         accessorKey: "user_id",
         header: "Customer",
-        cell: ({ row }) => (
-          <span className="text-sm font-medium">
-            <IdCell id={row.original.userId} prefix="User #" />
-          </span>
-        ),
+        cell: ({ row }) => <IdCell id={row.original.userId} prefix="User #" />,
       },
       {
         accessorKey: "vehicle_id",
         header: "Vehicle",
         cell: ({ row }) => (
-          <span className="text-sm font-medium">
-            <IdCell id={row.original.vehicleId} prefix="Vehicle #" />
-          </span>
+          <IdCell id={row.original.vehicleId} prefix="Vehicle #" />
         ),
       },
       {
@@ -281,18 +241,13 @@ export default function BookingManagementPage() {
           const prefixPath = isEmployee ? "/employee" : "/admin";
           const hasReturned = Boolean(booking.actualReturnTime);
 
-          const canApprove = booking.status === "pending";
           const canReject = booking.status === "pending";
           const canManageReturn = hasReturned;
           const canCreateReturn = !hasReturned && booking.status === "approved";
           const canCreateReview = booking.status === "completed";
 
           const hasAnyAction =
-            canApprove ||
-            canReject ||
-            canManageReturn ||
-            canCreateReturn ||
-            canCreateReview;
+            canReject || canManageReturn || canCreateReturn || canCreateReview;
 
           if (!hasAnyAction) {
             return (
@@ -304,22 +259,7 @@ export default function BookingManagementPage() {
 
           return (
             <BookingActionDropdown
-              onApprove={
-                canApprove
-                  ? () => {
-                      setSelectedBooking(booking);
-                      setDialogMode("approve");
-                    }
-                  : undefined
-              }
-              onReject={
-                canReject
-                  ? () => {
-                      setSelectedBooking(booking);
-                      setDialogMode("reject");
-                    }
-                  : undefined
-              }
+              onReject={canReject ? () => setRejectBooking(booking) : undefined}
               onManagerVehicleReturn={
                 canManageReturn
                   ? () => {
@@ -397,16 +337,12 @@ export default function BookingManagementPage() {
         onPageChange={setPage}
       />
 
-      <BookingStatusDialog
-        booking={selectedBooking}
-        open={!!selectedBooking && dialogMode !== null}
+      <BookingRejectDialog
+        booking={rejectBooking}
+        open={!!rejectBooking}
         onOpenChange={(open) => {
-          if (!open) {
-            setSelectedBooking(null);
-            setDialogMode(null);
-          }
+          if (!open) setRejectBooking(null);
         }}
-        mode={dialogMode ?? "approve"}
       />
 
       {openCreateDialog && selectedBooking?.status === "completed" && (

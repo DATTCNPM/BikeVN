@@ -240,7 +240,10 @@ export default function PaymentManagementPage() {
 
           if (payment.status === "refunded") return null;
 
-          if (payment.status === "processing_refund") {
+          if (
+            payment.status === "processing_refund" ||
+            payment.status === "completed"
+          ) {
             return (
               <PaymentActionDropdown
                 onRefund={() => {
@@ -250,8 +253,6 @@ export default function PaymentManagementPage() {
               />
             );
           }
-
-          if (payment.status === "completed") return null;
 
           return (
             <PaymentActionDropdown
