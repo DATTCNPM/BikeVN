@@ -31,7 +31,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,11 +88,12 @@ public class PaymentService {
 
         Payment payment = new Payment();
         LocalDateTime now = LocalDateTime.now();
+        String method = request.getPaymentMethod() != null ? request.getPaymentMethod() : "bank_transfer";
 
         payment.setBookingId(booking.getId());
         payment.setAmount(booking.getTotalPrice());
         payment.setStatus(PaymentStatus.pending);
-        payment.setPaymentMethod("bank_transfer");
+        payment.setPaymentMethod(method);
         payment.setIdempotencyKey(request.getIdempotencyKey());
         payment.setBranchId(booking.getPickupBranchId());
         payment.setType(PaymentType.rental);
@@ -185,6 +185,9 @@ public class PaymentService {
         Vehicle vehicle = vehicleRepository.findById(booking.getVehicleId())
                 .orElseThrow(()-> new AppException(ErrorCode.VEHICLE_NOT_EXISTED));
 
+        String targetBranchId = null;
+        NotificationMessage notificationMessage = null;
+
         if(PaymentType.rental.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.approved);
@@ -194,11 +197,31 @@ public class PaymentService {
             vehicleRepository.save(vehicle);
 
             bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(), booking.getUserId());
+
+            targetBranchId = booking.getPickupBranchId();
+            notificationMessage = NotificationMessage.builder()
+                    .type("NEW_BOOKING_ALERT")
+                    .branchId(targetBranchId)
+                    .title("New Booking !!!")
+                    .content("Vehicle " + vehicle.getName()
+                            + " (License: " + vehicle.getLicensePlate()
+                            + ") just rented!!!")
+                    .referenceId(booking.getId())
+                    .build();
         }
         else if(PaymentType.extra_fee.equals(payment.getType()))
         {
             booking.setStatus(BookingStatus.completed);
             booking.setExpiresAt(null);
+
+            targetBranchId = payment.getBranchId();
+            notificationMessage = NotificationMessage.builder()
+                    .type("RETURN_COMPLETED_ALERT")
+                    .branchId(targetBranchId)
+                    .title("Return & Payment Completed !!!")
+                    .content("Extra fee paid. Vehicle " + vehicle.getName() + " returned successfully.")
+                    .referenceId(booking.getId())
+                    .build();
         }
 
         paymentRepository.save(payment);
@@ -206,19 +229,11 @@ public class PaymentService {
 
         bookingLockService.releaseLockByVehicleAndUser(booking.getVehicleId(),booking.getUserId());
 
-        String branchId = booking.getPickupBranchId();
-
-        NotificationMessage notificationMessage = NotificationMessage.builder()
-                .type("NEW_BOOKING_ALERT")
-                .branchId(branchId)
-                .title("New Booking !!!")
-                .content("Vehicle " + vehicle.getName() + " (License: " + vehicle.getLicensePlate() +
-                        ") just rented!!!")
-                .referenceId(booking.getId())
-                .build();
-        messagingTemplate.convertAndSend(
-                "/topic/branch/" + branchId + "/notifications", notificationMessage
-        );
+        if (targetBranchId != null && notificationMessage != null) {
+            messagingTemplate.convertAndSend(
+                    "/topic/branch/" + targetBranchId + "/notifications", notificationMessage
+            );
+        }
 
     }
 
@@ -237,7 +252,8 @@ public class PaymentService {
             throw new AppException(ErrorCode.PAYMENT_ALREADY_COMPLETED);
         }
 
-        Booking booking = bookingRepository.findById(payment.getBookingId()).get();
+        Booking booking = bookingRepository.findById(payment.getBookingId())
+                .orElseThrow(()-> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
         if ("00".equals(responseCode)) {
 
@@ -275,59 +291,6 @@ public class PaymentService {
 
         paymentRepository.saveAll(payments);
     }
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('admin')")
-   public PageResponse<PaymentResponse> getAllPayments(int page, int size)
-   {
-       Pageable pageable = PageRequest.of(page - 1, size);
-       Page<Payment> pageData = paymentRepository.findAll(pageable);
-
-       var paymentResponses = pageData.getContent().stream()
-               .map(paymentMapper::toPaymentResponse)
-               .toList();
-
-       return PageResponse.<PaymentResponse>builder()
-               .currentPage(page)
-               .totalPages(pageData.getTotalPages())
-               .pageSize(size)
-               .totalElements(pageData.getTotalElements())
-               .data(paymentResponses)
-               .build();
-   }
-
-   @Transactional(readOnly = true)
-   @PreAuthorize("hasAnyRole('admin', 'employee')")
-   public PageResponse<PaymentResponse> getAllPaymentPerBranch(int page, int size)
-   {
-       var auth = SecurityContextHolder.getContext().getAuthentication();
-       if(!(auth instanceof JwtAuthenticationToken jwtAuthenticationToken))
-       {
-           throw new AppException(ErrorCode.UNAUTHENTICATED);
-       }
-
-       String tokenBranchId = (String) jwtAuthenticationToken.getTokenAttributes().get("branchId");
-       if(tokenBranchId == null)
-       {
-           throw new AppException(ErrorCode.UNAUTHORIZED);
-       }
-
-       Pageable pageable = PageRequest.of(page - 1, size);
-
-       Page<Payment> pageData = paymentRepository.findByBranchId(tokenBranchId, pageable);
-
-       var paymentResponses = pageData.getContent().stream()
-               .map(paymentMapper::toPaymentResponse)
-               .toList();
-
-       return PageResponse.<PaymentResponse>builder()
-               .currentPage(page)
-               .totalPages(pageData.getTotalPages())
-               .pageSize(size)
-               .totalElements(pageData.getTotalElements())
-               .data(paymentResponses)
-               .build();
-   }
 
     @Transactional(readOnly = true)
     @PreAuthorize("isAuthenticated()")
