@@ -67,59 +67,51 @@ export default function BranchPerformanceChart({ data }: Props) {
 
       {/* 1. Sửa tại đây: Set chiều cao cố định cho CardContent để tạo không gian vững chắc cho SSR */}
       <CardContent className="h-[320px] w-full p-6 pt-0">
-        {/* 2. Sửa tại đây: Dùng `h-full w-full` kết hợp `aspect-auto` chuẩn Shadcn */}
-        <ChartContainer config={chartConfig} className="h-full w-full">
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-            minWidth={0}
-            minHeight={0}
+        {/* 2. Dùng aspect-auto để ghi đè aspect-video của ChartContainer */}
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-full w-full"
+        >
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           >
-            <BarChart
-              data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid
-                vertical={false}
-                stroke="var(--border)"
-                strokeDasharray="3 3"
-              />
-
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
-                className="text-xs font-medium fill-muted-foreground"
-              />
-
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
-                width={65}
-                className="text-xs font-medium fill-muted-foreground"
-                tickFormatter={formatCurrency}
-              />
-
-              <ChartTooltip
-                cursor={{ fill: "var(--muted)", opacity: 0.15 }}
-                content={
-                  <ChartTooltipContent
-                    hideLabel
-                    formatter={(value) => formatCurrency(value)}
-                  />
-                }
-              />
-
-              <Bar
-                dataKey="value"
-                fill="var(--chart-2)"
-                radius={[6, 6, 0, 0]}
-                maxBarSize={50}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+            <CartesianGrid
+              vertical={false}
+              stroke="var(--border)"
+              strokeDasharray="3 3"
+            />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={12}
+              className="text-xs font-medium fill-muted-foreground"
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={12}
+              width={65}
+              className="text-xs font-medium fill-muted-foreground"
+              tickFormatter={formatCurrency}
+            />
+            <ChartTooltip
+              cursor={{ fill: "var(--muted)", opacity: 0.15 }}
+              content={
+                <ChartTooltipContent
+                  hideLabel
+                  formatter={(value) => formatCurrency(value)}
+                />
+              }
+            />
+            <Bar
+              dataKey="value"
+              fill="var(--chart-2)"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={50}
+            />
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
