@@ -1,11 +1,5 @@
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { useEffect, useState } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -42,6 +36,13 @@ const formatCurrency = (value: any) => {
 };
 
 export default function BranchPerformanceChart({ data }: Props) {
+  // 1. Thêm state kiểm tra Môi trường Client đã Mount chưa
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   if (!data || data.length === 0) {
     return (
       <Card className="rounded-3xl border-muted/50">
@@ -65,54 +66,62 @@ export default function BranchPerformanceChart({ data }: Props) {
         </CardTitle>
       </CardHeader>
 
-      {/* 1. Sửa tại đây: Set chiều cao cố định cho CardContent để tạo không gian vững chắc cho SSR */}
       <CardContent className="h-[320px] w-full p-6 pt-0">
-        {/* 2. Dùng aspect-auto để ghi đè aspect-video của ChartContainer */}
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-full w-full"
-        >
-          <BarChart
-            data={data}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+        {/* 2. Chỉ render ChartContainer khi Client đã Mount hoàn tất */}
+        {isMounted ? (
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-full w-full"
           >
-            <CartesianGrid
-              vertical={false}
-              stroke="var(--border)"
-              strokeDasharray="3 3"
-            />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={12}
-              className="text-xs font-medium fill-muted-foreground"
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={12}
-              width={65}
-              className="text-xs font-medium fill-muted-foreground"
-              tickFormatter={formatCurrency}
-            />
-            <ChartTooltip
-              cursor={{ fill: "var(--muted)", opacity: 0.15 }}
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value) => formatCurrency(value)}
-                />
-              }
-            />
-            <Bar
-              dataKey="value"
-              fill="var(--chart-2)"
-              radius={[6, 6, 0, 0]}
-              maxBarSize={50}
-            />
-          </BarChart>
-        </ChartContainer>
+            <BarChart
+              data={data}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid
+                vertical={false}
+                stroke="var(--border)"
+                strokeDasharray="3 3"
+              />
+
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                className="text-xs font-medium fill-muted-foreground"
+              />
+
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                width={65}
+                className="text-xs font-medium fill-muted-foreground"
+                tickFormatter={formatCurrency}
+              />
+
+              <ChartTooltip
+                cursor={{ fill: "var(--muted)", opacity: 0.15 }}
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value) => formatCurrency(value)}
+                  />
+                }
+              />
+
+              <Bar
+                dataKey="value"
+                fill="var(--chart-2)"
+                radius={[6, 6, 0, 0]}
+                maxBarSize={50}
+              />
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          // Placeholder hiển thị tạm trong lúc SSR/Hydrate trên Vercel
+          <div className="h-full w-full bg-muted/10 animate-pulse rounded-lg" />
+        )}
       </CardContent>
     </Card>
   );

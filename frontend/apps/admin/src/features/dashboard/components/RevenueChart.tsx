@@ -1,11 +1,5 @@
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { useEffect, useState } from "react";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -42,6 +36,12 @@ const formatCurrency = (value: any) => {
 };
 
 export default function RevenueChart({ data }: Props) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   if (!data || data.length === 0) {
     return (
       <Card className="rounded-3xl border-muted/50">
@@ -65,68 +65,75 @@ export default function RevenueChart({ data }: Props) {
         </CardTitle>
       </CardHeader>
 
-      {/* Sửa: Đặt h-[320px] cố định ở CardContent */}
       <CardContent className="h-[320px] w-full p-6 pt-0">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-full w-full"
-        >
-          <AreaChart
-            data={data}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+        {isMounted ? (
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-full w-full"
           >
-            <defs>
-              <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--chart-1)"
-                  stopOpacity={0.25}
-                />
-                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid
-              vertical={false}
-              stroke="var(--border)"
-              strokeDasharray="3 3"
-            />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={12}
-              className="text-xs font-medium fill-muted-foreground"
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={12}
-              width={65}
-              className="text-xs font-medium fill-muted-foreground"
-              tickFormatter={formatCurrency}
-            />
-            <ChartTooltip
-              cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value) => formatCurrency(value)}
-                />
-              }
-            />
-            <Area
-              type="monotone"
-              dataKey="value"
-              fill="url(#fillRevenue)"
-              stroke="var(--chart-1)"
-              strokeWidth={2.5}
-              activeDot={{
-                r: 6,
-                style: { fill: "var(--chart-1)", opacity: 0.9 },
-              }}
-            />
-          </AreaChart>
-        </ChartContainer>
+            <AreaChart
+              data={data}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--chart-1)"
+                    stopOpacity={0.25}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--chart-1)"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                vertical={false}
+                stroke="var(--border)"
+                strokeDasharray="3 3"
+              />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                className="text-xs font-medium fill-muted-foreground"
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                width={65}
+                className="text-xs font-medium fill-muted-foreground"
+                tickFormatter={formatCurrency}
+              />
+              <ChartTooltip
+                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value) => formatCurrency(value)}
+                  />
+                }
+              />
+              <Area
+                type="monotone"
+                dataKey="value"
+                fill="url(#fillRevenue)"
+                stroke="var(--chart-1)"
+                strokeWidth={2.5}
+                activeDot={{
+                  r: 6,
+                  style: { fill: "var(--chart-1)", opacity: 0.9 },
+                }}
+              />
+            </AreaChart>
+          </ChartContainer>
+        ) : (
+          <div className="h-full w-full bg-muted/10 animate-pulse rounded-lg" />
+        )}
       </CardContent>
     </Card>
   );

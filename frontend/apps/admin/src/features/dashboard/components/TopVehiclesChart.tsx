@@ -1,11 +1,5 @@
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { useEffect, useState } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -37,6 +31,12 @@ const formatNumber = (value: any) => {
 };
 
 export default function TopVehiclesChart({ data }: Props) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   if (!data || data.length === 0) {
     return (
       <Card className="rounded-3xl border-muted/50">
@@ -60,59 +60,62 @@ export default function TopVehiclesChart({ data }: Props) {
         </CardTitle>
       </CardHeader>
 
-      {/* Sửa: Đặt h-[320px] cố định ở CardContent */}
       <CardContent className="h-[320px] w-full p-6 pt-0">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-full w-full"
-        >
-          <BarChart
-            layout="vertical"
-            data={data}
-            margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+        {isMounted ? (
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-full w-full"
           >
-            <CartesianGrid
-              horizontal={false}
-              stroke="var(--border)"
-              strokeDasharray="3 3"
-            />
-            <XAxis
-              type="number"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              className="text-xs font-medium fill-muted-foreground"
-              tickFormatter={formatNumber}
-            />
-            <YAxis
-              dataKey="label"
-              type="category"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              width={130}
-              className="text-xs font-medium fill-foreground"
-            />
-            <ChartTooltip
-              cursor={{ fill: "var(--muted)", opacity: 0.15 }}
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value) => [
-                    `${formatNumber(value)} rentals`,
-                    "Rentals",
-                  ]}
-                />
-              }
-            />
-            <Bar
-              dataKey="value"
-              fill="var(--chart-3)"
-              radius={[0, 6, 6, 0]}
-              maxBarSize={24}
-            />
-          </BarChart>
-        </ChartContainer>
+            <BarChart
+              layout="vertical"
+              data={data}
+              margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+            >
+              <CartesianGrid
+                horizontal={false}
+                stroke="var(--border)"
+                strokeDasharray="3 3"
+              />
+              <XAxis
+                type="number"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                className="text-xs font-medium fill-muted-foreground"
+                tickFormatter={formatNumber}
+              />
+              <YAxis
+                dataKey="label"
+                type="category"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                width={130}
+                className="text-xs font-medium fill-foreground"
+              />
+              <ChartTooltip
+                cursor={{ fill: "var(--muted)", opacity: 0.15 }}
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value) => [
+                      `${formatNumber(value)} rentals`,
+                      "Rentals",
+                    ]}
+                  />
+                }
+              />
+              <Bar
+                dataKey="value"
+                fill="var(--chart-3)"
+                radius={[0, 6, 6, 0]}
+                maxBarSize={24}
+              />
+            </BarChart>
+          </ChartContainer>
+        ) : (
+          <div className="h-full w-full bg-muted/10 animate-pulse rounded-lg" />
+        )}
       </CardContent>
     </Card>
   );
