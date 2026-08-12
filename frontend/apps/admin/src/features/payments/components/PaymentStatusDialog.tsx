@@ -101,7 +101,7 @@ export default function PaymentStatusDialog({
       case "retry":
         // Handle retry logic here
         retryMutation.mutate(
-          { id: payment.id, newPaymentMethod: "cash" }, // Example payload
+          { id: payment.id, newPaymentMethod: "bank_transfer" },
           {
             onSuccess: () => handleSuccess("Payment retried successfully"),
             onError: handleError,

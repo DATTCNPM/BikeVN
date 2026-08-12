@@ -68,7 +68,7 @@ export default function VehicleManagementPage() {
 
   const apiFilters: VehicleQueryParams = useMemo(
     () => ({
-      search: search.trim() || undefined,
+      name: search.trim() || undefined,
       brandName: selectedFilters["brand"]?.value,
       modelName: selectedFilters["model"]?.value,
       currentBranchName: selectedFilters["branch"]?.value,

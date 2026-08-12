@@ -47,7 +47,7 @@ export default function ReturnSurchargeCard({ vehicleReturn }: Props) {
               Damage Assessment:
             </span>
             <p className="font-medium text-foreground italic bg-muted/50 p-2 rounded-lg text-[11px]">
-              "{vehicleReturn.damageDescription}"
+              "{vehicleReturn.notes}"
             </p>
           </div>
         )}
